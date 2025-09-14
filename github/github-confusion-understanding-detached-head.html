@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Detached HEAD</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- Compact Styles (from previous file) --- */
+        :root {
+            --bg-page: #f8f9fa;
+            --bg-surface: #ffffff;
+            --bg-muted: #f1f3f5;
+            --text-primary: #2c3e50;
+            --text-secondary: #6c757d;
+            --border-color: #dee2e6;
+            --accent: #dd6b20;
+            --warning: #f03e3e;
+            --font-main: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            --font-code: 'Courier New', Courier, monospace;
+        }
+
+        /* --- Base --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background: var(--bg-page);
+            color: var(--text-primary);
+            line-height: 1.5;
+        }
+        
+        /* --- Layout --- */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 1.5rem 1rem;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .panel {
+            background: var(--bg-surface);
+            border-radius: 8px;
+            padding: 1.25rem;
+            margin-bottom: 1.25rem;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .step-number {
+            background: var(--accent);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 0.75rem;
+            flex-shrink: 0;
+            font-size: 1rem;
+        }
+
+        .step-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+        
+        p {
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+        }
+        
+        /* --- Visual Demo --- */
+        .visual-demo {
+            background: var(--bg-muted);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 1rem;
+            margin: 1rem 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .explanation {
+            background: var(--bg-muted);
+            border-left: 3px solid var(--accent);
+            border-radius: 4px;
+            padding: 0.75rem 1rem;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+        }
+        .explanation strong { font-weight: 600; }
+
+        .next-button {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: block;
+            margin: 1rem auto 0;
+            transition: opacity 0.2s;
+        }
+        .next-button:hover {
+            opacity: 0.85;
+        }
+
+        .hidden { display: none; }
+        
+        /* --- DAG Visualization Styles --- */
+        .dag-container {
+            font-family: var(--font-code);
+            font-size: 0.8rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            width: 100%;
+        }
+        .commit-line {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .commit-node {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        .commit-line .arrow {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+        }
+        .commit-info {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+        }
+        .pointers {
+            display: flex;
+            gap: 0.5rem;
+            margin-left: 0.5rem;
+        }
+        .pointer {
+            padding: 0.25rem 0.6rem;
+            border-radius: 100px;
+            font-weight: bold;
+            color: white;
+            font-size: 0.75rem;
+        }
+        .pointer-branch {
+            background: #27ae60;
+        }
+        .pointer-head {
+            background: var(--accent);
+            border: 1px solid var(--text-primary);
+        }
+
+        /* Warning Pulse Animation */
+        @keyframes pulse-warning {
+            0% { box-shadow: 0 0 0 0 rgba(240, 62, 62, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(240, 62, 62, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(240, 62, 62, 0); }
+        }
+        .commit-node.warning {
+            border: 2px solid var(--warning);
+            animation: pulse-warning 2s infinite;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Understanding Detached HEAD</h1>
+
+        <!-- Step 1: Normal State -->
+        <div class="panel" id="step1">
+            <div class="step-header">
+                <div class="step-number">1</div>
+                <div class="step-title">The Normal State</div>
+            </div>
+            <p>Normally, `HEAD` (your current location) points to a branch name, like `main`. The branch then points to the latest commit. They move together.</p>
+            <div class="visual-demo">
+                <div class="dag-container">
+                    <div class="commit-line">
+                        <div class="commit-node">a1b2</div>
+                        <div class="arrow">←</div>
+                        <div class="commit-node">c3d4</div>
+                        <div class="pointers">
+                            <div class="pointer pointer-branch">main</div>
+                            <div class="pointer pointer-head">HEAD</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="explanation">
+                <strong>Key Point:</strong> `HEAD` → `main` → `c3d4`. This is the standard, "attached" state. When you make a new commit, both `HEAD` and `main` move forward together.
+            </div>
+            <button class="next-button" onclick="showStep(2)">Next: Detach HEAD →</button>
+        </div>
+
+        <!-- Step 2: Detaching HEAD -->
+        <div class="panel hidden" id="step2">
+            <div class="step-header">
+                <div class="step-number">2</div>
+                <div class="step-title">Detaching HEAD</div>
+            </div>
+            <p>When you check out a specific commit hash (`git checkout a1b2`), `HEAD` detaches from the branch and points directly to that commit.</p>
+            <div class="visual-demo">
+                <div class="dag-container">
+                    <div class="commit-line">
+                        <div class="commit-node">a1b2</div>
+                        <div class="pointers">
+                            <div class="pointer pointer-head">HEAD</div>
+                        </div>
+                        <div class="arrow">←</div>
+                        <div class="commit-node">c3d4</div>
+                        <div class="pointers">
+                            <div class="pointer pointer-branch">main</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="explanation">
+                <strong>Key Point:</strong> Now, `HEAD` → `a1b2` directly. The `main` branch is still back at `c3d4`. You are now in a "detached HEAD" state. You're looking at the past, but you're not on any branch.
+            </div>
+            <button class="next-button" onclick="showStep(3)">Next: The Danger →</button>
+        </div>
+
+        <!-- Step 3: Committing while Detached -->
+        <div class="panel hidden" id="step3">
+            <div class="step-header">
+                <div class="step-number">3</div>
+                <div class="step-title">The Danger: Orphaned Commits</div>
+            </div>
+            <p>If you make a new commit now, only `HEAD` moves forward. The new commit (`e5f6`) has no branch pointing to it. It's an orphan.</p>
+            <div class="visual-demo">
+                <div class="dag-container">
+                     <div class="commit-line">
+                        <div class="commit-node">a1b2</div>
+                        <div class="arrow">←</div>
+                        <div class="commit-node">c3d4</div>
+                        <div class="pointers">
+                            <div class="pointer pointer-branch">main</div>
+                        </div>
+                    </div>
+                     <div style="transform: rotate(90deg);" class="arrow">↑</div>
+                     <div class="commit-line">
+                        <div class="commit-node warning">e5f6</div>
+                        <div class="pointers">
+                           <div class="pointer pointer-head">HEAD</div>
+                        </div>
+                     </div>
+                </div>
+            </div>
+            <div class="explanation">
+                <strong>Key Point:</strong> The new commit `e5f6` is only referenced by `HEAD`. If you switch back to `main`, there is no easy way to get back to this new commit. It will eventually be deleted by Git's garbage collection.
+            </div>
+            <button class="next-button" onclick="showStep(4)">Next: The Fix →</button>
+        </div>
+
+        <!-- Step 4: The Fix -->
+        <div class="panel hidden" id="step4">
+            <div class="step-header">
+                <div class="step-number">4</div>
+                <div class="step-title">The Fix: Create a Branch</div>
+            </div>
+            <p>To save your orphaned commits, you must give them a name by creating a new branch right where you are. This re-attaches `HEAD` and saves your work.</p>
+            <div class="visual-demo">
+                <div class="dag-container">
+                    <div class="commit-line">
+                       <div class="commit-node">a1b2</div>
+                       <div class="arrow">←</div>
+                       <div class="commit-node">c3d4</div>
+                       <div class="pointers">
+                           <div class="pointer pointer-branch">main</div>
+                       </div>
+                   </div>
+                    <div style="transform: rotate(90deg);" class="arrow">↑</div>
+                    <div class="commit-line">
+                       <div class="commit-node">e5f6</div>
+                       <div class="pointers" id="new-branch-pointer" style="opacity:0;">
+                           <div class="pointer pointer-branch">new-feature</div>
+                           <div class="pointer pointer-head">HEAD</div>
+                       </div>
+                    </div>
+               </div>
+            </div>
+            <div class="explanation">
+                <strong>Key Point:</strong> Before switching away, run `git checkout -b new-feature`. This creates a new branch `new-feature` pointing to your new commit (`e5f6`) and re-attaches `HEAD` to it. Your work is now safe.
+                <button class="next-button" style="margin-top: 1rem; font-size: 0.8rem;" onclick="createBranch()">Simulate `git checkout -b new-feature`</button>
+            </div>
+             <button class="next-button" onclick="showStep(1)">Start Over</button>
+        </div>
+    </div>
+
+    <script>
+        function showStep(stepNumber) {
+            document.querySelectorAll('.panel').forEach(panel => {
+                panel.classList.add('hidden');
+            });
+            
+            const stepToShow = document.getElementById('step' + stepNumber);
+            if (stepToShow) {
+                stepToShow.classList.remove('hidden');
+                stepToShow.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'start' 
+                });
+            }
+        }
+        function createBranch() {
+            const newBranchPointer = document.getElementById('new-branch-pointer');
+            if(newBranchPointer) {
+                newBranchPointer.style.transition = 'opacity 0.5s';
+                newBranchPointer.style.opacity = '1';
+            }
+        }
+    </script>
+</body>
+</html>

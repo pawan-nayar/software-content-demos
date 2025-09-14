@@ -1,0 +1,1360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Part 3: Professional Workflows</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* --- Base Theme --- */
+        :root {
+            --text: #212529; --bg: #fff; --muted: #f8f9fa; --border: #e9ecef;
+            --accent: #fd7e14; --accent-2: #e87312; --header-bg: #2c3e50; --header-fg: #f8f9fa;
+            --ok: #16a34a; --ok-soft: #dcfce7; --bad: #dc2626; --bad-soft: #fee2e2;
+            --code-bg: #2d3748; --code-fg: #e2e8f0;
+            --font-main: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            --font-code: 'Courier New', Courier, monospace;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body { 
+            font-family: var(--font-main); 
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--text); 
+            line-height: 1.7; 
+            font-size: 16px; 
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- Header / Footer --- */
+        .site-header, .site-footer { background: var(--header-bg); color: var(--header-fg); padding: 14px 24px; flex-shrink: 0; }
+        .site-header { display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .logo { font-weight: 700; font-size: 1.15rem; color: #fff; text-decoration: none; cursor: pointer; }
+        .site-footer { text-align: center; padding: 30px; }
+
+        /* --- Main Wizard Container --- */
+        .wizard-container {
+            padding: 1rem;
+            flex-grow: 1;
+            /* display: flex; is now managed by Tailwind */
+            align-items: center;
+            justify-content: center;
+        }
+        .wizard-panel {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+        }
+        .wizard-panel h1, .wizard-panel h2.intro-title { font-size: 1.8rem; color: var(--accent-2); margin-bottom: 0.5rem; }
+        .wizard-panel p { font-size: 1.05rem; margin-bottom: 1rem; }
+        .wizard-panel h2 { font-size: 1.3rem; margin-top: 1.5rem; margin-bottom: 0.5rem; }
+        .start-btn { 
+            display: block; 
+            width: 100%; 
+            background: var(--accent); 
+            color: white; 
+            border: none; 
+            padding: 1rem; 
+            font-size: 1.2rem; 
+            font-weight: 700; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            margin-top: 1.5rem; 
+            transition: background-color 0.2s; 
+        }
+        .start-btn:hover { background: var(--accent-2); }
+        .start-btn:disabled { 
+            background-color: #ccc;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        .intro-primer {
+            background: var(--muted);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1.5rem;
+            text-align: left;
+        }
+        .intro-primer h3 {
+            font-weight: 600;
+            color: var(--accent-2);
+            margin-bottom: 0.5rem;
+        }
+        .intro-primer ul {
+            list-style-type: disc;
+            padding-left: 20px;
+        }
+
+        /* --- Select Screen --- */
+        .select-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        .select-card {
+            background: var(--muted);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            border-top: 4px solid var(--accent);
+        }
+        .select-card:hover { transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
+        .select-card h3 { color: var(--accent-2); margin-bottom: 0.5rem; }
+        .select-card p { font-size: 0.9rem; margin-bottom: 0; }
+        .select-card.completed {
+            background: #dcfce7;
+            border-color: #16a34a;
+            border-top-color: #16a34a;
+        }
+        
+        /* --- Tutorial Screen --- */
+        .tutorial-container {
+            /* display: none; is now managed by Tailwind .hidden class */
+            gap: 24px;
+            padding: 24px;
+            flex-grow: 1;
+        }
+        .left-column, .right-column { display: flex; flex-direction: column; gap: 24px; min-height: calc(100vh - 150px); }
+        
+        .panel { background: var(--bg); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .panel-header { padding: 12px 16px; border-bottom: 1px solid var(--border); background: var(--muted); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+        .panel-title { font-weight: 600; font-size: 1.1rem; }
+        .panel-body { padding: 16px; flex-grow: 1; overflow-y: auto; }
+        .back-btn { background: #6c757d; color: white; border: none; padding: 5px 12px; font-size: 0.9rem; border-radius: 6px; cursor: pointer; transition: background-color 0.2s; }
+        .back-btn:hover { background: #5a6268; }
+
+        /* --- Playground Tab Bar --- */
+        .playground-tabs { display: flex; border-bottom: 1px solid var(--border); flex-shrink: 0; flex-wrap: wrap; }
+        .crud-tab { flex-grow: 1; background: none; border: none; padding: 14px 10px; font-size: 1rem; font-weight: 600; cursor: pointer; border-bottom: 3px solid transparent; transition: background-color 0.2s, color 0.2s; }
+        .crud-tab.active { 
+            color: var(--accent); 
+            border-bottom-color: var(--accent); 
+            background-color: white; 
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .code-viewer { font-family: var(--font-code); font-size: 0.95rem; line-height: 1.6; background-color: var(--code-bg); color: var(--code-fg); padding: 16px; white-space: pre-wrap; margin: 0; flex-grow: 1;}
+        .output-viewer h1, .output-viewer h2 { margin-top: 1rem; margin-bottom: 0.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+        .output-viewer ul { margin-left: 20px; }
+        .output-viewer p { margin-bottom: 1rem; }
+        .commit-section { background: var(--muted); padding: 12px 16px; border-top: 1px solid var(--border); font-family: var(--font-code); font-size: 0.9rem; flex-shrink: 0;}
+        .commit-section strong { color: var(--accent-2); }
+        
+        /* --- Right Pane: Explanations --- */
+        #explanation-panel-body { padding: 0; min-height: 500px; }
+        .explanation-tabs { display: flex; border-bottom: 1px solid var(--border); padding: 0 16px; flex-shrink: 0; flex-wrap: wrap; }
+        .explanation-tab { background: none; border: none; padding: 12px 16px; font-size: 0.95rem; font-weight: 600; cursor: pointer; border-bottom: 3px solid transparent; }
+        .explanation-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+        .explanation-content { display: none; padding: 16px; }
+        .explanation-content.active { display: block; animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .explanation-content h3 { font-size: 1.2rem; color: var(--accent-2); margin-top: 0; margin-bottom: 12px; }
+        .explanation-content p { margin-bottom: 1rem; }
+        .explanation-content .analogy { background: var(--muted); border-left: 4px solid var(--accent); padding: 12px; border-radius: 4px; font-style: italic; }
+        .step-list { list-style-type: none; padding-left: 0; counter-reset: step-counter; }
+        .step-list li { counter-increment: step-counter; margin-bottom: 12px; display: flex; align-items: flex-start; text-align: left; }
+        .step-list li::before { content: counter(step-counter); background: var(--accent-2); color: white; font-weight: 700; border-radius: 50%; width: 24px; height: 24px; display: inline-flex; justify-content: center; align-items: center; margin-right: 12px; flex-shrink: 0; }
+        .quiz-question { margin-bottom: 24px; }
+        .quiz-question p { font-weight: 600; }
+        .quiz-option { display: block; margin: 8px 0; padding: 10px; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; transition: background-color 0.2s, border-color 0.2s; }
+        .quiz-option:hover { background: var(--muted); }
+        .quiz-option input { margin-right: 8px; }
+        .quiz-option.correct { background-color: var(--ok-soft); border-color: var(--ok); }
+        .quiz-option.incorrect { background-color: var(--bad-soft); border-color: var(--bad); }
+        .quiz-option.disabled { opacity: 0.6; pointer-events: none; }
+        
+        /* New Styles for Best Practices & Glossary */
+        .best-practices-section ul, .glossary-list ul { margin: 0; list-style-type: none; padding-left: 0; }
+        .best-practices-section li { margin-bottom: 8px; display: flex; align-items: flex-start; }
+        .best-practices-section .do-item::before { content: '✅'; margin-right: 10px; font-size: 1.2rem; flex-shrink: 0; margin-top: 2px; }
+        .best-practices-section .dont-item::before { content: '❌'; margin-right: 10px; font-size: 1.2rem; flex-shrink: 0; margin-top: 2px;}
+        .glossary-list li { margin-bottom: 10px; }
+        .glossary-list strong { color: var(--accent-2); }
+        .faq-list { margin-top: 1rem; }
+        .faq-list h4 { font-weight: 600; margin-bottom: 0.5rem; }
+        .faq-list p { margin-bottom: 1.2rem; }
+
+        /* General Quiz Styles */
+        .quiz-container { display: none; flex-direction: column; justify-content: center; align-items: center; flex-grow: 1; }
+        .quiz-container .quiz-panel { background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem 2rem; box-shadow: 0 5px 15px rgba(0,0,0,0.05); max-width: 800px; width: 100%; display: flex; flex-direction: column; text-align: left; }
+        .quiz-container .quiz-panel .q-card { min-height: 400px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .quiz-container .quiz-panel .q-card .q-content { flex-grow: 1; padding-bottom: 1rem; }
+        .quiz-container .quiz-panel .q-card h2 { font-size: 1.5rem; font-weight: 600; margin-bottom: 1rem; color: var(--accent-2); }
+        .quiz-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; }
+        .quiz-nav button { padding: 0.75rem 1.5rem; font-weight: bold; border-radius: 8px; transition: all 0.2s; background-color: var(--accent); color: white; border: none; }
+        .quiz-nav button:disabled { background-color: #ccc; cursor: not-allowed; opacity: 0.6; }
+        .quiz-nav button:hover:not(:disabled) { background-color: var(--accent-2); }
+        .progress-bar { width: 100%; height: 10px; background-color: #e9ecef; border-radius: 9999px; overflow: hidden; margin-bottom: 1.5rem; }
+        .progress-bar-fill { height: 100%; background-color: var(--accent); transition: width 0.3s ease-in-out; }
+        /* Quiz Question Types */
+        .question-body { margin-bottom: 1.5rem; }
+        .question-options label { display: block; background: var(--muted); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem 1rem; cursor: pointer; transition: all 0.2s; margin-bottom: 0.5rem; }
+        .question-options label:hover { background: #e9ecef; }
+        .question-options input[type="radio"], .question-options input[type="checkbox"] { margin-right: 0.75rem; }
+        .question-options label.correct { background-color: var(--ok-soft); border-color: var(--ok); }
+        .question-options label.incorrect { background-color: var(--bad-soft); border-color: var(--bad); }
+        .feedback { margin-top: 1rem; padding: 1rem; border-left: 4px solid; border-radius: 8px; }
+        .feedback.correct { border-color: var(--ok); background-color: var(--ok-soft); }
+        .feedback.incorrect { border-color: var(--bad); background-color: var(--bad-soft); }
+        
+        /* Sequence and Match Styles */
+        .seq-list { list-style: none; margin: 0; padding: 0; }
+        .seq-item { background: #fff; border: 1px solid var(--border); border-radius: 10px; padding: 0.6rem 0.8rem; display: flex; gap: 0.6rem; align-items: center; cursor: grab; user-select: none; margin-bottom: 0.4rem; transition: all 0.2s ease; }
+        .seq-item:hover { border-color: var(--accent); background: #f8f9fa; }
+        .seq-item .handle { opacity: 0.55; font-size: 1.2rem; }
+        .seq-item.dragging { opacity: 0.6; background: #fef3e7; border-color: var(--accent); transform: rotate(2deg); }
+        .match-grid { display: grid; gap: 1rem; }
+        @media(min-width: 760px) { .match-grid { grid-template-columns: 1fr 1fr; } }
+        .match-item { background: #fff; border: 1px solid var(--border); border-radius: 10px; padding: 0.55rem 0.7rem; cursor: pointer; transition: 0.2s; margin-bottom: 0.4rem; }
+        .match-item.is-picked { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(239, 125, 85, 0.18); }
+        
+    </style>
+</head>
+<body>
+
+    <header class="site-header">
+        <a id="logo-link" href="#" class="logo">GitHub Learning Series</a>
+    </header>
+
+    <main>
+        <!-- Screen 1: Intro -->
+        <section id="intro-screen" class="wizard-container flex">
+            <div class="wizard-panel">
+                <h1>Part 3: Professional Workflows 🏛️</h1>
+                <p>You've learned to collaborate with a team. Now it's time to learn how mature organizations build robust, automated, and high-quality software at scale. This module is about moving from commands to strategies.</p>
+                <div class="intro-primer">
+                    <h3>2-Minute Primer: What is CI/CD?</h3>
+                    <p><strong>CI/CD</strong> stands for Continuous Integration & Continuous Delivery. Think of it as an automated assembly line for your code.</p>
+                    <ul>
+                        <li><strong>Continuous Integration (CI):</strong> Every time a developer proposes a change, an automated system builds the code and runs tests to ensure the change doesn't break anything.</li>
+                        <li><strong>Continuous Delivery (CD):</strong> If all the tests pass, the system automatically prepares the code for release, and can even deploy it to users.</li>
+                    </ul>
+                    <p>This process catches bugs early, improves quality, and speeds up development.</p>
+                </div>
+                <button type="button" id="start-tutorial-btn" class="start-btn">Level Up to Professional 🚀</button>
+            </div>
+        </section>
+        
+        <!-- Screen 2: Select Tutorial -->
+        <section id="select-screen" class="wizard-container hidden">
+            <div class="wizard-panel">
+                <h2 class="intro-title">Professional & Advanced Topics ✨</h2>
+                <p>These concepts are key to working effectively in a professional development team.</p>
+                <div id="select-grid" class="select-grid">
+                    <div class="select-card" data-crud="branchProtection">
+                        <h3>🛡️ Branch Protection</h3>
+                        <p>Safeguarding your most important code.</p>
+                    </div>
+                     <div class="select-card" data-crud="advancedConflict">
+                        <h3>🤯 Advanced Conflicts</h3>
+                        <p>Resolving complex issues with rebase and squash.</p>
+                    </div>
+                    <div class="select-card" data-crud="codeReview">
+                        <h3>🤝 Professional Code Review</h3>
+                        <p>Giving and receiving effective, automated feedback.</p>
+                    </div>
+                    <div class="select-card" data-crud="ciCd">
+                        <h3>🤖 CI/CD Basics</h3>
+                        <p>Automating checks and deployments with GitHub Actions.</p>
+                    </div>
+                    <div class="select-card" data-crud="workflows">
+                        <h3>🌊 Team Workflows</h3>
+                        <p>Choosing between Git Flow and Trunk-Based Development.</p>
+                    </div>
+                    <div class="select-card" data-crud="gitArchaeology">
+                        <h3>🔎 Git Archaeology</h3>
+                        <p>Investigating history to find and fix bugs faster.</p>
+                    </div>
+                </div>
+                
+                <hr class="my-6 border-gray-300">
+
+                <h2>Capstone Test! 🧠</h2>
+                <p id="quiz-status-text">Complete at least 3 topics above to unlock the capstone quiz!</p>
+                <button type="button" id="start-quiz-btn" class="start-btn" disabled>Start Capstone Quiz</button>
+            </div>
+        </section>
+        
+        <!-- Screen 3: Tutorial -->
+        <section id="tutorial-screen" class="tutorial-container hidden grid-cols-1 md:grid-cols-2">
+            <!-- Left Column: Code and Output -->
+            <div class="left-column">
+                 <div class="panel">
+                    <div class="panel-header">
+                        <h2 class="panel-title">Playground</h2>
+                        <button type="button" id="back-btn" class="back-btn">← Back to Topics</button>
+                    </div>
+                    <div class="panel-body" style="padding:0; display:flex; flex-direction:column; flex-grow:1;">
+                        <div class="playground-tabs">
+                            <button type="button" class="crud-tab" data-crud="branchProtection">🛡️ Protection</button>
+                            <button type="button" class="crud-tab" data-crud="advancedConflict">🤯 Conflicts</button>
+                            <button type="button" class="crud-tab" data-crud="codeReview">🤝 Review</button>
+                            <button type="button" class="crud-tab" data-crud="ciCd">🤖 CI/CD</button>
+                            <button type="button" class="crud-tab" data-crud="workflows">🌊 Workflows</button>
+                            <button type="button" class="crud-tab" data-crud="gitArchaeology">🔎 Archaeology</button>
+                        </div>
+                        <pre id="code-viewer" class="code-viewer"></pre>
+                        <div id="commit-section" class="commit-section"></div>
+                    </div>
+                </div>
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2 class="panel-title">👀 What It Looks Like</h2>
+                    </div>
+                    <div id="output-viewer" class="panel-body output-viewer"></div>
+                </div>
+            </div>
+
+            <!-- Right Column: Learning Module -->
+            <div class="right-column">
+                <div class="panel" style="flex-grow: 1;">
+                    <div id="explanation-panel-body" class="panel-body">
+                        <!-- Explanation content will be injected here -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Screen 4: Final Quiz -->
+        <section id="final-quiz-screen" class="wizard-container hidden">
+            <div class="quiz-panel w-full max-w-2xl bg-white rounded-xl shadow-md p-6 sm:p-8">
+                <div class="flex justify-between items-center mb-4">
+                    <div class="progress-bar-container w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+                        <div id="quiz-progress" class="progress-bar-fill h-full bg-orange-500 transition-all duration-300 ease-in-out" style="width: 0%;"></div>
+                    </div>
+                    <span id="quiz-counter" class="text-sm font-semibold text-orange-500 ml-4 whitespace-nowrap">Q 1 / 25</span>
+                </div>
+                <div class="q-card" id="quiz-card">
+                    <!-- Quiz question will be rendered here -->
+                </div>
+                <div class="quiz-nav flex justify-between items-center mt-6">
+                    <button type="button" id="quiz-prev-btn" class="px-4 py-2 bg-gray-300 text-gray-700 font-semibold rounded-lg shadow-sm hover:bg-gray-400 transition-colors duration-200" disabled>← Previous</button>
+                    <button type="button" id="quiz-skip-btn" class="px-3 py-1 bg-yellow-500 text-white text-sm font-semibold rounded-lg shadow-sm hover:bg-yellow-600 transition-colors duration-200">Skip Question</button>
+                    <button type="button" id="quiz-next-btn" class="px-4 py-2 bg-orange-500 text-white font-semibold rounded-lg shadow-sm hover:bg-orange-600 transition-colors duration-200">Submit Answer</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <p>© 2025 A fun learning project. Let's make coding simple for everyone!</p>
+    </footer>
+
+    <script>
+    const playgroundData = {
+        branchProtection: {
+            code: `// Rule for 'main' branch in repository settings:
+- Require a pull request before merging
+  - Require 1 approval
+- Require status checks to pass before merging
+  - Require branches to be up to date before merging
+  - Status checks: 'build', 'test', 'lint'
+- Require linear history
+- Enforce for administrators`,
+            commit: "Branch protection rules are configured in the repository settings.",
+            output: "<h1>🛡️ Branch 'main' is Protected</h1><p>A developer tries to push directly to `main`, but the push is rejected by the server. They are forced to use the team's PR process.</p>",
+            explanation: {
+                concepts: {
+                    title: "Concept: Branch Protection & Policies",
+                    analogy: "<strong>Branch Protection</strong> is like putting a velvet rope and a security guard in front of the master blueprint room. No one can just walk in and scribble on it. Changes must be submitted on a separate form (a PR), checked by an automated inspector (status checks), and signed off by a manager (a review).",
+                    text: "In professional projects, the `main` or `develop` branch is critical. You can't allow anyone to push broken code directly to it. Branch protection rules are settings in GitHub that enforce quality control. They are the foundation of a professional workflow, transforming recommendations into requirements."
+                },
+                steps: {
+                    title: "Walkthrough: Setting Up a Secure Branch",
+                    list: [
+                        "In your repository settings, navigate to 'Branches' and add a new protection rule.",
+                        "Target the `main` branch.",
+                        "Enable 'Require a pull request before merging' and set the number of required approvals to at least 1.",
+                        "Enable 'Require status checks to pass before merging'. This is crucial. Add the names of your CI jobs (e.g., 'build', 'test') to the list.",
+                        "Enable 'Require conversation resolution before merging' to ensure all review comments are addressed.",
+                        "Consider enabling 'Enforce for administrators' to ensure even team leads follow the process."
+                    ]
+                },
+                quiz: [
+                    { q: "Why is 'Require status checks to pass' the most important rule for automation?", options: ["It makes the branch name green", "It blocks merging if automated tests (CI) are failing", "It emails the team lead"], correct: 1, explain: "This rule connects your PR process to your CI/CD pipeline, creating an automated quality gate that prevents broken code from being merged." },
+                    { q: "What is the purpose of the `CODEOWNERS` file?", options: ["To list who owns the copyright", "To automatically request reviews from specific teams when certain files are changed", "To define who can delete the repository"], correct: 1, explain: "CODEOWNERS automates the review assignment process, ensuring the right experts review changes to critical parts of the codebase." },
+                    { q: "A new developer on your team says they can't push to `main`. This is likely because...", options: ["Their keyboard is broken", "Branch protection rules are working correctly and forcing them to use a PR", "They forgot their password"], correct: 1, explain: "This is the intended outcome of branch protection: blocking direct pushes to encourage the proper PR workflow." },
+                    { q: "True or False: Branch protection rules are just suggestions for the team.", options: ["True", "False"], correct: 1, explain: "False. They are enforced by GitHub and will physically block actions that do not meet the criteria, like merging a failing PR." }
+                ],
+                bestPractices: {
+                    dos: ["Always protect your `main` and any other long-lived branches like `develop` or `release`.", "Integrate automated tests as required status checks to catch bugs early.", "Use a `CODEOWNERS` file to ensure accountability and expertise in reviews."],
+                    donts: ["Don't give everyone admin access, as they can often bypass branch protection unless you explicitly 'Enforce for administrators'.", "Don't allow merges if status checks are failing, even for small changes.", "Don't turn off protections 'just for a quick fix.' Follow the process."],
+                    glossary: [
+                        { term: "Branch Protection Rules", def: "Settings that enforce workflows for a branch, like requiring reviews or passing status checks." },
+                        { term: "Status Checks", def: "Automated processes, like CI tests, that report a pass/fail status on a commit." },
+                        { term: "CODEOWNERS", def: "A file in a repository that defines individuals or teams responsible for code in the repo, used to automate review assignments." }
+                    ]
+                },
+                faq: [
+                    { q: "What's the difference between protecting `main` and protecting `develop`?", a: "You typically have your strictest rules on `main` (e.g., requires multiple reviews, only allows merges from release branches). Rules on `develop` might be slightly more relaxed but should still require status checks to pass to keep the development branch stable." },
+                    { q: "What does 'Require branches to be up to date before merging' do?", a: "This is a very useful rule. It forces the developer to sync their feature branch with the latest changes from the target branch (`main`) *before* they can merge. This ensures their changes are tested against the most recent version of the code, preventing situations where their PR breaks something that was recently added to `main`." },
+                    { q: "Can admins bypass these rules?", a: "By default, yes. However, it is a strong best practice to check the 'Enforce for administrators' box. This ensures that everyone, regardless of their role, must follow the same quality process, which builds trust and prevents accidents."}
+                ]
+            }
+        },
+        advancedConflict: {
+            code: `> git checkout feat/add-new-header
+> git rebase main
+
+First, rewinding head to replay your work on top of it...
+Applying: feat: add new logo
+Using index info to reconstruct a base tree...
+Falling back to patching base and 3-way merge...
+Auto-merging src/components/Header.js
+CONFLICT (content): Merge conflict in src/components/Header.js`,
+            commit: "A conflict occurred during a rebase operation.",
+            output: "<h1>🤯 Advanced Conflict</h1><p>This conflict happened during a `rebase`, not a `merge`. The goal of rebasing is to create a clean, linear history by re-writing your commits on top of the latest `main` branch. It's powerful, but conflicts must be resolved commit by commit.</p>",
+            explanation: {
+                concepts: {
+                    title: "Concept: Advanced Conflicts & Merge Strategies",
+                    analogy: "In Part 2, a conflict was two authors editing the same sentence. An **advanced conflict** is when one author is editing Chapter 3, while another author renames Chapter 3 to 'The Great Battle' and moves it to the end of the book. When you try to combine the work, the editor is completely lost. **Rebasing** is like taking your edits and manually re-applying them, one by one, to the newly reorganized book.",
+                    text: "Professional teams often prefer a clean, linear Git history because it's easier to read and debug. This is achieved by using **Rebase** or **Squash** merge strategies instead of a standard merge commit. A **Rebase** replays your branch's commits on top of the target branch. A **Squash** combines all your branch's commits into a single, clean commit on the target branch. Both rewrite history and require care."
+                },
+                steps: {
+                    title: "Walkthrough: Resolving a Rebase Conflict",
+                    list: [
+                        "The `git rebase main` command fails with a conflict.",
+                        "You open the conflicted file, resolve the issue just like a normal merge conflict, and delete the markers.",
+                        "Instead of `commit`, you run `git add <file>` and then `git rebase --continue`.",
+                        "Git will continue re-applying your commits one by one. You may have to resolve conflicts on multiple commits.",
+                        "If it gets too complicated, you can always escape with `git rebase --abort`.",
+                        "Once complete, your branch history will be clean and linear, on top of the latest `main`."
+                    ]
+                },
+                quiz: [
+                    { q: "Your team wants the history on `main` to be as clean as possible, with each PR resulting in only one commit. Which merge strategy should be used?", options: ["Merge Commit", "Rebase and Merge", "Squash and Merge"], correct: 2, explain: "Squash and merge is specifically designed to combine all of a feature branch's commits into a single, clean commit on the target branch." },
+                    { q: "What is the primary risk of using `git rebase`?", options: ["It can delete files", "If used on a shared branch, it rewrites history and can cause major problems for teammates", "It is slower than merging"], correct: 1, explain: "The cardinal rule is to never rebase a public, shared branch. It should only be used to clean up your own local, un-shared feature branches." },
+                    { q: "During a rebase, you've fixed a conflict, run `git add`. What is the next command?", options: ["`git commit`", "`git rebase --continue`", "`git push`"], correct: 1, explain: "Unlike a merge, where you commit the result, in a rebase you use `--continue` to tell Git to proceed with applying the next commit in the sequence." },
+                    { q: "You are in the middle of a complex rebase with many conflicts. What command will safely get you out and return your branch to its original state?", options: ["`git reset --hard`", "`git rebase --abort`", "`git undo`"], correct: 1, explain: "`git rebase --abort` is the designed escape hatch to safely cancel a rebase in progress." },
+                    { q: "What is the main advantage of a rebase workflow over a merge commit workflow?", options: ["It's easier for beginners", "It creates a cleaner, linear history that is easier to read and navigate", "It prevents all conflicts"], correct: 1, explain: "The primary motivation for using rebase is to maintain a simple, linear project history, which can be invaluable for debugging and understanding the project's evolution." }
+                ],
+                bestPractices: {
+                    dos: ["Clean up your *local* feature branch history with interactive rebase *before* sharing it in a PR.", "Use `git rebase` to sync your feature branch with `main`, as it avoids unnecessary merge commits.", "Use a squash-and-merge policy on your repository if you value a clean `main` branch history."],
+                    donts: ["Don't rebase shared, public branches like `main` or `develop`.", "Don't force a rebase workflow on junior developers who aren't comfortable with it; the risk of mistakes is high."],
+                    glossary: [
+                        { term: "Rebase", def: "The process of re-applying commits from one branch onto a different base, used to create a linear history." },
+                        { term: "Squash", def: "To combine multiple commits into a single commit." },
+                        { term: "Linear History", def: "A Git history that avoids merge commits, appearing as a single, straight line of commits." }
+                    ]
+                },
+                faq: [
+                    { q: "When should I use `merge` vs. `rebase`?", a: "A good rule of thumb: use `rebase` to catch your feature branch up with `main` (`git rebase main`). Use `merge` for the final step of incorporating a feature branch into `main` via a Pull Request (or let GitHub's 'rebase and merge' or 'squash and merge' options handle it for you)." },
+                    { q: "What is `git pull --rebase`?", a: "This is a very useful command! Instead of doing a `fetch` and a `merge` (which is what a normal `git pull` does), it does a `fetch` and a `rebase`. This prevents messy local merge commits when all you want to do is sync your local branch with its remote version." },
+                    { q: "I made a mess during a rebase. How can I recover?", a: "The `reflog` is your best friend! Run `git reflog` to see a list of all your recent actions, including the state of your branch right before you started the rebase. You can then use `git reset --hard <commit-hash-from-reflog>` to return your branch to its pre-rebase state."}
+                ]
+            }
+        },
+        codeReview: {
+            code: `// .github/pull_request_template.md
+## Description
+_Please include a summary of the change._
+
+## Related Issue
+_Fixes # (issue)_
+
+## How Has This Been Tested?
+- [ ] Unit Tests
+- [ ] Manual Testing on Staging
+
+---
+// Review Comment
+- @reviewer: "Good catch! Instead of a hard-coded value, could we make this an environment variable? It will be easier to manage in the future."`,
+            commit: "Professional code reviews combine automation and constructive human feedback.",
+            output: "<h1>🤝 Professional Code Review</h1><p>A PR template automatically prompts the developer for details. A teammate then leaves a constructive, forward-looking suggestion, improving not just the code, but the long-term maintainability of the project.</p>",
+            explanation: {
+                concepts: {
+                    title: "Concept: Code Review Etiquette & Automation",
+                    analogy: "A professional code review is like a collaborative editing session for a book, but with robot assistants. The **PR Template** is a checklist the author must fill out. The **Linter** is a robot that automatically checks for grammar and style errors. The human **Reviewer** can then ignore the small stuff and focus on the important questions: 'Does this chapter fit the story?' or 'Is there a clearer way to phrase this?'",
+                    text: "An effective code review is a cornerstone of a healthy engineering team. The goal is to improve the code, not to criticize the author. In a professional setting, this process is enhanced with automation. **Linters** and style checkers run automatically in CI to catch trivial issues. **PR templates** ensure the author provides enough context for reviewers. This frees up human reviewers to focus on the things that matter: logic, architecture, and potential bugs."
+                },
+                steps: {
+                    title: "Walkthrough: An Automated Code Review",
+                    list: [
+                        "An author opens a Pull Request, which is pre-populated with the `.github/pull_request_template.md` file.",
+                        "This automatically triggers a CI job that runs a Linter (style checker). The Linter fails, and a red 'X' appears on the PR. The merge is blocked.",
+                        "The author pushes a new commit to fix the linting errors. The CI job runs again and passes.",
+                        "A human reviewer is automatically assigned via the `CODEOWNERS` file.",
+                        "The reviewer leaves constructive comments and suggestions.",
+                        "The author addresses the comments, pushes one final time, and the PR is approved and merged."
+                    ]
+                },
+                quiz: [
+                    { q: "What is the main benefit of using a Pull Request template?", options: ["It makes the PR page look nicer", "It standardizes the information provided in a PR, giving reviewers the context they need", "It automatically approves the PR"], correct: 1, explain: "A good template ensures the author provides a description, links to the issue, and confirms testing, which saves the reviewer significant time." },
+                    { q: "Why is it important to automate style checks (linting) in CI?", options: ["It allows teams to argue about style in PR comments", "It removes the need for human reviewers to comment on trivial issues like spacing or syntax", "It makes the code run faster"], correct: 1, explain: "Automating style checks saves human review time for more important architectural and logical issues." },
+                    { q: "A teammate leaves a review comment you disagree with. What is the best first step?", options: ["Ignore the comment", "Immediately make the change they asked for", "Politely ask for clarification on their reasoning to start a discussion"], correct: 2, explain: "A code review is a conversation. It's okay to disagree, but you should always seek to understand the other person's perspective first." },
+                    { q: "What is the most professional way to phrase a review comment?", options: ["'This is wrong.'", "'Why did you do it this way?'", "'Have you considered this alternative approach? It might handle X edge case better.'"], correct: 2, explain: "Good review comments are framed as questions or suggestions, not commands. They are constructive and explain the 'why' behind the feedback." }
+                ],
+                bestPractices: {
+                    dos: ["Be kind and constructive. Frame feedback as suggestions or questions.", "Automate everything you can (linting, testing) to focus human time on what matters.", "Praise good work, not just point out issues.", "Keep your own PRs small and focused to make them easier and faster to review."],
+                    donts: ["Don't make it personal. Comment on the code, not the coder.", "Don't use the review process to show off how smart you are.", "Don't approve a PR you don't understand. It's okay to ask for a walkthrough."],
+                    glossary: [
+                        { term: "Linter", def: "An automated tool that checks code for stylistic or programmatic errors." },
+                        { term: "PR Template", def: "A markdown file in `.github/` that pre-populates the description of new Pull Requests." },
+                        { term: "Review Etiquette", def: "The social norms for providing and receiving code review feedback in a professional and constructive manner." }
+                    ]
+                },
+                faq: [
+                    { q: "How long should a code review take?", a: "This varies, but a key goal is to never leave a PR waiting for more than one business day. Fast feedback loops are crucial for team velocity. If a PR is too large to review in under an hour, it should be broken into smaller PRs." },
+                    { q: "Who should I ask to review my PR?", a: "Most teams use a `CODEOWNERS` file to automate this. If not, you should request a review from at least one person who has context on the code you're changing, and perhaps one person from another team to get a fresh perspective." },
+                    { q: "As a reviewer, is it okay to approve a PR that still has some minor issues?", a: "It depends on your team's standards. A good practice is to prefix minor, non-blocking comments with 'nit:' (short for nitpick). This signals to the author that they can choose to address it now or in a future PR, allowing the current PR to be merged without delay."}
+                ]
+            }
+        },
+        ciCd: {
+            code: `name: Run Tests
+on: [pull_request]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+    - name: Install dependencies
+      run: npm ci
+    - name: Run unit tests
+      run: npm test`,
+            commit: "A GitHub Actions workflow is running automated checks...",
+            output: "<h1>🤖 CI/CD Pipeline Running...</h1><p><strong>Status:</strong> <span style='color:red;'>❌ Test job failed.</span></p><p>This PR is blocked from merging until the status checks pass.</p>",
+            explanation: {
+                concepts: {
+                    title: "Concept: CI/CD with GitHub Actions",
+                    analogy: "<strong>CI/CD</strong> is your factory's automated quality control and assembly line. When a developer submits a new part (a PR), a robot automatically checks if it fits the blueprint (**CI - Continuous Integration**). If it passes all checks, another robot can automatically package it and send it out for delivery (**CD - Continuous Delivery**).",
+                    text: "CI/CD is the practice of automating the building, testing, and deployment of code. On GitHub, this is done with **GitHub Actions**. You define a 'workflow' in a YAML file inside the `.github/workflows/` directory. This workflow can be triggered automatically by events like a `pull_request`. The workflow runs 'jobs' on a virtual machine, and the final pass/fail result is shown as a 'status check' on the PR."
+                },
+                steps: {
+                    title: "Walkthrough: A Failing CI Build",
+                    list: [
+                        "You push a new commit to your branch, which has an open PR.",
+                        "This automatically triggers the GitHub Actions workflow defined in your repository.",
+                        "The workflow runs jobs: it checks out the code, installs dependencies, and runs your test suite.",
+                        "One of the tests fails. The workflow stops and reports a 'failure' status back to the PR.",
+                        "You see a red 'X' next to your commit. Branch protection rules now block the 'Merge' button.",
+                        "You click 'Details' to view the logs, find the failed test, fix it locally, and push a new commit. The workflow runs again, and this time it passes."
+                    ]
+                },
+                quiz: [
+                    { q: "Where are GitHub Actions workflows defined?", options: ["In your computer's settings", "In a YAML file in the `.github/workflows` directory", "In the repository settings page"], correct: 1, explain: "Workflows are defined as code right inside your repository, allowing them to be versioned and edited just like your other source code." },
+                    { q: "What does 'CI' stand for?", options: ["Constant Inspection", "Code Integration", "Continuous Integration"], correct: 2, explain: "Continuous Integration is the practice of frequently merging all developer working copies to a shared mainline." },
+                    { q: "Your PR has a red 'X' and says 'Some checks were not successful'. What should you do?", options: ["Merge it anyway", "Ask a teammate to approve it", "Click 'Details' to view the logs and identify the error"], correct: 2, explain: "The logs are the most important tool for debugging a failed CI run. They will contain the exact error message that caused the failure." },
+                    { q: "What is a 'workflow artifact'?", options: ["An old piece of code", "A file, like a test report or a built application, that is saved after a workflow run", "A failed test"], correct: 1, explain: "Artifacts are used to persist data after a job has completed, such as saving a binary for later deployment." }
+                ],
+                bestPractices: {
+                    dos: ["Start with a simple CI workflow that just runs your tests.", "Keep your tests fast so you get quick feedback.", "Use community-built Actions from the GitHub Marketplace to simplify your workflows.", "Look at the logs of a failed CI run to understand what went wrong."],
+                    donts: ["Don't ignore failing CI checks. They are there for a reason.", "Don't put sensitive secrets like API keys directly in your workflow file. Use GitHub's encrypted Secrets.", "Don't merge code if the build is failing."],
+                    glossary: [
+                        { term: "GitHub Actions", def: "An automation platform integrated into GitHub for CI/CD." },
+                        { term: "Workflow", def: "An automated process defined in a YAML file that runs one or more jobs." },
+                        { term: "Job", def: "A set of steps that execute on the same virtual machine runner." },
+                        { term: "Step", def: "An individual task that can run commands or an action in a job." }
+                    ]
+                },
+                faq: [
+                    { q: "What's the difference between CI and CD?", a: "**CI (Continuous Integration)** is the part that automates the testing of code changes. Its main goal is to answer the question: 'Is this change safe to merge?'. **CD (Continuous Delivery/Deployment)** is the part that comes after CI. It automates the release of the code to an environment (like staging or production). Its main goal is to answer: 'The code is safe, let's make it available to users.'" },
+                    { q: "Can I run GitHub Actions on my own computer?", a: "While the main service runs on GitHub's hosted virtual machines, you can install a self-hosted runner on your own infrastructure for more control. There are also tools like 'act' that allow you to simulate and debug Actions workflows locally, which can be very helpful for development."}
+                ]
+            }
+        },
+        workflows: {
+            code: `// GitHub Flow
+main -> feature-branch -> PR -> main (deploy)
+
+// Git Flow
+main (production)
+  ^
+  | (release)
+develop (integration)
+  ^
+  | (feature)
+feature-branch`,
+            commit: "Choosing a workflow strategy depends on the team's release needs.",
+            output: "<h1>🌊 Team Workflow Strategies</h1><p>Teams use strategies like **GitHub Flow** (for rapid, continuous deployment) or **Git Flow** (for scheduled, versioned releases) to organize how they develop, release, and maintain their code.</p>",
+            explanation: {
+                concepts: {
+                    title: "Concept: Team Workflow Strategies",
+                    analogy: "A **workflow strategy** is like the set of rules for a professional kitchen. A small, agile cafe that serves dishes as soon as they're ready uses **GitHub Flow**. A large banquet hall that must serve a 5-course meal to 500 people at exactly 8 PM uses **Git Flow**, with separate preparation stages and a final, coordinated service.",
+                    text: "Teams need a shared understanding of how to use Git. **GitHub Flow** is a simple, lightweight workflow ideal for projects that deploy frequently (e.g., web apps). All work happens in branches off `main`, which is always kept in a deployable state. **Git Flow** is more structured, using a `develop` branch for integration and separate `release` and `hotfix` branches. This is better for projects with scheduled, versioned releases (e.g., mobile apps, desktop software)."
+                },
+                steps: {
+                    title: "Scenario: Handling an Emergency Hotfix in Git Flow",
+                    list: [
+                        "A critical bug is discovered in the live `main` branch.",
+                        "A `hotfix` branch is created directly from the commit on `main` that is tagged with the latest version (e.g., `v1.2.0`).",
+                        "The bug is fixed and committed on the `hotfix` branch.",
+                        "The `hotfix` branch is merged directly back into `main`. `main` is then tagged with a new patch version (e.g., `v1.2.1`) and deployed immediately.",
+                        "Crucially, the `hotfix` branch is also merged back into the `develop` branch to ensure the fix is included in the next regular release."
+                    ]
+                },
+                quiz: [
+                    { q: "Your team develops a web application and deploys changes to production multiple times per day. Which workflow is most suitable?", options: ["Git Flow", "GitHub Flow / Trunk-Based", "No workflow"], correct: 1, explain: "GitHub Flow and Trunk-Based Development are optimized for continuous delivery, where `main` always represents the deployable state of the application." },
+                    { q: "In Git Flow, what is the primary purpose of the `develop` branch?", options: ["It is the stable, production-ready branch", "It is an integration branch where all completed features are merged", "It is for experimental, personal work"], correct: 1, explain: "The `develop` branch serves as the central integration point for all feature branches before they are prepared for a release." },
+                    { q: "What is the key idea behind Trunk-Based Development?", options: ["Using many long-lived feature branches", "All developers work on small, frequent commits directly to the main trunk (`main`)", "Never merging code"], correct: 1, explain: "Trunk-Based Development minimizes branches and relies on comprehensive automated testing and feature flags to keep the main trunk stable." },
+                    { q: "In Git Flow, where do you branch from to start a new feature?", options: ["`main`", "`release`", "`develop`"], correct: 2, explain: "All new feature work begins from the `develop` branch, which contains the latest integrated code." }
+                ],
+                bestPractices: {
+                    dos: ["Choose a workflow and make sure the whole team understands and follows it.", "Use GitHub Flow for most web applications that deploy frequently.", "Use Git Flow for projects with longer, scheduled release cycles (like mobile apps).", "Use feature flags to decouple deployment from release, allowing you to merge code to `main` safely even if the feature isn't ready for users."],
+                    donts: ["Don't mix and match workflows without a clear reason.", "Don't let the `develop` branch get too far behind `main` in Git Flow.", "Don't use a feature branch to create a hotfix; hotfixes have a special process."],
+                    glossary: [
+                        { term: "Git Flow", def: "A structured workflow using `main`, `develop`, `feature`, `release`, and `hotfix` branches." },
+                        { term: "GitHub Flow", def: "A lightweight workflow where `main` is always deployable and new work is done in feature branches." },
+                        { term: "Trunk-Based Development", def: "A workflow where developers make small, frequent commits to a single main branch (`trunk`)." },
+                        { term: "Feature Flag", def: "A technique to turn features on or off without deploying new code, allowing for safer releases." }
+                    ]
+                },
+                faq: [
+                    { q: "How do we handle emergency hotfixes in GitHub Flow?", a: "It's the same as any other fix. You create a branch from `main`, fix the bug, get it reviewed via PR, and merge it back to `main` to be deployed. Because `main` is always deployable, there's no need for a special 'hotfix' branch type." },
+                    { q: "Is Git Flow outdated?", a: "Not outdated, but it's often considered overly complex for many modern web projects that practice continuous deployment. It remains very useful for software that has distinct, scheduled versions (e.g., mobile apps that go through an app store review process)." },
+                    { q: "Our team has two big features that will take months. How do we manage that?", a: "This is a classic challenge. The modern approach is to avoid long-lived feature branches. Instead, break the large features into the smallest possible mergeable chunks. Merge these small pieces to `main` frequently behind a 'feature flag'. This keeps your branches from diverging too far from `main` and avoids a massive, painful merge at the end." }
+                ]
+            }
+        },
+        gitArchaeology: {
+            code: `> git bisect start
+> git bisect bad HEAD
+> git bisect good v1.2.0
+Bisecting: 675 revisions left to test after this (roughly 10 steps)
+[c3d4e5f] feat: add new caching layer`,
+            commit: "Using git bisect to automatically find a bug.",
+            output: "<h1>🔎 Git Archaeology</h1><p>Git's history is a powerful tool. Instead of manually checking 100s of commits, `git bisect` uses a binary search to find the exact commit that introduced a bug in just a few steps.</p>",
+            explanation: {
+                concepts: {
+                    title: "Concept: Git Archaeology & Recovery",
+                    analogy: "<strong>Git Archaeology</strong> is like being a detective investigating a crime scene. You use tools to examine the timeline of events (the commit history) to find out exactly when and how something went wrong. `git log` is your list of all events, and `git bisect` is your superpower for instantly narrowing down the list of suspects.",
+                    text: "Sometimes you need to dig into your project's history to understand why a change was made or, more importantly, when a bug was introduced. `git log` has powerful options to format and search the commit history. `git bisect` is an incredible tool that performs a binary search on your commit history. You tell it one 'good' commit (where the bug didn't exist) and one 'bad' commit (where it does), and it will automatically help you pinpoint the exact commit that caused the problem."
+                },
+                steps: {
+                    title: "Walkthrough: Finding a Bug with `git bisect`",
+                    list: [
+                        "Start the process: `git bisect start`",
+                        "Mark the current, broken commit as bad: `git bisect bad HEAD`",
+                        "Find an old commit hash or tag where you know the code worked and mark it as good: `git bisect good v1.2.0`",
+                        "Git will check out a commit in the middle. Run your tests or manually check for the bug.",
+                        "Tell Git if this commit is `git bisect good` or `git bisect bad`. Git will repeat the process, halving the number of commits to check each time.",
+                        "After a few steps, Git will pinpoint the exact commit that introduced the bug."
+                    ]
+                },
+                quiz: [
+                    { q: "A bug was introduced sometime in the last 100 commits. What is the most efficient Git command to find the exact 'bad' commit?", options: ["`git log`", "`git blame`", "`git bisect`", "`git search`"], correct: 2, explain: "`git bisect` automates the search process using a binary search, making it far more efficient than manually checking commits." },
+                    { q: "You need to find out who wrote a specific, confusing line of code and when they did it. Which command would you use?", options: ["`git bisect`", "`git blame <filename>`", "`git log`"], correct: 1, explain: "`git blame` is designed to show the author and commit for each individual line in a file." },
+                    { q: "How do you safely undo a commit that has already been pushed to a shared branch like `main`?", options: ["Use `git reset --hard`", "Create a new commit that undoes the changes by using `git revert`", "Force-push a corrected version"], correct: 1, explain: "`git revert` is the safe, non-destructive way to undo changes on a public, shared branch because it creates a *new* commit that is the inverse of the problematic one, rather than rewriting history." },
+                    { q: "What does `git log -S'functionName'` do?", options: ["It searches for a branch with that name", "It lists all commits where the string 'functionName' was added or removed", "It shows the log for a specific author"], correct: 1, explain: "The `-S` flag is a powerful tool for finding when a specific piece of code was introduced or removed, acting like a historical search engine." }
+                ],
+                bestPractices: {
+                    dos: ["Use `git bisect` to save hours of manual searching for a bug's origin.", "Write good commit messages! It makes archaeology much easier.", "Use `git blame` to find the right person to ask for context before changing a piece of code."],
+                    donts: ["Don't manually search for a bug commit-by-commit if you have a clear 'good' and 'bad' state; use `bisect`.", "Don't use `git blame` to actually 'blame' someone, but rather to understand history.", "Don't rewrite public history (`reset`, `rebase`) to fix a bug; use `revert` instead."],
+                    glossary: [
+                        { term: "git bisect", def: "A command that uses a binary search to find the commit that introduced a bug." },
+                        { term: "git blame", def: "A command that annotates each line in a file with the commit and author who last modified it." },
+                        { term: "git revert", def: "A command that creates a new commit that is the inverse of a previous commit, safely undoing it." }
+                    ]
+                },
+                faq: [
+                    { q: "What's the difference between `git revert` and `git reset`?", a: "`git revert` is safe for public/shared history. It creates a *new* commit that undoes a previous one. `git reset` is for your private, local history. It moves the branch pointer backwards, effectively deleting commits. Never use `git reset` on history that other people have already pulled." },
+                    { q: "The `git blame` output shows a huge reformatting commit. How can I ignore it?", a: "This is a great, advanced question! You can use the `--ignore-rev` flag with `git blame`. You can create a file (e.g., `.git-blame-ignore-revs`) that lists the commit hashes of large, purely stylistic commits. Then, when you run `git blame --ignore-revs-file .git-blame-ignore-revs <file>`, it will skip over those commits to show you the more meaningful, logical changes."}
+                ]
+            }
+        },
+    };
+
+    const finalQuizQuestions = [
+        { type: "MCQ", text: "Your team deploys a mobile app in a 2-week release cycle that requires a testing phase. Which workflow is most appropriate?", options: ["GitHub Flow", "Git Flow", "Trunk-Based Development"], correct: 1, explain: "Git Flow is designed for projects with scheduled, versioned releases and dedicated stabilization phases (the `release` branch)." },
+        { type: "MCQ", text: "A developer's PR cannot be merged because the 'Require branches to be up to date' check is failing. What must they do?", options: ["Ask an admin to override the rule", "Sync their feature branch with the latest `main` branch", "Close and re-open the PR"], correct: 1, explain: "This rule requires the developer to merge or rebase the latest `main` into their branch to ensure their changes are tested against the most recent code." },
+        { type: "TF", text: "Using `git revert` on a commit in a public branch is dangerous because it rewrites history.", correct: false, explain: "`git revert` is the safe method because it does *not* rewrite history. Instead, it creates a new commit that is the inverse of the specified commit." },
+        { type: "MCQ", text: "You want to ensure all changes to files in the `src/auth/` directory are reviewed by the security team. What is the most effective way to automate this?", options: ["Send a weekly email reminder", "Use a `CODEOWNERS` file", "Add a comment in the PR template"], correct: 1, explain: "The `CODEOWNERS` file is the official GitHub mechanism to automatically assign reviewers based on file paths." },
+        { type: "MCQ", text: "A bug was introduced sometime last week, across about 200 commits. What is the most efficient Git command to find the exact commit that caused the bug?", options: ["`git log`", "`git blame`", "`git bisect`"], correct: 2, explain: "`git bisect` uses a binary search, which will find the commit in roughly 8 steps (`log2(200)`), whereas manually checking would be extremely slow." },
+        { type: "MCQ", text: "Your team wants a very clean, linear history on the `main` branch. What merge strategy should you enforce in your branch protection rules?", options: ["Allow merge commits", "Require rebase and merge, or squash and merge", "No merge strategy"], correct: 1, explain: "Both rebase and squash strategies rewrite history to be linear, avoiding the extra merge commits that a standard merge creates." },
+        { type: "MCQ", text: "A PR has been opened, and the CI build fails at the 'linting' step. What does this most likely mean?", options: ["The code has a major security flaw", "The code doesn't follow the team's established style guide", "The server is down"], correct: 1, explain: "Linting is the process of checking code for stylistic errors. A failed linting step is a common, and usually easy to fix, CI failure." },
+        { type: "MCQ", text: "When would you choose to use `git rebase` over `git merge` to sync your feature branch with `main`?", options: ["When you want to preserve the exact historical record of when you synced", "When you want to create a clean, linear history for your feature before creating a PR", "When you are a beginner and want the simplest option"], correct: 1, explain: "Rebasing is used to create a tidy, linear history by replaying your commits on top of the latest changes, avoiding a 'merge commit' in your feature branch." },
+        { type: "MCQ", text: "What is the primary purpose of a `pull_request_template.md` file?", options: ["To automatically test the code", "To provide a standard structure for PR descriptions, ensuring reviewers have context", "To list the project owners"], correct: 1, explain: "A good template prompts the author for a description, testing info, and related issues, which streamlines the review process." },
+        { type: "MMCQ", text: "Which of the following are characteristics of a good professional code review? (Choose 2)", options: ["Leaving personal comments about the author's skill", "Focusing only on finding typos and style issues", "Asking clarifying questions instead of making demands", "Suggesting improvements that enhance code readability and maintainability"], correct: [2, 3], explain: "Professional reviews are constructive, polite, and focus on improving the long-term health of the code, not just pointing out superficial flaws." },
+        { type: "SEQ", text: "Place these Git Flow branches in order from least stable (where daily work happens) to most stable (production code).", items: ["`main`", "`develop`", "`feature-branch`"], correct: ["feature-branch", "develop", "main"], explain: "Features are developed in isolation, integrated into `develop`, and only merged to `main` after being prepared in a release." },
+        { type: "MATCH", text: "Match the workflow to its ideal use case.", stems: ["GitHub Flow", "Git Flow", "Trunk-Based Development"], responses: ["A mobile app with scheduled monthly releases", "A web app that deploys to production 20 times per day", "A large, mature project with extensive automated testing and feature flags"], correct: [{ s: 0, r: 1 }, { s: 1, r: 0 }, { s: 2, r: 2 }], explain: "The release cadence and testing culture of a project are the key factors in choosing the right workflow." },
+        { type: "MCQ", text: "A `hotfix` branch in Git Flow should be created from which branch?", options: ["`develop`", "The `feature-branch` that has the bug", "The latest tag on the `main` branch"], correct: 2, explain: "A hotfix is for patching a critical bug in production, so it must be based on the current live code (`main`), not on in-progress development work." },
+        { type: "TF", text: "GitHub Actions can only be used to run tests.", correct: false, explain: "GitHub Actions is a full CI/CD platform that can be used for building code, running tests, deploying to servers, sending notifications, and much more." },
+        { type: "MCQ", text: "In a code review, what does the term 'nit' usually refer to?", options: ["A critical, blocking issue", "A minor, non-blocking suggestion or stylistic preference", "A security vulnerability", "Praise for good code"], correct: 1, explain: "'Nit' (short for nitpick) is a common convention to signal that a comment is a minor point that the author can choose to address or ignore without blocking the PR." },
+        { type: "MMCQ", text: "Which two commands are essential for investigating the history of a specific line of code? (Choose 2)", options: ["`git bisect`", "`git blame`", "`git log` with the `-L` option", "`git status`"], correct: [1, 2], explain: "`git blame` shows who last changed the line, while `git log -L` (or the History view on GitHub) can show the full evolution of that specific line or function over time." },
+        { type: "SEQ", text: "Put these steps for a CI/CD pipeline in the correct order: (1) Deploy to production, (2) Merge to `main`, (3) Run tests on a PR", items: ["Merge to `main`", "Deploy to production", "Run tests on a PR"], correct: ["Run tests on a PR", "Merge to main", "Deploy to production"], explain: "The pipeline ensures that tests pass before merging, and that code is merged before being deployed." },
+        { type: "MCQ", text: "You have resolved a conflict during a rebase. What is the correct command to proceed?", options: ["`git commit`", "`git merge --continue`", "`git rebase --continue`", "`git push`"], correct: 2, explain: "After resolving a conflict and adding the file, `git rebase --continue` tells Git to proceed with applying the rest of the commits in the rebase sequence." },
+        { type: "TF", text: "Branch protection rules can be configured using a YAML file in the `.github` directory.", correct: false, explain: "While many GitHub features (like Actions and PR templates) are configured via files in `.github`, branch protection rules must be configured in the repository's 'Settings' tab in the web UI." },
+        { type: "MCQ", text: "What is a primary benefit of using Feature Flags?", options: ["It makes your code run faster", "It allows you to merge incomplete features to `main` safely, decoupling deployment from release", "It replaces the need for branches", "It automatically writes tests for you"], correct: 1, explain: "Feature flags allow teams to practice continuous integration by merging code frequently, even for large features, while keeping the incomplete code hidden from users until it's ready." },
+        { type: "MCQ", text: "You need to undo a commit you made on your local branch that you have *not* pushed yet. What is the best command to use?", options: ["`git revert`", "`git reset`", "`git undo`", "`git blame`"], correct: 1, explain: "`git reset` is perfect for cleaning up your local, private history before you share it with others. `git revert` should be used for commits that are already public." },
+        { type: "MCQ", text: "What is the purpose of the `-u` flag in a command like `git push -u origin my-branch`?", options: ["It stands for 'undo'", "It forces the push, overwriting history", "It sets the remote branch as the 'upstream' tracking branch for the current local branch"], correct: 2, explain: "Setting the upstream branch allows you to simply run `git pull` or `git push` from that branch in the future, without needing to specify the remote and branch name each time." },
+        { type: "TF", text: "The `CODEOWNERS` file requires a special paid plan on GitHub.", correct: false, explain: "The `CODEOWNERS` file is a free feature available on all repositories, including public and private ones on the free plan." },
+        { type: "MCQ", text: "What is 'Trunk-Based Development'?", options: ["A more complex version of Git Flow", "A workflow where all developers make small, frequent commits to a single main branch (`trunk`)", "A system for managing large binary files", "A way to visually see your branches"], correct: 1, explain: "It's a workflow that minimizes the use of long-lived branches in favor of continuous integration to a single source of truth, relying heavily on automated testing." },
+        { type: "MCQ", text: "A PR has been approved, but the 'Merge' button is greyed out because a required status check from your CI is 'Pending'. What does this mean?", options: ["You need to ask another person for review", "The automated CI/CD pipeline is still running its tests", "There is a merge conflict", "You don't have permission to merge"], correct: 1, explain: "The status check will remain 'Pending' while the CI jobs are executing. The merge will be unblocked once the jobs complete and report a 'Success' status." }
+    ];
+
+    // Global state
+    let completedTutorials = [];
+    const minTutorialsForQuiz = 3;
+    let quizState = {
+        currentQ: 0,
+        score: 0,
+        answers: new Array(finalQuizQuestions.length).fill(null)
+    };
+
+    function renderMarkdown(text) {
+        if (!text) return '';
+        return text
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/g, '<em>$1</em>')
+            .replace(/`(.*?)`/g, '<code>$1</code>');
+    }
+    
+    // UI elements
+    const introScreen = document.getElementById('intro-screen');
+    const selectScreen = document.getElementById('select-screen');
+    const tutorialScreen = document.getElementById('tutorial-screen');
+    const finalQuizScreen = document.getElementById('final-quiz-screen');
+    const quizStatusText = document.getElementById('quiz-status-text');
+    const startQuizBtn = document.getElementById('start-quiz-btn');
+    const quizProgress = document.getElementById('quiz-progress');
+    const quizCard = document.getElementById('quiz-card');
+    const quizPrevBtn = document.getElementById('quiz-prev-btn');
+    const quizNextBtn = document.getElementById('quiz-next-btn');
+    const quizCounter = document.getElementById('quiz-counter');
+    const quizSkipBtn = document.getElementById('quiz-skip-btn');
+    
+    function showScreen(screenId) {
+        const screens = ['intro-screen', 'select-screen', 'tutorial-screen', 'final-quiz-screen'];
+        screens.forEach(id => {
+            const screen = document.getElementById(id);
+            if(id === screenId) {
+                screen.classList.remove('hidden');
+                // Re-apply flex or grid as needed, since hidden removes display properties
+                if(id === 'tutorial-screen') {
+                    screen.classList.add('grid');
+                } else {
+                    screen.classList.add('flex');
+                }
+            } else {
+                screen.classList.add('hidden');
+                screen.classList.remove('flex', 'grid');
+            }
+        });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    
+    function updateQuizButton() {
+        if (completedTutorials.length >= minTutorialsForQuiz) {
+            startQuizBtn.disabled = false;
+            quizStatusText.textContent = `You've completed ${completedTutorials.length} topics! The quiz is now ready.`;
+        } else {
+            startQuizBtn.disabled = true;
+            quizStatusText.textContent = `Complete at least ${minTutorialsForQuiz} topics to unlock the capstone quiz! (${completedTutorials.length} / ${minTutorialsForQuiz})`;
+        }
+    }
+
+    function markTutorialCompleted(crudAction) {
+        if (!completedTutorials.includes(crudAction)) {
+            completedTutorials.push(crudAction);
+            document.querySelector(`.select-card[data-crud="${crudAction}"]`).classList.add('completed');
+            updateQuizButton();
+        }
+    }
+
+    function switchCrudTab(crudAction) {
+        const data = playgroundData[crudAction];
+        document.getElementById('code-viewer').textContent = data.code;
+        document.getElementById('commit-section').innerHTML = renderMarkdown(data.commit);
+        document.getElementById('output-viewer').innerHTML = renderMarkdown(data.output);
+        
+        document.querySelectorAll('.crud-tab').forEach(t => t.classList.toggle('active', t.dataset.crud === crudAction));
+        renderExplanation(crudAction);
+        markTutorialCompleted(crudAction);
+    }
+    
+    function renderExplanation(crudAction) {
+        const explanationPanel = document.getElementById('explanation-panel-body');
+        const data = playgroundData[crudAction].explanation;
+        
+        explanationPanel.innerHTML = `
+            <div class="explanation-tabs">
+                <button type="button" class="explanation-tab active" data-tab="concepts">Concepts</button>
+                <button type="button" class="explanation-tab" data-tab="steps">Walkthrough</button>
+                <button type="button" class="explanation-tab" data-tab="quiz">Quiz</button>
+                <button type="button" class="explanation-tab" data-tab="bestPractices">Best Practices & Glossary</button>
+                <button type="button" class="explanation-tab" data-tab="faq">FAQs</button>
+            </div>
+            <div id="concepts-content" class="explanation-content active">
+                <h3>${data.concepts.title}</h3>
+                <p class="analogy">${renderMarkdown(data.concepts.analogy)}</p>
+                <p>${renderMarkdown(data.concepts.text)}</p>
+            </div>
+            <div id="steps-content" class="explanation-content">
+                <h3>${data.steps.title}</h3>
+                <ol class="step-list">
+                    ${data.steps.list.map((step) => `<li><span>${renderMarkdown(step)}</span></li>`).join('')}
+                </ol>
+            </div>
+            <div id="quiz-content" class="explanation-content">
+                <h3>Knowledge Check</h3>
+                ${data.quiz.map((quizItem, index) => `
+                    <div class="quiz-question" data-correct="${quizItem.correct}">
+                        <p><strong>Question ${index + 1}:</strong> ${renderMarkdown(quizItem.q)}</p>
+                        <div class="quiz-options">
+                        ${quizItem.options.map((opt, optIndex) => `
+                            <label class="quiz-option" for="q-${crudAction}-${index}-${optIndex}">
+                                <input type="radio" id="q-${crudAction}-${index}-${optIndex}" name="q-${crudAction}-${index}" value="${optIndex}"> <span>${renderMarkdown(opt)}</span>
+                            </label>
+                        `).join('')}
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+            <div id="bestPractices-content" class="explanation-content">
+                <h3>Best Practices & Glossary</h3>
+                <div class="best-practices-section">
+                    <h4>Do's and Don'ts</h4>
+                    <ul>
+                        ${data.bestPractices.dos.map((item) => `<li class="do-item"><span>${renderMarkdown(item)}</span></li>`).join('')}
+                    </ul>
+                    <ul class="mt-4">
+                        ${data.bestPractices.donts.map((item) => `<li class="dont-item"><span>${renderMarkdown(item)}</span></li>`).join('')}
+                    </ul>
+                </div>
+                <div class="glossary-section mt-6">
+                    <h4>Glossary</h4>
+                    <ul class="glossary-list">
+                        ${data.bestPractices.glossary.map((item) => `<li><strong>${item.term}</strong>: ${renderMarkdown(item.def)}</li>`).join('')}
+                    </ul>
+                </div>
+            </div>
+            <div id="faq-content" class="explanation-content">
+                <h3>Frequently Asked Questions</h3>
+                <div class="faq-list">
+                    ${data.faq.map((item) => `
+                        <div>
+                            <h4>${renderMarkdown(item.q)}</h4>
+                            <p>${renderMarkdown(item.a)}</p>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>`;
+        
+        setupExplanationTabsAndQuiz();
+    }
+    
+    function setupExplanationTabsAndQuiz() {
+        const expTabs = document.querySelectorAll('.explanation-tab');
+        const expContents = document.querySelectorAll('.explanation-content');
+        expTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabName = tab.dataset.tab;
+                expTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                expContents.forEach(content => {
+                    content.classList.toggle('active', content.id === `${tabName}-content`);
+                });
+            });
+        });
+
+        const quizQuestions = document.querySelectorAll('.quiz-question');
+        quizQuestions.forEach(quizQuestion => {
+            const optionsContainer = quizQuestion.querySelector('.quiz-options');
+            const correctAnswerIndex = parseInt(quizQuestion.dataset.correct);
+
+            optionsContainer.addEventListener('click', (e) => {
+                const selectedLabel = e.target.closest('label');
+                if (!selectedLabel || selectedLabel.classList.contains('disabled')) return;
+
+                const selectedIndex = parseInt(selectedLabel.querySelector('input').value);
+                const labels = optionsContainer.querySelectorAll('.quiz-option');
+
+                labels.forEach(label => label.classList.add('disabled'));
+
+                if (selectedIndex === correctAnswerIndex) {
+                    selectedLabel.classList.add('correct');
+                } else {
+                    selectedLabel.classList.add('incorrect');
+                    labels[correctAnswerIndex].classList.add('correct');
+                }
+            });
+        });
+    }
+
+    // --- Final Quiz Logic ---
+    function renderFinalQuizQuestion() {
+        const q = finalQuizQuestions[quizState.currentQ];
+        if (!q) {
+            showQuizResults();
+            return;
+        }
+        
+        if (!quizState.answers[quizState.currentQ]) {
+            quizState.answers[quizState.currentQ] = { answer: null, graded: false };
+        }
+
+        const progress = ((quizState.currentQ) / finalQuizQuestions.length) * 100;
+        quizProgress.style.width = `${progress}%`;
+        quizCounter.textContent = `Q ${quizState.currentQ + 1} / ${finalQuizQuestions.length}`;
+        quizPrevBtn.disabled = quizState.currentQ === 0;
+        
+        const isGraded = quizState.answers[quizState.currentQ] && quizState.answers[quizState.currentQ].graded;
+        quizNextBtn.textContent = isGraded ? (quizState.currentQ === finalQuizQuestions.length - 1 ? 'Finish Quiz' : 'Next Question →') : 'Submit Answer';
+        quizSkipBtn.style.display = isGraded ? 'none' : 'inline-block';
+
+        let questionContent = '';
+        const inputType = q.type === 'MMCQ' ? 'checkbox' : 'radio';
+
+        if (q.type === 'MCQ' || q.type === 'MMCQ' || q.type === 'TF') {
+            const options = q.type === 'TF' ? ['True', 'False'] : (q.options || []);
+            questionContent = `
+                <div class="question-body">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-800">${renderMarkdown(q.text)}</h2>
+                    <div class="question-options">
+                        ${options.map((option, index) => {
+                            const value = q.type === 'TF' ? (index === 0) : index;
+                            return `
+                            <label class="block bg-gray-100 border border-gray-300 rounded-lg p-4 shadow-sm hover:bg-orange-50 hover:border-orange-500 cursor-pointer transition-all duration-200 mb-2">
+                                <input type="${inputType}" name="q-${quizState.currentQ}" value="${value}" class="mr-3">
+                                <span class="text-lg text-gray-700">${renderMarkdown(option)}</span>
+                            </label>
+                        `}).join('')}
+                    </div>
+                </div>
+            `;
+        } else if (q.type === 'SEQ') {
+            const items = q.items || [];
+            questionContent = `
+                <div class="question-body">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-800">${renderMarkdown(q.text)}</h2>
+                    <ul id="sequence-list" class="space-y-2">
+                        ${shuffleArray([...items]).map(item => `
+                            <li draggable="true" class="seq-item">
+                                <span class="handle mr-3 text-gray-500">☰</span>
+                                <span class="text-lg text-gray-700">${renderMarkdown(item)}</span>
+                            </li>
+                        `).join('')}
+                    </ul>
+                </div>
+            `;
+        } else if (q.type === 'MATCH') {
+            const responses = q.responses || [];
+            const shuffledResponses = shuffleArray([...responses]);
+            const responseMap = {};
+            responses.forEach((resp, idx) => { responseMap[resp] = idx; });
+            const stems = q.stems || [];
+            questionContent = `
+                 <div class="question-body">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-800">${renderMarkdown(q.text)}</h2>
+                    <div class="match-grid grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                        <div>
+                            <h3 class="text-lg font-semibold mb-2 text-gray-800">Stems</h3>
+                            ${stems.map((stem, index) => `
+                                <div class="match-item bg-gray-100 border border-gray-300 rounded-lg p-4 shadow-sm cursor-pointer transition-colors duration-200 mb-2" data-side="stem" data-index="${index}">
+                                    <span class="text-lg text-gray-700">${renderMarkdown(stem)}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold mb-2 text-gray-800">Responses</h3>
+                            ${shuffledResponses.map((resp, index) => `
+                                <div class="match-item bg-gray-100 border border-gray-300 rounded-lg p-4 shadow-sm cursor-pointer transition-colors duration-200 mb-2" data-side="response" data-index="${responseMap[resp]}">
+                                    <span class="text-lg text-gray-700">${renderMarkdown(resp)}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        quizCard.innerHTML = `
+            <div class="q-content flex-grow flex flex-col justify-center">
+                ${questionContent}
+            </div>
+            <div id="quiz-feedback" class="mt-4"></div>
+        `;
+        
+        if (q.type === 'SEQ') addDragAndDropListeners();
+        else if (q.type === 'MATCH') addMatchListeners();
+        else addOptionListeners();
+        
+        restoreQuizAnswers();
+        if (quizState.answers[quizState.currentQ] && quizState.answers[quizState.currentQ].graded) {
+            gradeFinalQuiz(true);
+        }
+    }
+    
+    function addOptionListeners() {
+        const inputs = quizCard.querySelectorAll('input');
+        inputs.forEach(input => {
+            input.addEventListener('change', () => {
+                const q = finalQuizQuestions[quizState.currentQ];
+                if (q.type === 'MMCQ') {
+                    const selected = [...quizCard.querySelectorAll('input:checked')].map(el => parseInt(el.value));
+                    quizState.answers[quizState.currentQ] = { answer: selected, graded: false };
+                } else if (q.type === 'TF') {
+                    // Correctly convert string "true"/"false" to boolean for storing state
+                    quizState.answers[quizState.currentQ] = { answer: (input.value === 'true'), graded: false };
+                } else {
+                    quizState.answers[quizState.currentQ] = { answer: parseInt(input.value), graded: false };
+                }
+            });
+        });
+    }
+
+    function addDragAndDropListeners() {
+        let dragSrcEl = null;
+        document.querySelectorAll('#sequence-list li').forEach(item => {
+            item.addEventListener('dragstart', (e) => {
+                e.dataTransfer.effectAllowed = 'move'; dragSrcEl = item;
+                setTimeout(() => item.classList.add('dragging'), 0);
+            });
+            item.addEventListener('dragend', () => {
+                if (dragSrcEl) dragSrcEl.classList.remove('dragging'); 
+                saveSequenceOrder();
+            });
+            item.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                const after = getDragAfterElement(item.parentNode, e.clientY);
+                if (dragSrcEl && after !== dragSrcEl) { item.parentNode.insertBefore(dragSrcEl, after); }
+            });
+            item.addEventListener('drop', (e) => { e.preventDefault(); e.stopPropagation(); });
+        });
+        
+        function getDragAfterElement(container, y) {
+            const draggableElements = [...container.querySelectorAll('.seq-item:not(.dragging)')];
+            return draggableElements.reduce((closest, child) => {
+                const box = child.getBoundingClientRect();
+                const offset = y - box.top - box.height / 2;
+                if (offset < 0 && offset > closest.offset) { return { offset: offset, element: child }; } 
+                else { return closest; }
+            }, { offset: Number.NEGATIVE_INFINITY }).element;
+        }
+
+        function saveSequenceOrder() {
+            const currentOrder = Array.from(document.querySelectorAll('#sequence-list li')).map(el => {
+                // Strip <code> tags for comparison
+                const codeEl = el.querySelector('code');
+                return codeEl ? codeEl.textContent : el.querySelector('span:last-child').textContent;
+            });
+            quizState.answers[quizState.currentQ] = { answer: currentOrder, graded: false };
+        }
+    }
+
+    function addMatchListeners() {
+        let pickedA = null, pickedB = null;
+        const colorClasses = ['bg-yellow-100', 'bg-green-100', 'bg-blue-100', 'bg-pink-100'];
+        let pairIndex = 0;
+        
+        document.querySelectorAll('.match-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const side = item.dataset.side;
+                if (side === 'stem') {
+                    if (pickedA) pickedA.classList.remove('is-picked');
+                    pickedA = item; item.classList.add('is-picked');
+                } else {
+                    if (pickedB) pickedB.classList.remove('is-picked');
+                    pickedB = item; item.classList.add('is-picked');
+                }
+
+                if (pickedA && pickedB) {
+                    const pair = { s: parseInt(pickedA.dataset.index), r: parseInt(pickedB.dataset.index) };
+                    const currentAnswer = (quizState.answers[quizState.currentQ] && quizState.answers[quizState.currentQ].answer) || [];
+                    
+                    if (!currentAnswer.some(p => p.s === pair.s && p.r === pair.r)) {
+                         currentAnswer.push(pair);
+                         quizState.answers[quizState.currentQ] = { answer: currentAnswer, graded: false };
+
+                         const colorClass = colorClasses[pairIndex % colorClasses.length];
+                         pickedA.classList.remove('is-picked');
+                         pickedA.classList.add(colorClass, 'pointer-events-none');
+                         pickedB.classList.remove('is-picked');
+                         pickedB.classList.add(colorClass, 'pointer-events-none');
+                         
+                         pairIndex++; pickedA = null; pickedB = null;
+                    }
+                }
+            });
+        });
+    }
+
+    function restoreQuizAnswers() {
+        const q = finalQuizQuestions[quizState.currentQ];
+        const savedState = quizState.answers[quizState.currentQ];
+        if (!savedState || savedState.answer === null) return;
+        const savedAnswer = savedState.answer;
+
+        if (q.type === 'MCQ') {
+            const input = quizCard.querySelector(`input[value="${savedAnswer}"]`);
+            if (input) input.checked = true;
+        } else if (q.type === 'TF') {
+            const valueToFind = savedAnswer ? 'true' : 'false';
+            const input = quizCard.querySelector(`input[value="${valueToFind}"]`);
+            if (input) input.checked = true;
+        } else if (q.type === 'MMCQ') {
+            savedAnswer.forEach(val => {
+                const input = quizCard.querySelector(`input[value="${val}"]`);
+                if (input) input.checked = true;
+            });
+        } else if (q.type === 'SEQ') {
+            const list = document.getElementById('sequence-list');
+            if (list) {
+                // We must use the original 'items' to preserve markdown
+                const originalItemsMap = new Map();
+                q.items.forEach(item => {
+                    const cleanText = renderMarkdown(item).replace(/<[^>]*>/g, '');
+                    originalItemsMap.set(cleanText, item);
+                });
+
+                list.innerHTML = savedAnswer.map(itemText => {
+                    const originalItemHtml = originalItemsMap.get(itemText) || itemText;
+                    return `
+                    <li draggable="true" class="seq-item">
+                        <span class="handle mr-3 text-gray-500">☰</span>
+                        <span class="text-lg text-gray-700">${renderMarkdown(originalItemHtml)}</span>
+                    </li>`
+                }).join('');
+                addDragAndDropListeners();
+            }
+        } else if (q.type === 'MATCH') {
+            const pairs = savedAnswer;
+            const colorClasses = ['bg-yellow-100', 'bg-green-100', 'bg-blue-100', 'bg-pink-100'];
+            pairs.forEach((pair, index) => {
+                const colorClass = colorClasses[index % colorClasses.length];
+                const stemEl = quizCard.querySelector(`.match-item[data-side="stem"][data-index="${pair.s}"]`);
+                const responseEl = quizCard.querySelector(`.match-item[data-side="response"][data-index="${pair.r}"]`);
+                if (stemEl) stemEl.classList.add(colorClass, 'pointer-events-none');
+                if (responseEl) responseEl.classList.add(colorClass, 'pointer-events-none');
+            });
+        }
+    }
+    
+    function gradeFinalQuiz(isRestoring = false) {
+        const q = finalQuizQuestions[quizState.currentQ];
+        const userAnswer = quizState.answers[quizState.currentQ] ? quizState.answers[quizState.currentQ].answer : null;
+        let isCorrect = false;
+
+        const feedbackDiv = document.getElementById('quiz-feedback');
+        if (!feedbackDiv) return;
+
+        if (q.type === 'MCQ' || q.type === 'TF') {
+            isCorrect = userAnswer === q.correct; 
+            const allOptions = quizCard.querySelectorAll('label');
+            allOptions.forEach(label => label.classList.add('pointer-events-none'));
+            
+            let correctValue = q.type === 'TF' ? (q.correct ? 'true' : 'false') : q.correct;
+            const correctInput = quizCard.querySelector(`input[value="${correctValue}"]`);
+            if (correctInput) correctInput.closest('label').classList.add('correct');
+            
+            if (!isCorrect && userAnswer !== null) {
+                let userValue = q.type === 'TF' ? (userAnswer ? 'true' : 'false') : userAnswer;
+                const userInput = quizCard.querySelector(`input[value="${userValue}"]`);
+                if (userInput) userInput.closest('label').classList.add('incorrect');
+            }
+        } else if (q.type === 'MMCQ') {
+            const userAnswers = new Set(userAnswer || []);
+            const correctAnswers = new Set(q.correct || []);
+            isCorrect = userAnswers.size === correctAnswers.size && [...userAnswers].every(val => correctAnswers.has(val));
+            
+            const allOptions = quizCard.querySelectorAll('label');
+            allOptions.forEach(label => label.classList.add('pointer-events-none'));
+            
+            (q.options || []).forEach((opt, index) => {
+                const label = quizCard.querySelector(`input[value="${index}"]`).closest('label');
+                if (correctAnswers.has(index)) {
+                    label.classList.add('correct');
+                } else if (userAnswers.has(index)) {
+                    label.classList.add('incorrect');
+                }
+            });
+        } else if (q.type === 'SEQ') {
+            isCorrect = JSON.stringify(userAnswer) === JSON.stringify(q.correct);
+            const list = document.getElementById('sequence-list');
+            if (list) {
+                list.classList.add(isCorrect ? 'bg-green-100' : 'bg-red-100');
+                list.querySelectorAll('li').forEach(li => {
+                    li.draggable = false;
+                    li.classList.add('cursor-not-allowed');
+                });
+            }
+        } else if (q.type === 'MATCH') {
+            const pairs = userAnswer || [];
+            const correctPairs = new Set((q.correct || []).map(p => `${p.s}-${p.r}`));
+            let correctCount = pairs.filter(p => correctPairs.has(`${p.s}-${p.r}`)).length;
+            isCorrect = correctCount === (q.stems || []).length && pairs.length === (q.stems || []).length;
+            
+            const allItems = quizCard.querySelectorAll('.match-item');
+            allItems.forEach(item => item.classList.add('pointer-events-none'));
+        }
+
+        if (userAnswer !== null && !isRestoring && (!quizState.answers[quizState.currentQ] || !quizState.answers[quizState.currentQ].graded)) {
+            if (isCorrect) {
+                quizState.score++;
+            }
+        }
+        if (!isRestoring) {
+             quizState.answers[quizState.currentQ] = { ...quizState.answers[quizState.currentQ], graded: true };
+        }
+        
+        quizNextBtn.textContent = (quizState.currentQ === finalQuizQuestions.length - 1) ? 'Finish Quiz' : 'Next Question →';
+        quizSkipBtn.style.display = 'none';
+
+        feedbackDiv.innerHTML = `
+            <div class="feedback ${isCorrect ? 'correct' : 'incorrect'}">
+                <p class="font-bold text-lg mb-1">${isCorrect ? 'Correct! 🎉' : 'Not quite.'}</p>
+                <p>${renderMarkdown(q.explain)}</p>
+            </div>
+        `;
+    }
+
+    function shuffleArray(array) {
+        if (!array) return [];
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    // --- Event Listeners ---
+    document.addEventListener('DOMContentLoaded', () => {
+        // Apply markdown rendering to static intro text
+        const introPanel = document.getElementById('intro-screen');
+        if (introPanel) {
+            introPanel.querySelectorAll('p').forEach(p => {
+                p.innerHTML = renderMarkdown(p.innerHTML);
+            });
+            introPanel.querySelectorAll('li').forEach(li => {
+                li.innerHTML = renderMarkdown(li.innerHTML);
+            });
+        }
+
+        const logoLink = document.getElementById('logo-link');
+        const startBtn = document.getElementById('start-tutorial-btn');
+        const backBtn = document.getElementById('back-btn');
+        const selectCards = document.querySelectorAll('.select-card');
+        const tutorialTabs = document.querySelectorAll('.crud-tab');
+        
+        showScreen('intro-screen');
+        
+        logoLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            showScreen('intro-screen');
+        });
+
+        startBtn.addEventListener('click', () => {
+            showScreen('select-screen');
+            updateQuizButton();
+        });
+        
+        backBtn.addEventListener('click', () => {
+            showScreen('select-screen');
+        });
+        
+        selectCards.forEach(card => {
+            card.addEventListener('click', () => {
+                const crudAction = card.dataset.crud;
+                showScreen('tutorial-screen');
+                switchCrudTab(crudAction);
+            });
+        });
+
+        tutorialTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                switchCrudTab(tab.dataset.crud);
+            });
+        });
+
+        startQuizBtn.addEventListener('click', () => {
+            showScreen('final-quiz-screen');
+            quizState.currentQ = 0;
+            quizState.score = 0;
+            quizState.answers.fill(null);
+            renderFinalQuizQuestion();
+        });
+
+        quizPrevBtn.addEventListener('click', () => {
+            if (quizState.currentQ > 0) {
+                quizState.currentQ--;
+                renderFinalQuizQuestion();
+            }
+        });
+
+        quizSkipBtn.addEventListener('click', () => {
+            quizState.answers[quizState.currentQ] = { answer: null, graded: true, skipped: true };
+            if (quizState.currentQ < finalQuizQuestions.length - 1) {
+                quizState.currentQ++;
+                renderFinalQuizQuestion();
+            } else {
+                showQuizResults();
+            }
+        });
+
+        quizNextBtn.addEventListener('click', () => {
+            const currentAnswerState = quizState.answers[quizState.currentQ];
+            const hasAnswer = currentAnswerState && currentAnswerState.answer !== null && (Array.isArray(currentAnswerState.answer) ? currentAnswerState.answer.length > 0 : true);
+
+            if (!hasAnswer && !(currentAnswerState && currentAnswerState.graded)) {
+                const feedbackDiv = document.getElementById('quiz-feedback');
+                if(feedbackDiv) feedbackDiv.innerHTML = `<div class="feedback incorrect"><p class="font-bold">Please select an answer.</p></div>`;
+                return;
+            }
+
+            if (currentAnswerState && !currentAnswerState.graded) {
+                gradeFinalQuiz();
+            } else {
+                if (quizState.currentQ < finalQuizQuestions.length - 1) {
+                    quizState.currentQ++;
+                    renderFinalQuizQuestion();
+                } else {
+                    showQuizResults();
+                }
+            }
+        });
+    });
+
+    function showQuizResults() {
+        const totalMarks = finalQuizQuestions.length;
+        const skippedCount = quizState.answers.filter(a => a && a.skipped).length;
+        const answeredCount = totalMarks - skippedCount;
+        const quizCard = document.getElementById('quiz-card');
+        quizCard.innerHTML = `<div class="q-content text-center">
+                <h2 class="text-2xl font-bold">Professional Workflows Module Complete! 🏛️</h2>
+                 <p class="mt-4">${renderMarkdown(`You scored **${quizState.score}** out of **${answeredCount}** answered questions.`)}</p>
+                <div class="intro-primer mt-4">
+                    <h3>Recap: Controls & Risk Checklist</h3>
+                    <p>You've learned how organizations use automation and policy to manage risk and ensure quality.</p>
+                    <ul>
+                        <li><strong>Controls Map:</strong> \`Branch Protection\` is your gate, \`CI/CD\` is your inspector, and \`Code Review\` is your quality sign-off.</li>
+                        <li><strong>Risk Checklist:</strong> Do you have rules on \`main\`? Are tests required to pass before merging? Does your team agree on a workflow?</li>
+                    </ul>
+                </div>
+                <div class="mt-8">
+                    <button type="button" id="quiz-restart-btn" class="start-btn">Practice Again</button>
+                    <button type="button" id="quiz-back-btn" class="back-btn mt-4">Back to Topics</button>
+                </div>
+            </div>`;
+        
+        document.getElementById('quiz-restart-btn').addEventListener('click', () => {
+            // Reset state and go back to select screen for a fresh start
+            completedTutorials = [];
+            document.querySelectorAll('.select-card').forEach(c => c.classList.remove('completed'));
+            showScreen('select-screen');
+        });
+        document.getElementById('quiz-back-btn').addEventListener('click', () => showScreen('select-screen'));
+
+        document.getElementById('quiz-progress').style.width = '100%';
+        document.querySelector('.quiz-nav').style.display = 'none';
+    }
+    
+    </script>
+</body>
+</html>

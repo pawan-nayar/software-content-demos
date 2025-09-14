@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Variables & Data Types: Smart SVG + Quiz</title>
+
+  <!-- Fonts & Theme match -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* --- Base / Theme (replicated) --- */
+    :root{
+      --text:#212529; --bg:#fff; --muted:#f8f9fa; --border:#e9ecef;
+      --accent:#fd7e14; --accent-2:#e87312; --header-bg:#212529; --header-fg:#f8f9fa;
+      --ok:#16a34a; --ok-soft:#dcfce7; --bad:#dc2626; --bad-soft:#fee2e2;
+      --int:#4dabf7; --float:#51cf66; --string:#ffd43b; --bool:#845ef7; --char:#ff6b6b;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+    a{color:var(--accent);text-decoration:none}
+    a:hover{text-decoration:underline}
+    .container{max-width:900px;margin:auto;padding:16px}
+    @media (max-width:600px){.container{padding:12px}}
+
+    /* Header / Footer */
+    .site-header{background:var(--header-bg);color:var(--header-fg);padding:14px 18px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;position:sticky;top:0;z-index:60}
+    .logo{font-weight:700;font-size:1.15rem;color:#fff}
+    .site-header nav{display:flex;gap:14px}
+    .site-header nav a{color:#ced4da}
+    .site-header nav a:hover{color:#fff}
+    .site-footer{background:var(--header-bg);color:var(--header-fg);padding:40px;text-align:center;margin-top:50px}
+    .breadcrumbs{margin:12px 0 20px;color:#6c757d;overflow:auto;white-space:nowrap}
+    .breadcrumbs a{color:var(--accent)}
+
+    /* Typography */
+    h1{font-size:clamp(1.8rem,5vw,2.4rem);line-height:1.1;margin-bottom:6px}
+    h2{font-size:clamp(1.3rem,4vw,1.8rem);margin:40px 0 16px;border-bottom:2px solid var(--border);padding-bottom:6px}
+    p{margin:10px 0;word-wrap:break-word}
+    .lead{font-size:1.05rem;color:#495057;}
+    .intro-box{font-size:1.05rem;background:#fef7f0;padding:20px;border-radius:12px;border-left:5px solid var(--accent);margin:24px 0}
+
+    /* SVG Board */
+    .diagram-wrap{background:#fffbfa;border:1px solid var(--accent-2);border-radius:12px;padding:18px;margin:24px 0}
+    .svg-note{font-size:.9rem;color:#6c757d;margin-top:6px}
+    svg{width:100%;height:auto;max-height:640px;display:block;margin:auto}
+    .hotspot{cursor:pointer;outline:none}
+    .hotspot:focus .halo,.hotspot:hover .halo{stroke:var(--accent);stroke-width:2;fill:transparent}
+    .memory-int{fill:var(--int)}
+    .memory-float{fill:var(--float)}
+    .memory-string{fill:var(--string)}
+    .memory-bool{fill:var(--bool)}
+    .memory-char{fill:var(--char)}
+    .label{font-size:10px;fill:#111}
+    .address-label{font-size:8px;fill:#666}
+    .code-text{font-size:9px;fill:#333;font-family:monospace}
+
+    /* Tooltip */
+    .tooltip{
+      position:fixed; /* follow pointer */
+      pointer-events:none; z-index:70;
+      background:#fff; color:#111; border:1px solid var(--border);
+      border-left:4px solid var(--accent); border-radius:8px; padding:10px 12px; max-width:260px;
+      box-shadow:0 6px 20px rgba(0,0,0,0.12); font-size:.95rem; line-height:1.4; display:none;
+    }
+
+    /* Quiz (replicated) */
+    .interactive-quiz-section{
+      margin:40px 0;background:#fffbfa;border:1px solid var(--accent-2);border-radius:12px;padding:24px;
+    }
+    .interactive-quiz-section h2{margin-top:0;border-bottom-color:var(--accent);color:var(--accent-2)}
+    .quiz-container{margin:20px 0}
+    .quiz-navigation{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding:15px;background:var(--muted);border-radius:8px}
+    .nav-btn{background:var(--accent);color:#fff;border:none;padding:10px 20px;border-radius:5px;cursor:pointer;font-size:14px;font-weight:600;transition:background .3s}
+    .nav-btn:hover{background:var(--accent-2)}
+    .nav-btn:disabled{background:#ccc;cursor:not-allowed}
+    .question-counter{font-weight:bold;color:var(--accent-2);font-size:16px}
+    .quiz{padding:20px;border:2px solid var(--border);border-radius:8px;background:var(--bg);display:none}
+    .quiz.active{display:block}
+    .quiz p.question-text{font-size:1.1rem;margin-bottom:20px;color:var(--text);font-weight:600;line-height:1.5}
+    .quiz label{display:block;margin:12px 0;padding:12px;border:1px solid var(--border);border-radius:6px;cursor:pointer;background:var(--muted);transition:all .3s}
+    .quiz label:hover{background:#f0f0f0;border-color:var(--accent)}
+    .quiz input[type="radio"]{margin-right:12px;transform:scale(1.2);accent-color:var(--accent)}
+    .explanation{display:none;margin-top:20px;padding:15px;border-radius:4px;font-size:.95rem;line-height:1.6}
+    .quiz.answered .explanation{display:block}
+    .quiz.answered label.correct{background:var(--ok-soft);border-color:var(--ok)}
+    .quiz.answered label.incorrect{background:var(--bad-soft);border-color:var(--bad)}
+    .explanation.correct{border-left:4px solid var(--ok);background:var(--ok-soft)}
+    .explanation.incorrect{border-left:4px solid var(--bad);background:var(--bad-soft)}
+    
+    /* Glossary Styles */
+    .glossary-section {
+      margin: 40px 0;
+      background: #fffbfa;
+      border: 1px solid var(--accent-2);
+      border-radius: 12px;
+      padding: 24px;
+    }
+    .glossary-section h2 {
+      margin-top: 0;
+      border-bottom-color: var(--accent);
+      color: var(--accent-2);
+    }
+    .glossary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 12px;
+      margin-top: 20px;
+    }
+    .glossary-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+    .glossary-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      border-color: var(--accent);
+    }
+    .glossary-term {
+      font-weight: 600;
+      color: var(--accent-2);
+      margin-bottom: 4px;
+      font-size: 1rem;
+    }
+    .glossary-definition {
+      font-size: 0.9rem;
+      color: var(--text);
+      line-height: 1.5;
+      display: none;
+      margin-top: 8px;
+      padding: 8px;
+      background: var(--muted);
+      border-radius: 4px;
+      border-left: 3px solid var(--accent);
+    }
+    .glossary-card.active .glossary-definition {
+      display: block;
+    }
+    .glossary-card.active {
+      background: #fef7f0;
+    }
+  </style>
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="#">Beyond Dictionary</a>
+  <nav>
+    <a href="#">Learning</a>
+    <a href="#">FAQs</a>
+    <a href="#">Blog</a>
+  </nav>
+</header>
+
+<main class="container">
+  <nav class="breadcrumbs" aria-label="Breadcrumb">
+    <a href="#">Programming</a> › <a href="#">Computer Science</a> › <span>Variables & Data Types</span>
+  </nav>
+
+  <header>
+    <h1>Variables & Data Types: Interactive Memory Blocks 💾</h1>
+    <p class="lead">Explore how different data types are stored in computer memory.</p>
+    <div class="intro-box">
+      <p>
+        Variables are named storage locations in computer memory that hold data values. Each variable has a specific data type 
+        that determines how much memory it occupies, what values it can store, and what operations can be performed on it. 
+        Understanding memory allocation helps programmers write efficient code and avoid common errors like buffer overflows 
+        or type mismatches. Different programming languages handle memory management differently—some allocate memory automatically 
+        while others require manual management.
+      </p>
+    </div>
+  </header>
+
+  <!-- Smart SVG -->
+  <section class="diagram-wrap" aria-label="Variable Memory Blocks Diagram">
+    <svg viewBox="0 0 900 520" role="img" aria-labelledby="title desc">
+      <title id="title">Variable memory allocation visualization</title>
+      <desc id="desc">Hover over memory blocks to see variable declarations and data types.</desc>
+
+      <!-- Memory addresses (left side) -->
+      <text x="20" y="30" class="address-label">Memory Address</text>
+      <text x="20" y="80" class="address-label">0x1000</text>
+      <text x="20" y="130" class="address-label">0x1004</text>
+      <text x="20" y="180" class="address-label">0x1008</text>
+      <text x="20" y="230" class="address-label">0x1010</text>
+      <text x="20" y="280" class="address-label">0x1018</text>
+      <text x="20" y="330" class="address-label">0x1019</text>
+      <text x="20" y="380" class="address-label">0x101A</text>
+      <text x="20" y="430" class="address-label">0x101B</text>
+
+      <!-- Variable declarations (top) -->
+      <text x="100" y="30" class="code-text">int score = 95;</text>
+      <text x="250" y="30" class="code-text">float pi = 3.14159;</text>
+      <text x="420" y="30" class="code-text">string name = "Alice";</text>
+      <text x="620" y="30" class="code-text">bool isActive = true;</text>
+      <text x="780" y="30" class="code-text">char grade = 'A';</text>
+
+      <!-- Integer variable -->
+      <g class="hotspot" tabindex="0" data-tip="Integer variable 'score' stores the value 95. Integers typically use 4 bytes (32 bits) and can store whole numbers from -2,147,483,648 to 2,147,483,647.">
+        <rect x="80" y="60" width="120" height="40" rx="4" class="memory-int"></rect>
+        <text x="140" y="85" text-anchor="middle" class="label">score = 95</text>
+        <text x="140" y="95" text-anchor="middle" class="address-label">int (4 bytes)</text>
+        <rect x="80" y="60" width="120" height="40" fill="none" class="halo"></rect>
+      </g>
+
+      <!-- Float variable -->
+      <g class="hotspot" tabindex="0" data-tip="Float variable 'pi' stores 3.14159. Floating-point numbers use IEEE 754 standard with 4 bytes for single precision, storing decimal values with limited precision.">
+        <rect x="80" y="110" width="120" height="40" rx="4" class="memory-float"></rect>
+        <text x="140" y="135" text-anchor="middle" class="label">pi = 3.14159</text>
+        <text x="140" y="145" text-anchor="middle" class="address-label">float (4 bytes)</text>
+        <rect x="80" y="110" width="120" height="40" fill="none" class="halo"></rect>
+      </g>
+
+      <!-- String variable (multiple blocks) -->
+      <g class="hotspot" tabindex="0" data-tip="String variable 'name' stores 'Alice'. Strings are arrays of characters, with each character typically taking 1 byte. This string uses 8 bytes including null terminator.">
+        <rect x="80" y="160" width="240" height="40" rx="4" class="memory-string"></rect>
+        <text x="200" y="185" text-anchor="middle" class="label">name = "Alice"</text>
+        <text x="200" y="195" text-anchor="middle" class="address-label">string (8 bytes)</text>
+        
+        <!-- Individual character blocks -->
+        <rect x="85" y="165" width="28" height="30" fill="none" stroke="#333" stroke-width="1"></rect>
+        <rect x="115" y="165" width="28" height="30" fill="none" stroke="#333" stroke-width="1"></rect>
+        <rect x="145" y="165" width="28" height="30" fill="none" stroke="#333" stroke-width="1"></rect>
+        <rect x="175" y="165" width="28" height="30" fill="none" stroke="#333" stroke-width="1"></rect>
+        <rect x="205" y="165" width="28" height="30" fill="none" stroke="#333" stroke-width="1"></rect>
+        <rect x="235" y="165" width="28" height="30" fill="none" stroke="#333" stroke-width="1"></rect>
+        <rect x="265" y="165" width="28" height="30" fill="none" stroke="#333" stroke-width="1"></rect>
+        <rect x="295" y="165" width="20" height="30" fill="none" stroke="#333" stroke-width="1"></rect>
+        
+        <text x="99" y="183" text-anchor="middle" class="address-label">'A'</text>
+        <text x="129" y="183" text-anchor="middle" class="address-label">'l'</text>
+        <text x="159" y="183" text-anchor="middle" class="address-label">'i'</text>
+        <text x="189" y="183" text-anchor="middle" class="address-label">'c'</text>
+        <text x="219" y="183" text-anchor="middle" class="address-label">'e'</text>
+        <text x="249" y="183" text-anchor="middle" class="address-label">'\0'</text>
+        
+        <rect x="80" y="160" width="240" height="40" fill="none" class="halo"></rect>
+      </g>
+
+      <!-- Boolean variable -->
+      <g class="hotspot" tabindex="0" data-tip="Boolean variable 'isActive' stores true. Booleans only need 1 bit but typically occupy 1 byte for memory alignment. Can only store true (1) or false (0).">
+        <rect x="80" y="210" width="120" height="40" rx="4" class="memory-bool"></rect>
+        <text x="140" y="235" text-anchor="middle" class="label">isActive = true</text>
+        <text x="140" y="245" text-anchor="middle" class="address-label">bool (1 byte)</text>
+        <rect x="80" y="210" width="120" height="40" fill="none" class="halo"></rect>
+      </g>
+
+      <!-- Character variable -->
+      <g class="hotspot" tabindex="0" data-tip="Character variable 'grade' stores 'A'. Characters use 1 byte and store single letters, digits, or symbols using ASCII or UTF-8 encoding.">
+        <rect x="80" y="260" width="60" height="40" rx="4" class="memory-char"></rect>
+        <text x="110" y="285" text-anchor="middle" class="label">grade = 'A'</text>
+        <text x="110" y="295" text-anchor="middle" class="address-label">char (1 byte)</text>
+        <rect x="80" y="260" width="60" height="40" fill="none" class="halo"></rect>
+      </g>
+
+      <!-- Array example -->
+      <g class="hotspot" tabindex="0" data-tip="Integer array 'numbers' stores multiple values. Arrays allocate contiguous memory blocks. This array of 5 integers uses 20 bytes total (5 × 4 bytes each).">
+        <rect x="80" y="310" width="300" height="40" rx="4" class="memory-int"></rect>
+        <text x="230" y="335" text-anchor="middle" class="label">numbers[] = {10, 20, 30, 40, 50}</text>
+        <text x="230" y="345" text-anchor="middle" class="address-label">int array (20 bytes)</text>
+        
+        <!-- Individual array elements -->
+        <rect x="85" y="315" width="55" height="30" fill="none" stroke="#333" stroke-width="1"></rect>
+        <rect x="142" y="315" width="55" height="30" fill="none" stroke="#333" stroke-width="1"></rect>
+        <rect x="199" y="315" width="55" height="30" fill="none" stroke="#333" stroke-width="1"></rect>
+        <rect x="256" y="315" width="55" height="30" fill="none" stroke="#333" stroke-width="1"></rect>
+        <rect x="313" y="315" width="55" height="30" fill="none" stroke="#333" stroke-width="1"></rect>
+        
+        <text x="112" y="333" text-anchor="middle" class="address-label">10</text>
+        <text x="169" y="333" text-anchor="middle" class="address-label">20</text>
+        <text x="226" y="333" text-anchor="middle" class="address-label">30</text>
+        <text x="283" y="333" text-anchor="middle" class="address-label">40</text>
+        <text x="340" y="333" text-anchor="middle" class="address-label">50</text>
+        
+        <rect x="80" y="310" width="300" height="40" fill="none" class="halo"></rect>
+      </g>
+
+      <!-- Pointer example -->
+      <g class="hotspot" tabindex="0" data-tip="Pointer variable 'ptr' stores a memory address (0x1000). Pointers typically use 8 bytes on 64-bit systems and 'point to' other variables in memory.">
+        <rect x="80" y="360" width="140" height="40" rx="4" fill="#ff8787"></rect>
+        <text x="150" y="385" text-anchor="middle" class="label">ptr = 0x1000</text>
+        <text x="150" y="395" text-anchor="middle" class="address-label">pointer (8 bytes)</text>
+        <rect x="80" y="360" width="140" height="40" fill="none" class="halo"></rect>
+      </g>
+
+      <!-- Memory stack illustration -->
+      <g class="hotspot" tabindex="0" data-tip="Stack memory grows downward. Local variables are allocated on the stack with automatic cleanup when scope ends. Faster access but limited size.">
+        <rect x="450" y="80" width="200" height="300" fill="#f8f9fa" stroke="#dee2e6" stroke-width="2" rx="8"></rect>
+        <text x="550" y="100" text-anchor="middle" class="label">STACK MEMORY</text>
+        <text x="550" y="115" text-anchor="middle" class="address-label">↓ Growing Down</text>
+        
+        <!-- Stack frames -->
+        <rect x="460" y="130" width="180" height="30" fill="#e3f2fd" stroke="#2196f3"></rect>
+        <text x="550" y="150" text-anchor="middle" class="address-label">main() function</text>
+        
+        <rect x="460" y="170" width="180" height="30" fill="#f3e5f5" stroke="#9c27b0"></rect>
+        <text x="550" y="190" text-anchor="middle" class="address-label">calculateSum() function</text>
+        
+        <rect x="460" y="210" width="180" height="30" fill="#fff3e0" stroke="#ff9800"></rect>
+        <text x="550" y="230" text-anchor="middle" class="address-label">local variables</text>
+        
+        <rect x="450" y="80" width="200" height="300" fill="none" class="halo"></rect>
+      </g>
+
+      <!-- Heap memory illustration -->
+      <g class="hotspot" tabindex="0" data-tip="Heap memory for dynamic allocation. Objects created with 'new' or 'malloc' are stored here. Larger but slower access, requires manual cleanup in some languages.">
+        <rect x="700" y="80" width="180" height="300" fill="#f8f9fa" stroke="#dee2e6" stroke-width="2" rx="8"></rect>
+        <text x="790" y="100" text-anchor="middle" class="label">HEAP MEMORY</text>
+        <text x="790" y="115" text-anchor="middle" class="address-label">Dynamic Allocation</text>
+        
+        <!-- Heap blocks -->
+        <rect x="710" y="140" width="80" height="50" fill="#e8f5e8" stroke="#4caf50"></rect>
+        <text x="750" y="168" text-anchor="middle" class="address-label">Object A</text>
+        
+        <rect x="790" y="200" width="80" height="60" fill="#ffe8e8" stroke="#f44336"></rect>
+        <text x="830" y="233" text-anchor="middle" class="address-label">Object B</text>
+        
+        <rect x="710" y="280" width="100" height="40" fill="#fff8e1" stroke="#ffc107"></rect>
+        <text x="760" y="303" text-anchor="middle" class="address-label">Array C</text>
+        
+        <rect x="700" y="80" width="180" height="300" fill="none" class="halo"></rect>
+      </g>
+
+      <!-- Type size legend -->
+      <g>
+        <text x="450" y="450" class="label">Data Type Sizes:</text>
+        <rect x="450" y="460" width="20" height="15" class="memory-char"></rect>
+        <text x="475" y="472" class="address-label">char (1 byte)</text>
+        
+        <rect x="550" y="460" width="20" height="15" class="memory-bool"></rect>
+        <text x="575" y="472" class="address-label">bool (1 byte)</text>
+        
+        <rect x="650" y="460" width="20" height="15" class="memory-int"></rect>
+        <text x="675" y="472" class="address-label">int (4 bytes)</text>
+        
+        <rect x="450" y="485" width="20" height="15" class="memory-float"></rect>
+        <text x="475" y="497" class="address-label">float (4 bytes)</text>
+        
+        <rect x="570" y="485" width="20" height="15" class="memory-string"></rect>
+        <text x="595" y="497" class="address-label">string (variable)</text>
+      </g>
+    </svg>
+    <p class="svg-note">Tip: hover or focus any highlighted area for details about memory allocation and data types.</p>
+  </section>
+
+  <!-- 10-question MCQ -->
+  <section class="interactive-quiz-section">
+    <h2>Checkpoint Quiz: Variables & Data Types</h2>
+    <div class="quiz-container" id="quiz-container-1">
+      <div class="quiz-navigation">
+        <button class="nav-btn" id="prevBtn_1" onclick="changeQuestion(1, -1)">← Previous</button>
+        <span class="question-counter">Question <span id="currentQ_1">1</span> of 10</span>
+        <button class="nav-btn" id="nextBtn_1" onclick="changeQuestion(1, 1)">Next →</button>
+      </div>
+
+      <div class="quiz" id="q_1_1" data-correct="2">
+        <p class="question-text">1. How many bytes does a typical integer variable occupy in memory?</p>
+        <label><input type="radio" name="q_1_1" value="1"> 1 byte</label>
+        <label><input type="radio" name="q_1_1" value="2"> 4 bytes</label>
+        <label><input type="radio" name="q_1_1" value="3"> 8 bytes</label>
+        <label><input type="radio" name="q_1_1" value="4"> 2 bytes</label>
+        <div class="explanation"></div>
+      </div>
+
+      <div class="quiz" id="q_1_2" data-correct="1">
+        <p class="question-text">2. Which data type is best suited for storing a single letter grade like 'A' or 'B'?</p>
+        <label><input type="radio" name="q_1_2" value="1"> char</label>
+        <label><input type="radio" name="q_1_2" value="2"> int</label>
+        <label><input type="radio" name="q_1_2" value="3"> string</label>
+        <label><input type="radio" name="q_1_2" value="4"> float</label>
+        <div class="explanation"></div>
+      </div>
+
+      <div class="quiz" id="q_1_3" data-correct="3">
+        <p class="question-text">3. What is the main difference between stack and heap memory?</p>
+        <label><input type="radio" name="q_1_3" value="1"> Stack is slower but larger than heap</label>
+        <label><input type="radio" name="q_1_3" value="2"> Heap memory is automatically managed</label>
+        <label><input type="radio" name="q_1_3" value="3"> Stack is faster with automatic cleanup, heap allows dynamic allocation</label>
+        <label><input type="radio" name="q_1_3" value="4"> There is no difference between them</label>
+        <div class="explanation"></div>
+      </div>
+
+      <div class="quiz" id="q_1_4" data-correct="2">
+        <p class="question-text">4. Boolean variables can store...</p>
+        <label><input type="radio" name="q_1_4" value="1"> Any integer value</label>
+        <label><input type="radio" name="q_1_4" value="2"> Only true or false values</label>
+        <label><input type="radio" name="q_1_4" value="3"> Decimal numbers</label>
+        <label><input type="radio" name="q_1_4" value="4"> Text strings</label>
+        <div class="explanation"></div>
+      </div>
+
+      <div class="quiz" id="q_1_5" data-correct="4">
+        <p class="question-text">5. What does a pointer variable store?</p>
+        <label><input type="radio" name="q_1_5" value="1"> The actual data value</label>
+        <label><input type="radio" name="q_1_5" value="2"> The variable name</label>
+        <label><input type="radio" name="q_1_5" value="3"> The data type</label>
+        <label><input type="radio" name="q_1_5" value="4"> A memory address</label>
+        <div class="explanation"></div>
+      </div>
+
+      <div class="quiz" id="q_1_6" data-correct="1">
+        <p class="question-text">6. Arrays in memory are stored...</p>
+        <label><input type="radio" name="q_1_6" value="1"> In contiguous (adjacent) memory locations</label>
+        <label><input type="radio" name="q_1_6" value="2"> Randomly throughout memory</label>
+        <label><input type="radio" name="q_1_6" value="3"> Only in heap memory</label>
+        <label><input type="radio" name="q_1_6" value="4"> Only in stack memory</label>
+        <div class="explanation"></div>
+      </div>
+
+      <div class="quiz" id="q_1_7" data-correct="3">
+        <p class="question-text">7. Which data type would you use to store the value 3.14159?</p>
+        <label><input type="radio" name="q_1_7" value="1"> int</label>
+        <label><input type="radio" name="q_1_7" value="2"> char</label>
+        <label><input type="radio" name="q_1_7" value="3"> float or double</label>
+        <label><input type="radio" name="q_1_7" value="4"> bool</label>
+        <div class="explanation"></div>
+      </div>
+
+      <div class="quiz" id="q_1_8" data-correct="2">
+        <p class="question-text">8. String variables are essentially...</p>
+        <label><input type="radio" name="q_1_8" value="1"> Single characters</label>
+        <label><input type="radio" name="q_1_8" value="2"> Arrays of characters</label>
+        <label><input type="radio" name="q_1_8" value="3"> Integer values</label>
+        <label><input type="radio" name="q_1_8" value="4"> Boolean combinations</label>
+        <div class="explanation"></div>
+      </div>
+
+      <div class="quiz" id="q_1_9" data-correct="4">
+        <p class="question-text">9. Memory alignment means...</p>
+        <label><input type="radio" name="q_1_9" value="1"> Variables are sorted alphabetically</label>
+        <label><input type="radio" name="q_1_9" value="2"> All variables use the same amount of memory</label>
+        <label><input type="radio" name="q_1_9" value="3"> Memory is organized in a straight line</label>
+        <label><input type="radio" name="q_1_9" value="4"> Data is placed at memory addresses that are multiples of certain boundaries</label>
+        <div class="explanation"></div>
+      </div>
+
+      <div class="quiz" id="q_1_10" data-correct="1">
+        <p class="question-text">10. What happens to local variables when a function ends?</p>
+        <label><input type="radio" name="q_1_10" value="1"> They are automatically removed from stack memory</label>
+        <label><input type="radio" name="q_1_10" value="2"> They remain in memory forever</label>
+        <label><input type="radio" name="q_1_10" value="3"> They are moved to heap memory</label>
+        <label><input type="radio" name="q_1_10" value="4"> They become global variables</label>
+        <div class="explanation"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Glossary Section -->
+  <section class="glossary-section">
+    <h2>Variables & Data Types Glossary</h2>
+    <div class="glossary-grid" id="glossaryGrid">
+      <!-- Glossary cards will be populated by JavaScript -->
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer"><small>© 2025 Beyond Dictionary</small></footer>
+
+<div id="tooltip" class="tooltip" role="status" aria-live="polite"></div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  /* ==== SVG Tooltip Logic ==== */
+  const tip = document.getElementById('tooltip');
+  const showTip = (text, x, y) => {
+    tip.textContent = text;
+    tip.style.display = 'block';
+    
+    // Position tooltip to avoid overlapping with hovered element
+    const tipRect = tip.getBoundingClientRect();
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    
+    let left = x + 20;
+    let top = y - 60; // Position above the cursor
+    
+    // If tooltip would go off right edge, position to left of cursor
+    if (left + 260 > viewportWidth) {
+      left = x - 280;
+    }
+    
+    // If tooltip would go off top edge, position below cursor
+    if (top < 0) {
+      top = y + 20;
+    }
+    
+    // If still off bottom edge, position at top of viewport
+    if (top + 100 > viewportHeight) {
+      top = 10;
+    }
+    
+    tip.style.left = left + 'px';
+    tip.style.top = top + 'px';
+  };
+  const hideTip = () => { tip.style.display = 'none'; };
+
+  document.querySelectorAll('.hotspot').forEach(h => {
+    let text = h.getAttribute('data-tip');
+    h.addEventListener('pointerenter', e => showTip(text, e.clientX, e.clientY));
+    h.addEventListener('pointermove', e => showTip(text, e.clientX, e.clientY));
+    h.addEventListener('pointerleave', hideTip);
+    h.addEventListener('focus', e => showTip(text, (window.innerWidth/2), e.target.getBoundingClientRect().top + 20));
+    h.addEventListener('blur', hideTip);
+  });
+
+  /* ==== Quiz Feedback ==== */
+  const quizFeedback = {
+    '1_1': { correct: 2, feedback: [
+      "Incorrect. 1 byte is typically used for characters, not integers.",
+      "Correct! Most modern systems use 4 bytes (32 bits) for integer variables.",
+      "Incorrect. 8 bytes is typically used for long integers or pointers on 64-bit systems.",
+      "Incorrect. 2 bytes was common in older 16-bit systems but not modern ones."
+    ]},
+    '1_2': { correct: 1, feedback: [
+      "Correct! The char data type is designed for storing single characters.",
+      "Incorrect. Int is for whole numbers, not single characters.",
+      "Incorrect. String is for multiple characters, not just one.",
+      "Incorrect. Float is for decimal numbers, not characters."
+    ]},
+    '1_3': { correct: 3, feedback: [
+      "Incorrect. Stack is actually faster and often smaller than heap.",
+      "Incorrect. Stack memory is automatically managed, not heap.",
+      "Correct! Stack provides fast access with automatic cleanup, while heap allows dynamic allocation.",
+      "Incorrect. There are significant differences in speed, management, and usage."
+    ]},
+    '1_4': { correct: 2, feedback: [
+      "Incorrect. Boolean variables cannot store arbitrary integers.",
+      "Correct! Boolean variables can only store true or false values.",
+      "Incorrect. Decimal numbers require float or double data types.",
+      "Incorrect. Text strings require string or character array data types."
+    ]},
+    '1_5': { correct: 4, feedback: [
+      "Incorrect. Pointers store addresses, not the actual data values.",
+      "Incorrect. Variable names are handled by the compiler, not stored by pointers.",
+      "Incorrect. Data types are compile-time information, not stored by pointers.",
+      "Correct! Pointers store memory addresses that point to other variables."
+    ]},
+    '1_6': { correct: 1, feedback: [
+      "Correct! Arrays are stored in contiguous memory locations for efficient access.",
+      "Incorrect. Random storage would make array indexing very inefficient.",
+      "Incorrect. Arrays can be stored in either stack or heap memory.",
+      "Incorrect. Arrays can be allocated in heap memory as well as stack."
+    ]},
+    '1_7': { correct: 3, feedback: [
+      "Incorrect. Int cannot store decimal values like 3.14159.",
+      "Incorrect. Char is for single characters, not decimal numbers.",
+      "Correct! Float or double data types are designed for decimal numbers.",
+      "Incorrect. Bool only stores true/false values, not decimal numbers."
+    ]},
+    '1_8': { correct: 2, feedback: [
+      "Incorrect. Strings contain multiple characters, not just one.",
+      "Correct! Strings are implemented as arrays of characters in most languages.",
+      "Incorrect. Strings are not integer values, they're character sequences.",
+      "Incorrect. Strings are not related to boolean operations."
+    ]},
+    '1_9': { correct: 4, feedback: [
+      "Incorrect. Memory alignment is about physical memory layout, not alphabetical order.",
+      "Incorrect. Different data types can still use different amounts of memory.",
+      "Incorrect. Memory alignment is about address boundaries, not linear organization.",
+      "Correct! Memory alignment places data at addresses that are multiples of certain values for efficiency."
+    ]},
+    '1_10': { correct: 1, feedback: [
+      "Correct! Local variables are automatically cleaned up when the function scope ends.",
+      "Incorrect. Memory would quickly run out if variables were never cleaned up.",
+      "Incorrect. Local variables are not moved to heap memory.",
+      "Incorrect. Local variables do not become global when functions end."
+    ]}
+  };
+
+  /* ==== Multi-question Quiz Logic (replicated) ==== */
+  const quizStates = {};
+  const containers = document.querySelectorAll('.quiz-container');
+  containers.forEach((container, i) => {
+    const quizId = i + 1;
+    const quizzes = container.querySelectorAll('.quiz');
+    quizStates[quizId] = { current: 1, total: quizzes.length, answered: new Array(quizzes.length).fill(false) };
+    quizzes.forEach((quiz, j) => {
+      const questionIndex = j + 1;
+      quiz.querySelectorAll('input[type="radio"]').forEach(radio => {
+        radio.addEventListener('change', () => handleAnswer(quizId, questionIndex, radio));
+      });
+    });
+  });
+
+  function handleAnswer(quizId, questionIndex, radio){
+    const quiz = document.getElementById(`q_${quizId}_${questionIndex}`);
+    if(quiz.classList.contains('answered')) return;
+    quiz.classList.add('answered');
+    quizStates[quizId].answered[questionIndex-1] = true;
+
+    const selected = parseInt(radio.value);
+    const data = quizFeedback[`${quizId}_${questionIndex}`];
+    const correct = data.correct;
+    const exp = quiz.querySelector('.explanation');
+    const chosenLabel = radio.parentElement;
+
+    const text = data.feedback[selected-1];
+    if(selected === correct){
+      chosenLabel.classList.add('correct');
+      exp.classList.add('correct');
+      exp.innerHTML = `<strong>Correct!</strong> ${text}`;
+    }else{
+      chosenLabel.classList.add('incorrect');
+      const correctLabel = quiz.querySelector(`input[value="${correct}"]`).parentElement;
+      correctLabel.classList.add('correct');
+      exp.classList.add('incorrect');
+      exp.innerHTML = `<strong>Incorrect.</strong> ${text}`;
+    }
+  }
+
+  window.changeQuestion = (quizId, dir) => {
+    const state = quizStates[quizId];
+    const next = state.current + dir;
+    if(next>=1 && next<=state.total){
+      document.getElementById(`q_${quizId}_${state.current}`).classList.remove('active');
+      state.current = next;
+      document.getElementById(`q_${quizId}_${state.current}`).classList.add('active');
+      updateNav(quizId);
+    }
+  };
+
+  function updateNav(quizId){
+    const s = quizStates[quizId];
+    document.getElementById(`currentQ_${quizId}`).textContent = s.current;
+    document.getElementById(`prevBtn_${quizId}`).disabled = s.current===1;
+    document.getElementById(`nextBtn_${quizId}`).disabled = s.current===s.total;
+  }
+
+  // init
+  containers.forEach((_, i) => {
+    const id = i+1;
+    document.getElementById(`q_${id}_1`).classList.add('active');
+    updateNav(id);
+  });
+
+  /* ==== Glossary Functionality ==== */
+  const glossaryData = [
+    {
+      term: "Variable",
+      definition: "A named storage location in computer memory that holds a data value. Variables have a data type, memory address, and can be modified during program execution."
+    },
+    {
+      term: "Data Type",
+      definition: "A classification that specifies what kind of value a variable can hold and what operations can be performed on it. Examples include int, float, char, and bool."
+    },
+    {
+      term: "Integer (int)",
+      definition: "A data type that stores whole numbers without decimal points. Typically uses 4 bytes and can store values from -2,147,483,648 to 2,147,483,647."
+    },
+    {
+      term: "Float",
+      definition: "A data type that stores decimal numbers using floating-point representation. Uses 4 bytes for single precision with limited decimal accuracy."
+    },
+    {
+      term: "Character (char)",
+      definition: "A data type that stores a single character like 'A', '5', or '@'. Uses 1 byte and typically follows ASCII or UTF-8 encoding standards."
+    },
+    {
+      term: "Boolean (bool)",
+      definition: "A data type that can only store two values: true or false. Despite needing only 1 bit, it typically occupies 1 byte for memory alignment."
+    },
+    {
+      term: "String",
+      definition: "A sequence of characters forming text. Implemented as an array of characters, with size varying based on the text length plus null terminator."
+    },
+    {
+      term: "Array",
+      definition: "A collection of elements of the same data type stored in contiguous memory locations. Elements are accessed using indices starting from 0."
+    },
+    {
+      term: "Pointer",
+      definition: "A variable that stores the memory address of another variable. Allows indirect access to data and dynamic memory management."
+    },
+    {
+      term: "Memory Address",
+      definition: "A unique identifier for a specific location in computer memory, typically expressed in hexadecimal format like 0x1000."
+    },
+    {
+      term: "Stack Memory",
+      definition: "A region of memory that stores local variables and function call information. Managed automatically with fast access but limited size."
+    },
+    {
+      term: "Heap Memory",
+      definition: "A region of memory used for dynamic allocation. Larger than stack but slower access, requiring manual management in some languages."
+    },
+    {
+      term: "Memory Allocation",
+      definition: "The process of reserving memory space for variables and data structures. Can be static (compile-time) or dynamic (runtime)."
+    },
+    {
+      term: "Byte",
+      definition: "The basic unit of computer memory, consisting of 8 bits. Can store values from 0 to 255 or represent a single character."
+    },
+    {
+      term: "Memory Alignment",
+      definition: "The practice of placing data at memory addresses that are multiples of the data size, improving CPU access efficiency."
+    },
+    {
+      term: "Null Terminator",
+      definition: "A special character ('\\0') that marks the end of a string in languages like C/C++. Essential for determining string length."
+    },
+    {
+      term: "Scope",
+      definition: "The region of code where a variable is accessible. Variables go out of scope when their containing block or function ends."
+    },
+    {
+      term: "Declaration",
+      definition: "The statement that introduces a variable name and its data type to the program, like 'int age;' or 'char grade = 'A';'."
+    },
+    {
+      term: "Initialization",
+      definition: "The process of assigning an initial value to a variable when it's declared, ensuring it contains known data before use."
+    },
+    {
+      term: "Memory Leak",
+      definition: "A programming error where allocated memory is never freed, causing the program to gradually consume more memory over time."
+    }
+  ];
+
+  const glossaryGrid = document.getElementById('glossaryGrid');
+  
+  function renderGlossary() {
+    glossaryGrid.innerHTML = '';
+    glossaryData.forEach(item => {
+      const card = document.createElement('div');
+      card.className = 'glossary-card';
+      card.innerHTML = `
+        <div class="glossary-term">${item.term}</div>
+        <div class="glossary-definition">${item.definition}</div>
+      `;
+      
+      card.addEventListener('click', () => {
+        // Close all other cards
+        document.querySelectorAll('.glossary-card').forEach(c => c.classList.remove('active'));
+        // Toggle current card
+        card.classList.toggle('active');
+      });
+      
+      glossaryGrid.appendChild(card);
+    });
+  }
+
+  renderGlossary();
+});
+</script>
+</body>
+</html>

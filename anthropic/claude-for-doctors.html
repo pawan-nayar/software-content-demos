@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Claude Code Workflow: The Beginner's Journey for Doctors</title>
+    <meta name="description" content="An interactive guide showing how a beginner can go from an idea to a live GitHub project using Anthropic's Claude Code, without writing any code.">
+    <meta name="keywords" content="Claude Code, GitHub for Beginners, AI Coding Assistant, No-Code, AI Workflow, Learn to Code">
+    <meta name="author" content="Beyond Dictionary">
+    <meta name="robots" content="index, follow">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <style>
+      /* --- Base Styles (from provided example) --- */
+      :root {
+        --text:#212529; --bg:#fff; --muted:#f8f9fa; --border:#e9ecef;
+        --accent:#d9480f; --accent-2:#c9400a; --header-bg:#212529; --header-fg:#f8f9fa;
+        --ok:#198754; --ok-soft:#d1e7dd; --bad:#dc3545; --bad-soft:#f8d7da;
+        --info-color: #0d6efd; --info-soft: #cfe2ff;
+        --myth-color: #6c757d;
+      }
+      *{box-sizing:border-box;margin:0;padding:0}
+      html,body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.8; scroll-behavior: smooth;}
+      .container{max-width:900px;margin:auto;padding:24px;background:#fff}
+      a{color:var(--accent);text-decoration:none}
+      a:hover{text-decoration:underline}
+
+      /* Header / Footer */
+      .site-header,.site-footer{background:var(--header-bg);color:var(--header-fg);padding:14px 24px}
+      .site-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;position:sticky;top:0;z-index:100}
+      .logo{font-weight:700;font-size:1.15rem;color:#fff}
+      .site-header nav{display:flex;gap:14px} .site-header nav a{color:#ced4da} .site-header nav a:hover{color:#fff}
+      .site-footer{text-align:center;margin-top:50px;padding:20px; font-size: 0.9rem;}
+      
+      /* Typography & Layout */
+      h1{font-size:clamp(2rem,5vw,2.8rem);text-align:left;margin-bottom:8px;color:var(--text);line-height:1.2}
+      .byline{font-size:clamp(1rem,3vw,1.25rem);font-style:italic;color:#4a5568;margin-bottom:24px}
+      h2{font-size:clamp(1.5rem,4vw,2.2rem);color:var(--text);margin:64px 0 24px;border-bottom:2px solid var(--border);padding-bottom:12px}
+      h3{font-size:clamp(1.2rem,3vw,1.6rem);color:var(--text);margin-top:48px;margin-bottom:16px}
+      p, ul, li {font-size: 1.1rem; max-width: 75ch;}
+      p{margin-bottom:20px;word-wrap:break-word; line-height: 1.9;}
+      ul{margin-left:24px;margin-bottom:24px;padding-left:1em}
+      li{margin-bottom:16px;padding-left:0.5em}
+      .intro{font-size:1.2rem;line-height:1.8;background:var(--muted);padding:24px;border-radius:12px;border-left:4px solid var(--accent);margin:24px 0}
+      strong { font-weight: 600; }
+      .highlight-accent { color: var(--accent-2); font-weight: 600; }
+      .code-block { background: #212529; color: #f8f9fa; border: 1px solid #495057; border-radius: 8px; padding: 1.2em; font-family: 'Roboto Mono', monospace; white-space: pre-wrap; text-align: left; margin: 16px 0; }
+
+      /* --- NEW: Interactive Workflow Diagram --- */
+      .workflow-wrapper { background: var(--muted); padding: 2.5rem 2rem; border-radius: 12px; text-align: center; }
+      .workflow-diagram { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin: 2rem 0; }
+      .workflow-step { display: flex; flex-direction: column; gap: 20px; align-items: center; }
+      .workflow-node { width: 100%; min-height: 120px; padding: 1.2rem; border-radius: 12px; background: #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.07); cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; border: 2px solid transparent; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+      .workflow-node:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
+      .workflow-node.active { border-color: var(--accent); transform: translateY(-5px) scale(1.03); box-shadow: 0 8px 25px rgba(217, 72, 15, 0.2); }
+      .node-title { font-weight: 700; font-size: 1.1rem; color: var(--text); margin-bottom: 8px; }
+      .node-prompt { font-style: italic; color: var(--myth-color); font-size: 0.95rem; }
+      .workflow-actor { font-weight: 600; font-size: 0.9rem; padding: 4px 12px; border-radius: 99px; }
+      .actor-anya { background-color: var(--info-soft); color: var(--info-color); border: 1px solid var(--info-color); }
+      .actor-claude { background-color: var(--ok-soft); color: var(--ok); border: 1px solid var(--ok); }
+      .workflow-arrow { font-size: 2rem; color: var(--myth-color); margin-top: 1rem; }
+      .workflow-legend { display: flex; justify-content: center; gap: 20px; margin-top: 2rem; flex-wrap: wrap; }
+      .legend-item { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; }
+      .legend-swatch { width: 16px; height: 16px; border-radius: 4px; border: 1px solid rgba(0,0,0,0.1); }
+
+      /* --- NEW: Detailed Breakdown Section --- */
+      .breakdown-section { border-left: 3px solid var(--border); padding: 1rem 0 1rem 2rem; margin-top: 2rem; transition: border-color 0.3s; }
+      .breakdown-section.active { border-color: var(--accent); }
+      .breakdown-section h3 { margin-top: 0; display: flex; align-items: center; gap: 12px; }
+      .step-number { background: var(--accent); color: white; width: 36px; height: 36px; border-radius: 50%; display: inline-flex; justify-content: center; align-items: center; font-weight: 700; font-size: 1.2rem; flex-shrink: 0;}
+      .breakdown-card { background: var(--muted); padding: 1.5rem; border-radius: 8px; margin-top: 1rem; }
+      .breakdown-card h4 { margin: 0 0 10px; font-size: 1.1rem; color: var(--myth-color); font-weight: 600;}
+      .breakdown-card p { font-size: 1rem; margin-bottom: 0; }
+      .fallback-tip { background: var(--bad-soft); border: 1px solid var(--bad); padding: 1rem; border-radius: 8px; margin: 1rem 0; }
+      .fallback-tip code { background: rgba(0,0,0,0.1); padding: 2px 6px; border-radius: 4px; font-family: 'Roboto Mono', monospace;}
+
+      /* --- NEW: Prompt Library --- */
+      .prompt-category h3 { border-left: 3px solid var(--accent); padding-left: 12px; }
+      .prompt-item { display: flex; align-items: center; gap: 1rem; background: var(--muted); padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid var(--border); }
+      .prompt-text { flex-grow: 1; font-family: 'Roboto Mono', monospace; font-size: 1rem; color: #343a40; }
+      .copy-btn { background: var(--accent); color: #fff; border: none; padding: 10px 18px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: background-color 0.2s ease; }
+      .copy-btn:hover{background-color:var(--accent-2);}
+      .copy-btn.copied { background-color: var(--ok); }
+    </style>
+</head>
+<body>
+
+ <header class="site-header">
+     <a href="#" class="logo">Beyond Dictionary</a>
+     <nav><a href="#">What's New</a><a href="#">Learning</a><a href="#">AI Guides</a></nav>
+ </header>
+
+ <div class="container">
+   
+   <h1>Interactive Claude Code Workflow</h1>
+   <p class="byline">The Beginner's Journey: From Intent to Shipped Project for Doctors</p>
+   
+   <h2>What is Claude Code?</h2>
+   <p>Claude Code is a command-line tool that lets you delegate coding tasks to Claude directly from your terminal. Instead of manually writing code, debugging syntax, and managing Git workflows, you simply describe what you want in plain English.</p>
+   
+   <p class="intro">
+    <strong>The Magic:</strong> You say "create a patient feedback form and deploy it to GitHub" — Claude handles the HTML, CSS, Git commits, repository creation, and deployment. All automatically. This workflow shows Anya's journey from complete beginner to having a live project on GitHub, without writing a single line of code or memorizing Git commands.
+   </p>
+
+    <section id="interactive-workflow">
+        <h2>Interactive Workflow</h2>
+        <div class="workflow-wrapper">
+            <p style="margin-bottom: 0;">Click on any step to see detailed explanations below.</p>
+            <div class="workflow-diagram">
+                <div class="workflow-step">
+                    <span class="workflow-actor actor-anya">Anya Asks</span>
+                    <div class="workflow-node" data-target="node-1">
+                        <span class="node-title">Describe Goal</span>
+                        <span class="node-prompt">"Create patient feedback tool"</span>
+                    </div>
+                    <span class="workflow-arrow">👇</span>
+                    <span class="workflow-actor actor-claude">Claude Acts</span>
+                    <div class="workflow-node result-node">
+                        <p style="margin:0; font-family: 'Roboto Mono', monospace; font-size: 1rem;">Claude Creates<br><code>index.html</code><br>with form &amp; textarea</p>
+                    </div>
+                </div>
+                <div class="workflow-step">
+                    <span class="workflow-actor actor-anya">Anya Asks</span>
+                    <div class="workflow-node" data-target="node-2">
+                        <span class="node-title">Style It</span>
+                        <span class="node-prompt">"Make it look professional"</span>
+                    </div>
+                    <span class="workflow-arrow">👇</span>
+                    <span class="workflow-actor actor-claude">Claude Acts</span>
+                    <div class="workflow-node result-node">
+                        <p style="margin:0; font-family: 'Roboto Mono', monospace; font-size: 1rem;">Claude Styles<br>Generates CSS<br>Inter font, Blue button</p>
+                    </div>
+                </div>
+                <div class="workflow-step">
+                    <span class="workflow-actor actor-anya">Anya Asks</span>
+                    <div class="workflow-node" data-target="node-3">
+                        <span class="node-title">Save to GitHub</span>
+                        <span class="node-prompt">"Push to my GitHub account"</span>
+                    </div>
+                    <span class="workflow-arrow">👇</span>
+                    <span class="workflow-actor actor-claude">Claude Acts</span>
+                    <div class="workflow-node result-node">
+                         <p style="margin:0; font-family: 'Roboto Mono', monospace; font-size: 1rem;">Claude Ships<br>Git init, commit<br>Creates repo, Pushes code</p>
+                    </div>
+                </div>
+            </div>
+            <div class="workflow-legend">
+                <div class="legend-item"><span class="legend-swatch" style="background-color: var(--info-soft); border-color: var(--info-color);"></span> Anya's Role</div>
+                <div class="legend-item"><span class="legend-swatch" style="background-color: var(--ok-soft); border-color: var(--ok);"></span> Claude's Role</div>
+                <div class="legend-item"><span class="legend-swatch" style="background: #fff; border-color: var(--border);"></span> Action Step</div>
+            </div>
+        </div>
+    </section>
+
+   <section id="breakdown">
+        <h2>Detailed Breakdown: Each Step Explained</h2>
+        <p>Here's the complete journey from Anya's perspective, showing exactly what happens at each stage:</p>
+
+        <div id="node-1" class="breakdown-section">
+            <h3><span class="step-number">1</span> Node 1 — Describe goal, not syntax</h3>
+            <div class="breakdown-card">
+                <h4>Anya's Request:</h4>
+                <p>"Create a new project for a patient feedback tool. Make a single HTML page called index.html with a form. The form should have a textarea for feedback and a submit button."</p>
+            </div>
+            <p><strong>Claude's Action:</strong> Creates folder + <code>index.html</code> with a functional form that is immediately viewable in a browser.</p>
+            <h4>Generated Code:</h4>
+            <div class="code-block">
+&lt;!-- index.html --&gt;
+&lt;form action="#" method="post"&gt;
+  &lt;textarea name="feedback" required placeholder="Enter your feedback..."&gt;&lt;/textarea&gt;
+  &lt;button type="submit"&gt;Submit Feedback&lt;/button&gt;
+&lt;/form&gt;
+            </div>
+            <p><strong>What you learned:</strong> HTML form basics; minimum viable UI patterns. Form elements work without needing to remember syntax.</p>
+            <div class="fallback-tip"><strong>Fallback tips:</strong> If file not found, check your working directory with <code>pwd</code> and list contents with <code>ls -la</code>.</div>
+            <h4>Why this matters:</h4>
+            <ul>
+                <li>No need to memorize HTML tags or attributes</li>
+                <li>Focus on the goal, not the implementation details</li>
+                <li>From idea to working prototype in seconds</li>
+                <li>Perfect for non-technical founders and designers</li>
+            </ul>
+        </div>
+
+        <div id="node-2" class="breakdown-section">
+            <h3><span class="step-number">2</span> Node 2 — Style it professionally</h3>
+            <div class="breakdown-card">
+                <h4>Anya's Request:</h4>
+                <p>"Style the page. Center the form, use a clean font like 'Inter', and make the submit button blue with white text."</p>
+            </div>
+            <p><strong>Claude's Action:</strong> Generates <code>style.css</code>, links it to the HTML file, and applies a centered layout with professional button styling.</p>
+            <h4>Generated CSS:</h4>
+            <div class="code-block">
+/* style.css */
+body {
+  font-family: 'Inter', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+button {
+  background: #3b82f6;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+            </div>
+            <p><strong>What you learned:</strong> External CSS linking, typography choices, modern layout techniques like Flexbox.</p>
+             <div class="fallback-tip"><strong>Fallback tips:</strong> If styles don't apply, verify <code>&lt;link rel="stylesheet" href="style.css"&gt;</code> is in the HTML <code>&lt;head&gt;</code> and hard refresh the browser cache (Ctrl+Shift+R).</div>
+            <h4>Why this matters:</h4>
+            <ul>
+                <li>Professional design without CSS expertise</li>
+                <li>Modern UI patterns applied automatically</li>
+                <li>Consistent color schemes and typography</li>
+                <li>Responsive design principles included</li>
+            </ul>
+        </div>
+        
+        <div id="node-3" class="breakdown-section">
+            <h3><span class="step-number">3</span> Node 3 — Save to GitHub without friction</h3>
+            <div class="breakdown-card">
+                <h4>Anya's Request:</h4>
+                <p>"This looks good. Save all my work and create a new project on my GitHub account called 'patient-feedback-tool'. Push all the files there."</p>
+            </div>
+            <p><strong>Claude's Action:</strong> Executes the complete Git workflow and GitHub repository creation automatically.</p>
+            <h4>Commands Executed:</h4>
+            <div class="code-block">
+git init
+git add .
+git commit -m "Initial commit: Create patient feedback form"
+gh repo create patient-feedback-tool --public
+git remote add origin https://github.com/username/patient-feedback-tool.git
+git push -u origin main
+            </div>
+            <p><strong>What you learned:</strong> Git basics (init, add, commit, push), remote repository creation, and conventional commit messages.</p>
+            <div class="fallback-tip"><strong>Fallback tips:</strong> If authentication fails, run <code>gh auth login</code> or set up a Personal Access Token. Test SSH connection with <code>ssh -T git@github.com</code>.</div>
+            <h4>Why this matters:</h4>
+            <ul>
+                <li>From local files to deployed project instantly</li>
+                <li>No Git commands to memorize or mess up</li>
+                <li>Professional commit messages with context</li>
+                <li>Ready for collaboration and portfolio showcasing</li>
+            </ul>
+        </div>
+   </section>
+
+   <section id="prompt-library">
+        <h2>Complete Prompt Library - 30 Examples</h2>
+        <p>Copy these prompts to master every aspect of the Claude Code workflow. Organized by the 6 key workflow steps:</p>
+        
+        <div class="prompt-category">
+            <h3>🎯 Step 1: Describe Goals (5 prompts)</h3>
+            <div class="prompt-item"><span class="prompt-text">Create a modern landing page for a SaaS product with hero section, features grid, pricing table, and contact form.</span><button class="copy-btn">Copy</button></div>
+            <div class="prompt-item"><span class="prompt-text">Build a task management app with drag-and-drop functionality, local storage, and dark mode toggle.</span><button class="copy-btn">Copy</button></div>
+            <div class="prompt-item"><span class="prompt-text">Make a portfolio website showcasing my projects with image gallery, resume download, and contact integration.</span><button class="copy-btn">Copy</button></div>
+            <div class="prompt-item"><span class="prompt-text">Create an e-commerce product page with image carousel, size selector, add to cart, and customer reviews section.</span><button class="copy-btn">Copy</button></div>
+            <div class="prompt-item"><span class="prompt-text">Build a weather dashboard that shows current conditions, 5-day forecast, and location search with API integration.</span><button class="copy-btn">Copy</button></div>
+        </div>
+        <div class="prompt-category">
+            <h3>📖 Step 2: Claude Reads Context (5 prompts)</h3>
+            <div class="prompt-item"><span class="prompt-text">Before starting, analyze my existing codebase structure and identify the current tech stack and coding patterns.</span><button class="copy-btn">Copy</button></div>
+            <div class="prompt-item"><span class="prompt-text">Read my CLAUDE.md file and follow the established naming conventions and folder structure rules.</span><button class="copy-btn">Copy</button></div>
+            <div class="prompt-item"><span class="prompt-text">Examine my package.json dependencies and use compatible versions for any new packages you add.</span><button class="copy-btn">Copy</button></div>
+            <div class="prompt-item"><span class="prompt-text">Review my existing CSS variables and maintain consistent design tokens throughout the new components.</span><button class="copy-btn">Copy</button></div>
+            <div class="prompt-item"><span class="prompt-text">Check my current API endpoints and authentication patterns before integrating new backend calls.</span><button class="copy-btn">Copy</button></div>
+        </div>
+        <div class="prompt-category">
+            <h3>🛠️ Step 3: Claude Modifies Files (5 prompts)</h3>
+            <div class="prompt-item"><span class="prompt-text">Refactor this component to use React hooks instead of class components while maintaining all functionality.</span><button class="copy-btn">Copy</button></div>
+            <div class="prompt-item"><span class="prompt-text">Add TypeScript types to all existing JavaScript files and fix any type errors that arise.</span><button class="copy-btn">Copy</button></div>
+            <div class="prompt-item"><span class="prompt-text">Optimize this code for performance by implementing lazy loading and reducing bundle size.</span><button class="copy-btn">Copy</button></div>
+            <div class="prompt-item"><span class="prompt-text">Add comprehensive error handling and loading states to all API calls in the application.</span><button class="copy-btn">Copy</button></div>
+            <div class="prompt-item"><span class="prompt-text">Implement accessibility improvements including ARIA labels, keyboard navigation, and screen reader support.</span><button class="copy-btn">Copy</button></div>
+        </div>
+        <div class="prompt-category">
+            <h3>💾 Step 4: Claude Commits Changes (5 prompts)</h3>
+            <div class="prompt-item"><span class="prompt-text">Stage all changes and create a conventional commit message following the format: type(scope): description.</span><button class="copy-btn">Copy</button></div>
+            <div class="prompt-item"><span class="prompt-text">Commit these UI changes with a detailed message explaining what was modified and why.</span><button class="copy-btn">Copy</button></div>
+            <div class="prompt-item"><span class="prompt-text">Create separate commits for each feature added, with clear descriptions of functionality and impact.</span><button class="copy-btn">Copy</button></div>
+            <div class="prompt-item"><span class="prompt-text">Write a commit message that includes the problem solved, solution implemented, and how to test the changes.</span><button class="copy-btn">Copy</button></div>
+            <div class="prompt-item"><span class="prompt-text">Summarize the staged diff and explain the before/after behavior in the commit description.</span><button class="copy-btn">Copy</button></div>
+        </div>
+        <div class="prompt-category">
+            <h3>🚀 Step 5: Claude Opens Pull Request (5 prompts)</h3>
+            <div class="prompt-item"><span class="prompt-text">Create a new branch, push changes, and open a pull request with detailed description and screenshots.</span><button class="copy-btn">Copy</button></div>
+            <div class="prompt-item"><span class="prompt-text">Open a PR with checklist of completed tasks, testing instructions, and deployment notes.</span><button class="copy-btn">Copy</button></div>
+            <div class="prompt-item"><span class="prompt-text">Push to feature branch and create pull request with before/after comparisons and breaking change warnings.</span><button class="copy-btn">Copy</button></div>
+            <div class="prompt-item"><span class="prompt-text">Generate a PR with links to related issues, performance impact analysis, and reviewer assignment.</span><button class="copy-btn">Copy</button></div>
+            <div class="prompt-item"><span class="prompt-text">Create pull request with automatic labels, milestone assignment, and integration with project management tools.</span><button class="copy-btn">Copy</button></div>
+        </div>
+        <div class="prompt-category">
+            <h3>✅ Step 6: Review & Merge (5 prompts)</h3>
+            <div class="prompt-item"><span class="prompt-text">Review the pull request changes and provide suggestions for code improvements or optimizations.</span><button class="copy-btn">Copy</button></div>
+            <div class="prompt-item"><span class="prompt-text">Run all tests, check code coverage, and verify the build passes before approving the merge.</span><button class="copy-btn">Copy</button></div>
+            <div class="prompt-item"><span class="prompt-text">Merge this PR using squash and merge strategy, then delete the feature branch automatically.</span><button class="copy-btn">Copy</button></div>
+            <div class="prompt-item"><span class="prompt-text">After merging, tag this release and update the changelog with all new features and bug fixes.</span><button class="copy-btn">Copy</button></div>
+            <div class="prompt-item"><span class="prompt-text">Deploy the merged changes to staging environment and run smoke tests to verify everything works.</span><button class="copy-btn">Copy</button></div>
+        </div>
+   </section>
+
+ </div>
+
+ <footer class="site-footer">
+   <p>Created by Beyond Dictionary</p>
+ </footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // --- Interactive Workflow ---
+    const workflowNodes = document.querySelectorAll('.workflow-node[data-target]');
+    const breakdownSections = document.querySelectorAll('.breakdown-section');
+
+    workflowNodes.forEach(node => {
+        node.addEventListener('click', () => {
+            const targetId = node.dataset.target;
+            const targetElement = document.getElementById(targetId);
+
+            // Toggle active class on nodes
+            workflowNodes.forEach(n => n.classList.remove('active'));
+            node.classList.add('active');
+            
+            // Toggle active class on sections
+            breakdownSections.forEach(s => s.classList.remove('active'));
+            if (targetElement) {
+                targetElement.classList.add('active');
+                targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+    });
+
+    // --- Prompt Library Copy Buttons ---
+    const copyButtons = document.querySelectorAll('.copy-btn');
+    copyButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const promptText = button.previousElementSibling.textContent;
+            navigator.clipboard.writeText(promptText).then(() => {
+                button.textContent = 'Copied!';
+                button.classList.add('copied');
+                setTimeout(() => {
+                    button.textContent = 'Copy';
+                    button.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+            });
+        });
+    });
+});
+</script>
+
+</body>
+</html>

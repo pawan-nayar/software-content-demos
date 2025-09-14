@@ -1,0 +1,402 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hello-Calc: Intro to Python Basics — Beyond Dictionary</title>
+  <meta name="description" content="An interactive tool to learn fundamental Python concepts like keywords, identifiers, variables, and basic operations in a structured, hands-on environment." />
+  <meta name="keywords" content="python basics, learn python, python variables, python keywords, python identifiers, introduction to programming" />
+  <meta name="author" content="Beyond Dictionary" />
+  <meta name="theme-color" content="#ea7a27" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* --- Theme and Core Styles (mirrored from sample) --- */
+    :root{
+      --bg:#ffffff; --text:#1f2937; --muted:#f8fafc; --border:#e5e7eb;
+      --accent:#ea7a27; --accent-2:#d46a1e;
+      --header-bg:#0f172a; --header-fg:#f8fafc; --nav-fg:#cbd5e1; --nav-fg-hover:#ffffff;
+      --heading:#111827;
+      --chip-bg:#fff7ed; --chip-border:#ffd8a8; --chip-text:#b45309;
+      --ok:#22a06b; --ok-soft:#e8f7f0; --bad:#d84e4e; --bad-soft:#fdecec; --info:#2563eb; --info-soft:#e8f1fe;
+      --btn-primary-bg:#ea7a27; --btn-primary-bg-hover:#d46a1e; --btn-primary-fg:#ffffff;
+      --focus: rgba(234,122,39,.35);
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+    a{color:var(--accent);text-decoration:none}
+    a:hover{text-decoration:underline}
+    .container{max-width:1000px;margin:auto;padding:16px}
+    @media (max-width:600px){.container{padding:12px}}
+
+    .site-header{background:var(--header-bg);color:var(--header-fg);padding:14px 18px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:60}
+    .logo{font-weight:700;font-size:1.1rem;color:#fff}
+    .site-header nav{display:flex;gap:14px}
+    .site-header nav a{color:var(--nav-fg)}
+    .site-header nav a:hover{color:var(--nav-fg-hover)}
+    
+    .breadcrumbs{margin:12px 0 20px;color:#6c757d;overflow:auto;white-space:nowrap}
+    h1{font-size:clamp(1.8rem,5vw,2.4rem);line-height:1.1;margin-bottom:6px;color:var(--heading)}
+    h2{font-size:clamp(1.3rem,4vw,1.8rem);margin:24px 0 12px;border-bottom:2px solid var(--border);padding-bottom:6px;color:var(--heading)}
+    p{margin:10px 0}
+    .lead{font-size:1.05rem;color:#374151}
+
+    #calculator{position:relative;background-color:#f8fafc;margin:20px -16px;padding:24px 16px;border-radius:8px}
+    #calculator::before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg, transparent 0%, rgba(234,122,39,.05) 35%, rgba(234,122,39,.05) 65%, transparent 100%)}
+    @media (max-width:600px){#calculator{margin:16px -12px;padding:20px 12px}}
+
+    .calc-layout{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+    @media (max-width:900px){.calc-layout{grid-template-columns:1fr}}
+    .calc-stack{display:flex;flex-direction:column;gap:12px}
+
+    .calc-card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:16px;box-shadow:0 6px 20px rgba(17,24,39,.06)}
+    .inputs-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:12px 0}
+    .input-group label{display:block;margin-bottom:4px;font-weight:500;color:#495057;font-size:0.9rem}
+    .input-group input{width:100%;padding:10px 12px;border:2px solid #cbd5e0;border-radius:10px;font-size:0.9rem;background:white;color:#4a5568}
+    .input-group input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--focus)}
+
+    .calc-actions{display:flex;gap:8px;margin:8px 0;flex-wrap:wrap}
+    .solve-button{padding:10px 14px;background:var(--btn-primary-bg);color:#fff;border:none;border-radius:12px;font-weight:700;cursor:pointer}
+    .solve-button:hover{background:var(--btn-primary-bg-hover)}
+    .reset-button{padding:10px 14px;background:#f1f3f5;color:#212529;border:none;border-radius:12px;font-weight:700;cursor:pointer}
+
+    .results{background:#fff;border:1px solid var(--border);border-radius:12px;padding:16px;display:none}
+    .results.show{display:block}
+    .result-item{margin-bottom:10px;padding:12px;background:#fff;border-radius:10px;border-left:4px solid var(--accent)}
+    .result-label{font-weight:600;color:#475569}
+    .result-value{font-size:1.05rem;color:var(--accent);font-weight:700}
+    .result-code{font-family:monospace;background:var(--muted);padding:8px;border-radius:6px;margin-top:8px;border:1px solid var(--border);white-space:pre-wrap;}
+
+    .info-card{background:var(--info-soft);border:1px solid var(--info);border-radius:14px;padding:16px}
+    .info-card ul {list-style-type: '✓ '; padding-left: 20px;}
+    .info-card li { margin-bottom: 8px; }
+    .info-card code { background: rgba(0,0,0,0.05); padding: 2px 5px; border-radius: 4px; }
+
+    /* --- Quiz & Glossary Styles --- */
+    .quiz{border:2px solid var(--border);border-radius:12px;background:#fff;padding:16px;margin:12px 0}
+    .quiz-q{font-weight:700;margin-bottom:8px}
+    .quiz-options{display:grid;gap:10px;margin:10px 0}
+    .quiz-option{padding:10px 12px;border:2px solid var(--border);border-radius:10px;background:#f8f9fa;cursor:pointer;text-align:left;font-family:inherit;font-size:inherit;width:100%;}
+    .quiz-option:hover{border-color:var(--accent)}
+    .quiz-option.correct{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+    .quiz-option.incorrect{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+    .quiz-explain{display:none;margin-top:10px;padding:12px;border-radius:10px;background:var(--chip-bg);border:1px solid var(--chip-border)}
+    .quiz-explain.show{display:block}
+    .quiz-explain .status{font-weight:800;margin-bottom:6px}
+    .quiz-explain .status.ok{color:var(--ok)}
+    .quiz-explain .status.bad{color:var(--bad)}
+
+    .glossary-cloud{display:flex;flex-wrap:wrap;gap:12px;margin:14px 0}
+    .glossary-chip{position:relative;display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:999px;background:var(--chip-bg);border:1px solid var(--chip-border);color:var(--chip-text);font-weight:600;cursor:pointer;box-shadow:0 2px 6px rgba(234,122,39,.12)}
+    .glossary-chip:focus{outline:3px solid var(--focus)}
+    .chip-tip{position:fixed;z-index:80;min-width:240px;max-width:min(92vw,420px);background:var(--accent);color:#fff;padding:12px 14px;border-radius:12px;box-shadow:0 12px 28px rgba(234,122,39,.35);opacity:0;visibility:hidden;transition:.15s;line-height:1.45}
+    .chip-tip.show{opacity:1;visibility:visible}
+    .chip-tip .arrow{position:absolute;width:12px;height:12px;background:var(--accent);transform:rotate(45deg)}
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <a class="logo" href="#">Beyond Dictionary</a>
+    <nav>
+      <a href="#practice">Practice</a>
+      <a href="#glossary">Glossary</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="#">Concepts</a> › <a href="#">Python</a> › <span>Intro to Basics</span>
+    </nav>
+
+    <header>
+      <h1>Hello-Calc: Python Basics</h1>
+      <p class="lead">An interactive introduction to Python's core concepts. Learn about <strong>variables</strong>, see the list of reserved <strong>keywords</strong>, understand <strong>identifier</strong> rules, and see how comments work, all in one place.</p>
+    </header>
+
+    <section id="calculator">
+      <div class="calc-layout">
+        <!-- Left Column: Calculator and Results -->
+        <div class="calc-stack">
+          <div class="calc-card">
+            <h2 style="border:0;margin-top:0">1. Variables & Calculation</h2>
+            <p style="color:#6c757d;margin-bottom:12px">A variable stores a value. Enter two numbers below to see them stored in variables and then added together.</p>
+            <div class="inputs-grid">
+              <div class="input-group"><label>First Number (number1)</label><input type="number" id="num1" placeholder="e.g., 15" value="15"></div>
+              <div class="input-group"><label>Second Number (number2)</label><input type="number" id="num2" placeholder="e.g., 10" value="10"></div>
+            </div>
+            <div class="calc-actions">
+              <button class="solve-button" id="solveBtn">Calculate Sum</button>
+              <button class="reset-button" id="resetBtn">Reset</button>
+            </div>
+          </div>
+
+          <div id="results" class="results"></div>
+        </div>
+
+        <!-- Right Column: Identifier Rules -->
+        <div class="calc-stack">
+            <div class="calc-card info-card">
+              <h2 style="border:0;margin-top:0; color: var(--info)">2. Identifier Rules</h2>
+              <p style="color:#475569;margin-bottom:12px">An <strong>identifier</strong> is the name you give to a variable, function, etc. It must follow these rules:</p>
+              <ul>
+                <li>Can contain letters (a-z, A-Z), numbers (0-9), and underscores (_).</li>
+                <li>Cannot start with a number. (e.g., <code>1st_num</code> is invalid).</li>
+                <li>Cannot be a keyword. (e.g., <code>for</code> is invalid).</li>
+                <li>Is case-sensitive. (<code>myVar</code> and <code>myvar</code> are different).</li>
+              </ul>
+            </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="glossary">
+      <h2>3. Python Keywords</h2>
+      <p style="color:#6c757d;margin-bottom:12px">Keywords are the reserved words in Python; you can't use them as variable names. Tap a keyword to see its purpose.</p>
+      <div id="glossaryCloud" class="glossary-cloud"></div>
+    </section>
+    
+    <section id="practice">
+      <h2>4. Practice Questions</h2>
+      <p style="color:#6c757d;margin-bottom:12px">Test your understanding of the concepts.</p>
+
+      <div class="quiz">
+        <div class="quiz-q">1) Which of the following is a VALID Python variable name (identifier)?</div>
+        <div class="quiz-options">
+          <button class="quiz-option" data-correct="false">2nd_place</button>
+          <button class="quiz-option" data-correct="true">user_score_2</button>
+          <button class="quiz-option" data-correct="false">global</button>
+          <button class="quiz-option" data-correct="false">user-score</button>
+        </div>
+        <div class="quiz-explain"><div class="status"></div>
+          <div><strong>How:</strong> <code>user_score_2</code> follows all rules.</div>
+          <div><em>Why the others are wrong:</em> <code>2nd_place</code> starts with a number. <code>global</code> is a keyword. <code>user-score</code> contains a hyphen, which is not allowed.</div>
+        </div>
+      </div>
+
+      <div class="quiz">
+        <div class="quiz-q">2) What is the primary purpose of a comment in code?</div>
+        <div class="quiz-options">
+          <button class="quiz-option" data-correct="false">To make the program run faster.</button>
+          <button class="quiz-option" data-correct="false">To store data that can change.</button>
+          <button class="quiz-option" data-correct="true">To explain the code to human readers.</button>
+          <button class="quiz-option" data-correct="false">To tell the computer to skip an error.</button>
+        </div>
+        <div class="quiz-explain"><div class="status"></div>
+          <div><strong>How:</strong> Comments (starting with <code>#</code> in Python) are ignored by the computer and are meant to provide explanations for humans reading the code.</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer"><small>© 2025 Beyond Dictionary</small></footer>
+  <div class="chip-tip" id="chipTip"><div class="arrow" aria-hidden="true"></div><div class="tip-content" id="tipContent"></div></div>
+
+  <script>
+  // ---------- DOM Element Access ----------
+  const el = id => document.getElementById(id);
+
+  // ---------- Main Calculation Logic ----------
+  function solve() {
+    const resultsDiv = el('results');
+    resultsDiv.innerHTML = ''; // Clear previous results
+
+    const num1_val = el('num1').value;
+    const num2_val = el('num2').value;
+
+    // Validate inputs
+    if (num1_val === '' || num2_val === '') {
+        showError('Please enter a value for both numbers.');
+        return;
+    }
+
+    const number1 = parseFloat(num1_val);
+    const number2 = parseFloat(num2_val);
+    
+    if (isNaN(number1) || isNaN(number2)) {
+        showError('Please ensure both inputs are valid numbers.');
+        return;
+    }
+
+    const sum = number1 + number2;
+
+    // Display results
+    resultsDiv.classList.add('show');
+    addResult('Equivalent Python Code', 
+      `<pre class="result-code"># This is a comment. It explains the code but is ignored by Python.\n`+
+      `number1 = ${number1}  # Assigning the first value to a variable.\n` +
+      `number2 = ${number2}  # Assigning the second value.\n\n` +
+      `# The variables are added and the result is stored in 'sum_of_numbers'.\n` +
+      `sum_of_numbers = number1 + number2</pre>`
+    );
+    addResult('Result of Calculation', `<span class="result-value">${sum}</span> (sum_of_numbers)`);
+  }
+
+  function addResult(label, val) {
+    const resultsDiv = el('results');
+    const d = document.createElement('div');
+    d.className = 'result-item';
+    d.innerHTML = `<div class="result-label">${label}</div><div>${val}</div>`;
+    resultsDiv.appendChild(d);
+  }
+  
+  function showError(msg) {
+    const resultsDiv = el('results');
+    resultsDiv.classList.add('show');
+    const d = document.createElement('div');
+    d.className = 'result-item';
+    d.style.borderColor = 'var(--bad)';
+    d.innerHTML = `<div class="result-label" style="color:var(--bad)">Error</div><div>${msg}</div>`;
+    resultsDiv.appendChild(d);
+  }
+
+  function resetCalc() {
+    el('num1').value = '15';
+    el('num2').value = '10';
+    const resultsDiv = el('results');
+    resultsDiv.innerHTML = '';
+    resultsDiv.classList.remove('show');
+  }
+
+  // ---------- Quiz Logic ----------
+  function initMCQs() {
+    document.querySelectorAll('.quiz').forEach(quiz => {
+      const options = quiz.querySelectorAll('.quiz-option');
+      const explain = quiz.querySelector('.quiz-explain');
+      const status = explain.querySelector('.status');
+      
+      options.forEach(opt => {
+        opt.addEventListener('click', () => {
+          // Disable all options after one is clicked
+          options.forEach(o => o.disabled = true);
+          
+          const isCorrect = opt.dataset.correct === 'true';
+          
+          if (isCorrect) {
+            opt.classList.add('correct');
+            status.className = 'status ok';
+            status.textContent = 'Correct!';
+          } else {
+            opt.classList.add('incorrect');
+            // Highlight the correct answer
+            options.forEach(o => { if (o.dataset.correct === 'true') o.classList.add('correct'); });
+            status.className = 'status bad';
+            status.textContent = 'Incorrect.';
+          }
+          explain.classList.add('show');
+        });
+      });
+    });
+  }
+
+  // ---------- Glossary Logic ----------
+  const glossaryData = [
+    {term:'and', def:'A logical operator (a and b is true if a is true and b is true).'},
+    {term:'as', def:'Used to create an alias when importing modules.'},
+    {term:'assert', def:'Used for debugging, checks if a condition is true.'},
+    {term:'break', def:'Breaks out of the current closest enclosing loop.'},
+    {term:'class', def:'Used to define a new user-defined class.'},
+    {term:'continue', def:'Continues to the next iteration of a loop.'},
+    {term:'def', def:'Used to define a function.'},
+    {term:'del', def:'Deletes an object.'},
+    {term:'elif', def:'Short for "else if", used in conditional statements.'},
+    {term:'else', def:'Used in conditional statements.'},
+    {term:'except', def:'Catches exceptions in a try...except block.'},
+    {term:'False', def:'A boolean value representing false.'},
+    {term:'finally', def:'Code that is always executed, regardless of exceptions.'},
+    {term:'for', def:'Used to create a for loop.'},
+    {term:'from', def:'Used to import specific parts of a module.'},
+    {term:'global', def:'Declares a variable as global (belonging to the global scope).'},
+    {term:'if', def:'Used to create a conditional statement.'},
+    {term:'import', def:'Imports a module.'},
+    {term:'in', def:'Checks if a value is present in a list, tuple, etc.'},
+    {term:'is', def:'Tests if two variables refer to the same object.'},
+    {term:'lambda', def:'Creates a small, anonymous function.'},
+    {term:'None', def:'Represents a null value or a void.'},
+    {term:'nonlocal', def:'Declares a variable to not be local.'},
+    {term:'not', def:'A logical operator, inverts a boolean value.'},
+    {term:'or', def:'A logical operator (a or b is true if either a or b is true).'},
+    {term:'pass', def:'A null statement, a placeholder.'},
+    {term:'raise', def:'Raises an exception.'},
+    {term:'return', def:'Exits a function and returns a value.'},
+    {term:'True', def:'A boolean value representing true.'},
+    {term:'try', def:'Starts a try...except block for error handling.'},
+    {term:'while', def:'Used to create a while loop.'},
+    {term:'with', def:'Used to simplify exception handling by encapsulating common setup and cleanup tasks.'},
+    {term:'yield', def:'Pauses a function and returns a value, used in generators.'},
+  ];
+
+  function initGlossary() {
+    const cloud = el('glossaryCloud');
+    const tip = el('chipTip');
+    const tipContent = el('tipContent');
+    const tipArrow = tip.querySelector('.arrow');
+    let openChip = null;
+
+    cloud.innerHTML = glossaryData.map((g, i) => `<button class="glossary-chip" data-i="${i}" aria-expanded="false" tabindex="0"><span>${g.term}</span></button>`).join('');
+    
+    function clamp(n, min, max) { return Math.max(min, Math.min(n, max)); }
+
+    function positionTipFor(btn) {
+      const rect = btn.getBoundingClientRect();
+      const vw = innerWidth, vh = innerHeight, pad = 8;
+      tip.style.maxWidth = Math.min(vw - pad * 2, 420) + 'px';
+      const tr = tip.getBoundingClientRect();
+      const preferTop = rect.top > (vh - rect.bottom);
+      const top = preferTop ? rect.top - tr.height - 12 : rect.bottom + 12;
+      const left = clamp(rect.left + rect.width / 2 - tr.width / 2, pad, vw - tr.width - pad);
+      tip.style.top = Math.max(8, top) + 'px';
+      tip.style.left = left + 'px';
+      tipArrow.style.top = preferTop ? (tr.height - 6) + 'px' : '-6px';
+      tipArrow.style.left = clamp(rect.left + rect.width / 2 - left - 6, 10, tr.width - 22) + 'px';
+    }
+
+    function openTip(btn, text) {
+      tipContent.textContent = text;
+      tip.classList.add('show');
+      positionTipFor(btn);
+      openChip = btn;
+      btn.setAttribute('aria-expanded', 'true');
+    }
+
+    function closeTip() {
+      tip.classList.remove('show');
+      if (openChip) {
+        openChip.setAttribute('aria-expanded', 'false');
+        openChip = null;
+      }
+    }
+
+    cloud.querySelectorAll('.glossary-chip').forEach((btn, i) => {
+      const def = glossaryData[i].def;
+      ['click', 'focus'].forEach(evt => btn.addEventListener(evt, () => openTip(btn, def)));
+      btn.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openTip(btn, def); } 
+        else if (e.key === 'Escape') { closeTip(); }
+      });
+      btn.addEventListener('blur', () => {
+        setTimeout(() => { if (document.activeElement !== btn && !tip.contains(document.activeElement)) closeTip(); }, 100);
+      });
+    });
+
+    // Event listeners to handle tip positioning and closing
+    addEventListener('resize', () => { if (openChip) positionTipFor(openChip); });
+    addEventListener('scroll', () => { if (openChip) positionTipFor(openChip); }, { passive: true });
+    document.addEventListener('click', (e) => {
+      if (openChip && !openChip.contains(e.target) && !tip.contains(e.target)) closeTip();
+    });
+  }
+
+  // ---------- Initial Wiring ----------
+  document.addEventListener('DOMContentLoaded', () => {
+    el('solveBtn').addEventListener('click', solve);
+    el('resetBtn').addEventListener('click', resetCalc);
+    initMCQs();
+    initGlossary();
+    // Run calculation on load with default values
+    solve();
+  });
+  </script>
+</body>
+</html>

@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Git DeepThink Player • Professional Scenarios</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-page: #f9fafb;
+            --bg-surface: #ffffff;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --border-color: #e5e7eb;
+            --accent: #dd6b20;
+            --note-bg: #fefce8; /* Yellowish background for notes */
+            --note-border: #facc15; /* Yellow border for notes */
+            --font-main: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            --font-code: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+        }
+        
+        html, body { margin: 0; background: var(--bg-page); color: var(--text-primary); font-family: var(--font-main); line-height: 1.6; }
+        .container { max-width: 800px; margin: 0 auto; padding: 2rem 1rem; }
+        
+        /* --- Intro Screen Styles --- */
+        #intro-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
+            text-align: center;
+        }
+        #intro-screen h1 { font-size: 2.5rem; }
+        #intro-screen p { color: var(--text-secondary); font-size: 1.125rem; max-width: 600px; margin: 1rem 0 2rem; }
+        .start-button { font-size: 1.125rem; padding: 0.75rem 2rem; }
+
+        /* --- Animation Overlay --- */
+        #animation-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: #000;
+            z-index: 1000;
+            display: none;
+        }
+        #matrix-canvas { display: block; }
+        
+        /* --- Player Styles --- */
+        #player-screen { display: none; }
+        header h1 { text-align: center; margin-bottom: 2rem; font-size: 1.75rem; font-weight: 700; }
+        .player { border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-surface); padding: 1rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -2px rgba(0,0,0,0.05); transition: box-shadow 0.4s ease-out; }
+        .player.is-glowing {
+            box-shadow: 0 0 15px 5px color-mix(in srgb, var(--accent) 20%, transparent);
+        }
+
+        .viewport { background: var(--bg-surface); border-radius: 10px; padding: 1.25rem; min-height: 400px; }
+        
+        .card-title { font-weight: 700; color: var(--accent); margin: 0 0 0.5rem; font-size: 1.1rem; }
+        .card-scenario { font-style: italic; color: var(--text-secondary); margin: 0.5rem 0 1.5rem; }
+        
+        .reveal-container { text-align: center; margin: 2rem 0; }
+        .solution-container.hidden, .nav.hidden { display: none; }
+
+        .card-body h3 { font-size: 0.9rem; font-weight: 600; color: var(--text-primary); margin: 1.25rem 0 0.5rem; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border-color); padding-bottom: 0.25rem; }
+        .card-body p { margin: 0 0 0.5rem; font-size: 1rem; }
+        
+        /* --- New "Note Element" Style --- */
+        .principle-box { 
+            background: var(--note-bg); 
+            border: 1px solid var(--note-border);
+            border-left-width: 4px;
+            border-radius: 8px; 
+            padding: 0.75rem 1rem; 
+            margin: 0.5rem 0; 
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+        .principle-box .icon { color: var(--note-border); flex-shrink: 0; margin-top: 4px; }
+        .principle-box .content .title { font-weight: 600; color: var(--text-primary); }
+        .principle-box .content .desc { color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.25rem; }
+
+        .card-body ol { margin: 0.5rem 0 0 1.25rem; padding: 0; }
+        
+        .nav { display: flex; gap: 0.75rem; align-items: center; justify-content: center; margin-top: 1rem; }
+        .btn { background: var(--accent); color: white; border: none; border-radius: 8px; padding: 0.6rem 1.2rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .btn:hover:not([disabled]) { opacity: 0.9; }
+        .btn[disabled] { background: #d1d5db; cursor: not-allowed; }
+        #counter { font-weight: 600; color: var(--text-secondary); }
+    </style>
+</head>
+<body>
+    <!-- Animation Canvas -->
+    <div id="animation-overlay">
+        <canvas id="matrix-canvas"></canvas>
+    </div>
+
+    <!-- Intro Screen (Page 1) -->
+    <div class="container" id="intro-screen">
+        <h1>Welcome to Git DeepThink</h1>
+        <p>Go beyond commands. These <b>36 scenarios</b> are designed to build strategic mastery by exploring the real-world challenges, failure modes, and elegant solutions that define professional Git workflows.</p>
+        <button id="start-btn" class="btn start-button">Start the Experience</button>
+    </div>
+
+    <!-- Player Screen (Page 2-37) -->
+    <div id="player-screen">
+        <header>
+            <div class="container" style="padding-top: 0; padding-bottom: 0;">
+                <h1>36 DeepThink Questions</h1>
+            </div>
+        </header>
+        <main class="container" style="padding-top: 0;">
+            <div class="player" id="player">
+                <div class="viewport">
+                    <div class="card">
+                        <div class="card-title" id="qtitle">DeepThink</div>
+                        <p class="card-scenario" id="qtext"></p>
+                        
+                        <div class="reveal-container">
+                            <button id="reveal-btn" class="btn">Reveal the Insight</button>
+                        </div>
+
+                        <div class="solution-container hidden">
+                            <div class="card-body">
+                                <h3>The Deeper Insight (Answer)</h3>
+                                <p id="answer"></p>
+                                <h3>Core Git Principle</h3>
+                                <div class="principle-box" id="principle">
+                                    <div class="icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15.09 16.23a1 1 0 0 0-1.41-1.41l-4.25 4.25a1 1 0 0 0 1.41 1.41l4.25-4.25z"/><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/><path d="M12 15a3 3 0 1 0-3-3 3 3 0 0 0 3 3z"/></svg>
+                                    </div>
+                                    <div class="content">
+                                        <div class="title" id="p-title"></div>
+                                        <div class="desc" id="p-desc"></div>
+                                    </div>
+                                </div>
+                                <h3>Solution Process</h3>
+                                <ol id="apply"></ol>
+                                <h3>Real-World Impact (The "Aha" Moment)</h3>
+                                <p id="predict"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="nav hidden" id="nav-controls">
+                    <button id="prev" class="btn">Prev</button>
+                    <div id="counter">1 / 36</div>
+                    <button id="next" class="btn">Next</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+<script>
+const DATA = [
+    // --- Failure & Recovery ---
+    { q: "A developer runs <b>`git reset --hard`</b> and loses two days of unpushed work. Is it gone forever?", a: "No. The work is not gone until Git's garbage collection runs. The commits are now 'unreachable', but Git's <b>`reflog`</b>—a private log of where HEAD has been—acts as a safety net.", p: "The Reflog: Your Local Safety Net", d: "Git tracks the history of branch pointers, not just the commits themselves. Every local action that moves HEAD is recorded.", steps: ["Run `git reflog` to see a time-ordered list of all recent actions.", "Identify the SHA hash of the 'lost' commit from before the `reset`.", "Run `git branch recovered-work [SHA]` to create a new branch pointing to the lost commit, making it safe again."], x: "A potentially career-limiting mistake becomes a recoverable inconvenience. This builds confidence and transforms fear of Git's power into mastery." },
+    { q: "A team lead <b>force-pushes</b> a rebased `main` branch to 'clean up' history. Why does this break the repository for everyone else?", a: "Force-pushing a shared branch rewrites public history. Every other developer's local `main` now has a different history from the remote. Git sees this divergence and, for safety, refuses to merge the two unrelated timelines.", p: "Immutability of Shared History", d: "A shared branch is a collaborative agreement. Rewriting its history breaks that agreement for everyone who has a copy.", steps: ["The lead must immediately tell the team <b>not to pull or push</b>.", "The lead uses their own `reflog` to find the commit hash of `main` <b>before</b> the rebase.", "The lead force-pushes the original, correct history back to the remote server.", "The team can now pull and work normally again."], x: "This reveals that Git's strictness isn't a bug; it's a feature to prevent data loss. It forces teams to establish and enforce safe workflows, like using branch protection rules to block force-pushes to `main`." },
+    { q: "You merge a Pull Request, but later realize it introduced a severe bug. You can't rewrite history on the shared `main` branch. How do you undo the change?", a: "You use <b>`git revert [merge-commit-SHA]`</b>. This command doesn't delete anything; it creates a <b>new</b> commit that is the exact inverse of the faulty merge, safely undoing the changes while preserving the project's history.", p: "`git revert`: The Safe, History-Preserving Undo", d: "Unlike `reset`, `revert` is a forward-moving action that creates new history, making it safe for shared branches.", steps: ["Find the SHA of the merge commit you want to undo using `git log`.", "Run `git revert -m 1 [merge-commit-SHA]`. The `-m 1` tells Git which parent of the merge commit to keep as the 'mainline'.", "Push the new revert commit to the remote. The bug is now fixed in the history."], x: "This demonstrates professional-grade repository management. You can correct major errors on a live project without destroying the historical record, maintaining both stability and auditability." },
+    { q: "While resolving a massive merge conflict, you make a mistake and the file is now a complete mess. How do you abort and start over without losing your branch?", a: "You can instantly return to the state before the merge began. The conflict markers are temporary; Git makes it easy to escape.", p: "Aborting a Failed Merge", d: "Git holds the repository in a 'merging' state, which can be safely aborted to return to the pre-merge state.", steps: ["To abort the entire merge operation, run <b>`git merge --abort`</b>.", "Alternatively, to just restore the single conflicted file to its original state, run <b>`git checkout -- [file-name]`</b>.", "Pull the latest changes from the target branch again and attempt the merge with a fresh perspective."], x: "This removes the fear of merge conflicts. Knowing you can easily and safely abort a merge attempt encourages developers to tackle them head-on instead of letting branches diverge for too long." },
+    { q: "A developer accidentally commits a 500MB video file to the repository. Even after removing it in a later commit, the repository is still huge. Why?", a: "Git keeps every version of every file in its history. The 'remove' commit just adds a new snapshot without the file, but the old snapshot containing the large file is <b>still stored</b> in the repository's database.", p: "History is Forever (Until Rewritten)", d: "A commit does not alter the past. The large object remains in the history, bloating the repository for every future clone.", steps: ["Use a tool like `git filter-repo` or BFG Repo-Cleaner to scrub the large file from <b>every</b> commit in the history.", "This is a history-rewriting operation, so it must be carefully coordinated with the entire team.", "After cleaning, every team member must fetch the rewritten history and re-clone or reset their local copies."], x: "This reveals the true nature of Git's object database. It highlights the importance of using `.gitignore` and tools like Git LFS (Large File Storage) for handling large binaries from the start." },
+    // --- Surprising Reveals & Elegant Solutions ---
+    { q: "A bug was introduced sometime in the last 640 commits. How can you find the exact commit that caused it without manually checking each one?", a: "You use <b>`git bisect`</b>, a powerful tool that performs a binary search on your commit history. By repeatedly marking commits as 'good' or 'bad', you can pinpoint the faulty commit in minutes, not days.", p: "`git bisect`: The Logarithmic Debugger", d: "Binary search drastically reduces the search space, finding a needle in a haystack with logarithmic efficiency.", steps: ["Start the process with `git bisect start`.", "Mark the current broken commit as bad: `git bisect bad HEAD`.", "Find an old commit where the code worked and mark it as good: `git bisect good [old-commit-SHA]`.", "Git will check out a commit in the middle. Test it. Tell Git if it's `good` or `bad`. Repeat until Git identifies the exact commit."], x: "What seems like an impossible manual task is solved by an elegant algorithm built into Git. This transforms debugging from a frustrating chore into a systematic, powerful process." },
+    { q: "You need to apply a critical security patch from the `main` branch to five older, long-term support (LTS) branches. Do you have to manually copy-paste the code?", a: "No. You use <b>`git cherry-pick`</b>. This command allows you to select a specific commit from one branch and apply it directly onto another, as if it were a patch.", p: "`git cherry-pick`: Surgical Precision", d: "A commit is a self-contained set of changes that can be treated as a patch and applied anywhere in the history.", steps: ["On the `main` branch, find the SHA of the security patch commit using `git log`.", "For each LTS branch, run `git checkout [lts-branch-name]`.", "Apply the patch with `git cherry-pick [patch-commit-SHA]`.", "Resolve any minor conflicts that arise and push the updated LTS branch."], x: "This reveals that commits are portable units of work. It's an indispensable tool for enterprise environments managing multiple release lines, ensuring consistency and saving immense amounts of manual effort." },
+    { q: "A file has a confusing line of code. How can you find out not only <b>who</b> wrote it, but <b>why</b>, and see the context of the original change?", a: "You use `git blame` combined with `git show`. `blame` tells you the 'who' and 'when' for every line, and `show` reveals the 'why' by displaying the full commit message and diff for that change.", p: "Code Archaeology with `blame` and `show`", d: "Git's history is not just a backup; it's a rich, queryable database of intent and context.", steps: ["Run `git blame [file-name]` to see the commit SHA and author for each line.", "Find the line in question and copy its commit SHA.", "Run `git show [commit-SHA]` to see the full diff and, most importantly, the commit message that explains the rationale for the change."], x: "This changes the perspective on blame. It's not about finding who to blame, but <b>who to ask for context</b>. It promotes collaboration by making the history a living document." },
+    { q: "How can a developer on a slow network contribute to a massive 50GB monorepo without downloading the entire thing?", a: "They use modern Git features like <b>partial clone and sparse checkout</b>. This allows them to download only the repository's metadata and then 'hydrate' only the specific directories they actually need to work on.", p: "Partial Clone & Sparse Checkout: Working at Scale", d: "Git's architecture decouples commit history (metadata) from file content (blobs), enabling highly efficient, on-demand data fetching.", steps: ["Clone the repository without any file content: `git clone --filter=blob:none [repo-url]`.", "Navigate into the repo and initialize sparse checkout: `git sparse-checkout init --cone`.", "Tell Git which directory you need: `git sparse-checkout set [path/to/your/project]`.", "Git will now download only the files within that directory, making the local copy small and fast."], x: "This is how massive tech companies manage gigantic repositories. It reveals that Git is built for extreme scale, solving problems that seem impossible with traditional version control." },
+    { q: "Your team has dozens of small 'WIP' commits on a feature branch. How do you present this as a single, clean commit in a Pull Request?", a: "You use <b>interactive rebase (`git rebase -i`)</b>. This opens an editor that lets you rewrite your branch's history before sharing it, allowing you to squash multiple commits into one, reword messages, and fix mistakes.", p: "Interactive Rebase: Curating Your Story", d: "A feature branch's history is a draft. Interactive rebase is the tool for editing that draft into a clean, logical final version before publishing.", steps: ["Run `git rebase -i main` (or the base branch).", "An editor will open with a list of your commits. Keep the first commit as `pick`.", "Change the action for all subsequent commits from `pick` to `squash` or `fixup`.", "Save and close. Git will combine the commits and prompt you to write a new, clean commit message for the single resulting commit."], x: "This creates a powerful 'aha' moment about the purpose of history. The messy, real-time history is for you; the <b>clean, curated history</b> is for your team. It's the key to maintaining a readable and useful project log." },
+    { q:"Why does `git status` sometimes show files as 'modified' even if you haven't touched them?", a:"This is often due to line ending changes (CRLF vs LF). Git sees the change in <b>invisible characters</b> as a modification.", p:"Line Ending Normalization", d:"Git can be configured to handle line endings consistently across different operating systems.", steps:["Configure Git to handle line endings automatically: `git config --global core.autocrlf true` (Windows) or `input` (Mac/Linux).", "Add a `.gitattributes` file to the project to enforce consistent line endings for everyone."], x:"This solves a major source of 'phantom' changes and merge conflicts in cross-platform teams, revealing the importance of configuration management." },
+    { q:"You have two branches that don't touch the same files. Why might you still get a merge conflict?", a:"You can get a <b>tree conflict</b> if one branch modifies a file and another branch deletes or renames the directory containing that file.", p:"Tree Conflicts", d:"Git tracks changes to both content (blobs) and structure (trees). Conflicting structural changes also require manual resolution.", steps:["`git status` will show the structural conflict (e.g., 'deleted by us, modified by them').", "Decide on the correct final structure: should the file exist in its new location, or should it be deleted?", "Use `git add` or `git rm` to stage the desired final state and complete the merge."], x:"This deepens the understanding of Git's object model beyond just file content, showing how it manages the entire project structure." },
+    { q:"What is the purpose of the `.gitkeep` file found in some repositories?", a:"Git only tracks files, not empty directories. A `.gitkeep` file is a convention—a placeholder file placed inside an otherwise empty directory to force Git to track it.", p:"Tracking Empty Directories", d:"By tracking a file within it, Git is forced to acknowledge and create the parent directory upon checkout.", steps:["Create an empty directory you want to preserve (e.g., `logs/`).", "Create an empty file within it: `touch logs/.gitkeep`.", "Add and commit the `.gitkeep` file."], x:"A simple, elegant community convention that solves a fundamental limitation in Git's design without requiring complex workarounds." },
+    { q:"Why would a team choose a complex 'Git Flow' workflow over a simple 'GitHub Flow'?", a:"'Git Flow' is designed for projects with <b>scheduled, versioned releases</b> (e.g., mobile apps). Its separate `develop` and `release` branches allow for a stabilization period where new features are frozen and only bug fixes are allowed.", p:"Workflow Aligns with Release Cadence", d:"The branching model should reflect the business's deployment and support strategy.", steps:["Analyze the project's release needs: continuous deployment vs. versioned releases.", "If versioned, adopt Git Flow's separation of development, release, and hotfix branches.", "Automate versioning and tagging as part of the release process."], x:"This connects the technical choice of branching strategy directly to the business model, showing there is no single 'best' workflow, only the one that best fits the context." },
+    { q:"You run `git pull` and get a 'fatal: refusing to merge unrelated histories' error. What does this mean?", a:"This typically happens when a project's `.git` directory was deleted and re-initialized. The local and remote repositories now have <b>no common ancestor</b>, and Git, for safety, refuses to merge two completely unrelated projects.", p:"Common Ancestor Requirement", d:"A merge operation requires branches to have a shared history to calculate a diff. Without it, Git has no basis for combining them.", steps:["If this is intentional, re-run the pull with the flag: `git pull origin main --allow-unrelated-histories`.", "If this is a mistake, it usually requires deleting the local copy and re-cloning from the remote to get the correct history."], x:"This error reveals a core safety mechanism in Git and is a powerful lesson in the importance of a project's hidden `.git` directory." },
+    { q:"How can you find every commit where a specific function's code was changed?", a:"Use Git's 'pickaxe' search (`-S`) or the `-L` option, which can trace the history of specific lines of code within a file.", p:"Advanced Log Searching", d:"`git log` is a powerful tool for querying the commit database based on content, not just metadata.", steps:["To find when a string was introduced or removed, use <b>`git log -S'functionName'`</b>.", "To trace the evolution of a specific function, use <b>`git log -L :functionName:path/to/file.js`</b>."], x:"This elevates `git log` from a simple history viewer to a powerful forensic tool, enabling developers to understand the evolution of specific pieces of code over time." },
+    { q:"A teammate suggests adding the entire `node_modules` directory to the repository. Why is this a disastrous idea?", a:"It massively bloats the repository with thousands of files that can be easily regenerated. It causes huge commits and conflicts, and makes cloning extremely slow. Dependencies should be managed by a manifest file (`package.json`), not by committing the files directly.", p:"Manage Dependencies, Don't Vendor Them", d:"The repository should store your source code, not the compiled dependencies of your dependencies.", steps:["Create a `.gitignore` file in the root of the project.", "Add `node_modules/` to the `.gitignore` file.", "Commit the `.gitignore` file. Git will now ignore this directory completely."], x:"This is a foundational lesson in project setup and scalability. Understanding what <b>not</b> to commit is as important as understanding what to commit." },
+    { q:"What is a 'detached HEAD' state, and why is it both useful and dangerous?", a:"It means `HEAD` is pointing directly to a commit SHA instead of a branch name. It's <b>useful</b> for inspecting old states of the code. It's <b>dangerous</b> because if you make new commits from this state, they don't belong to any branch and can be lost once you check out something else.", p:"Detached HEAD: Direct Pointer", d:"HEAD is a pointer. It can point to a symbolic name (a branch) or directly to an address (a commit SHA).", steps:["To inspect an old commit safely: `git checkout [commit-SHA]`.", "If you make new commits and want to save them, create a branch immediately: `git branch [new-branch-name]`.", "To return to safety, checkout an existing branch: `git checkout main`."], x:"This reveals the true nature of HEAD as a dynamic pointer and teaches the critical difference between a branch (a moving pointer) and a commit (a static point in history)." },
+    { q:"Why is it a bad idea to commit API keys or other secrets directly into a Git repository?", a:"Once a secret is committed, it is stored in the project's history <b>forever</b>, even if you 'remove' it in a later commit. Anyone with read access can find the secret by looking through the history.", p:"Secrets Don't Belong in History", d:"The Git history is a permanent, transparent record. Secrets require a separate, secure management system.", steps:["Use environment variables or a dedicated secrets management tool (like Vault).", "Load them into the application at runtime; never hardcode them.", "If a secret is accidentally committed, it must be considered compromised. Rotate the secret immediately, then use a tool like `git filter-repo` to scrub it from the entire history."], x:"This is a critical security lesson. It connects Git usage directly to application security best practices and prevents catastrophic data breaches." },
+    { q:"What does the `git stash` command do that a simple commit does not?", a:"`git stash` saves your uncommitted local changes to a temporary storage area and then cleans your working directory. This allows you to quickly switch branches without having to make a messy 'WIP' commit.", p:"`git stash`: A Temporary Shelving System", d:"Stashing provides a clean way to pause your current work without creating a permanent record in the commit history.", steps:["When you need to switch tasks, run `git stash` to save your work.", "Switch to the other branch and do your work.", "Return to your original branch and run `git stash pop` to re-apply your saved changes."], x:"This is a major productivity booster. It provides an elegant solution to the common problem of being interrupted mid-task, keeping the commit history clean and focused." },
+    { q:"A developer creates a PR, but the CI build fails because of a style issue (linting). Why is this automated check a good thing?", a:"It offloads tedious, non-functional feedback from human reviewers to a machine. This saves time and emotional energy by automating adherence to team standards, allowing human reviewers to focus on what matters: logic, architecture, and correctness.", p:"Automate Mechanical Feedback", d:"Let robots handle robotic tasks. Free up human brainpower for complex, creative review.", steps:["Integrate a linter (like ESLint, RuboCop) into the project's CI pipeline.", "Configure it to run on every Pull Request.", "Enable branch protection rules to block merges if the linting check fails."], x:"This elevates the code review process from nitpicking to a high-level architectural discussion, improving both code quality and team morale." },
+    { q:"What is the difference between `git fetch` and `git pull`?", a:"`git fetch` downloads all new data from the remote but does <b>not</b> integrate any of it. `git pull` is a combination of `git fetch` followed immediately by `git merge` to integrate the changes.", p:"Fetch vs. Pull: Separate vs. Combined Actions", d:"Fetch updates your local copy of the remote, while Pull updates your actual working branch.", steps:["Use `git fetch` to see what has changed on the remote without disrupting your local work.", "Use `git status` to see how far 'behind' your branch is.", "When ready, use `git merge` or `git rebase` to integrate the fetched changes. Or, if you want the combined action, use `git pull`."], x:"Understanding this distinction gives a developer more control. `fetch` is a safe way to check for updates, while `pull` is a more forceful action that immediately changes your local branch." },
+    { q:"Your feature branch is 20 commits behind `main`. What is the difference between merging and rebasing it?", a:"<b>Merging</b> will create a new merge commit, preserving the parallel history. <b>Rebasing</b> will rewrite the feature branch's history, replaying its commits on top of the latest `main`, creating a clean, linear history.", p:"Merge vs. Rebase: Preserving vs. Rewriting History", d:"The end-state of the code will be the same, but the shape of the history graph will be fundamentally different.", steps:["To preserve history, checkout `main`, pull, then `git merge feature-branch`.", "To create a linear history, checkout `feature-branch`, then `git rebase main`.", "After resolving conflicts, you can merge the clean branch into `main`."], x:"This is a core strategic choice for a development team. The decision to favor merge or rebase workflows defines how the project's history is recorded and read." },
+    { q:"What is the `CODEOWNERS` file in a GitHub repository?", a:"It's a file that automatically assigns developers or teams as required reviewers for PRs that modify certain files. It codifies ownership and ensures experts review critical changes.", p:"`CODEOWNERS`: Automated Review Assignment", d:"It turns tribal knowledge about who owns which part of the codebase into an automated, enforced policy.", steps:["Create a file at `.github/CODEOWNERS`.", "Add lines specifying a file pattern and the owner's GitHub username or team name (e.g., `/src/billing/ @billing-team`).", "Enable it in branch protection rules by requiring review from Code Owners."], x:"This is a powerful scalability mechanism. In a large organization, it ensures that changes to critical infrastructure, security, or billing code are always reviewed by the correct team, preventing costly mistakes." },
+    { q:"You need to stage and commit only <b>some</b> of the changes within a single modified file. How can you do this?", a:"Use <b>`git add --patch`</b> (or `git add -p`). This launches an interactive session that shows you each 'hunk' of changes within the file, allowing you to stage them individually.", p:"Patching: Staging Changes Incrementally", d:"Git allows for granular control over what goes into a commit, even within a single file.", steps:["Run `git add -p [file-name]`.", "For each hunk of changes, Git will ask what to do. Press 'y' to stage it, 'n' to skip it, 's' to split it, or 'e' to edit it manually.", "After staging the desired hunks, create a commit as usual."], x:"This enables the creation of highly focused, logical commits. It's the ultimate tool for separating unrelated changes (e.g., a bug fix and a refactor) that happen to be in the same file." },
+    // --- NEW QUESTIONS ---
+    { q:"A CI pipeline takes 40 minutes to run on every commit, slowing down PRs. What is a Git-native way to speed this up?", a:"Use <b>path filtering</b> in your CI configuration. This allows the pipeline to intelligently run only the tests relevant to the code that was actually changed, skipping irrelevant jobs.", p:"Path-Based CI Triggering", d:"Your CI system can inspect the diff of a PR to make decisions, dramatically improving efficiency.", steps:["Configure your CI workflow (e.g., GitHub Actions) to trigger jobs based on `on.pull_request.paths`.", "Define different test suites for different parts of your monorepo (e.g., 'frontend-tests', 'api-tests').", "A change to `/frontend` will now only trigger the frontend tests, providing faster feedback."], x:"This is an enterprise-grade optimization that makes monorepos manageable. It respects developers' time by providing feedback in minutes, not hours." },
+    { q:"An open-source project is getting lots of low-quality PRs that ignore contribution rules. How do you automate guidance?", a:"Create a `CONTRIBUTING.md` file and a `pull_request_template.md`. GitHub automatically shows a banner linking to these files when a user creates their first PR, guiding them before they even start.", p:"Automating Contributor Guidance", d:"Use repository metadata files to set expectations and streamline the contribution process for the community.", steps:["Create a `CONTRIBUTING.md` file in the root or `.github/` directory with guidelines on setup, coding standards, and PR process.", "Create a `pull_request_template.md` in `.github/` with a checklist for contributors to fill out.", "These files will now automatically appear to new contributors."], x:"This empowers maintainers to scale their project. It filters out low-effort contributions and educates new community members, fostering a healthier open-source ecosystem." },
+    { q:"As a maintainer, you receive a huge PR that fixes a typo but also refactors 10 files. What's the right way to handle this?", a:"Politely ask the contributor to split the PR into two separate ones. The typo fix is an easy win and can be merged immediately. The large refactor requires a more in-depth review and discussion.", p:"The Single Responsibility Principle for Pull Requests", d:"Each PR should address one single, logical concern. This makes reviews faster, reduces risk, and simplifies potential reverts.", steps:["Thank the contributor for their effort.", "Explain that you'd like to merge the typo fix quickly and ask them to create a new PR with only that change.", "State that the refactor is a valuable but separate discussion and should be in its own PR for proper review."], x:"This is a masterclass in community championship. It teaches contributors best practices, respects their time by merging what's ready, and maintains the quality of the project's history." },
+    { q:"What is `git worktree` and how does it solve the problem of needing to quickly switch branches for a hotfix when you have uncommitted work?", a:"`git worktree` allows you to have multiple branches checked out into <b>different directories</b> simultaneously, all connected to the same repository. This avoids the need to stash or commit your current work.", p:"Parallel Work with Worktrees", d:"A single repository can support multiple working directories, each on a different branch.", steps:["From your project root, run `git worktree add ../project-hotfix hotfix-branch`.", "A new directory `project-hotfix` is created with the `hotfix-branch` checked out.", "Work on the hotfix in the new directory. Commit and push as normal.", "When done, simply delete the `project-hotfix` directory and run `git worktree prune`."], x:"This is a game-changing productivity feature. It eliminates the friction of context switching, providing an elegant solution to a universal developer problem." },
+    { q:"How can a team automatically enforce that commit messages follow a specific format (e.g., `feat: add new button`)?", a:"Use <b>Git hooks</b>, specifically a `commit-msg` hook. This is a script that runs automatically before a commit is finalized, allowing you to validate the message and reject it if it doesn't meet the standard.", p:"Git Hooks for Policy Enforcement", d:"Hooks are scripts triggered by Git events, enabling custom automation and policy enforcement directly on the developer's machine.", steps:["Use a tool like `husky` to simplify managing Git hooks in a team environment.", "Configure a `commit-msg` hook that runs a linter (like `commitlint`) against the commit message.", "If the message is invalid, the script exits with an error, and the commit is aborted."], x:"This automates conventions, leading to a clean, consistent, and machine-readable commit history that can be used to auto-generate changelogs and trigger other automations." },
+    { q:"An important PR from an external contributor has gone stale and now has merge conflicts. What's the best way to get it merged?", a:"As a maintainer with push access, you can check a box on the PR to 'Allow edits by maintainers'. Then you can pull their branch locally, resolve the conflicts yourself, and push the fix directly to their branch to update the PR.", p:"Maintainer-Assisted PR Resolution", d:"GitHub provides collaborative tools for maintainers to help contributors overcome technical hurdles and get valuable code merged.", steps:["Ensure the 'Allow edits by maintainers' box is checked by the contributor.", "Follow GitHub's command-line instructions to fetch and check out their branch locally.", "Merge the latest `main` into their branch, resolve the conflicts, and commit the result.", "Push the resolved branch back to their fork. The PR will automatically update."], x:"This is a key open-source leadership skill. It shows you value community contributions and are willing to help get them over the finish line, encouraging future participation." },
+    { q:"Your company acquires another company. How do you merge their entire Git repository into yours while preserving all of their history?", a:"Add their repository as a remote, `fetch` their history, and then `merge` their main branch using the <b>`--allow-unrelated-histories`</b> flag, often placing their files into a dedicated subdirectory.", p:"Merging Unrelated Histories", d:"Git can weave together two completely separate project histories into a single, unified timeline.", steps:["Navigate to your company's repository.", "Add the acquired company's repo as a remote: `git remote add acquired_repo [url]`.", "Fetch their history: `git fetch acquired_repo`.", "Merge their main branch: `git merge acquired_repo/main --allow-unrelated-histories`, placing their files in a subdirectory for organization."], x:"This demonstrates Git's power to handle extremely complex, large-scale organizational changes, a critical capability for enterprise M&A activities." },
+    { q:"You see a commit with a `Co-authored-by:` trailer in the message. What does this mean?", a:"It's a formal way to give credit to multiple authors on a single commit, often used in pair programming or collaborative debugging. GitHub recognizes this trailer and displays all co-authors on the commit and in contribution graphs.", p:"Crediting Multiple Authors", d:"A commit object can store metadata for more than one author, ensuring proper attribution in collaborative environments.", steps:["When writing a commit message, leave a blank line after the main message.", "Add the trailer on its own line: `Co-authored-by: Name <email@example.com>`.", "You can add multiple `Co-authored-by` lines for each contributor."], x:"This fosters a collaborative and supportive team culture. It ensures everyone's contributions are visible and valued, which is especially important in open-source and enterprise settings." },
+    { q:"A project's history is full of merge commits, making `git log` very hard to read. What workflow would have prevented this?", a:"A <b>rebase or squash-and-merge</b> workflow. By enforcing this via branch protection rules, a team can ensure the `main` branch history remains perfectly linear and easy to follow.", p:"Curating History for Readability", d:"The merge strategy is a deliberate choice that defines the long-term maintainability and auditability of a project's history.", steps:["In GitHub repository settings, under 'Branches' -> 'Branch protection rules'.", "Edit the rule for the `main` branch.", "Under 'Pull Request', disable 'Allow merge commits' and enable 'Allow squash merging' or 'Allow rebase merging'.", "This forces all contributions to be added to `main` as clean, single commits."], x:"This is a strategic decision for project leadership. A clean, linear history is a valuable asset that makes debugging, reverting, and understanding the project's evolution significantly easier over the long term." },
+    { q:"You want to change the author info on your last commit before pushing. How can you do this without creating a new commit?", a:"Use <b>`git commit --amend --author=\"New Name <new@email.com>\"`</b>. The `--amend` flag allows you to modify the most recent commit in place, including its metadata like the author or message.", p:"Amending Commits", d:"A commit is not set in stone until it is pushed and shared. Local history is malleable.", steps:["Make sure your working directory is clean.", "Run the `git commit --amend` command with the desired flags (`--author` or just to change the message).", "Your editor will open to confirm the changes. Save and close."], x:"This provides a simple, elegant way to fix common mistakes before they become part of the shared history, promoting higher quality commits." },
+    { q:"A new junior developer on your open-source project is struggling with a complex rebase. How can you, as a maintainer, teach them effectively?", a:"Instead of just telling them the commands, create a 'demonstration' PR. Branch from their branch, perform the rebase correctly, and open a PR back into *their* branch. Explain each step in the PR description. They can then review the clean history, merge your PR, and be ready to merge theirs into main.", p:"Mentorship Through Demonstration", d:"Use Git's own collaborative tools (branches, PRs) as a teaching medium to provide safe, reviewable, and hands-on lessons.", steps:["Fetch the contributor's branch.", "Create a new local branch from it: `git checkout -b fix/rebase-demo contributor/feature-branch`.", "Perform the interactive rebase, squashing and fixing up commits.", "Push your demo branch and open a PR against their original branch.", "Walk them through the 'Files Changed' tab to show the result."], x:"This is community championship in action. It transforms a moment of frustration into a powerful learning experience, building both the contributor's skills and their loyalty to the project." }
+];
+
+// ... (rest of the script is identical to the previous version) ...
+const player = document.getElementById('player');
+const introScreen = document.getElementById('intro-screen');
+const playerScreen = document.getElementById('player-screen');
+const startBtn = document.getElementById('start-btn');
+const revealBtn = document.getElementById('reveal-btn');
+const solutionContainer = document.querySelector('.solution-container');
+const navControls = document.getElementById('nav-controls');
+
+const elQ = document.getElementById('qtext');
+const elT = document.getElementById('qtitle');
+const elA = document.getElementById('answer');
+const elPTitle = document.getElementById('p-title');
+const elPDesc = document.getElementById('p-desc');
+const elX = document.getElementById('predict');
+const elC = document.getElementById('counter');
+const elApply = document.getElementById('apply');
+const prev = document.getElementById('prev');
+const next = document.getElementById('next');
+
+let idx = 0;
+
+function render() {
+    const n = DATA.length;
+    const d = DATA[idx];
+    elT.innerHTML = `DeepThink ${idx + 1}`;
+    elQ.innerHTML = d.q;
+    elA.innerHTML = d.a;
+    elPTitle.innerHTML = d.p;
+    elPDesc.innerHTML = d.d;
+    elApply.innerHTML = d.steps.map(s => `<li>${s}</li>`).join('');
+    elX.innerHTML = d.x;
+    elC.textContent = `${idx + 1} / ${n}`;
+    prev.disabled = (idx === 0);
+    next.disabled = (idx === n - 1);
+
+    // Reset view to question-only
+    solutionContainer.classList.add('hidden');
+    navControls.classList.add('hidden');
+    revealBtn.classList.remove('hidden');
+}
+
+function revealInsight() {
+    solutionContainer.classList.remove('hidden');
+    navControls.classList.remove('hidden');
+    revealBtn.classList.add('hidden');
+
+    // Add glow effect and remove it after animation
+    player.classList.add('is-glowing');
+    setTimeout(() => {
+        player.classList.remove('is-glowing');
+    }, 500);
+}
+
+function navigate(direction) {
+    const newIdx = idx + direction;
+    if (newIdx >= 0 && newIdx < DATA.length) {
+        idx = newIdx;
+        render();
+        document.querySelector('.player').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+}
+
+// --- Animation Logic ---
+function startAnimation() {
+    const animationOverlay = document.getElementById('animation-overlay');
+    const canvas = document.getElementById('matrix-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    animationOverlay.style.display = 'block';
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const chars = ['0', '1', ' '];
+    const fontSize = 14;
+    const columns = canvas.width / fontSize;
+    const drops = [];
+    for (let x = 0; x < columns; x++) {
+        drops[x] = 1;
+    }
+
+    function draw() {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        ctx.fillStyle = '#22c55e'; // Green color for binary rain
+        ctx.font = fontSize + 'px ' + 'monospace';
+
+        for (let i = 0; i < drops.length; i++) {
+            const text = chars[Math.floor(Math.random() * chars.length)];
+            ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+            
+            if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                drops[i] = 0;
+            }
+            drops[i]++;
+        }
+    }
+    
+    const intervalId = setInterval(draw, 40);
+
+    // Stop animation and transition to player
+    setTimeout(() => {
+        clearInterval(intervalId);
+        animationOverlay.style.display = 'none';
+        introScreen.style.display = 'none';
+        playerScreen.style.display = 'block';
+    }, 2500);
+}
+
+
+// --- Event Listeners ---
+document.addEventListener('DOMContentLoaded', () => {
+    const startBtn = document.getElementById('start-btn');
+    startBtn.addEventListener('click', startAnimation);
+    
+    revealBtn.addEventListener('click', revealInsight);
+    prev.addEventListener('click', () => navigate(-1));
+    next.addEventListener('click', () => navigate(1));
+
+    render();
+});
+
+</script>
+</body>
+</html>
+

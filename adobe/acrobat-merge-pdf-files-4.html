@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Ultimate Guide to Combining PDFs, Part 4: Fixing Common PDF Merge Problems (30+ Errors & Solutions)</title>
+    
+    <meta name="description" content="Part 4 of the ultimate guide to combining PDF files. This is the complete troubleshooting encyclopedia with 20+ detailed FAQs, advanced quizzes, and solutions for every common merge error.">
+    <meta name="keywords" content="fix pdf merge problems, acrobat crashing, pdf file too large, preserve hyperlinks pdf, pdf troubleshooting, pawan nayar">
+
+    <style>
+        :root {
+            --color-primary: #fa0f00; /* Adobe Red */
+            --color-secondary: #ff7b00;
+            --color-text-header: #1a1a1a;
+            --color-text-body: #333333;
+            --color-text-subtle: #6c757d;
+            --color-background: #f8f9fa;
+            --color-border: #dee2e6;
+            --color-success: #00a878;
+            --color-danger: #dc3545;
+            --color-info: #007bff;
+            --color-info-bg: #f0f7ff;
+            --color-info-border: #bde0ff;
+
+            --font-family-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --font-family-serif: "Georgia", "Times New Roman", serif;
+            --font-family-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+            
+            --space-m:  1.5rem;
+            --space-l:  2.25rem;
+            --space-xl: 3.5rem;
+            
+            --shadow-subtle: 0 2px 4px rgba(0,0,0,0.05);
+            --shadow-medium: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        *, *::before, *::after { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: var(--font-family-sans);
+            background: var(--color-background);
+            color: var(--color-text-body);
+            line-height: 1.7;
+            font-size: 18px; 
+            -webkit-font-smoothing: antialiased;
+        }
+        .article-container { width: 95%; max-width: 90ch; margin: 2rem auto; background: #fff; padding: var(--space-l); border-radius: 8px; box-shadow: var(--shadow-medium);}
+        .article-header { text-align: center; margin-bottom: var(--space-l); }
+        .article-breadcrumb {
+            text-align: center;
+            font-size: 1rem;
+            color: var(--color-text-subtle);
+            margin-bottom: 2rem;
+        }
+        .article-breadcrumb a {
+            color: var(--color-primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .article-section { margin-bottom: var(--space-xl); }
+        h1, h2, h3, h4 { color: var(--color-text-header); font-weight: 700; line-height: 1.3; text-wrap: balance; }
+        h1 { font-size: clamp(2.2rem, 5vw, 3rem); margin-bottom: 1rem; }
+        h2 { font-size: clamp(1.8rem, 4vw, 2.2rem); margin-top: var(--space-xl); margin-bottom: var(--space-m); padding-bottom: 0.75rem; border-bottom: 2px solid var(--color-primary); }
+        h3 { font-size: 1.5rem; margin-top: var(--space-l); margin-bottom: var(--space-m); color: #444; }
+        h4 { font-size: 1.2rem; margin-top: var(--space-l); margin-bottom: 0.75rem; color: var(--color-primary); }
+        p { margin-bottom: 1.25rem; }
+        a { color: var(--color-primary); text-decoration: underline; font-weight: 600; }
+        code { background: rgba(0,0,0,0.05); padding: 3px 7px; border-radius: 4px; font-family: var(--font-family-mono); font-size: 0.9em; }
+        blockquote { font-family: var(--font-family-serif); font-size: 1.25rem; font-style: italic; border-left: 4px solid var(--color-primary); padding: var(--space-m); margin: var(--space-l) 0; color: #555; background: #fdfdfd;}
+        ul, ol { padding-left: var(--space-m); margin-bottom: var(--space-m); }
+        li { margin-bottom: 0.75rem; }
+        .reveal { opacity: 0; transform: translateY(20px); transition: opacity 1s ease-out, transform 0.8s ease-out; }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+        
+        .interactive-container { background: #fdfdff; border: 1px solid var(--color-border); border-radius: 8px; padding: var(--space-l); margin-top: var(--space-l); }
+        
+        .accordion-item { border-bottom: 1px solid var(--color-border); }
+        .accordion-item:last-child { border-bottom: none; }
+        .accordion-button { background: none; border: none; width: 100%; text-align: left; padding: 1.2rem 0.5rem; font-size: 1.1rem; font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .accordion-button::after { content: '+'; font-size: 1.8rem; color: var(--color-primary); transition: transform 0.3s; }
+        .accordion-item.active .accordion-button::after { transform: rotate(45deg); }
+        .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.5s ease-in-out; }
+        .accordion-content .content-wrapper { padding: 0 0.5rem 1.5rem 0.5rem; }
+        .accordion-content h5 { font-size: 1rem; color: var(--color-text-subtle); font-weight: bold; margin-top: 1rem; margin-bottom: 0.5rem; text-transform: uppercase; }
+        
+        .quiz-options-list { list-style: none; padding: 0; }
+        .quiz-options-list li { background-color: white; border: 1px solid var(--color-border); border-radius: 5px; padding: 1rem; margin-bottom: 0.5rem; user-select: none; transition: all 0.2s; }
+        .quiz-options-list li:not(.answered) { cursor: pointer; }
+        .quiz-options-list li:not(.answered):hover { border-color: var(--color-primary); box-shadow: var(--shadow-medium); }
+        .quiz-feedback { margin-top: 1rem; font-weight: 500; padding: var(--space-m); border-radius: 5px; display: none; line-height: 1.6; }
+        .quiz-feedback.visible { display: block; }
+        .quiz-feedback strong { font-weight: 700; }
+        .correct { background-color: #f0fff8 !important; border-color: var(--color-success) !important; }
+        .incorrect { background-color: #fff1f0 !important; border-color: var(--color-danger) !important; }
+
+        .footer-summary {
+            background: #f8f9fa;
+            border-top: 2px solid var(--color-primary);
+            padding: var(--space-l);
+            margin: var(--space-xl) calc(var(--space-l) * -1) calc(var(--space-l) * -1);
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+            text-align: center;
+        }
+        .footer-summary h3 { margin-top: 0; }
+        .footer-summary .home-link {
+            display: inline-block;
+            margin-top: 1rem;
+            font-size: 1.2rem;
+            font-weight: 700;
+            padding: 0.75rem 1.5rem;
+            background: var(--color-primary);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.2s;
+        }
+        .footer-summary .home-link:hover { background-color: #333; }
+    </style>
+</head>
+<body>
+
+    <div class="article-container">
+        
+        <div class="article-breadcrumb reveal">
+            <p><a href="acrobat-merge-pdf-files-index.html">← Back to Main Guide</a> &nbsp;|&nbsp; Part 4 of 4</p>
+        </div>
+
+        <header class="article-header reveal">
+            <h1>Part 4: Fixing Common PDF Merge Problems (30+ Errors & Solutions)</h1>
+        </header>
+
+        <main>
+            <section class="article-section reveal">
+                <h2>The Ultimate Troubleshooting Encyclopedia</h2>
+                <p>Welcome to the final and most critical module of the series. In the previous parts, we explored strategy, real-world use cases, and step-by-step tutorials. This is the "emergency room" for your PDF workflow. No matter how well you plan, you will eventually encounter errors: a file that refuses to merge, a final document that is inexplicably massive, or a crash at the worst possible moment. This is a normal part of working with complex documents.</p>
+                <p>This guide is designed to give you the knowledge and confidence to solve any problem you face. We have compiled an exhaustive list of over 30 common (and uncommon) issues. Each entry explains the likely cause of the problem, provides a clear step-by-step solution, and offers a pro-tip on how to prevent it from happening again. Bookmark this page—it will be an invaluable resource for years to come.</p>
+            </section>
+            
+            <section class="article-section reveal">
+                <h2>The Exhaustive Troubleshooting FAQ</h2>
+                <p>Find your problem in the list below. Click any question to reveal the detailed cause, solution, and prevention tips.</p>
+                <div class="faq-container" id="faq-container">
+                    </div>
+            </section>
+
+            <section class="article-section reveal">
+                <h2>Advanced Knowledge Check</h2>
+                <div class="interactive-container">
+                    <h3>Quiz 1: Scenario Troubleshooting</h3>
+                    <p>You merged a 10-page Word document with a 50-page scanned report. The final PDF is 150 MB and the text from the scanned pages isn't searchable. What are the two most important tools you forgot to use?</p>
+                    <ul class="quiz-options-list" id="q1-options">
+                        <li data-correct="false">"Add Password" and "Add Header/Footer"</li>
+                        <li data-correct="false">"Create Portfolio" and "Flattening"</li>
+                        <li data-correct="true">"Optimize PDF (Compress)" and "Run OCR (Text Recognition)"</li>
+                        <li data-correct="false">"Bates Numbering" and "Add Bookmarks"</li>
+                    </ul>
+                    <div class="quiz-feedback" id="q1-feedback"></div>
+
+                    <h3 style="margin-top: 2.5rem;">Quiz 2: First Step Diagnostics</h3>
+                    <p>You attempt to merge five PDF files, but Acrobat gives you a generic "Merge failed" error. What is the very first, most logical step you should take to diagnose the problem?</p>
+                     <ul class="quiz-options-list" id="q2-options">
+                        <li data-correct="false">Reinstall Adobe Acrobat.</li>
+                        <li data-correct="true">Try to open each of the five PDF files individually to see if one is corrupt.</li>
+                        <li data-correct="false">Immediately try merging them with an online tool instead.</li>
+                         <li data-correct="false">Merge them in a different order.</li>
+                    </ul>
+                    <div class="quiz-feedback" id="q2-feedback"></div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="article-footer reveal">
+            <div class="footer-summary">
+                <h3>Series Complete: You Are Now a PDF Pro</h3>
+                <p>In this final module, you learned how to diagnose and solve over 30 common problems, turning errors into opportunities to refine your workflow. You have completed the entire "Ultimate Guide" series and now possess the skills to handle any document combination challenge with the confidence of a professional.</p>
+                <a href="acrobat-merge-pdf-files-index.html" class="home-link">← Return to the Main Guide Hub</a>
+            </div>
+        </footer>
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Scroll-reveal animation
+    if (window.IntersectionObserver) {
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    revealObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.05 });
+        document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+    }
+
+    // FAQ Accordion Logic
+    const faqContainer = document.getElementById('faq-container');
+    if (faqContainer) {
+        const faqContent = [
+            { q: 'Q1: Why are some files not merging or being skipped?', a: "<h5>Cause:</h5><p>This is usually due to one of three reasons: 1) The file is <strong>corrupt</strong> and Acrobat cannot process it. 2) The file has <strong>security restrictions</strong> (is password-protected) that prevent modification. 3) It's a non-standard or unsupported file type that the tool cannot convert to PDF properly.</p><h5>Solution:</h5><ol><li>Try to open each source file individually. If one fails to open, it's corrupt. Try re-saving it from its original program.</li><li>If a file is password-protected, Acrobat should prompt you for the password. If it doesn't, you may need to open it and remove the security first.</li></ol><h5>Prevention:</h5><p>Always do a quick check of your source files before a large merge. Ensure they all open correctly and are not locked.</p>" },
+            { q: 'Q2: Why does Acrobat crash or freeze during a large merge?', a: "<h5>Cause:</h5><p>This is almost always a <strong>system memory (RAM) issue</strong>. Combining hundreds of high-resolution files requires a lot of system resources, and your computer may be running out of available memory to complete the operation.</p><h5>Solution:</h5><ol><li>Close all other applications to free up as much RAM as possible.</li><li>Merge the files in smaller batches. For example, combine files 1-50 into `Batch1.pdf`, then 51-100 into `Batch2.pdf`. Finally, merge `Batch1.pdf` and `Batch2.pdf` together.</li></ol><h5>Prevention:</h5><p>For regularly merging very large document sets, consider using a computer with more RAM (16GB or higher is recommended).</p>" },
+            { q: 'Q3: Why is my final merged file size so large?', a: "<h5>Cause:</h5><p>The primary cause is <strong>uncompressed, high-resolution images</strong>. Each photo from a modern camera can be several megabytes. The second cause is embedded fonts, especially from complex design files.</p><h5>Solution:</h5><p>After merging, go to <strong>File > Save as Other > Optimized PDF...</strong>. In the 'Images' panel, set the resolution for color and grayscale images to 150 DPI (for screen) or 300 DPI (for print). This single step can reduce file sizes by up to 90%.</p><h5>Prevention:</h5><p>Follow the best practice of compressing once at the very end of your workflow.</p>" },
+            { q: 'Q4: How do I preserve hyperlinks from my source Word or PDF files?', a: "<h5>Cause:</h5><p>Hyperlinks can be lost if the tool or settings used for conversion do not support them. Basic converters often 'flatten' a document, discarding all interactivity.</p><h5>Solution:</h5><ol><li>Ensure you are using Adobe Acrobat Pro, which is designed to preserve hyperlinks by default.</li><li>In your Word options, under 'Save', ensure the 'Preserve fidelity when sharing this document' option is checked.</li><li>When printing to PDF from Word, go to 'Options' in the print dialog and make sure 'Document properties' and 'Document structure tags for accessibility' are checked.</li></ol><h5>Prevention:</h5><p>Always use a high-quality PDF creation tool like Acrobat Pro instead of basic 'Print to PDF' drivers when interactivity is critical.</p>" },
+            { q: 'Q5: Why are pages missing from the final merged file?', a: "<h5>Cause:</h5><p>This can happen if a source document is corrupt or contains blank pages that are discarded by the tool. For Excel files, it's very common if a 'Print Area' was not defined, so the tool didn't know which cells to convert.</p><h5>Solution:</h5><p>Before merging, open your source Excel file, select the cells you want to include, and go to 'Page Layout > Print Area > Set Print Area'. For other documents, quickly scroll through them to ensure there are no unexpected blank pages.</p><h5>Prevention:</h5><p>Always use the thumbnail preview in the 'Combine Files' window to visually check that all expected pages are present before you click the 'Combine' button.</p>" },
+            { q: 'Q6: Why are my fonts changing or looking weird after the merge?', a: "<h5>Cause:</strong><p>The computer viewing the merged PDF doesn't have the original fonts installed and the fonts were not embedded in the source document. The system substitutes a different font, which can cause text to reflow and look incorrect.</p><h5>Solution:</h5><p>The only truly reliable fix is to go back to the source document (e.g., the Word or InDesign file) and export it to PDF again, but this time, in the options, ensure that 'Embed fonts' is checked. </p><h5>Prevention:</h5><p>Standardize on using PDF/A format when possible, as it enforces font embedding automatically.</p>" },
+            { q: 'Q7: Why are all my comments and annotations lost?', a: "<h5>Cause:</h5><p>This is often a result of using a basic or free online merge tool that flattens the PDF as part of its process. It can also happen if there is a version conflict between the tool that created the comments and the tool performing the merge.</p><h5>Solution:</h5><p>Use the 'Combine Files' feature within a recent version of Adobe Acrobat Pro, which is designed to preserve annotations. If comments are still being lost, try opening the commented PDF and re-saving it as an 'Optimized PDF', which can sometimes clean up compatibility issues before merging.</p><h5>Prevention:</h5><p>Avoid free online tools for any document where preserving interactivity like comments, links, or form fields is important.</p>" },
+            { q: 'Q8: How can I undo a merge?', a: "<h5>Cause:</h5><p>A merged PDF is a new file; the original source files are not 'linked' to it. There is no direct 'un-merge' command.</p><h5>Solution:</h5><p>You cannot truly undo a merge. However, you can use the <strong>'Organize Pages' -> 'Split'</strong> tool in Acrobat Pro. You can split the document every X pages, by file size, or by top-level bookmarks. This allows you to break the large file back down into smaller pieces, which may be your original documents.</p><h5>Prevention:</h5><p>Never delete your source files! Always keep the original documents safe until you are 100% satisfied with the final merged product. Follow a non-destructive workflow.</p>" },
+            { q: 'Q9: How do I keep my page numbers sequential?', a: "<h5>Cause:</h5><p>Acrobat sees the merged file as one long document. It will not automatically remove the old page numbers from the individual source files, leading to a confusing mix of page numbers in the footers.</p><h5>Solution:</h5><p>After merging, go to the <strong>'Edit PDF'</strong> tool. First, manually delete any text boxes containing the old page numbers. Then, go to <strong>'Header & Footer' -> 'Add...'</strong>. In this dialog, you can add a new, clean footer and use the 'Insert Page Number' button to apply fresh, sequential numbering to the entire document.</p><h5>Prevention:</h5><p>If possible, remove page numbers from your source documents before you begin the merge process.</p>" },
+            { q: 'Q10: Why are some of my scanned images pixelated or blurry?', a: "<h5>Cause:</h5><p>This usually happens during the compression step. If you use 'Reduce File Size' or 'Optimize PDF' with settings that are too aggressive, the tool will downsample your images to a lower resolution (e.g., 72 or 96 DPI) to save space, causing blurriness.</p><h5>Solution:</h5><p>Unfortunately, this cannot be easily undone after the file is saved. You will need to re-merge the original, high-resolution source files. When you compress the new file, choose a higher quality setting or manually set the DPI in the 'Optimize PDF' dialog to 150 DPI for screens or 300 DPI for print.</p><h5>Prevention:</h5><p>Always save a non-compressed, high-quality master version of your merged file before creating smaller, compressed versions for distribution.</p>" },
+            { q: 'Q11: How to reorder files before combining?', a: "<h5>Cause:</h5><p>The default order of files added to the 'Combine' window is based on your system's file selection order, which may not be what you want.</p><h5>Solution:</h5><p>In the 'Combine Files' window, you have full control. You can either <strong>drag and drop the file thumbnails</strong> into the correct sequence or use the 'Sort by' dropdown menu to automatically sort them by name, size, or date modified.</p><h5>Prevention:</h5><p>Adopt the best practice of renaming your files with a numerical prefix (<code>01_...</code>, <code>02_...</code>) before you start. This allows for instant, perfect sorting by name.</p>" },
+            { q: 'Q12: How to preserve form fields so they remain fillable?', a: "<h5>Cause:</h5><p>Some simpler PDF tools or incorrect settings can 'flatten' a PDF, which turns fillable form fields into static, non-interactive text and boxes.</p><h5>Solution:</h5><p>Ensure you are using Acrobat Pro, which preserves form fields by default. When combining multiple PDFs that contain forms, Acrobat will attempt to merge the form fields. After merging, open the 'Prepare Form' tool to check that all fields are still recognized correctly and have unique names.</p><h5>Prevention:</h5><p>Avoid using 'Print to PDF' to create your source files from programs like Word, as this method almost always flattens form fields. Use the 'Create PDF' functionality instead.</p>" },
+            { q: 'Q13: Why is the page layout inconsistent (different margins/sizes)?', a: "<h5>Cause:</h5><p>The 'Combine Files' tool is an assembler, not a formatter. It stitches your source documents together as-is. If one source file is A4 and another is US Letter, or if they have different margins, that inconsistency will be present in the final file.</p><h5>Solution:</h5><p>The only proper fix is to edit the source documents. Open the original Word, Excel, or InDesign files and change their page setup options to be consistent before you create the PDFs and merge them.</p><h5>Prevention:</h5><p>Establish a document template for projects that require frequent merging to ensure all source files start with the same page size and margins.</p>" },
+            { q: 'Q14: How can I compress a merged file even further?', a: "<h5>Cause:</h5><p>The standard 'Reduce File Size' option uses a balanced set of presets. You may need more aggressive, specific settings to get the smallest possible size.</p><h5>Solution:</h5><p>Use the <strong>'Optimize PDF'</strong> tool (File > Save as Other > Optimized PDF...). In the dialog: 1) Aggressively downsample images to 96 or 72 DPI. 2) In 'Fonts', unembed any standard system fonts like Arial or Times New Roman. 3) In 'Discard Objects', check all options to remove things like JavaScript actions, embedded thumbnails, and document tags.</p><h5>Prevention:</h5><p>Be aware that aggressive optimization can degrade visual quality and remove functionality. Always save an optimized file as a new copy.</p>" },
+            { q: 'Q15: How can I preview the document before combining?', a: "<h5>Cause:</h5><p>You want to see how the pages will look and flow before committing to the final merge operation.</p><h5>Solution:</h5><p>The 'Combine Files' window *is* the preview mode. You can double-click any of the file thumbnails in the window to open a larger preview of its pages. You can step through the pages of each source document and reorder them before you ever click the 'Combine' button.</p><h5>Prevention:</h5><p>Make using this preview feature a mandatory step in your personal workflow. A quick check here saves significant time later.</p>" },
+            { q: 'Q16: How can I rename files during the merge?', a: "<h5>Cause:</h5><p>Renaming files is part of a larger, repeatable workflow that you want to automate.</p><h5>Solution:</h5><p>You cannot rename files during a simple merge. However, you can do this as part of an automated workflow using the <strong>'Action Wizard'</strong> in Acrobat Pro. You can create an Action that combines files, then adds a 'Save' step where you can configure a standardized naming convention using variables like date or input filenames.</p><h5>Prevention:</h5><p>For one-off jobs, it's fastest to simply use 'Save As' at the end. For repeated jobs, invest the time to build an Action.</p>" },
+            { q: 'Q17: How can I automate batch merges?', a: "<h5>Cause:</h5><p>You have a recurring task, such as combining daily reports for 50 different departments into 50 separate merged files.</p><h5>Solution:</h5><p>This is the prime use case for the <strong>'Action Wizard'</strong> in Acrobat Pro. You can build a custom action that prompts you for files, combines them, adds headers/footers, compresses, and saves them to a specific folder. For even more advanced automation, Acrobat supports JavaScript, allowing developers to script complex document processing workflows.</p><h5>Prevention:</h5><p>If you have a repetitive PDF task, explore the Action Wizard. The 15 minutes it takes to set up an action can save you hours of manual work each month.</p>" },
+            { q: 'Q18: How can I add a cover page automatically?', a: "<h5>Cause:</h5><p>You want every merged document to have a consistent, templated cover page without manually adding it each time.</p><h5>Solution:</h5><p>Create your cover page as a separate, one-page PDF template. When you use the 'Combine Files' tool, simply make it a habit to always add your cover page template as the very first file in the list before adding your other documents.</p><h5>Prevention:</h5><p>For full automation, you can use the 'Action Wizard' to create an action that always starts by inserting your cover page template before combining the files you select.</p>" },
+            { q: 'Q19: How can I handle file version conflicts?', a: "<h5>Cause:</h5><p>You have two versions of a merged report, and you need to know exactly what has changed between them.</p><h5>Solution:</h5><p>Use the <strong>'Compare Files'</strong> tool in Acrobat Pro. It's designed specifically for this purpose. Open the tool, select the two PDF files you want to compare (e.g., `Report_v1.pdf` and `Report_v2.pdf`), and Acrobat will produce a new summary document that visually highlights every single text and image difference between the two versions.</p><h5>Prevention:</h5><p>Use a clear versioning system in your filenames (e.g., `_v1`, `_v2`) to avoid confusion.</p>" },
+            { q: 'Q20: Why can\'t I drag-and-drop files into the tool?', a: "<h5>Cause:</h5><p>This is usually due to one of two reasons: 1) System permissions. If you are running Acrobat as an administrator but your file explorer is not, the 'drag' operation can be blocked by the operating system. 2) The Acrobat window is not in focus or has a dialog box open that you need to address first.</p><h5>Solution:</h5><p>First, try simply clicking the 'Add Files' button instead of dragging. If that works, the issue is with the drag-and-drop action itself. Try running both Acrobat and your file explorer with the same level of user permissions. Close any open dialog boxes in Acrobat before attempting to drag.</p><h5>Prevention:</h5><p>Get comfortable using the 'Add Files' button as it's a more reliable method than dragging and dropping.</p>" }
+        ];
+
+        let content = '';
+        faqContent.forEach(item => {
+            content += `
+                <div class="accordion-item">
+                    <button class="accordion-button">${item.q}</button>
+                    <div class="accordion-content"><div class="content-wrapper">${item.a}</div></div>
+                </div>`;
+        });
+        faqContainer.innerHTML = content;
+        
+        faqContainer.querySelectorAll('.accordion-button').forEach(button => {
+            button.addEventListener('click', () => {
+                const accordionItem = button.parentElement;
+                const accordionContent = button.nextElementSibling;
+                const isActive = accordionItem.classList.contains('active');
+                
+                if (!isActive) {
+                    accordionItem.classList.add('active');
+                    accordionContent.style.maxHeight = accordionContent.scrollHeight + 'px';
+                } else {
+                    accordionItem.classList.remove('active');
+                    accordionContent.style.maxHeight = null;
+                }
+            });
+        });
+    }
+
+    // Quiz Handler with Detailed Feedback
+    function handleQuiz(quizId, feedback) {
+        const quizOptions = document.getElementById(quizId);
+        if (quizOptions) {
+            const feedbackEl = document.getElementById(quizId.replace('-options', '-feedback'));
+            quizOptions.addEventListener('click', e => {
+                const selectedOption = e.target.closest('li');
+                if (!selectedOption || quizOptions.classList.contains('answered')) return;
+                
+                quizOptions.classList.add('answered');
+                const isCorrect = selectedOption.dataset.correct === 'true';
+
+                if (isCorrect) {
+                    selectedOption.classList.add('correct');
+                    feedbackEl.innerHTML = feedback.correct;
+                    feedbackEl.classList.add('correct', 'visible');
+                } else {
+                    selectedOption.classList.add('incorrect');
+                    quizOptions.querySelector('[data-correct="true"]').classList.add('correct');
+                    feedbackEl.innerHTML = feedback.incorrect;
+                    feedbackEl.classList.add('incorrect', 'visible');
+                }
+                quizOptions.querySelectorAll('li').forEach(li => li.classList.add('answered'));
+            });
+        }
+    }
+    
+    handleQuiz('q1-options', {
+        correct: '<strong>✅ Correct!</strong> A huge file size points to uncompressed images, and non-searchable text points to a lack of OCR. These are two distinct problems that must be solved with the correct tools after merging.',
+        incorrect: '<strong>❌ Incorrect.</strong> While other tools are important, the core problems described (huge size, non-searchable text) are directly solved by Compression and OCR respectively. The correct answer is highlighted.'
+    });
+
+    handleQuiz('q2-options', {
+        correct: '<strong>✅ Correct!</strong> A generic failure is most often caused by a single corrupt file in the batch. Isolating the problem file by trying to open each one individually is the most efficient first step in diagnosing the issue.',
+        incorrect: '<strong>❌ Incorrect.</strong> Before reinstalling software or trying other tools, the simplest and most likely cause is a problem with one of the source files. Always check your inputs first. The correct answer is highlighted.'
+    });
+});
+</script>
+
+</body>
+</html>

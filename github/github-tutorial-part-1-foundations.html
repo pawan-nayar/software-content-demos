@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Foundations: Your First Repository</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* --- Base Theme --- */
+        :root {
+            --text: #212529; --bg: #fff; --muted: #f8f9fa; --border: #e9ecef;
+            --accent: #fd7e14; --accent-2: #e87312; --header-bg: #2c3e50; --header-fg: #f8f9fa;
+            --ok: #16a34a; --ok-soft: #dcfce7; --bad: #dc2626; --bad-soft: #fee2e2;
+            --code-bg: #2d3748; --code-fg: #e2e8f0;
+            --font-main: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            --font-code: 'Courier New', Courier, monospace;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body { 
+            font-family: var(--font-main); 
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--text); 
+            line-height: 1.7; 
+            font-size: 16px; 
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- Header / Footer --- */
+        .site-header, .site-footer { background: var(--header-bg); color: var(--header-fg); padding: 14px 24px; flex-shrink: 0; }
+        .site-header { display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .logo { font-weight: 700; font-size: 1.15rem; color: #fff; text-decoration: none; cursor: pointer; }
+        .site-footer { text-align: center; padding: 30px; }
+
+        /* --- Main Wizard Container --- */
+        .wizard-container {
+            padding: 1rem;
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .wizard-panel {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+        }
+        .wizard-panel h1 { font-size: 1.8rem; color: var(--accent-2); margin-bottom: 0.5rem; }
+        .wizard-panel p { font-size: 1.05rem; margin-bottom: 1rem; }
+        .wizard-panel h2 { font-size: 1.3rem; margin-top: 1.5rem; margin-bottom: 0.5rem; }
+        .start-btn { 
+            display: block; 
+            width: 100%; 
+            background: var(--accent); 
+            color: white; 
+            border: none; 
+            padding: 1rem; 
+            font-size: 1.2rem; 
+            font-weight: 700; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            margin-top: 1.5rem; 
+            transition: background-color 0.2s; 
+        }
+        .start-btn:hover { background: var(--accent-2); }
+        .start-btn:disabled { 
+            background-color: #ccc;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        /* --- Select Screen --- */
+        .select-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        .select-card {
+            background: var(--muted);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            border-top: 4px solid var(--accent);
+        }
+        .select-card:hover { transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
+        .select-card h3 { color: var(--accent-2); margin-bottom: 0.5rem; }
+        .select-card p { font-size: 0.9rem; margin-bottom: 0; }
+        .select-card.completed {
+            background: #dcfce7;
+            border-color: #16a34a;
+            border-top-color: #16a34a;
+        }
+        
+        /* --- Tutorial Screen --- */
+        .tutorial-container {
+            display: none; /* Initially hidden */
+            grid-template-columns: 45% 1fr;
+            gap: 24px;
+            padding: 24px;
+            flex-grow: 1;
+        }
+        .left-column, .right-column { display: flex; flex-direction: column; gap: 24px; min-height: calc(100vh - 150px); }
+        
+        .panel { background: var(--bg); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .panel-header { padding: 12px 16px; border-bottom: 1px solid var(--border); background: var(--muted); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+        .panel-title { font-weight: 600; font-size: 1.1rem; }
+        .panel-body { padding: 16px; flex-grow: 1; overflow-y: auto; }
+        .back-btn { background: #6c757d; color: white; border: none; padding: 5px 12px; font-size: 0.9rem; border-radius: 6px; cursor: pointer; transition: background-color 0.2s; }
+        .back-btn:hover { background: #5a6268; }
+
+        /* --- Playground Tab Bar --- */
+        .playground-tabs { display: flex; border-bottom: 1px solid var(--border); flex-shrink: 0; flex-wrap: wrap; }
+        .crud-tab { flex-grow: 1; background: none; border: none; padding: 14px 10px; font-size: 1rem; font-weight: 600; cursor: pointer; border-bottom: 3px solid transparent; transition: background-color 0.2s, color 0.2s; }
+        .crud-tab.active { 
+            color: var(--accent); 
+            border-bottom-color: var(--accent); 
+            background-color: white; 
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .code-viewer { font-family: var(--font-code); font-size: 0.95rem; line-height: 1.6; background-color: var(--code-bg); color: var(--code-fg); padding: 16px; white-space: pre-wrap; margin: 0; flex-grow: 1;}
+        .output-viewer h1, .output-viewer h2 { margin-top: 1rem; margin-bottom: 0.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+        .output-viewer ul { margin-left: 20px; }
+        .output-viewer p { margin-bottom: 1rem; }
+        .commit-section { background: var(--muted); padding: 12px 16px; border-top: 1px solid var(--border); font-family: var(--font-code); font-size: 0.9rem; flex-shrink: 0;}
+        .commit-section strong { color: var(--accent-2); }
+        
+        /* --- Right Pane: Explanations --- */
+        #explanation-panel-body { padding: 0; min-height: 500px; }
+        .explanation-tabs { display: flex; border-bottom: 1px solid var(--border); padding: 0 16px; flex-shrink: 0; flex-wrap: wrap; }
+        .explanation-tab { background: none; border: none; padding: 12px 16px; font-size: 0.95rem; font-weight: 600; cursor: pointer; border-bottom: 3px solid transparent; }
+        .explanation-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+        .explanation-content { display: none; padding: 16px; }
+        .explanation-content.active { display: block; animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .explanation-content h3 { font-size: 1.2rem; color: var(--accent-2); margin-top: 0; margin-bottom: 12px; }
+        .explanation-content p { margin-bottom: 1rem; }
+        .explanation-content .analogy { background: var(--muted); border-left: 4px solid var(--accent); padding: 12px; border-radius: 4px; font-style: italic; }
+        .step-list { list-style-type: none; padding-left: 0; counter-reset: step-counter; }
+        .step-list li { counter-increment: step-counter; margin-bottom: 12px; display: flex; align-items: flex-start; text-align: left; }
+        .step-list li::before { content: counter(step-counter); background: var(--accent-2); color: white; font-weight: 700; border-radius: 50%; width: 24px; height: 24px; display: inline-flex; justify-content: center; align-items: center; margin-right: 12px; flex-shrink: 0; }
+        .quiz-question { margin-bottom: 24px; }
+        .quiz-question p { font-weight: 600; }
+        .quiz-option { display: block; margin: 8px 0; padding: 10px; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; transition: background-color 0.2s, border-color 0.2s; }
+        .quiz-option:hover { background: var(--muted); }
+        .quiz-option input { margin-right: 8px; }
+        .quiz-option.correct { background-color: var(--ok-soft); border-color: var(--ok); }
+        .quiz-option.incorrect { background-color: var(--bad-soft); border-color: var(--bad); }
+        .quiz-option.disabled { opacity: 0.6; pointer-events: none; }
+        
+        /* New Styles for Best Practices & Glossary */
+        .best-practices-section ul, .glossary-list ul { margin: 0; list-style-type: none; padding-left: 0; }
+        .best-practices-section li { margin-bottom: 8px; display: flex; align-items: flex-start; }
+        .best-practices-section .do-item::before { content: '✅'; margin-right: 10px; font-size: 1.2rem; flex-shrink: 0; margin-top: 2px; }
+        .best-practices-section .dont-item::before { content: '❌'; margin-right: 10px; font-size: 1.2rem; flex-shrink: 0; margin-top: 2px;}
+        .glossary-list li { margin-bottom: 10px; }
+        .glossary-list strong { color: var(--accent-2); }
+        .faq-list { margin-top: 1rem; }
+        .faq-list h4 { font-weight: 600; margin-bottom: 0.5rem; }
+        .faq-list p { margin-bottom: 1.2rem; }
+
+        /* General Quiz Styles */
+        .quiz-container { display: none; flex-direction: column; justify-content: center; align-items: center; flex-grow: 1; }
+        .quiz-container .quiz-panel { background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem 2rem; box-shadow: 0 5px 15px rgba(0,0,0,0.05); max-width: 800px; width: 100%; display: flex; flex-direction: column; text-align: left; }
+        .quiz-container .quiz-panel .q-card { min-height: 400px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .quiz-container .quiz-panel .q-card .q-content { flex-grow: 1; padding-bottom: 1rem; }
+        .quiz-container .quiz-panel .q-card h2 { font-size: 1.5rem; font-weight: 600; margin-bottom: 1rem; color: var(--accent-2); }
+        .quiz-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; }
+        .quiz-nav button { padding: 0.75rem 1.5rem; font-weight: bold; border-radius: 8px; transition: all 0.2s; background-color: var(--accent); color: white; border: none; }
+        .quiz-nav button:disabled { background-color: #ccc; cursor: not-allowed; opacity: 0.6; }
+        .quiz-nav button:hover:not(:disabled) { background-color: var(--accent-2); }
+        .progress-bar { width: 100%; height: 10px; background-color: #e9ecef; border-radius: 9999px; overflow: hidden; margin-bottom: 1.5rem; }
+        .progress-bar-fill { height: 100%; background-color: var(--accent); transition: width 0.3s ease-in-out; }
+        /* Quiz Question Types */
+        .question-body { margin-bottom: 1.5rem; }
+        .question-options label { display: block; background: var(--muted); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem 1rem; cursor: pointer; transition: all 0.2s; margin-bottom: 0.5rem; }
+        .question-options label:hover { background: #e9ecef; }
+        .question-options input[type="radio"], .question-options input[type="checkbox"] { margin-right: 0.75rem; }
+        .question-options label.correct { background-color: var(--ok-soft); border-color: var(--ok); }
+        .question-options label.incorrect { background-color: var(--bad-soft); border-color: var(--bad); }
+        .feedback { margin-top: 1rem; padding: 1rem; border-left: 4px solid; border-radius: 8px; }
+        .feedback.correct { border-color: var(--ok); background-color: var(--ok-soft); }
+        .feedback.incorrect { border-color: var(--bad); background-color: var(--bad-soft); }
+        
+        /* Sequence and Match Styles */
+        .seq-list { list-style: none; margin: 0; padding: 0; }
+        .seq-item { background: #fff; border: 1px solid var(--border); border-radius: 10px; padding: 0.6rem 0.8rem; display: flex; gap: 0.6rem; align-items: center; cursor: grab; user-select: none; margin-bottom: 0.4rem; transition: all 0.2s ease; }
+        .seq-item:hover { border-color: var(--accent); background: #f8f9fa; }
+        .seq-item .handle { opacity: 0.55; font-size: 1.2rem; }
+        .seq-item.dragging { opacity: 0.6; background: #fef3e7; border-color: var(--accent); transform: rotate(2deg); }
+        .match-grid { display: grid; gap: 1rem; }
+        @media(min-width: 760px) { .match-grid { grid-template-columns: 1fr 1fr; } }
+        .match-item { background: #fff; border: 1px solid var(--border); border-radius: 10px; padding: 0.55rem 0.7rem; cursor: pointer; transition: 0.2s; margin-bottom: 0.4rem; }
+        .match-item.is-picked { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(239, 125, 85, 0.18); }
+        
+    </style>
+</head>
+<body>
+
+    <header class="site-header">
+        <a class="logo" onclick="showScreen(introScreen)">GitHub Learning Series</a>
+    </header>
+
+    <!-- Screen 1: Intro -->
+    <div id="intro-screen" class="wizard-container">
+        <div class="wizard-panel">
+            <h1>Part 1: GitHub Foundations 🚀</h1>
+            <p>Welcome to your first GitHub playground! This module covers the essentials for managing your own projects. You'll learn how to track changes, save your work history, and manage files—the foundational skills for every developer.</p>
+            <p>This is all about your individual workflow. We'll cover teamwork and collaboration in Part 2.</p>
+            <button id="start-tutorial-btn" class="start-btn">Let's Get Started! 🚀</button>
+        </div>
+    </div>
+    
+    <!-- Screen 2: Select Tutorial -->
+    <div id="select-screen" class="wizard-container" style="display: none;">
+        <div class="wizard-panel">
+            <h1>Choose Your First Topic! ✨</h1>
+            <p>These are the fundamental building blocks of Git and GitHub. Select one to learn how it works.</p>
+            <div id="select-grid" class="select-grid">
+                <div class="select-card" data-crud="repo">
+                    <h3>📚 Repository</h3>
+                    <p>Your project's complete folder and history.</p>
+                </div>
+                 <div class="select-card" data-crud="staging">
+                    <h3>📋 Staging Area</h3>
+                    <p>Preparing which changes to save.</p>
+                </div>
+                <div class="select-card" data-crud="create">
+                    <h3>📄 Create & Commit</h3>
+                    <p>Adding a new file and saving the snapshot.</p>
+                </div>
+                <div class="select-card" data-crud="read">
+                    <h3>👀 Read History</h3>
+                    <p>Viewing files and their commit history.</p>
+                </div>
+                <div class="select-card" data-crud="update">
+                    <h3>✏️ Update & Commit</h3>
+                    <p>Modifying files and saving new changes.</p>
+                </div>
+                <div class="select-card" data-crud="delete">
+                    <h3>🗑️ Delete & Commit</h3>
+                    <p>Removing a file in a new snapshot.</p>
+                </div>
+            </div>
+            
+            <hr class="my-6 border-gray-300">
+
+            <h2>Final Test! 🧠</h2>
+            <p id="quiz-status-text">Complete at least 3 topics above to unlock the final quiz!</p>
+            <button id="start-quiz-btn" class="start-btn" disabled>Start Final Quiz</button>
+        </div>
+    </div>
+    
+    <!-- Screen 3: Tutorial -->
+    <main id="tutorial-screen" class="tutorial-container">
+        <!-- Left Column: Code and Output -->
+        <div class="left-column">
+             <div class="panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">Playground</h2>
+                    <button id="back-btn" class="back-btn">← Back to Topics</button>
+                </div>
+                <div class="panel-body" style="padding:0; display:flex; flex-direction:column; flex-grow:1;">
+                    <div class="playground-tabs">
+                        <button class="crud-tab" data-crud="repo">📚 Repo</button>
+                        <button class="crud-tab" data-crud="staging">📋 Staging</button>
+                        <button class="crud-tab" data-crud="create">📄 Create</button>
+                        <button class="crud-tab" data-crud="read">👀 Read</button>
+                        <button class="crud-tab" data-crud="update">✏️ Update</button>
+                        <button class="crud-tab" data-crud="delete">🗑️ Delete</button>
+                    </div>
+                    <pre id="code-viewer" class="code-viewer"></pre>
+                    <div id="commit-section" class="commit-section"></div>
+                </div>
+            </div>
+            <div class="panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">👀 What It Looks Like</h2>
+                </div>
+                <div id="output-viewer" class="panel-body output-viewer"></div>
+            </div>
+        </div>
+
+        <!-- Right Column: Learning Module -->
+        <div class="right-column">
+            <div class="panel" style="flex-grow: 1;">
+                <div id="explanation-panel-body" class="panel-body">
+                    <!-- Explanation content will be injected here -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Screen 4: Final Quiz -->
+    <div id="final-quiz-screen" class="wizard-container light-quiz-style hidden">
+        <div class="quiz-panel w-full max-w-2xl bg-white rounded-xl shadow-md p-6 sm:p-8">
+            <div class="flex justify-between items-center mb-4">
+                <div class="progress-bar-container w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+                    <div id="quiz-progress" class="progress-bar-fill h-full bg-orange-500 transition-all duration-300 ease-in-out" style="width: 0%;"></div>
+                </div>
+                <span id="quiz-counter" class="text-sm font-semibold text-orange-500 ml-4 whitespace-nowrap">Q 1 / 17</span>
+            </div>
+            <div class="q-card" id="quiz-card">
+                <!-- Quiz question will be rendered here -->
+            </div>
+            <div class="quiz-nav flex justify-between items-center mt-6">
+                <button id="quiz-prev-btn" class="px-4 py-2 bg-gray-300 text-gray-700 font-semibold rounded-lg shadow-sm hover:bg-gray-400 transition-colors duration-200" disabled>← Previous</button>
+                <button id="quiz-skip-btn" class="px-3 py-1 bg-yellow-500 text-white text-sm font-semibold rounded-lg shadow-sm hover:bg-yellow-600 transition-colors duration-200">Skip Question</button>
+                <button id="quiz-next-btn" class="px-4 py-2 bg-orange-500 text-white font-semibold rounded-lg shadow-sm hover:bg-orange-600 transition-colors duration-200">Submit Answer</button>
+            </div>
+        </div>
+    </div>
+
+
+    <footer class="site-footer">
+        <p>© 2025 A fun learning project. Let's make coding simple for everyone!</p>
+    </footer>
+
+    <script>
+    const playgroundData = {
+        repo: {
+            code: `my-awesome-project/ (local copy)
+├── .git/ (tracks all history)
+└── my-story.md
+
+GitHub.com/YourUsername/my-awesome-project/ (remote copy)`,
+            commit: "A repository contains your entire project and its full history.",
+            output: "<h1>My Awesome Project 📚</h1><p>Your local repository on your computer is synced with a remote one on GitHub.</p>",
+            explanation: {
+                concepts: {
+                    title: "Concept: What is a Repository?",
+                    analogy: "A <strong>Repository (Repo)</strong> is like the master folder for a project. It contains all your files and, crucially, the entire history of every change ever made. You have a 'local' copy on your computer, and a 'remote' copy on GitHub that acts as your backup and sharing point.",
+                    text: "It's important to distinguish between <strong>Git</strong> and <strong>GitHub</strong>. <strong>Git</strong> is the software that runs on your computer, tracking changes and managing history inside a hidden `.git` folder. <strong>GitHub</strong> is a website that hosts your repositories, allowing you to store them online ('remotes') and, eventually, collaborate with others."
+                },
+                steps: {
+                    title: "The Local vs. Remote Workflow",
+                    list: [
+                        "You 'clone' a remote repository from GitHub to your computer, creating a 'local' repository.",
+                        "You work on your files locally, making changes and saving them with commits.",
+                        "You 'push' your commits from your local repo up to the remote repo on GitHub to share them.",
+                        "You 'pull' changes from the remote repo to get updates (important when you work on multiple computers or with a team)."
+                    ]
+                },
+                quiz: [
+                    { q: "What is the difference between Git and GitHub?", options: ["They are the same thing", "Git is the tool; GitHub is a website that hosts Git repos", "Git is for single users; GitHub is for teams"], correct: 1, explain: "Git is the core technology, while GitHub is a popular service that provides hosting and tools for Git repositories." },
+                    { q: "A 'local' repository is on...", options: ["A server in Antarctica", "The GitHub website", "Your own computer"], correct: 2, explain: "Your local repo is the one on your machine where you do your work." }
+                ],
+                bestPractices: {
+                    dos: ["Keep each distinct project in its own repository.", "Give your repos clear, descriptive names (e.g., `personal-portfolio-site`).", "Write a good `README.md` file explaining your project."],
+                    donts: ["Don't dump unrelated projects into one giant repo.", "Don't use vague names like `project1` or `stuff`.", "Don't be afraid to work offline; your local repo has the full history."],
+                    glossary: [
+                        { term: "Git", def: "The distributed version control system that runs on your computer." },
+                        { term: "GitHub", def: "A web platform for hosting remote Git repositories and collaboration." },
+                        { term: "Local Repository", def: "The copy of the repository on your machine." },
+                        { term: "Remote Repository", def: "The copy of the repository hosted on a server, like GitHub." },
+                        { term: "Clone", def: "The act of creating a local copy of a remote repository." }
+                    ]
+                },
+                faq: [
+                    { q: "Can I use Git without an internet connection?", a: "Yes! Because you have a full copy of the repo locally, you can make commits and view history all while offline. You only need an internet connection to `push` or `pull` changes to/from a remote." },
+                    { q: "Why `main` instead of `master`?", a: "Historically, the default branch was named `master`. The industry has shifted to using `main` as a more inclusive and neutral term. Both mean the same thing: the primary branch of the repository. All new repositories on GitHub now default to `main`." },
+                    { q: "I see 'fatal: not a git repository'. What did I do wrong?", a: "This common error means you're trying to run a Git command in a folder that isn't a Git repository. Make sure you've used `cd` to navigate into your project folder (the one with the hidden `.git` directory) before running commands like `git status` or `git log`."}
+                ]
+            }
+        },
+        staging: {
+            code: `# You've changed my-story.md and styles.css
+# But you only want to save the story change now.
+
+> git add my-story.md
+> git status
+On branch main
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+        modified:   my-story.md
+
+Changes not staged for commit:
+        modified:   styles.css`,
+            commit: "Only staged changes will be included in the next commit.",
+            output: "<h2>Changes Prepared!</h2><p>The <strong>Staging Area</strong> is a crucial intermediate step. It's a list of changes you have prepared for your next saved snapshot (commit).</p>",
+            explanation: {
+                concepts: {
+                    title: "Concept: The Staging Area",
+                    analogy: "Think of the **Staging Area** (or 'index') like a shopping cart. As you walk through a store, you make many potential choices (editing files). When you put an item in your cart (`git add`), you are preparing it for checkout. You can add or remove items from the cart as much as you like. The **commit** is the final act of purchasing everything currently in the cart.",
+                    text: "This two-step process—modifying files and then explicitly adding them to the staging area—is a core Git concept. It gives you fine-grained control to build up your commits piece by piece. You might change three files to fix one bug, but only want to group two of them into a single logical commit. The staging area makes this possible."
+                },
+                steps: {
+                    title: "The Staging Workflow",
+                    list: [
+                        "You modify one or more files in your project.",
+                        "You use `git add <filename>` to move the changes you want from your working files into the Staging Area.",
+                        "You can use `git status` at any time to see what is staged, unstaged, or untracked.",
+                        "When you're happy with the staged changes, you use `git commit` to save that exact snapshot to your history."
+                    ]
+                },
+                quiz: [
+                    { q: "What is the 'staging area' for?", options: ["A place to list your favorite files", "Preparing exactly which changes will be in your next commit", "Hiding files you don't like"], correct: 1, explain: "The staging area acts as a 'draft' for your next commit, giving you control over what's included." },
+                    { q: "What does `git add` do?", options: ["Adds a file to GitHub", "Adds changes to the staging area", "Adds a new user to the project"], correct: 1, explain: "`git add` takes the current changes in a file and stages them for the next commit." },
+                    { q: "Which command shows you what is currently staged and unstaged?", options: ["`git show`", "`git log`", "`git status`"], correct: 2, explain: "`git status` is one of the most frequently used commands and is essential for seeing the current state of your work."}
+                ],
+                bestPractices: {
+                    dos: ["Use `git status` frequently to check the state of your files.", "Stage and commit related changes together as one logical unit.", "Use the staging area to build up your commit piece by piece."],
+                    donts: ["Don't just use `git add .` blindly; be intentional about what you are staging.", "Don't forget to stage a file after modifying it; otherwise, the changes won't be in your commit."],
+                    glossary: [
+                        { term: "Staging Area / Index", def: "A holding area where you prepare changes for your next commit." },
+                        { term: "Working Directory", def: "The set of files on your computer that you are currently editing." },
+                        { term: "git status", def: "A command to show the current state of your working directory and staging area." },
+                        { term: "Commit", def: "A snapshot of your project's staged state, saved to its history." }
+                    ]
+                },
+                faq: [
+                    { q: "What if I edit a file *after* I use `git add` on it?", a: "This is a key concept! `git add` takes a snapshot of the file *at that exact moment* and puts it in the staging area. If you edit the file again before you commit, those new changes will be unstaged. You must run `git add` on the file again to update the snapshot in the staging area." },
+                    { q: "I made changes and committed, but my latest edits are missing! Why?", a: "This is a classic Week 1 mistake! It almost always means you forgot to run `git add <file>` *after* your latest edits but *before* you ran `git commit`. A commit only saves what's in the staging area. If you edit a file, you must `add` it again to update the staged version." }
+                ]
+            }
+        },
+        create: {
+            code: `> touch new-chapter.md
+> git add new-chapter.md
+> git commit -m 'feat: Begin chapter 2'
+> git push`,
+            commit: "<strong>commit:</strong> 'feat: Begin chapter 2'",
+            output: "<h1>My Awesome Story</h1><h2>Chapter 2</h2><p>A new chapter file has been created, staged, saved to local history (committed), and then pushed to the remote repository.</p>",
+            explanation: {
+                concepts: {
+                    title: "Concept: Creating and Committing Files",
+                    analogy: "Creating a file is adding a new document to your project's blueprint. The standard developer workflow is to do this on your local machine, then save that change as an official revision (a commit), and finally send your revision to the main server (push to the remote).",
+                    text: "While you *can* create files directly on the GitHub website, the typical workflow is to create and edit files on your local machine, use Git to commit them to your local repository, and then `push` those commits to the remote repository on GitHub."
+                },
+                steps: {
+                    title: "Steps to Create and Commit a File",
+                    list: [
+                        "Create a new file in your project folder on your computer (e.g., `new-file.md`).",
+                        "Use `git add new-file.md` to stage this new file, telling Git you want to start tracking it.",
+                        "Use `git commit -m 'Create new-file.md'` to save the staged snapshot in your local history.",
+                        "Finally, use `git push` to send that new commit up to GitHub."
+                    ]
+                },
+                quiz: [
+                     { q: "When you create a brand new file, what's the first Git command you need to run for it?", options: ["git commit", "git push", "git add"], correct: 2, explain: "A new file is 'untracked' by default. `git add` tells Git to start tracking it and stages it for the first commit." },
+                     { q: "What does the `-m` in `git commit -m 'message'` stand for?", options: ["master", "main", "message", "modify"], correct: 2, explain: "The `-m` flag stands for 'message' and allows you to provide your commit message directly on the command line." }
+                ],
+                bestPractices: {
+                    dos: ["Write short, present-tense, descriptive commit messages (e.g., 'feat: Add user login form').", "Make small, logical commits that each represent a single complete thought or feature."],
+                    donts: ["Don't write vague messages like 'stuff' or 'changes'.", "Don't lump many unrelated changes into a single, massive commit."],
+                    glossary: [
+                        { term: "git add", def: "Adds file changes to the staging area for the next commit." },
+                        { term: "git commit", def: "Records a snapshot of the staging area to the repository's history." },
+                        { term: "git push", def: "Uploads local repository commits to a remote repository." }
+                    ]
+                },
+                faq: [
+                    { q: "Can I create a folder?", a: "Git doesn't track empty folders. A folder is created in the history as soon as you add a file inside it. For example, `git add assets/icon.png` will create the `assets` folder in the commit." }
+                ]
+            }
+        },
+        read: {
+            code: `# My Awesome Story
+## Chapter 1
+- A brave knight appeared.
+- A dragon roared in the distance.
+
+> git log --oneline my-story.md
+c1a2b3d feat: Clarify knight's motivation
+e4f5g6h docs: Begin chapter 1`,
+            commit: "(No new commit, just viewing history)",
+            output: "<h1>My Awesome Story</h1><h2>Chapter 1</h2><ul><li>A brave knight appeared.</li><li>A dragon roared in the distance.</li></ul>",
+            explanation: {
+                concepts: {
+                    title: "Concept: Reading Files & History",
+                    analogy: "Reading a file is like looking at the project blueprint. But GitHub gives you special lenses to view it. You can see the final, rendered version, the raw text, or even a version that shows who built each part (`blame`).",
+                    text: "Viewing a file on GitHub is more than just seeing its content. You can also inspect its history using Git. The `git log` command is powerful for seeing the timeline of commits that have affected a specific file, helping you understand how it has evolved."
+                },
+                steps: {
+                    title: "Ways to Read a File on GitHub",
+                    list: [
+                        "Click a filename in your repository to see the default view (usually rendered).",
+                        "Click the 'Raw' button to see the file as plain text, with no styling.",
+                        "Click the 'Blame' button to enter a view where each line is annotated with the commit and author who last changed it.",
+                        "Click the 'History' button to see a list of all commits that modified this file."
+                    ]
+                },
+                quiz: [
+                     { q: "Which view shows you who was the last person to change a specific line?", options: ["Raw", "Rendered", "Blame"], correct: 2, explain: "Blame view is invaluable for understanding the history and context of a specific line of code." },
+                     { q: "What is the primary purpose of a `README.md` file?", options: ["To hide secret code", "To provide a summary and instructions for the project", "To list every file in the repo"], correct: 1, explain: "The README is the front page of your project, and a good one is essential for helping others understand its purpose."}
+                ],
+                bestPractices: {
+                    dos: ["Use 'Blame' to understand the context behind a specific line of code before you change it.", "Check the 'History' of a file to see how a bug might have been introduced.", "Read the `README.md` file first when exploring a new project."],
+                    donts: ["Don't assume the rendered view is the only way to see a file's content."],
+                    glossary: [
+                        { term: "Blame", def: "A view that annotates each line of a file with information about the last commit that modified it." },
+                        { term: "History", def: "The chronological log of commits for a repository or a specific file." },
+                        { term: "Markdown", def: "A simple text-to-HTML conversion tool for web writers, used for formatting `README.md` files."}
+                    ]
+                },
+                faq: [
+                    { q: "Why is it called 'Blame'?", a: "It's a bit of a joke in developer culture. It's less about blaming someone for a mistake and more about finding the right person to ask for context about a piece of code." }
+                ]
+            }
+        },
+        update: {
+            code: `// edit my-story.md locally...
+> git add my-story.md
+> git commit -m 'feat: Clarify knight's motivation'
+> git push`,
+            commit: "<strong>commit:</strong> 'feat: Clarify knight's motivation'",
+            output: "<h1>My Awesome Story</h1><h2>Chapter 1</h2><ul><li>A brave knight, seeking justice, appeared. ✏️</li><li>A dragon roared in the distance.</li></ul>",
+            explanation: {
+                concepts: {
+                    title: "Concept: Updating a File",
+                    analogy: "Updating a file is like revising a section of the project's blueprint. You mark up your local copy, stage the change, save that change as an official revision (a commit), and then send your revision to the main office (push to the remote).",
+                    text: "Just like creating files, the standard workflow for updating them happens locally. You edit the file on your computer, stage the changes, commit the snapshot, and then push to the remote. This `edit → add → commit → push` cycle is the heartbeat of using Git."
+                },
+                steps: {
+                    title: "Steps to Update a File",
+                    list: [
+                        "Open a file in your project folder on your computer and make your changes.",
+                        "Use `git add <filename>` to stage the file you just modified. Yes, you use `git add` for both new and modified files!",
+                        "Use `git commit -m 'Your clear message'` to save the snapshot of your changes to your local history.",
+                        "Use `git push` to upload your new commit(s) to the remote repository on GitHub."
+                    ]
+                },
+                quiz: [
+                    { q: "What is the correct four-step cycle for making an update?", options: ["Edit → Commit → Stage → Push", "Edit → add → Commit → Push", "Push → Edit → Stage → Commit"], correct: 1, explain: "You must edit, stage the changes (`add`), save them locally (`commit`), and then share them (`push`)." },
+                    { q: "What command do you use to prepare a modified file for a commit?", options: ["git modify", "git stage", "git add"], correct: 2, explain: "`git add` is used to stage changes from modified files, not just new files." }
+                ],
+                bestPractices: {
+                    dos: ["Before starting work, always run `git pull` to get the latest changes from the remote.", "Make small, focused commits for each update.", "Write clear messages explaining *why* you made the change."],
+                    donts: ["Don't work for days without pulling from the remote; you risk creating major conflicts.", "Don't edit files directly on GitHub if you're collaborating, as it can cause workflow issues."],
+                    glossary: [
+                        { term: "git pull", def: "To fetch from and integrate with another repository or a local branch." }
+                    ]
+                },
+                faq: [
+                    { q: "What's a 'conflict'?", a: "A merge conflict happens when Git can't automatically figure out how to combine changes. This most commonly occurs when two people modify the same lines in a file. We'll cover this in detail in Part 2!" },
+                    { q: "What happens if I forget to `git pull` before I start working?", a: "If no one else has made changes, you're fine! But if the remote repository has new commits that you don't have, Git will prevent you from pushing your own changes later. It will tell you to `pull` first to integrate the remote changes. This is Git's way of preventing you from accidentally overwriting history."}
+                ]
+            }
+        },
+        delete: {
+            code: `> git rm my-story.md
+> git commit -m 'refactor: Remove obsolete story file'
+> git push`,
+            commit: "<strong>commit:</strong> 'refactor: Remove obsolete story file'",
+            output: "<p>The file 'my-story.md' is no longer present in the latest version of the project.</p><p>However, it still exists perfectly preserved in all previous commits in the project's history.</p>",
+            explanation: {
+                concepts: {
+                    title: "Concept: Deleting a File",
+                    analogy: "Deleting a file in Git doesn't erase it from existence. Think of your project history as a series of film frames. Deleting a file is like creating a <strong>new frame</strong> where that actor is no longer on screen. The actor still exists in all the previous frames.",
+                    text: "When you delete a file and make a commit, you are creating a new snapshot of your project where that file is simply not included. It remains perfectly intact within the previous commits. Because Git's history is immutable, you can always check out an older commit to see the file exactly as it was."
+                },
+                steps: {
+                    title: "Steps to Delete a File",
+                    list: [
+                        "On your local machine, run `git rm <filename>`. This command both removes the file from your filesystem and stages the deletion.",
+                        "Write a final commit for this change: `git commit -m 'Delete old-file.md'`. This creates the new snapshot where the file is absent.",
+                        "Push the commit to GitHub with `git push` to sync the deletion with the remote repository."
+                    ]
+                },
+                quiz: [
+                    { q: "If you delete a file in a commit, is it gone forever?", options: ["Yes, it's completely erased", "No, it still exists in the history of previous commits"], correct: 1, explain: "Git never truly loses history. The file is simply absent from commits made *after* the deletion." },
+                     { q: "What command both deletes a file from your disk and stages that deletion?", options: ["git delete", "git remove", "git rm"], correct: 2, explain: "`git rm` is the proper command to tell Git you intend to delete a file." }
+                ],
+                bestPractices: {
+                    dos: ["Be sure you want to delete a file before running `git rm`.", "Use a clear commit message explaining why the file was removed.", "Remember you can always recover a deleted file by checking out an older commit."],
+                    donts: ["Don't manually delete a file and then use `git add`. The `git rm` command is the correct and simpler way to do it."],
+                    glossary: [
+                        { term: "git rm", def: "A command to remove files from the working tree and from the index (staging area)." },
+                        { term: "Immutable", def: "Meaning 'unchangeable'. Git's history is largely immutable; you add new commits, you don't change old ones." }
+                    ]
+                },
+                faq: [
+                    { q: "How do I get a deleted file back?", a: "You can find the commit right before the file was deleted in your `git log`, and then use `git checkout <commit-hash> -- <path/to/file>` to restore the file from that specific commit." }
+                ]
+            }
+        },
+    };
+
+    const finalQuizQuestions = [
+        { type: "MCQ", text: "What is the key characteristic of a 'distributed' version control system like Git?", options: ["It's very centralized", "Everyone has a full copy of the project's history", "It only works when you are online"], correct: 1, explain: "Distributed means the entire history is mirrored on every developer's machine, enabling offline work and robust backups."},
+        { type: "MCQ", text: "What is the primary role of the 'staging area'?", options: ["To store files permanently", "To carefully craft what will be included in the next commit", "To share files with teammates"], correct: 1, explain: "The staging area (or index) acts as a draft space, letting you choose which modifications to group into a single, logical commit."},
+        { type: "TF", text: "A 'commit' in Git stores only the specific lines that have changed since the previous commit.", correct: false, explain: "A commit stores a complete snapshot of all tracked files at a point in time, referencing a 'tree' object."},
+        { type: "MCQ", text: "What is the standard developer workflow for updating a file?", options: ["Edit locally -> Stage -> Commit -> Push", "Edit on GitHub -> Commit", "Email changes -> Push -> Commit"], correct: 0, explain: "The fundamental cycle is to edit files on your local machine, stage them with `git add`, commit them with `git commit`, and then share them with `git push`."},
+        { type: "TF", text: "The `git blame` command is used to see who last modified each line of a file.", correct: true, explain: "`git blame` is a powerful tool for tracing the history of a file line-by-line to find context."},
+        { type: "MCQ", text: "If you 'delete' a file and commit that change, what happens to the file?", options: ["It's permanently erased from all history", "It is absent from the new commit, but exists in all prior commits", "It's moved to a special archive on GitHub"], correct: 1, explain: "Git's history is immutable. The file isn't truly 'gone'; it's just not part of the project's state from that new commit forward."},
+        { type: "MCQ", text: "What is the relationship between Git and GitHub?", options: ["They are identical", "Git is a company, GitHub is their main product", "Git is the underlying version control tool; GitHub is a web platform for hosting Git repositories"], correct: 2, explain: "You can use Git without ever using GitHub, but GitHub's primary function is to provide a remote home and collaboration tools for Git repositories."},
+        { type: "MCQ", text: "Which command would you use to create a local copy of a remote repository from GitHub?", options: ["git copy", "git download", "git clone"], correct: 2, explain: "`git clone [URL]` is the command used to fetch a full copy of a remote repository and set it up on your local machine."},
+        { type: "MCQ", text: "What is the best practice for commit messages?", options: ["Long, detailed paragraphs", "Single words like 'update' or 'fixed'", "Short, present-tense messages describing the change"], correct: 2, explain: "Clear, concise, and descriptive messages are crucial for maintaining a readable and useful project history."},
+        { type: "MCQ", text: "You modified an existing file. Which command do you use to get it ready for a commit?", options: ["git commit", "git track", "git add"], correct: 2, explain: "The `git add` command is used for both staging new files and staging modifications to existing, tracked files."},
+        { type: "MMCQ", text: "Which of these are good practices for a solo developer? (Choose 2)", options: ["Never run `git pull`", "Commit large, unrelated changes together", "Push to the remote repository often as a backup", "Write clear commit messages for your future self"], correct: [2, 3], explain: "Frequent pushing backs up your work, and clear commit messages are essential for understanding your own project history later on."},
+        { type: "SEQ", text: "Put these actions in the correct order for adding a new file locally and sharing it: (1) git push, (2) create the file, (3) git commit, (4) git add", items: ["git push", "create the file", "git commit", "git add"], correct: ["create the file", "git add", "git commit", "git push"], explain: "You must create the file, then stage it (`add`), save the snapshot (`commit`), and finally upload it to the remote (`push`)."},
+        { type: "MATCH", text: "Match the Git term to its description.", stems: ["Blob", "Tree", "Commit", "main"], responses: ["Stores the content of a single file", "The name of the default branch", "Represents a directory and its contents", "A snapshot of the project with an author and message"], correct: [{ s: 0, r: 0 }, { s: 1, r: 2 }, { s: 2, r: 3 }, { s: 3, r: 1 }], explain: "A blob is file content, a tree is a directory, a commit is a snapshot, and `main` is the name of the primary branch."},
+        { type: "MMCQ", text: "Which of these views are available on GitHub for inspecting a file? (Choose 2)", options: ["Raw view (plain text)", "Encrypted view", "Blame view (line-by-line history)", "Delete view"], correct: [0, 2], explain: "GitHub provides several useful ways to inspect files, including seeing the raw text and viewing who last changed each line."},
+        { type: "TF", text: "A local repository contains the complete history of the project, just like the remote.", correct: true, explain: "This is the core principle of a distributed system. Your local `.git` folder contains the entire project history, allowing you to work offline. You only need to sync with the remote to share or receive new updates."},
+        { type: "MCQ", text: "You run `git commit`, but realize your very last edit to a file wasn't included. What is the most likely reason?", options: ["You didn't save the file", "You forgot to run `git add` after your last edit", "GitHub is down"], correct: 1, explain: "A commit only saves what has been explicitly staged with `git add`. Forgetting to `add` the final changes is a very common beginner mistake."},
+        { type: "MCQ", text: "You're in your computer's main 'Documents' folder and run `git status`, but get an error: 'fatal: not a git repository'. What should you do?", options: ["Run `git init` immediately", "Navigate into your specific project's folder using `cd`", "Delete your Documents folder"], correct: 1, explain: "Git commands must be run from within a Git repository. You need to use the command line to change directory (`cd`) into your project folder first."}
+    ];
+
+    // Global state
+    let completedTutorials = [];
+    const minTutorialsForQuiz = 3;
+    let quizState = {
+        currentQ: 0,
+        score: 0,
+        answers: new Array(finalQuizQuestions.length).fill(null)
+    };
+
+    function renderMarkdown(text) {
+        if (!text) return '';
+        return text
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/g, '<em>$1</em>')
+            .replace(/`(.*?)`/g, '<code>$1</code>');
+    }
+    
+    // UI elements
+    const introScreen = document.getElementById('intro-screen');
+    const selectScreen = document.getElementById('select-screen');
+    const tutorialScreen = document.getElementById('tutorial-screen');
+    const finalQuizScreen = document.getElementById('final-quiz-screen');
+    const quizStatusText = document.getElementById('quiz-status-text');
+    const startQuizBtn = document.getElementById('start-quiz-btn');
+    const quizProgress = document.getElementById('quiz-progress');
+    const quizCard = document.getElementById('quiz-card');
+    const quizPrevBtn = document.getElementById('quiz-prev-btn');
+    const quizNextBtn = document.getElementById('quiz-next-btn');
+    const quizCounter = document.getElementById('quiz-counter');
+    const quizSkipBtn = document.getElementById('quiz-skip-btn');
+    
+    function showScreen(screen) {
+        introScreen.style.display = 'none';
+        selectScreen.style.display = 'none';
+        tutorialScreen.style.display = 'none';
+        finalQuizScreen.style.display = 'none';
+        screen.style.display = 'flex';
+        if (screen.id === 'tutorial-screen') {
+            screen.style.display = 'grid';
+        }
+        if (screen.id === 'final-quiz-screen') {
+            document.body.style.display = 'flex';
+            document.body.style.flexDirection = 'column';
+        } else {
+            document.body.style.display = 'flex';
+            document.body.style.flexDirection = 'column';
+        }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    
+    function updateQuizButton() {
+        if (completedTutorials.length >= minTutorialsForQuiz) {
+            startQuizBtn.disabled = false;
+            quizStatusText.textContent = `You've completed ${completedTutorials.length} topics! The quiz is now ready.`;
+        } else {
+            startQuizBtn.disabled = true;
+            quizStatusText.textContent = `Complete at least ${minTutorialsForQuiz} topics to unlock the final quiz! (${completedTutorials.length} / ${minTutorialsForQuiz})`;
+        }
+    }
+
+    function markTutorialCompleted(crudAction) {
+        if (!completedTutorials.includes(crudAction)) {
+            completedTutorials.push(crudAction);
+            document.querySelector(`.select-card[data-crud="${crudAction}"]`).classList.add('completed');
+            updateQuizButton();
+        }
+    }
+
+    function switchCrudTab(crudAction) {
+        const data = playgroundData[crudAction];
+        document.getElementById('code-viewer').textContent = data.code;
+        document.getElementById('commit-section').innerHTML = renderMarkdown(data.commit);
+        document.getElementById('output-viewer').innerHTML = renderMarkdown(data.output);
+        
+        document.querySelectorAll('.crud-tab').forEach(t => t.classList.toggle('active', t.dataset.crud === crudAction));
+        renderExplanation(crudAction);
+        markTutorialCompleted(crudAction);
+    }
+    
+    function renderExplanation(crudAction) {
+        const explanationPanel = document.getElementById('explanation-panel-body');
+        const data = playgroundData[crudAction].explanation;
+        
+        explanationPanel.innerHTML = `
+            <div class="explanation-tabs">
+                <button class="explanation-tab active" data-tab="concepts">Concepts</button>
+                <button class="explanation-tab" data-tab="steps">Steps</button>
+                <button class="explanation-tab" data-tab="quiz">Quiz</button>
+                <button class="explanation-tab" data-tab="bestPractices">Best Practices & Glossary</button>
+                <button class="explanation-tab" data-tab="faq">FAQs</button>
+            </div>
+            <div id="concepts-content" class="explanation-content active">
+                <h3>${data.concepts.title}</h3>
+                <p class="analogy">${renderMarkdown(data.concepts.analogy)}</p>
+                <p>${renderMarkdown(data.concepts.text)}</p>
+            </div>
+            <div id="steps-content" class="explanation-content">
+                <h3>${data.steps.title}</h3>
+                <ol class="step-list">
+                    ${data.steps.list.map((step) => `<li><span>${renderMarkdown(step)}</span></li>`).join('')}
+                </ol>
+            </div>
+            <div id="quiz-content" class="explanation-content">
+                <h3>Knowledge Check</h3>
+                ${data.quiz.map((quizItem, index) => `
+                    <div class="quiz-question" data-correct="${quizItem.correct}">
+                        <p><strong>Question ${index + 1}:</strong> ${renderMarkdown(quizItem.q)}</p>
+                        <div class="quiz-options">
+                        ${quizItem.options.map((opt, optIndex) => `
+                            <label class="quiz-option" for="q-${crudAction}-${index}-${optIndex}">
+                                <input type="radio" id="q-${crudAction}-${index}-${optIndex}" name="q-${crudAction}-${index}" value="${optIndex}"> <span>${renderMarkdown(opt)}</span>
+                            </label>
+                        `).join('')}
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+            <div id="bestPractices-content" class="explanation-content">
+                <h3>Best Practices & Glossary</h3>
+                <div class="best-practices-section">
+                    <h4>Do's and Don'ts</h4>
+                    <ul>
+                        ${data.bestPractices.dos.map((item) => `<li class="do-item"><span>${renderMarkdown(item)}</span></li>`).join('')}
+                    </ul>
+                    <ul class="mt-4">
+                        ${data.bestPractices.donts.map((item) => `<li class="dont-item"><span>${renderMarkdown(item)}</span></li>`).join('')}
+                    </ul>
+                </div>
+                <div class="glossary-section mt-6">
+                    <h4>Glossary</h4>
+                    <ul class="glossary-list">
+                        ${data.bestPractices.glossary.map((item) => `<li><strong>${item.term}</strong>: ${renderMarkdown(item.def)}</li>`).join('')}
+                    </ul>
+                </div>
+            </div>
+            <div id="faq-content" class="explanation-content">
+                <h3>Frequently Asked Questions</h3>
+                <div class="faq-list">
+                    ${data.faq.map((item) => `
+                        <div>
+                            <h4>${renderMarkdown(item.q)}</h4>
+                            <p>${renderMarkdown(item.a)}</p>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+        
+        setupExplanationTabsAndQuiz();
+    }
+    
+    function setupExplanationTabsAndQuiz() {
+        const expTabs = document.querySelectorAll('.explanation-tab');
+        const expContents = document.querySelectorAll('.explanation-content');
+        expTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabName = tab.dataset.tab;
+                expTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                expContents.forEach(content => {
+                    content.classList.toggle('active', content.id === `${tabName}-content`);
+                });
+            });
+        });
+
+        const quizQuestions = document.querySelectorAll('.quiz-question');
+        quizQuestions.forEach(quizQuestion => {
+            const optionsContainer = quizQuestion.querySelector('.quiz-options');
+            const correctAnswerIndex = parseInt(quizQuestion.dataset.correct);
+
+            optionsContainer.addEventListener('click', (e) => {
+                const selectedLabel = e.target.closest('label');
+                if (!selectedLabel || selectedLabel.classList.contains('disabled')) return;
+
+                const selectedIndex = parseInt(selectedLabel.querySelector('input').value);
+                const labels = optionsContainer.querySelectorAll('.quiz-option');
+
+                labels.forEach(label => label.classList.add('disabled'));
+
+                if (selectedIndex === correctAnswerIndex) {
+                    selectedLabel.classList.add('correct');
+                } else {
+                    selectedLabel.classList.add('incorrect');
+                    labels[correctAnswerIndex].classList.add('correct');
+                }
+            });
+        });
+    }
+
+    // --- Final Quiz Logic ---
+    function renderFinalQuizQuestion() {
+        const q = finalQuizQuestions[quizState.currentQ];
+        if (!q) {
+            showQuizResults();
+            return;
+        }
+        
+        if (!quizState.answers[quizState.currentQ]) {
+            quizState.answers[quizState.currentQ] = { answer: null, graded: false };
+        }
+
+        const progress = ((quizState.currentQ) / finalQuizQuestions.length) * 100;
+        quizProgress.style.width = `${progress}%`;
+        quizCounter.textContent = `Q ${quizState.currentQ + 1} / ${finalQuizQuestions.length}`;
+        quizPrevBtn.disabled = quizState.currentQ === 0;
+        
+        const isGraded = quizState.answers[quizState.currentQ] && quizState.answers[quizState.currentQ].graded;
+        quizNextBtn.textContent = isGraded ? (quizState.currentQ === finalQuizQuestions.length - 1 ? 'Finish Quiz' : 'Next Question →') : 'Submit Answer';
+        quizSkipBtn.style.display = isGraded ? 'none' : 'inline-block';
+
+        let questionContent = '';
+        const inputType = q.type === 'MMCQ' ? 'checkbox' : 'radio';
+
+        if (q.type === 'MCQ' || q.type === 'MMCQ' || q.type === 'TF') {
+            const options = q.type === 'TF' ? ['True', 'False'] : (q.options || []);
+            questionContent = `
+                <div class="question-body">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-800">${renderMarkdown(q.text)}</h2>
+                    <div class="question-options">
+                        ${options.map((option, index) => {
+                            const value = q.type === 'TF' ? (index === 0) : index;
+                            return `
+                            <label class="block bg-gray-100 border border-gray-300 rounded-lg p-4 shadow-sm hover:bg-orange-50 hover:border-orange-500 cursor-pointer transition-all duration-200 mb-2">
+                                <input type="${inputType}" name="q-${quizState.currentQ}" value="${value}" class="mr-3">
+                                <span class="text-lg text-gray-700">${renderMarkdown(option)}</span>
+                            </label>
+                        `}).join('')}
+                    </div>
+                </div>
+            `;
+        } else if (q.type === 'SEQ') {
+            const items = q.items || [];
+            questionContent = `
+                <div class="question-body">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-800">${renderMarkdown(q.text)}</h2>
+                    <ul id="sequence-list" class="space-y-2">
+                        ${shuffleArray([...items]).map(item => `
+                            <li draggable="true" class="seq-item">
+                                <span class="handle mr-3 text-gray-500">☰</span>
+                                <span class="text-lg text-gray-700">${renderMarkdown(item)}</span>
+                            </li>
+                        `).join('')}
+                    </ul>
+                </div>
+            `;
+        } else if (q.type === 'MATCH') {
+            const responses = q.responses || [];
+            const shuffledResponses = shuffleArray([...responses]);
+            const responseMap = {};
+            responses.forEach((resp, idx) => { responseMap[resp] = idx; });
+            const stems = q.stems || [];
+            questionContent = `
+                <div class="match-grid grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                    <div>
+                        <h3 class="text-lg font-semibold mb-2 text-gray-800">Stems</h3>
+                        ${stems.map((stem, index) => `
+                            <div class="match-item bg-gray-100 border border-gray-300 rounded-lg p-4 shadow-sm cursor-pointer transition-colors duration-200 mb-2" data-side="stem" data-index="${index}">
+                                <span class="text-lg text-gray-700">${renderMarkdown(stem)}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold mb-2 text-gray-800">Responses</h3>
+                        ${shuffledResponses.map((resp, index) => `
+                            <div class="match-item bg-gray-100 border border-gray-300 rounded-lg p-4 shadow-sm cursor-pointer transition-colors duration-200 mb-2" data-side="response" data-index="${responseMap[resp]}">
+                                <span class="text-lg text-gray-700">${renderMarkdown(resp)}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        quizCard.innerHTML = `
+            <div class="q-content flex-grow flex flex-col justify-center">
+                ${questionContent}
+            </div>
+            <div id="quiz-feedback" class="mt-4"></div>
+        `;
+        
+        if (q.type === 'SEQ') addDragAndDropListeners();
+        else if (q.type === 'MATCH') addMatchListeners();
+        else addOptionListeners();
+        
+        restoreQuizAnswers();
+        if (quizState.answers[quizState.currentQ] && quizState.answers[quizState.currentQ].graded) {
+            gradeFinalQuiz(true);
+        }
+    }
+    
+    function addOptionListeners() {
+        const inputs = quizCard.querySelectorAll('input');
+        inputs.forEach(input => {
+            input.addEventListener('change', () => {
+                const q = finalQuizQuestions[quizState.currentQ];
+                if (q.type === 'MMCQ') {
+                    const selected = [...quizCard.querySelectorAll('input:checked')].map(el => parseInt(el.value));
+                    quizState.answers[quizState.currentQ] = { answer: selected, graded: false };
+                } else if (q.type === 'TF') {
+                    quizState.answers[quizState.currentQ] = { answer: (input.value === 'true'), graded: false };
+                } else {
+                    quizState.answers[quizState.currentQ] = { answer: parseInt(input.value), graded: false };
+                }
+            });
+        });
+    }
+
+    function addDragAndDropListeners() {
+        let dragSrcEl = null;
+        document.querySelectorAll('#sequence-list li').forEach(item => {
+            item.addEventListener('dragstart', (e) => {
+                e.dataTransfer.effectAllowed = 'move'; dragSrcEl = item;
+                setTimeout(() => item.classList.add('dragging'), 0);
+            });
+            item.addEventListener('dragend', () => {
+                dragSrcEl.classList.remove('dragging'); saveSequenceOrder();
+            });
+            item.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                const after = getDragAfterElement(item.parentNode, e.clientY);
+                if (dragSrcEl && after !== dragSrcEl) { item.parentNode.insertBefore(dragSrcEl, after); }
+            });
+            item.addEventListener('drop', (e) => { e.preventDefault(); e.stopPropagation(); });
+        });
+        
+        function getDragAfterElement(container, y) {
+            const draggableElements = [...container.querySelectorAll('.seq-item:not(.dragging)')];
+            return draggableElements.reduce((closest, child) => {
+                const box = child.getBoundingClientRect();
+                const offset = y - box.top - box.height / 2;
+                if (offset < 0 && offset > closest.offset) { return { offset: offset, element: child }; } 
+                else { return closest; }
+            }, { offset: Number.NEGATIVE_INFINITY }).element;
+        }
+
+        function saveSequenceOrder() {
+            const currentOrder = Array.from(document.querySelectorAll('#sequence-list li')).map(el => el.querySelector('span:last-child').textContent);
+            quizState.answers[quizState.currentQ] = { answer: currentOrder, graded: false };
+        }
+    }
+
+    function addMatchListeners() {
+        let pickedA = null, pickedB = null;
+        const colorClasses = ['bg-yellow-100', 'bg-green-100', 'bg-blue-100', 'bg-pink-100'];
+        let pairIndex = 0;
+        
+        document.querySelectorAll('.match-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const side = item.dataset.side;
+                if (side === 'stem') {
+                    if (pickedA) pickedA.classList.remove('is-picked');
+                    pickedA = item; item.classList.add('is-picked');
+                } else {
+                    if (pickedB) pickedB.classList.remove('is-picked');
+                    pickedB = item; item.classList.add('is-picked');
+                }
+
+                if (pickedA && pickedB) {
+                    const pair = { s: parseInt(pickedA.dataset.index), r: parseInt(pickedB.dataset.index) };
+                    const currentAnswer = (quizState.answers[quizState.currentQ] && quizState.answers[quizState.currentQ].answer) || [];
+                    
+                    if (!currentAnswer.some(p => p.s === pair.s && p.r === pair.r)) {
+                         currentAnswer.push(pair);
+                         quizState.answers[quizState.currentQ] = { answer: currentAnswer, graded: false };
+
+                         const colorClass = colorClasses[pairIndex % colorClasses.length];
+                         pickedA.classList.remove('is-picked');
+                         pickedA.classList.add(colorClass, 'pointer-events-none');
+                         pickedB.classList.remove('is-picked');
+                         pickedB.classList.add(colorClass, 'pointer-events-none');
+                         
+                         pairIndex++; pickedA = null; pickedB = null;
+                    }
+                }
+            });
+        });
+    }
+
+    function restoreQuizAnswers() {
+        const q = finalQuizQuestions[quizState.currentQ];
+        const savedState = quizState.answers[quizState.currentQ];
+        if (!savedState || !savedState.answer) return;
+        const savedAnswer = savedState.answer;
+
+        if (q.type === 'MCQ' || q.type === 'TF') {
+            const valueToFind = q.type === 'TF' ? String(savedAnswer) : savedAnswer;
+            const input = quizCard.querySelector(`input[value="${valueToFind}"]`);
+            if (input) input.checked = true;
+        } else if (q.type === 'MMCQ') {
+            savedAnswer.forEach(val => {
+                const input = quizCard.querySelector(`input[value="${val}"]`);
+                if (input) input.checked = true;
+            });
+        } else if (q.type === 'SEQ') {
+            const list = document.getElementById('sequence-list');
+            if (list) {
+                list.innerHTML = savedAnswer.map(item => `
+                    <li draggable="true" class="seq-item">
+                        <span class="handle mr-3 text-gray-500">☰</span>
+                        <span class="text-lg text-gray-700">${renderMarkdown(item)}</span>
+                    </li>`).join('');
+                addDragAndDropListeners();
+            }
+        } else if (q.type === 'MATCH') {
+            const pairs = savedAnswer;
+            const colorClasses = ['bg-yellow-100', 'bg-green-100', 'bg-blue-100', 'bg-pink-100'];
+            pairs.forEach((pair, index) => {
+                const colorClass = colorClasses[index % colorClasses.length];
+                const stemEl = quizCard.querySelector(`.match-item[data-side="stem"][data-index="${pair.s}"]`);
+                const responseEl = quizCard.querySelector(`.match-item[data-side="response"][data-index="${pair.r}"]`);
+                if (stemEl) stemEl.classList.add(colorClass, 'pointer-events-none');
+                if (responseEl) responseEl.classList.add(colorClass, 'pointer-events-none');
+            });
+        }
+    }
+    
+    function gradeFinalQuiz(isRestoring = false) {
+        const q = finalQuizQuestions[quizState.currentQ];
+        const userAnswer = quizState.answers[quizState.currentQ] ? quizState.answers[quizState.currentQ].answer : null;
+        let isCorrect = false;
+
+        const feedbackDiv = document.getElementById('quiz-feedback');
+        if (!feedbackDiv) return;
+
+        if (q.type === 'MCQ' || q.type === 'TF') {
+            isCorrect = userAnswer === q.correct;
+            const allOptions = quizCard.querySelectorAll('label');
+            allOptions.forEach(label => label.classList.add('pointer-events-none'));
+            
+            const correctValue = q.type === 'TF' ? String(q.correct) : q.correct;
+            const correctOptionLabel = quizCard.querySelector(`input[value="${correctValue}"]`).closest('label');
+            if (correctOptionLabel) correctOptionLabel.classList.add('correct');
+            
+            if (!isCorrect && userAnswer !== null) {
+                const userValue = q.type === 'TF' ? String(userAnswer) : userAnswer;
+                const userOptionLabel = quizCard.querySelector(`input[value="${userValue}"]`).closest('label');
+                if (userOptionLabel) userOptionLabel.classList.add('incorrect');
+            }
+        } else if (q.type === 'MMCQ') {
+            const userAnswers = new Set(userAnswer || []);
+            const correctAnswers = new Set(q.correct || []);
+            isCorrect = userAnswers.size === correctAnswers.size && [...userAnswers].every(val => correctAnswers.has(val));
+            
+            const allOptions = quizCard.querySelectorAll('label');
+            allOptions.forEach(label => label.classList.add('pointer-events-none'));
+            
+            (q.options || []).forEach((opt, index) => {
+                const label = quizCard.querySelector(`input[value="${index}"]`).closest('label');
+                if (correctAnswers.has(index)) {
+                    label.classList.add('correct');
+                } else if (userAnswers.has(index)) {
+                    label.classList.add('incorrect');
+                }
+            });
+        } else if (q.type === 'SEQ') {
+            isCorrect = JSON.stringify(userAnswer) === JSON.stringify(q.correct);
+            const list = document.getElementById('sequence-list');
+            if (list) {
+                list.classList.add(isCorrect ? 'bg-green-100' : 'bg-red-100');
+                list.querySelectorAll('li').forEach(li => li.classList.add('cursor-not-allowed'));
+            }
+        } else if (q.type === 'MATCH') {
+            const pairs = userAnswer || [];
+            const correctPairs = new Set((q.correct || []).map(p => `${p.s}-${p.r}`));
+            let correctCount = pairs.filter(p => correctPairs.has(`${p.s}-${p.r}`)).length;
+            isCorrect = correctCount === (q.stems || []).length && pairs.length === (q.stems || []).length;
+            
+            const allItems = quizCard.querySelectorAll('.match-item');
+            allItems.forEach(item => item.classList.add('pointer-events-none'));
+        }
+
+        if (userAnswer !== null && !isRestoring) {
+            if (isCorrect && (!quizState.answers[quizState.currentQ] || !quizState.answers[quizState.currentQ].graded)) {
+                quizState.score++;
+            }
+            quizState.answers[quizState.currentQ] = { ...quizState.answers[quizState.currentQ], graded: true };
+        }
+        
+        quizNextBtn.textContent = (quizState.currentQ === finalQuizQuestions.length - 1) ? 'Finish Quiz' : 'Next Question →';
+        quizSkipBtn.style.display = 'none';
+
+        feedbackDiv.innerHTML = `
+            <div class="feedback ${isCorrect ? 'correct' : 'incorrect'}">
+                <p class="font-bold text-lg mb-1">${isCorrect ? 'Correct! 🎉' : 'Not quite.'}</p>
+                <p>${renderMarkdown(q.explain)}</p>
+            </div>
+        `;
+    }
+
+    function shuffleArray(array) {
+        if (!array) return [];
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    // --- Event Listeners ---
+    document.addEventListener('DOMContentLoaded', () => {
+        // Apply markdown rendering to static intro text
+        const introPanel = document.getElementById('intro-screen');
+        if (introPanel) {
+            introPanel.querySelectorAll('p').forEach(p => {
+                p.innerHTML = renderMarkdown(p.innerHTML);
+            });
+        }
+
+        const startBtn = document.getElementById('start-tutorial-btn');
+        const backBtn = document.getElementById('back-btn');
+        const selectCards = document.querySelectorAll('.select-card');
+        const tutorialTabs = document.querySelectorAll('.crud-tab');
+        
+        showScreen(introScreen);
+        
+        startBtn.addEventListener('click', () => {
+            showScreen(selectScreen);
+            updateQuizButton();
+        });
+        
+        backBtn.addEventListener('click', () => {
+            showScreen(selectScreen);
+        });
+        
+        selectCards.forEach(card => {
+            card.addEventListener('click', () => {
+                const crudAction = card.dataset.crud;
+                showScreen(tutorialScreen);
+                switchCrudTab(crudAction);
+            });
+        });
+
+        tutorialTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                switchCrudTab(tab.dataset.crud);
+            });
+        });
+
+        startQuizBtn.addEventListener('click', () => {
+            showScreen(finalQuizScreen);
+            quizState.currentQ = 0;
+            quizState.score = 0;
+            quizState.answers.fill(null);
+            renderFinalQuizQuestion();
+        });
+
+        quizPrevBtn.addEventListener('click', () => {
+            if (quizState.currentQ > 0) {
+                quizState.currentQ--;
+                renderFinalQuizQuestion();
+            }
+        });
+
+        quizSkipBtn.addEventListener('click', () => {
+            quizState.answers[quizState.currentQ] = { answer: null, graded: true, skipped: true };
+            if (quizState.currentQ < finalQuizQuestions.length - 1) {
+                quizState.currentQ++;
+                renderFinalQuizQuestion();
+            } else {
+                showQuizResults();
+            }
+        });
+
+        quizNextBtn.addEventListener('click', () => {
+            const currentAnswerState = quizState.answers[quizState.currentQ];
+            const hasAnswer = currentAnswerState && currentAnswerState.answer !== null && (Array.isArray(currentAnswerState.answer) ? currentAnswerState.answer.length > 0 : true);
+
+            if (!hasAnswer) {
+                const feedbackDiv = document.getElementById('quiz-feedback');
+                if(feedbackDiv) feedbackDiv.innerHTML = `<div class="feedback incorrect"><p class="font-bold">Please select an answer.</p></div>`;
+                return;
+            }
+
+            if (currentAnswerState && !currentAnswerState.graded) {
+                gradeFinalQuiz();
+            } else {
+                if (quizState.currentQ < finalQuizQuestions.length - 1) {
+                    quizState.currentQ++;
+                    renderFinalQuizQuestion();
+                } else {
+                    showQuizResults();
+                }
+            }
+        });
+    });
+
+    function showQuizResults() {
+        const totalMarks = finalQuizQuestions.length;
+        const skippedCount = quizState.answers.filter(a => a && a.skipped).length;
+        const answeredCount = totalMarks - skippedCount;
+        quizCard.innerHTML = `<div class="q-content text-center">
+                <h2 class="text-2xl font-bold">Quiz Complete! 🎉</h2>
+                <p class="mt-4">${renderMarkdown(`You scored **${quizState.score}** out of **${answeredCount}** answered questions.`)}</p>
+                ${skippedCount > 0 ? `<p class="text-sm text-gray-600 mt-2">You skipped ${skippedCount} question${skippedCount > 1 ? 's' : ''}.</p>` : ''}
+                <p class="mt-2">You've finished Part 1. You're ready for Teamwork & Collaboration!</p>
+                <div class="mt-8">
+                    <button onclick="window.location.reload()" class="start-btn">Practice Again</button>
+                    <button onclick="showScreen(selectScreen);" class="back-btn mt-4">Back to Topics</button>
+                </div>
+            </div>`;
+        quizProgress.style.width = '100%';
+        document.querySelector('.quiz-nav').style.display = 'none';
+    }
+    
+    </script>
+</body>
+</html>
+

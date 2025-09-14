@@ -1,0 +1,1288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Python Error Detection Trainer - 44 Examples</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 2vh 2vw;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: #f5f5f4;
+      color: #1a1a1a;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      gap: 2vh;
+    }
+    .card-container {
+      perspective: 1200px;
+      width: 100%;
+      max-width: min(90vw, 700px);
+      height: 75vh;
+      transition: max-width 0.3s ease;
+    }
+    .card {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+      transition: transform 0.7s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+    .card.flipped { transform: rotateY(180deg); }
+    .card-face {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      background: #fffaf3;
+      border-radius: 1rem;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+    }
+    .card-front { z-index: 2; }
+    .card-back { transform: rotateY(180deg); z-index: 1; }
+    .card.flipped .card-front { z-index: 1; }
+    .card.flipped .card-back { z-index: 2; }
+    .card-content {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      padding: clamp(1rem, 3vw, 1.5rem);
+    }
+    .card-header {
+      flex-shrink: 0;
+      text-align: center;
+      margin-bottom: clamp(0.75rem, 2vh, 1rem);
+    }
+    .card-body {
+      flex-grow: 1;
+      overflow-y: auto;
+      min-height: 0;
+      padding-right: 0.5rem;
+      margin-right: -0.5rem;
+    }
+    .card-footer {
+      flex-shrink: 0;
+      padding-top: clamp(0.5rem, 1.5vh, 0.75rem);
+      margin-top: auto;
+      border-top: 1px solid #eee;
+    }
+    h2 {
+      font-size: clamp(1.1rem, 3vw, 1.4rem);
+      font-weight: 700;
+      margin: 0 0 clamp(0.25rem, 1vh, 0.5rem) 0;
+      line-height: 1.2;
+      color: #1a1a1a;
+    }
+    .error-type {
+      font-size: clamp(0.75rem, 2vw, 0.9rem);
+      color: #6c757d;
+      margin: 0;
+    }
+    .description {
+      font-size: clamp(0.85rem, 2.5vw, 1rem);
+      line-height: 1.4;
+      margin: 0 0 clamp(0.5rem, 2vh, 0.75rem) 0;
+    }
+    .symptoms {
+      background: #fff0dc;
+      border-left: 4px solid #fd7e14;
+      padding: clamp(0.5rem, 2vw, 0.75rem);
+      margin-bottom: clamp(0.25rem, 1vh, 0.5rem);
+      border-radius: 0 8px 8px 0;
+      font-size: clamp(0.8rem, 2.2vw, 0.95rem);
+    }
+    .symptoms strong {
+      display: block;
+      margin-bottom: clamp(0.2rem, 1vh, 0.4rem);
+      color: #e87312;
+    }
+    
+    /* Code container */
+    .code-container {
+      background: #2d2d2d;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: clamp(0.5rem, 2vh, 0.75rem);
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .code-header {
+      background: #343a40;
+      color: #fff;
+      padding: clamp(0.4rem, 1.5vw, 0.6rem) clamp(0.6rem, 2vw, 0.8rem);
+      font-size: clamp(0.7rem, 2vw, 0.85rem);
+      font-weight: 600;
+      border-bottom: 1px solid #495057;
+      flex-shrink: 0;
+    }
+    .code-block {
+      font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+      font-size: clamp(0.75rem, 2.2vw, 0.9rem);
+      line-height: 1.5;
+      color: #f8f8f2;
+      background: #2d2d2d;
+      margin: 0;
+      padding: clamp(0.5rem, 2vw, 0.75rem);
+      white-space: pre-wrap;
+      overflow-y: auto;
+      flex: 1;
+      min-height: 0;
+    }
+    .code-block::-webkit-scrollbar { width: 8px; }
+    .code-block::-webkit-scrollbar-track { background: #1a1a1a; }
+    .code-block::-webkit-scrollbar-thumb { background: #4a5568; border-radius: 4px; }
+    .code-block::-webkit-scrollbar-thumb:hover { background: #6c757d; }
+    .code-line {
+      display: block;
+      position: relative;
+      padding: clamp(0.1rem, 0.5vh, 0.2rem) clamp(0.3rem, 1vw, 0.5rem);
+      margin: clamp(0.02rem, 0.2vh, 0.05rem) 0;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .code-line:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .code-line.error-line {
+      background: rgba(220, 38, 38, 0.2);
+      border-left: 3px solid #dc2626;
+    }
+    .code-line.error-line:hover {
+      background: rgba(220, 38, 38, 0.3);
+    }
+    
+    /* Tooltip */
+    .tooltip {
+      position: fixed;
+      background: #374151;
+      color: #f9fafb;
+      padding: clamp(0.5rem, 2vw, 0.75rem) clamp(0.6rem, 2.5vw, 0.9rem);
+      border-radius: 6px;
+      font-size: clamp(0.75rem, 2.2vw, 0.9rem);
+      max-width: min(300px, 90vw);
+      z-index: 1000;
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(-5px);
+      transition: all 0.2s ease;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+      word-wrap: break-word;
+    }
+    .tooltip.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .tooltip.good {
+      border-left: 4px solid #16a34a;
+    }
+    .tooltip.error {
+      border-left: 4px solid #dc2626;
+      background: #7f1d1d;
+      color: #fecaca;
+    }
+    .tooltip::before {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 16px;
+      width: 8px;
+      height: 8px;
+      background: inherit;
+      transform: rotate(45deg);
+    }
+    
+    .solution-section {
+      background: #f8f9fa;
+      padding: clamp(0.5rem, 2vw, 0.75rem);
+      border-radius: 6px;
+      border-left: 4px solid #16a34a;
+      margin-top: clamp(0.25rem, 1vh, 0.5rem);
+    }
+    .solution-section strong {
+      color: #15803d;
+      display: block;
+      margin-bottom: clamp(0.2rem, 1vh, 0.4rem);
+      font-size: clamp(0.8rem, 2.2vw, 0.95rem);
+    }
+    .solution-text {
+      font-size: clamp(0.75rem, 2.2vw, 0.9rem);
+      line-height: 1.4;
+      color: #374151;
+    }
+    
+    .card-body::-webkit-scrollbar { width: 6px; }
+    .card-body::-webkit-scrollbar-track { background: transparent; }
+    .card-body::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
+    .card-body::-webkit-scrollbar-thumb:hover { background: #999; }
+    
+    .controls {
+      margin-top: clamp(0.5vh, 1.5vh, 1vh);
+      display: flex;
+      gap: clamp(0.3rem, 1vw, 0.5rem);
+      justify-content: center;
+    }
+    select, button {
+      padding: clamp(0.3rem, 1vw, 0.5rem) clamp(0.6rem, 1.5vw, 0.8rem);
+      font-size: clamp(0.7rem, 1.8vw, 0.85rem);
+      border: 1px solid #ccc;
+      border-radius: 0.5rem;
+      background-color: #fff;
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+    }
+    button:hover, select:hover {
+      border-color: #999;
+      background-color: #f9f9f9;
+    }
+    .flip-button {
+      width: 100%;
+      background: #fff0dc;
+      font-weight: 600;
+      font-size: clamp(0.85rem, 2.5vw, 1rem);
+      padding: clamp(0.5rem, 2vw, 0.75rem);
+    }
+    .flip-button:hover { background: #ffe0c4; }
+    
+    /* Responsive adjustments */
+    @media (max-height: 600px) {
+      body { gap: 1vh; }
+      .card-container { height: 70vh; }
+      .card-content { padding: clamp(0.75rem, 2vw, 1rem); }
+    }
+    
+    @media (max-width: 480px) {
+      body { padding: 1vh 1vw; }
+      .card-container { height: 80vh; }
+      .controls { flex-direction: column; align-items: center; }
+    }
+  </style>
+</head>
+<body>
+  <h2 style="font-size: clamp(1.3rem, 4vw, 1.8rem); font-weight: 700; margin: 0 0 2vw 0; text-align: center; color: #1a1a1a;">Common Python Errors</h2>
+  
+  <div class="card-container">
+    <div class="card" id="concept-card">
+      <div class="card-face card-front">
+        <div class="card-content">
+          <div class="card-header">
+            <h2 id="card-title">SyntaxError: Missing Colon</h2>
+            <p class="error-type" id="error-type">Beginner • Control Structures</p>
+          </div>
+          <div class="card-body">
+            <p class="description" id="card-description">
+              You're writing a simple program to check if a number is positive, but Python won't even run your code. The interpreter is complaining about invalid syntax on your if statement line.
+            </p>
+            <div class="symptoms">
+              <strong>🔍 What you'll see:</strong>
+              <div id="symptoms">Python stops before running and shows "SyntaxError: invalid syntax" pointing to your if statement.</div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <button class="flip-button" id="flip-btn-front">View Code & Analysis</button>
+          </div>
+        </div>
+      </div>
+      <div class="card-face card-back">
+        <div class="card-content">
+          <div class="card-header">
+            <h2 id="back-title">Interactive Code Analysis</h2>
+            <p class="error-type">Hover over each line to understand what it does</p>
+          </div>
+          <div class="card-body">
+            <div class="code-container">
+              <div class="code-header">Python Code</div>
+              <pre class="code-block" id="code-block"></pre>
+            </div>
+            <div class="solution-section">
+              <strong>💡 How to Fix:</strong>
+              <div class="solution-text" id="solution-text">
+                Add a colon (:) at the end of the if statement. In Python, compound statements like if, for, while, and function definitions must end with a colon to indicate the start of an indented code block.
+              </div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <button class="flip-button" id="flip-btn-back">Back to Problem</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button id="prev-btn">Previous</button>
+    <select id="progress-indicator">
+      <option>Error 1 of 44</option>
+    </select>
+    <button id="next-btn">Next</button>
+  </div>
+
+  <footer style="margin-top: clamp(0.5vh, 1vh, 0.75vh); text-align: center; font-size: 0.85rem; color: #6c757d; line-height: 1.3;">
+    Created with ❤️ for budding programmers by <strong style="color: #1a1a1a;">Beyond Dictionary</strong>
+  </footer>
+
+  <div class="tooltip" id="tooltip"></div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const errorExamples = [
+        {
+          title: "SyntaxError: Missing Colon",
+          type: "Beginner • Control Structures",
+          description: "You're writing a simple program to check if a number is positive, but Python won't even run your code. The interpreter is complaining about invalid syntax on your if statement line.",
+          symptoms: "Python stops before running and shows \"SyntaxError: invalid syntax\" pointing to your if statement.",
+          code: [
+            { text: "# Check if a number is positive", purpose: "Comment explaining what the code does", isError: false },
+            { text: "x = 10", purpose: "Assigns the value 10 to variable x", isError: false },
+            { text: "if x > 0", purpose: "MISSING COLON: This should end with ':' to start a code block", isError: true },
+            { text: "    print(\"positive\")", purpose: "Prints 'positive' if condition is true", isError: false }
+          ],
+          solution: "Add a colon (:) at the end of the if statement. In Python, compound statements like if, for, while, and function definitions must end with a colon to indicate the start of an indented code block."
+        },
+        {
+          title: "IndentationError: Expected Block",
+          type: "Beginner • Code Structure",
+          description: "Your for loop looks correct, but Python is complaining about indentation. The error message mentions 'expected an indented block' which sounds confusing.",
+          symptoms: "Python shows 'IndentationError: expected an indented block' and points to the line after your for statement.",
+          code: [
+            { text: "# Print numbers from 0 to 2", purpose: "Comment describing the loop's purpose", isError: false },
+            { text: "for i in range(3):", purpose: "Loop that iterates 3 times (0, 1, 2)", isError: false },
+            { text: "print(i)", purpose: "MISSING INDENTATION: This should be indented with 4 spaces", isError: true }
+          ],
+          solution: "Indent the print statement with 4 spaces. In Python, code blocks are defined by indentation, not braces. Everything inside a for loop, if statement, or function must be indented consistently."
+        },
+        {
+          title: "NameError: Undefined Variable",
+          type: "Beginner • Variables",
+          description: "You're trying to print a counter variable, but Python says the name isn't defined. You're sure you created the variable just above this line.",
+          symptoms: "Python shows \"NameError: name 'cout' is not defined\" and stops execution.",
+          code: [
+            { text: "# Initialize a counter", purpose: "Comment explaining the variable's purpose", isError: false },
+            { text: "count = 10", purpose: "Creates a variable named 'count' with value 10", isError: false },
+            { text: "print(cout)", purpose: "TYPO: Variable name is misspelled - should be 'count'", isError: true }
+          ],
+          solution: "Fix the typo in the variable name. 'cout' should be 'count'. Python variable names are case-sensitive and must be spelled exactly as they were defined."
+        },
+        {
+          title: "TypeError: Unsupported Operation",
+          type: "Intermediate • Data Types",
+          description: "You're trying to add user input to a number, but Python complains about unsupported operand types between 'int' and 'str'.",
+          symptoms: "Python shows \"TypeError: unsupported operand type(s) for +: 'int' and 'str'\" when the addition is attempted.",
+          code: [
+            { text: "# Add user input to a base number", purpose: "Comment describing the calculation", isError: false },
+            { text: "base = 10", purpose: "Integer variable with value 10", isError: false },
+            { text: "user_input = input(\"Enter a number: \")", purpose: "Gets user input (always returns a string)", isError: false },
+            { text: "total = base + user_input", purpose: "ERROR: Can't add integer and string directly", isError: true }
+          ],
+          solution: "Convert the string to an integer using int(). Change the line to: total = base + int(user_input). The input() function always returns a string, so you must convert it to a number before mathematical operations."
+        },
+        {
+          title: "ValueError: Invalid Conversion", 
+          type: "Intermediate • Type Conversion",
+          description: "You're converting user input to an integer, but sometimes the program crashes when users enter certain values that look like numbers.",
+          symptoms: "Python shows \"ValueError: invalid literal for int() with base 10: '5.0'\" when trying to convert the input.",
+          code: [
+            { text: "# Convert user input to integer", purpose: "Comment explaining the conversion", isError: false },
+            { text: "user_input = \"5.0\"", purpose: "Simulated user input containing a decimal", isError: false },
+            { text: "number = int(user_input)", purpose: "ERROR: int() can't convert strings with decimal points", isError: true },
+            { text: "print(f\"Number: {number}\")", purpose: "Prints the converted number", isError: false }
+          ],
+          solution: "First convert to float, then to int: number = int(float(user_input)). The int() function can't directly convert strings with decimal points, but float() can handle them."
+        },
+        {
+          title: "KeyError: Missing Dictionary Key",
+          type: "Intermediate • Data Structures",
+          description: "You're building a price lookup system, but your program crashes when looking up items that aren't in your price list.",
+          symptoms: "Python shows \"KeyError: 'milk'\" when trying to access a dictionary key that doesn't exist.",
+          code: [
+            { text: "# Store item prices", purpose: "Comment describing the price dictionary", isError: false },
+            { text: "prices = {\"apple\": 1.50, \"banana\": 0.75}", purpose: "Dictionary with prices for apple and banana", isError: false },
+            { text: "item = \"milk\"", purpose: "Variable containing the item to look up", isError: false },
+            { text: "price = prices[item]", purpose: "ERROR: 'milk' key doesn't exist in the dictionary", isError: true }
+          ],
+          solution: "Use the get() method with a default value: price = prices.get(item, 0.0). This returns 0.0 if the key doesn't exist instead of raising an error."
+        },
+        {
+          title: "IndexError: List Index Out of Range",
+          type: "Intermediate • Data Structures",
+          description: "You're accessing list elements by index, but sometimes your program crashes with an 'index out of range' error, even though you're being careful with your indices.",
+          symptoms: "Python shows \"IndexError: list index out of range\" when trying to access an element that doesn't exist.",
+          code: [
+            { text: "# Access list elements", purpose: "Comment describing list access", isError: false },
+            { text: "numbers = [10, 20, 30]", purpose: "List with 3 elements (indices 0, 1, 2)", isError: false },
+            { text: "index = 3", purpose: "Index value that's beyond the list bounds", isError: false },
+            { text: "value = numbers[index]", purpose: "ERROR: Index 3 doesn't exist (only 0, 1, 2 are valid)", isError: true }
+          ],
+          solution: "Check the index bounds first: if index < len(numbers): value = numbers[index]. Always ensure your index is less than the length of the list."
+        },
+        {
+          title: "ZeroDivisionError: Division by Zero",
+          type: "Beginner • Arithmetic",
+          description: "You're calculating an average, but sometimes your program crashes with a division by zero error when there are no items to average.",
+          symptoms: "Python shows \"ZeroDivisionError: division by zero\" when the denominator is zero.",
+          code: [
+            { text: "# Calculate average", purpose: "Comment describing the calculation", isError: false },
+            { text: "total = 100", purpose: "Sum of all values", isError: false },
+            { text: "count = 0", purpose: "Number of items (zero means no items)", isError: false },
+            { text: "average = total / count", purpose: "ERROR: Division by zero is undefined in mathematics", isError: true }
+          ],
+          solution: "Check for zero before dividing: average = total / count if count > 0 else 0. Always validate that your denominator isn't zero before performing division."
+        },
+        {
+          title: "FileNotFoundError: Missing File",
+          type: "Intermediate • File Handling",
+          description: "You're trying to read from a file, but your program crashes saying the file doesn't exist, even though you're sure you created it.",
+          symptoms: "Python shows \"FileNotFoundError: [Errno 2] No such file or directory: 'data.txt'\" when trying to open the file.",
+          code: [
+            { text: "# Read data from file", purpose: "Comment describing file operation", isError: false },
+            { text: "filename = \"data.txt\"", purpose: "Name of the file to read", isError: false },
+            { text: "with open(filename, 'r') as file:", purpose: "ERROR: File doesn't exist or wrong path", isError: true },
+            { text: "    content = file.read()", purpose: "Reads the file content", isError: false }
+          ],
+          solution: "Use a try-except block to handle missing files: try: with open(filename, 'r') as file: ... except FileNotFoundError: print('File not found'). Always handle the possibility that files might not exist."
+        },
+        {
+          title: "AttributeError: Wrong Method Name",
+          type: "Beginner • Methods",
+          description: "You're trying to convert text to uppercase, but Python says the string object doesn't have the attribute you're using.",
+          symptoms: "Python shows \"AttributeError: 'str' object has no attribute 'toUpper'\" when calling the method.",
+          code: [
+            { text: "# Convert text to uppercase", purpose: "Comment describing text transformation", isError: false },
+            { text: "text = \"hello world\"", purpose: "String variable with lowercase text", isError: false },
+            { text: "uppercase_text = text.toUpper()", purpose: "ERROR: Method name is wrong - should be 'upper()'", isError: true },
+            { text: "print(uppercase_text)", purpose: "Prints the uppercase text", isError: false }
+          ],
+          solution: "Use the correct method name: uppercase_text = text.upper(). Python string methods are case-sensitive. The correct method is 'upper()', not 'toUpper()'."
+        },
+        {
+          title: "ImportError: Module Not Found",
+          type: "Beginner • Environment",
+          description: "You're trying to import a popular library like 'requests' or 'pandas' but Python says the module doesn't exist, even though you're sure it's a real library.",
+          symptoms: "Python shows \"ModuleNotFoundError: No module named 'requests'\" when trying to import.",
+          code: [
+            { text: "# Try to import requests library", purpose: "Comment describing the import", isError: false },
+            { text: "import requests", purpose: "ERROR: Module not installed in current environment", isError: true },
+            { text: "response = requests.get('https://api.github.com')", purpose: "Would make HTTP request if import worked", isError: false },
+            { text: "print(response.status_code)", purpose: "Would print HTTP status code", isError: false }
+          ],
+          solution: "Install the module using pip: 'pip install requests' in your terminal. Make sure you're using the same Python environment where you're running your script."
+        },
+        {
+          title: "RecursionError: Maximum Depth Exceeded",
+          type: "Intermediate • Functions",
+          description: "You wrote a recursive function but it keeps calling itself forever until Python stops it with a recursion error. Your function is missing a proper exit condition.",
+          symptoms: "Python shows \"RecursionError: maximum recursion depth exceeded\" after many function calls.",
+          code: [
+            { text: "# Calculate factorial recursively", purpose: "Comment explaining recursive function", isError: false },
+            { text: "def factorial(n):", purpose: "Function definition for factorial calculation", isError: false },
+            { text: "    return n * factorial(n - 1)", purpose: "ERROR: Missing base case - will recurse forever", isError: true },
+            { text: "result = factorial(5)", purpose: "Function call that triggers infinite recursion", isError: false },
+            { text: "print(result)", purpose: "Would print result if function worked", isError: false }
+          ],
+          solution: "Add a base case to stop recursion: 'if n <= 1: return 1'. Every recursive function needs a condition that stops the recursion."
+        },
+        {
+          title: "UnboundLocalError: Local Variable Referenced",
+          type: "Intermediate • Variable Scope",
+          description: "You're trying to modify a global variable inside a function, but Python thinks you're creating a local variable and gets confused about which one you mean.",
+          symptoms: "Python shows \"UnboundLocalError: local variable 'counter' referenced before assignment\" inside a function.",
+          code: [
+            { text: "# Global counter variable", purpose: "Comment explaining global variable", isError: false },
+            { text: "counter = 0", purpose: "Global variable initialized to 0", isError: false },
+            { text: "def increment():", purpose: "Function to increment the counter", isError: false },
+            { text: "    print(f\"Current: {counter}\")", purpose: "ERROR: Python sees 'counter =' below and gets confused", isError: true },
+            { text: "    counter = counter + 1", purpose: "Assignment makes Python treat counter as local", isError: false },
+            { text: "increment()", purpose: "Function call that triggers the error", isError: false }
+          ],
+          solution: "Use 'global counter' at the start of the function to tell Python you want to modify the global variable, not create a local one."
+        },
+        {
+          title: "JSON Decode Error: Invalid Format",
+          type: "Intermediate • Data Parsing",
+          description: "You're trying to parse JSON data from an API or file, but the data is malformed or not valid JSON format, causing the parser to fail.",
+          symptoms: "Python shows \"json.decoder.JSONDecodeError: Expecting property name enclosed in double quotes\" or similar JSON parsing error.",
+          code: [
+            { text: "import json", purpose: "Import JSON module for parsing", isError: false },
+            { text: "# Malformed JSON string", purpose: "Comment describing the JSON data", isError: false },
+            { text: "json_string = \"{'name': 'John', 'age': 30}\"", purpose: "Invalid JSON: uses single quotes instead of double", isError: false },
+            { text: "try:", purpose: "Start of try block for error handling", isError: false },
+            { text: "    data = json.loads(json_string)", purpose: "ERROR: Invalid JSON format with single quotes", isError: true },
+            { text: "    print(data)", purpose: "Would print parsed data if successful", isError: false },
+            { text: "except json.JSONDecodeError as e:", purpose: "Catch JSON parsing errors", isError: false },
+            { text: "    print(f\"JSON Error: {e}\")", purpose: "Print the specific JSON error message", isError: false }
+          ],
+          solution: "Use double quotes in JSON: '{\"name\": \"John\", \"age\": 30}'. JSON requires double quotes for strings, not single quotes like Python."
+        },
+        {
+          title: "Pandas KeyError: Column Not Found",
+          type: "Data Science • DataFrames",
+          description: "You're working with a pandas DataFrame and trying to access a column, but pandas says the column doesn't exist. Maybe there's a typo or the column name has extra spaces.",
+          symptoms: "Python shows \"KeyError: 'columnn'\" when trying to access a DataFrame column that doesn't exist.",
+          code: [
+            { text: "import pandas as pd", purpose: "Import pandas library for data manipulation", isError: false },
+            { text: "# Create a sample DataFrame", purpose: "Comment describing DataFrame creation", isError: false },
+            { text: "data = {'name': ['Alice', 'Bob'], 'age': [25, 30]}", purpose: "Dictionary with sample data", isError: false },
+            { text: "df = pd.DataFrame(data)", purpose: "Create DataFrame from dictionary", isError: false },
+            { text: "# Try to access a column", purpose: "Comment before column access", isError: false },
+            { text: "print(df.columns)", purpose: "Show available columns: ['name', 'age']", isError: false },
+            { text: "ages = df['agee']", purpose: "ERROR: Column name has typo - extra 'e'", isError: true },
+            { text: "print(ages)", purpose: "Would print the ages column if name was correct", isError: false }
+          ],
+          solution: "Check the exact column name using df.columns first. Use df['age'] instead of df['agee']. Column names are case-sensitive and must match exactly."
+        },
+        {
+          title: "Unicode Decode Error: Wrong Encoding",
+          type: "Advanced • File Handling",
+          description: "You're trying to read a text file, but it contains special characters that Python can't decode with the default UTF-8 encoding. The file might be in a different encoding.",
+          symptoms: "Python shows \"UnicodeDecodeError: 'utf-8' codec can't decode byte 0xff in position 0\" when reading a file.",
+          code: [
+            { text: "# Try to read a file with special characters", purpose: "Comment describing file reading", isError: false },
+            { text: "filename = 'data_latin.txt'", purpose: "File containing Latin-1 encoded text", isError: false },
+            { text: "try:", purpose: "Start of try block for error handling", isError: false },
+            { text: "    with open(filename, 'r') as file:", purpose: "ERROR: Default UTF-8 encoding can't read Latin-1 file", isError: true },
+            { text: "        content = file.read()", purpose: "Attempt to read file content", isError: false },
+            { text: "        print(content)", purpose: "Would print content if encoding was correct", isError: false },
+            { text: "except UnicodeDecodeError as e:", purpose: "Catch encoding errors", isError: false },
+            { text: "    print(f\"Encoding error: {e}\")", purpose: "Print the specific encoding error", isError: false }
+          ],
+          solution: "Specify the correct encoding: open(filename, 'r', encoding='latin-1'). Common encodings include 'utf-8', 'latin-1', 'cp1252', and 'ascii'."
+        },
+        {
+          title: "Circular Import Error: Modules Importing Each Other",
+          type: "Advanced • Module Design",
+          description: "You have two Python files that import each other, creating a circular dependency. When Python tries to load them, it gets stuck in an infinite loop.",
+          symptoms: "Python shows \"ImportError: cannot import name 'function_name' from partially initialized module\" or similar circular import error.",
+          code: [
+            { text: "# File: module_a.py", purpose: "Comment showing this is the first module", isError: false },
+            { text: "from module_b import helper_function", purpose: "Import from module B", isError: false },
+            { text: "def main_function():", purpose: "Function definition in module A", isError: false },
+            { text: "    return helper_function() + 10", purpose: "Uses function from module B", isError: false },
+            { text: "# File: module_b.py", purpose: "Comment showing this is the second module", isError: false },
+            { text: "from module_a import main_function", purpose: "ERROR: Creates circular import with module A", isError: true },
+            { text: "def helper_function():", purpose: "Function definition in module B", isError: false },
+            { text: "    return main_function() * 2", purpose: "Tries to use function from module A", isError: false }
+          ],
+          solution: "Restructure your code: move shared functions to a third module, use import statements inside functions, or reorganize your modules to avoid circular dependencies."
+        },
+        {
+          title: "Memory Error: Loading Too Much Data",
+          type: "Advanced • Performance",
+          description: "You're trying to load a huge dataset or create a very large list all at once, but your computer runs out of memory and can't complete the operation.",
+          symptoms: "Python shows \"MemoryError\" or the program becomes extremely slow and may be killed by the operating system.",
+          code: [
+            { text: "# Try to create a huge list in memory", purpose: "Comment describing memory-intensive operation", isError: false },
+            { text: "import csv", purpose: "Import CSV module for file processing", isError: false },
+            { text: "def load_huge_file(filename):", purpose: "Function to load a very large CSV file", isError: false },
+            { text: "    with open(filename, 'r') as file:", purpose: "Open the large file for reading", isError: false },
+            { text: "        reader = csv.reader(file)", purpose: "Create CSV reader object", isError: false },
+            { text: "        all_rows = list(reader)", purpose: "ERROR: Loads entire file into memory at once", isError: true },
+            { text: "        return all_rows", purpose: "Return all rows (if memory allows)", isError: false },
+            { text: "# This will fail for very large files", purpose: "Comment warning about memory usage", isError: false },
+            { text: "data = load_huge_file('huge_dataset.csv')", purpose: "Attempt to load multi-gigabyte file", isError: false }
+          ],
+          solution: "Process data in chunks or use generators. Instead of list(reader), iterate through the reader directly: 'for row in reader:' to process one row at a time."
+        },
+        {
+          title: "Async/Await: Coroutine Never Awaited",
+          type: "Advanced • Asynchronous Programming",
+          description: "You defined an async function and called it, but forgot to use 'await' or 'asyncio.run()'. The function returns a coroutine object but never actually executes.",
+          symptoms: "Python shows \"RuntimeWarning: coroutine 'fetch_data' was never awaited\" and the function doesn't run.",
+          code: [
+            { text: "import asyncio", purpose: "Import asyncio for asynchronous programming", isError: false },
+            { text: "import aiohttp", purpose: "Import aiohttp for async HTTP requests", isError: false },
+            { text: "async def fetch_data(url):", purpose: "Async function definition", isError: false },
+            { text: "    async with aiohttp.ClientSession() as session:", purpose: "Create async HTTP session", isError: false },
+            { text: "        async with session.get(url) as response:", purpose: "Make async HTTP request", isError: false },
+            { text: "            return await response.text()", purpose: "Return response text asynchronously", isError: false },
+            { text: "# Wrong way - coroutine never runs", purpose: "Comment explaining the error", isError: false },
+            { text: "result = fetch_data('https://api.github.com')", purpose: "ERROR: Missing 'await' or 'asyncio.run()'", isError: true },
+            { text: "print(result)", purpose: "Prints coroutine object, not actual data", isError: false }
+          ],
+          solution: "Use 'asyncio.run(fetch_data(url))' for top-level calls, or 'await fetch_data(url)' inside another async function."
+        },
+        {
+          title: "Class Attribute vs Instance Attribute Confusion",
+          type: "Advanced • Object-Oriented Programming",
+          description: "You're defining a class with what you think are instance attributes, but they're actually class attributes shared by all instances, causing unexpected behavior.",
+          symptoms: "All instances of your class share the same list or dictionary, and changes in one instance affect all others.",
+          code: [
+            { text: "# Problematic class definition", purpose: "Comment showing class with shared attributes", isError: false },
+            { text: "class Student:", purpose: "Class definition for Student", isError: false },
+            { text: "    grades = []", purpose: "ERROR: This is a class attribute, shared by all instances", isError: true },
+            { text: "    def __init__(self, name):", purpose: "Constructor method", isError: false },
+            { text: "        self.name = name", purpose: "Instance attribute (correct)", isError: false },
+            { text: "    def add_grade(self, grade):", purpose: "Method to add a grade", isError: false },
+            { text: "        self.grades.append(grade)", purpose: "Modifies shared class attribute", isError: false },
+            { text: "# Create two students", purpose: "Comment before creating instances", isError: false },
+            { text: "alice = Student('Alice')", purpose: "Create first student instance", isError: false },
+            { text: "bob = Student('Bob')", purpose: "Create second student instance", isError: false },
+            { text: "alice.add_grade(95)", purpose: "Add grade to Alice", isError: false },
+            { text: "print(bob.grades)", purpose: "Bob's grades also show Alice's grade!", isError: false }
+          ],
+          solution: "Move the list to __init__: 'self.grades = []'. This creates a separate list for each instance instead of sharing one list among all instances."
+        },
+        {
+          title: "Dictionary Key Error in Loop",
+          type: "Intermediate • Data Structures",
+          description: "You're iterating through a dictionary and trying to modify it at the same time, which causes Python to raise an error about the dictionary changing size during iteration.",
+          symptoms: "Python shows \"RuntimeError: dictionary changed size during iteration\" when modifying a dict while looping through it.",
+          code: [
+            { text: "# Dictionary of user scores", purpose: "Comment describing the data structure", isError: false },
+            { text: "scores = {'Alice': 85, 'Bob': 92, 'Charlie': 78, 'David': 65}", purpose: "Dictionary with student scores", isError: false },
+            { text: "# Try to remove failing students (score < 70)", purpose: "Comment explaining the goal", isError: false },
+            { text: "for name, score in scores.items():", purpose: "Loop through dictionary items", isError: false },
+            { text: "    if score < 70:", purpose: "Check if score is below threshold", isError: false },
+            { text: "        del scores[name]", purpose: "ERROR: Modifying dict while iterating", isError: true },
+            { text: "print(scores)", purpose: "Would print remaining students if successful", isError: false }
+          ],
+          solution: "Create a copy of the keys first: 'for name in list(scores.keys()):' or use dictionary comprehension: 'scores = {k:v for k,v in scores.items() if v >= 70}'"
+        },
+        {
+          title: "File Permission Error: Access Denied",
+          type: "Intermediate • File System",
+          description: "You're trying to write to a file or directory that requires administrator privileges, or the file is currently open in another program and locked.",
+          symptoms: "Python shows \"PermissionError: [Errno 13] Permission denied\" when trying to write to a protected location.",
+          code: [
+            { text: "# Try to write to a system directory", purpose: "Comment describing file operation", isError: false },
+            { text: "import os", purpose: "Import os module for system operations", isError: false },
+            { text: "def save_log(message):", purpose: "Function to save log messages", isError: false },
+            { text: "    log_path = '/etc/myapp.log'", purpose: "System directory (requires admin rights)", isError: false },
+            { text: "    try:", purpose: "Start of try block for error handling", isError: false },
+            { text: "        with open(log_path, 'a') as file:", purpose: "ERROR: No permission to write to /etc/", isError: true },
+            { text: "            file.write(f\"{message}\\n\")", purpose: "Attempt to write log message", isError: false },
+            { text: "    except PermissionError as e:", purpose: "Catch permission errors", isError: false },
+            { text: "        print(f\"Access denied: {e}\")", purpose: "Print permission error message", isError: false },
+            { text: "save_log('Application started')", purpose: "Call function that triggers permission error", isError: false }
+          ],
+          solution: "Use a writable directory like the user's home folder or temp directory: 'log_path = os.path.expanduser('~/myapp.log')' or check file permissions first."
+        },
+        {
+          title: "SQL Injection Vulnerability in Database Query",
+          type: "Advanced • Security",
+          description: "You're building SQL queries by concatenating strings with user input, which creates a serious security vulnerability that attackers can exploit to access or modify your database.",
+          symptoms: "No immediate error, but creates security risk. Malicious input like \"; DROP TABLE users; --\" could destroy your database.",
+          code: [
+            { text: "import sqlite3", purpose: "Import SQLite database module", isError: false },
+            { text: "def get_user(username):", purpose: "Function to retrieve user from database", isError: false },
+            { text: "    conn = sqlite3.connect('users.db')", purpose: "Connect to SQLite database", isError: false },
+            { text: "    cursor = conn.cursor()", purpose: "Create database cursor", isError: false },
+            { text: "    # Vulnerable SQL query construction", purpose: "Comment warning about security issue", isError: false },
+            { text: "    query = f\"SELECT * FROM users WHERE name = '{username}'\"", purpose: "ERROR: Direct string interpolation enables SQL injection", isError: true },
+            { text: "    cursor.execute(query)", purpose: "Execute the vulnerable query", isError: false },
+            { text: "    result = cursor.fetchone()", purpose: "Fetch query result", isError: false },
+            { text: "    conn.close()", purpose: "Close database connection", isError: false },
+            { text: "    return result", purpose: "Return user data", isError: false },
+            { text: "# This could be dangerous if username is from user input", purpose: "Comment about security risk", isError: false },
+            { text: "user = get_user(\"Alice\")", purpose: "Function call that works but is vulnerable", isError: false }
+          ],
+          solution: "Use parameterized queries: 'cursor.execute(\"SELECT * FROM users WHERE name = ?\", (username,))'. This prevents SQL injection by properly escaping user input."
+        },
+        {
+          title: "Thread Safety Issue: Race Condition",
+          type: "Advanced • Concurrency",
+          description: "You're using multiple threads that access shared data without proper synchronization, causing unpredictable results and data corruption when threads interfere with each other.",
+          symptoms: "Inconsistent results, data corruption, or occasional crashes when running multi-threaded code. Results vary between runs.",
+          code: [
+            { text: "import threading", purpose: "Import threading module", isError: false },
+            { text: "import time", purpose: "Import time module for delays", isError: false },
+            { text: "# Shared counter variable", purpose: "Comment describing shared resource", isError: false },
+            { text: "counter = 0", purpose: "Global counter accessed by multiple threads", isError: false },
+            { text: "def increment():", purpose: "Function to increment counter", isError: false },
+            { text: "    global counter", purpose: "Access global counter variable", isError: false },
+            { text: "    for _ in range(100000):", purpose: "Loop many times to increase chance of race condition", isError: false },
+            { text: "        counter += 1", purpose: "ERROR: Not thread-safe, multiple threads can interfere", isError: true },
+            { text: "# Create multiple threads", purpose: "Comment before thread creation", isError: false },
+            { text: "threads = [threading.Thread(target=increment) for _ in range(5)]", purpose: "Create 5 threads running increment function", isError: false },
+            { text: "for thread in threads:", purpose: "Start all threads", isError: false },
+            { text: "    thread.start()", purpose: "Begin thread execution", isError: false },
+            { text: "for thread in threads:", purpose: "Wait for all threads to complete", isError: false },
+            { text: "    thread.join()", purpose: "Join threads back to main", isError: false },
+            { text: "print(f\"Final counter: {counter}\")", purpose: "Print result (should be 500000 but often isn't)", isError: false }
+          ],
+          solution: "Use threading.Lock() to synchronize access: 'with lock: counter += 1'. This ensures only one thread can modify the counter at a time."
+        },
+        {
+          title: "Context Manager Not Used: Resource Leak",
+          type: "Intermediate • Best Practices",
+          description: "You're opening files or network connections but not properly closing them, which can lead to resource leaks and eventually exhaust your system's available file handles.",
+          symptoms: "\"Too many open files\" error after running the program many times, or resources not being released properly.",
+          code: [
+            { text: "# Function that processes multiple files", purpose: "Comment describing file processing", isError: false },
+            { text: "def process_files(file_list):", purpose: "Function to process a list of files", isError: false },
+            { text: "    results = []", purpose: "List to store processing results", isError: false },
+            { text: "    for filename in file_list:", purpose: "Loop through each file", isError: false },
+            { text: "        try:", purpose: "Start try block for error handling", isError: false },
+            { text: "            file = open(filename, 'r')", purpose: "ERROR: File opened but never explicitly closed", isError: true },
+            { text: "            content = file.read()", purpose: "Read file content", isError: false },
+            { text: "            results.append(len(content))", purpose: "Process content and store result", isError: false },
+            { text: "            # Missing file.close() or context manager", purpose: "Comment highlighting the missing cleanup", isError: false },
+            { text: "        except FileNotFoundError:", purpose: "Handle missing files", isError: false },
+            { text: "            results.append(0)", purpose: "Add 0 for missing files", isError: false },
+            { text: "    return results", purpose: "Return processing results", isError: false },
+            { text: "# Process many files", purpose: "Comment before function call", isError: false },
+            { text: "files = ['file1.txt', 'file2.txt', 'file3.txt']", purpose: "List of files to process", isError: false },
+            { text: "result = process_files(files)", purpose: "Call function that leaks file handles", isError: false }
+          ],
+          solution: "Use context managers: 'with open(filename, 'r') as file:' instead of manual open/close. This automatically closes files even if errors occur."
+        },
+        {
+          title: "Mutable Default Argument Trap",
+          type: "Advanced • Function Design",
+          description: "You used a mutable object (like a list or dictionary) as a default parameter in a function, causing all calls to share the same object and leading to unexpected behavior.",
+          symptoms: "Function calls affect each other unexpectedly. Default parameters seem to 'remember' values from previous function calls.",
+          code: [
+            { text: "# Function with mutable default argument", purpose: "Comment describing problematic function", isError: false },
+            { text: "def add_item(item, shopping_list=[]):", purpose: "ERROR: Mutable default argument creates shared state", isError: true },
+            { text: "    shopping_list.append(item)", purpose: "Add item to the list", isError: false },
+            { text: "    return shopping_list", purpose: "Return the modified list", isError: false },
+            { text: "# First call", purpose: "Comment before first function call", isError: false },
+            { text: "list1 = add_item('apples')", purpose: "Call function without providing list", isError: false },
+            { text: "print(f\"List 1: {list1}\")", purpose: "Print first list: ['apples']", isError: false },
+            { text: "# Second call - unexpected behavior", purpose: "Comment before second call", isError: false },
+            { text: "list2 = add_item('bananas')", purpose: "Second call without providing list", isError: false },
+            { text: "print(f\"List 2: {list2}\")", purpose: "Print second list: ['apples', 'bananas'] - unexpected!", isError: false },
+            { text: "# Both lists are the same object!", purpose: "Comment explaining the problem", isError: false },
+            { text: "print(f\"Same object? {list1 is list2}\")", purpose: "Print True - they share the same list object", isError: false }
+          ],
+          solution: "Use None as default and create new object inside function: 'def add_item(item, shopping_list=None): if shopping_list is None: shopping_list = []'"
+        },
+        {
+          title: "Generator Exhaustion: One-Time Use",
+          type: "Advanced • Iterators",
+          description: "You created a generator object and used it once, but when you try to iterate through it again, it appears empty because generators can only be consumed once.",
+          symptoms: "Second iteration through a generator produces no results, even though the first iteration worked fine.",
+          code: [
+            { text: "# Create a generator function", purpose: "Comment describing generator", isError: false },
+            { text: "def number_generator(n):", purpose: "Generator function definition", isError: false },
+            { text: "    for i in range(n):", purpose: "Loop to yield numbers", isError: false },
+            { text: "        yield i * 2", purpose: "Yield doubled numbers", isError: false },
+            { text: "# Create generator object", purpose: "Comment before generator creation", isError: false },
+            { text: "numbers = number_generator(5)", purpose: "Create generator for numbers 0,2,4,6,8", isError: false },
+            { text: "# First use works fine", purpose: "Comment before first iteration", isError: false },
+            { text: "print(\"First iteration:\")", purpose: "Label for first iteration", isError: false },
+            { text: "for num in numbers:", purpose: "Iterate through generator", isError: false },
+            { text: "    print(num, end=' ')", purpose: "Print each number", isError: false },
+            { text: "# Second use produces no output", purpose: "Comment before second iteration", isError: false },
+            { text: "print(\"\\nSecond iteration:\")", purpose: "Label for second iteration", isError: false },
+            { text: "for num in numbers:", purpose: "ERROR: Generator is exhausted, no output", isError: true },
+            { text: "    print(num, end=' ')", purpose: "This won't print anything", isError: false }
+          ],
+          solution: "Create a new generator for each use: 'numbers = number_generator(5)' before each iteration, or convert to a list if you need multiple iterations: 'numbers = list(number_generator(5))'"
+        },
+        {
+          title: "Floating Point Precision Error",
+          type: "Intermediate • Numeric Computing",
+          description: "You're comparing floating point numbers for equality, but due to how computers represent decimal numbers, tiny rounding errors make exact comparisons unreliable.",
+          symptoms: "Mathematical calculations that should be equal return False when compared, like 0.1 + 0.2 == 0.3 returning False.",
+          code: [
+            { text: "# Floating point precision demonstration", purpose: "Comment describing precision issue", isError: false },
+            { text: "import math", purpose: "Import math module for comparison function", isError: false },
+            { text: "# Simple decimal arithmetic", purpose: "Comment before calculation", isError: false },
+            { text: "result = 0.1 + 0.2", purpose: "Add two decimal numbers", isError: false },
+            { text: "expected = 0.3", purpose: "Expected result", isError: false },
+            { text: "print(f\"Result: {result}\")", purpose: "Print actual result: 0.30000000000000004", isError: false },
+            { text: "print(f\"Expected: {expected}\")", purpose: "Print expected result: 0.3", isError: false },
+            { text: "# Direct comparison fails", purpose: "Comment before problematic comparison", isError: false },
+            { text: "if result == expected:", purpose: "ERROR: Floating point comparison is unreliable", isError: true },
+            { text: "    print(\"Equal!\")", purpose: "This won't print due to precision error", isError: false },
+            { text: "else:", purpose: "Else clause for failed comparison", isError: false },
+            { text: "    print(\"Not equal due to floating point precision\")", purpose: "This will print instead", isError: false }
+          ],
+          solution: "Use math.isclose() for floating point comparisons: 'if math.isclose(result, expected):' or compare with a small tolerance: 'if abs(result - expected) < 1e-9:'"
+        },
+        {
+          title: "Class Method vs Static Method Confusion",
+          type: "Advanced • Object-Oriented Programming",
+          description: "You're trying to access instance attributes from a static method, or you're confused about when to use @classmethod vs @staticmethod decorators.",
+          symptoms: "NameError when trying to access 'self' in a static method, or TypeError when calling methods incorrectly.",
+          code: [
+            { text: "class Calculator:", purpose: "Class definition for calculator", isError: false },
+            { text: "    tax_rate = 0.08", purpose: "Class attribute for tax rate", isError: false },
+            { text: "    def __init__(self, discount=0):", purpose: "Constructor with discount parameter", isError: false },
+            { text: "        self.discount = discount", purpose: "Instance attribute for discount", isError: false },
+            { text: "    @staticmethod", purpose: "Static method decorator", isError: false },
+            { text: "    def calculate_total(price):", purpose: "Static method definition", isError: false },
+            { text: "        # Try to access instance attribute", purpose: "Comment about attempted access", isError: false },
+            { text: "        discounted = price - self.discount", purpose: "ERROR: 'self' not available in static method", isError: true },
+            { text: "        return discounted * (1 + Calculator.tax_rate)", purpose: "Calculate total with tax", isError: false },
+            { text: "    @classmethod", purpose: "Class method decorator", isError: false },
+            { text: "    def get_tax_rate(cls):", purpose: "Class method to get tax rate", isError: false },
+            { text: "        return cls.tax_rate", purpose: "Access class attribute correctly", isError: false },
+            { text: "# Usage that causes error", purpose: "Comment before problematic usage", isError: false },
+            { text: "calc = Calculator(10)", purpose: "Create calculator instance", isError: false },
+            { text: "total = Calculator.calculate_total(100)", purpose: "Call static method (will fail)", isError: false }
+          ],
+          solution: "Use regular instance method to access self.discount, or pass discount as parameter to static method. Static methods can't access instance attributes."
+        },
+        {
+          title: "Django Model DoesNotExist Error",
+          type: "Web Development • Django",
+          description: "You're working with Django models and trying to get a specific object from the database, but the object doesn't exist, causing Django to raise a DoesNotExist exception.",
+          symptoms: "Python shows \"User.DoesNotExist: User matching query does not exist\" when trying to retrieve a non-existent database record.",
+          code: [
+            { text: "from django.contrib.auth.models import User", purpose: "Import Django's built-in User model", isError: false },
+            { text: "from django.shortcuts import render", purpose: "Import Django render function for templates", isError: false },
+            { text: "def user_profile(request, user_id):", purpose: "View function to display user profile", isError: false },
+            { text: "    user = User.objects.get(id=user_id)", purpose: "ERROR: Raises DoesNotExist if user doesn't exist", isError: true },
+            { text: "    profile_data = {", purpose: "Dictionary to store profile information", isError: false },
+            { text: "        'username': user.username,", purpose: "Add username to profile data", isError: false },
+            { text: "        'email': user.email,", purpose: "Add email to profile data", isError: false },
+            { text: "        'last_login': user.last_login", purpose: "Add last login time to profile data", isError: false },
+            { text: "    }", purpose: "Close the profile data dictionary", isError: false },
+            { text: "    return render(request, 'profile.html', profile_data)", purpose: "Render template with user data", isError: false }
+          ],
+          solution: "Use get_object_or_404() for automatic 404 handling: 'user = get_object_or_404(User, id=user_id)' or use try-except: 'try: user = User.objects.get(id=user_id) except User.DoesNotExist: return HttpResponse(status=404)'"
+        },
+        {
+          title: "Pandas DataFrame Memory Optimization Error",
+          type: "Data Science • Performance",
+          description: "You're loading a large CSV file into a pandas DataFrame without optimizing data types, causing excessive memory usage and potential MemoryError crashes.",
+          symptoms: "System becomes slow, may show MemoryError, or the program gets killed by the operating system due to excessive memory usage.",
+          code: [
+            { text: "import pandas as pd", purpose: "Import pandas library for data analysis", isError: false },
+            { text: "import numpy as np", purpose: "Import numpy for numerical operations", isError: false },
+            { text: "def load_sales_data(filename):", purpose: "Function to load large sales dataset", isError: false },
+            { text: "    df = pd.read_csv(filename)", purpose: "ERROR: Loads with default dtypes, uses excessive memory", isError: true },
+            { text: "    total_sales = df['sales_amount'].sum()", purpose: "Calculate total sales", isError: false },
+            { text: "    avg_price = df['unit_price'].mean()", purpose: "Calculate average unit price", isError: false },
+            { text: "    customer_count = df['customer_id'].nunique()", purpose: "Count unique customers", isError: false },
+            { text: "    return {", purpose: "Return analysis results", isError: false },
+            { text: "        'total_sales': total_sales,", purpose: "Add total sales to results", isError: false },
+            { text: "        'avg_price': avg_price,", purpose: "Add average price to results", isError: false },
+            { text: "        'customers': customer_count", purpose: "Add customer count to results", isError: false },
+            { text: "    }", purpose: "Close results dictionary", isError: false },
+            { text: "results = load_sales_data('huge_sales_data.csv')", purpose: "Function call that may crash due to memory", isError: false }
+          ],
+          solution: "Optimize data types and chunk processing: 'df = pd.read_csv(filename, dtype={'customer_id': 'category', 'sales_amount': 'float32'}, chunksize=10000)' or use specific columns: 'usecols=['sales_amount', 'customer_id']'"
+        },
+        {
+          title: "AsyncIO Event Loop Management Error",
+          type: "Advanced • Asynchronous Programming",
+          description: "You're mixing synchronous and asynchronous code incorrectly, trying to run async functions in environments that already have an event loop running, causing runtime conflicts.",
+          symptoms: "Python shows \"RuntimeError: asyncio.run() cannot be called from a running event loop\" when trying to run async code improperly.",
+          code: [
+            { text: "import asyncio", purpose: "Import asyncio for asynchronous programming", isError: false },
+            { text: "import aiohttp", purpose: "Import aiohttp for async HTTP requests", isError: false },
+            { text: "import requests", purpose: "Import requests for comparison", isError: false },
+            { text: "async def fetch_api_data(url):", purpose: "Async function to fetch data from API", isError: false },
+            { text: "    async with aiohttp.ClientSession() as session:", purpose: "Create async HTTP session", isError: false },
+            { text: "        async with session.get(url) as response:", purpose: "Make async GET request", isError: false },
+            { text: "            return await response.json()", purpose: "Return JSON response data", isError: false },
+            { text: "async def process_multiple_apis():", purpose: "Function to process multiple API calls", isError: false },
+            { text: "    urls = [", purpose: "List of API endpoints to call", isError: false },
+            { text: "        'https://api.github.com/users/octocat',", purpose: "GitHub API endpoint", isError: false },
+            { text: "        'https://jsonplaceholder.typicode.com/posts/1'", purpose: "JSONPlaceholder API endpoint", isError: false },
+            { text: "    ]", purpose: "Close URLs list", isError: false },
+            { text: "    for url in urls:", purpose: "Loop through each API URL", isError: false },
+            { text: "        # Wrong: trying to run async inside async", purpose: "Comment explaining the error", isError: false },
+            { text: "        data = asyncio.run(fetch_api_data(url))", purpose: "ERROR: Can't use asyncio.run() inside async function", isError: true },
+            { text: "        print(f\"Data from {url}: {data}\")", purpose: "Print the fetched data", isError: false },
+            { text: "# This will fail if called from Jupyter or existing event loop", purpose: "Comment about execution context", isError: false },
+            { text: "asyncio.run(process_multiple_apis())", purpose: "Run the async function", isError: false }
+          ],
+          solution: "Use 'await' instead of 'asyncio.run()' inside async functions: 'data = await fetch_api_data(url)'. Use asyncio.run() only at the top level, or asyncio.create_task() for concurrent execution."
+        },
+        {
+          title: "Flask Session Security Configuration Error",
+          type: "Web Development • Security",
+          description: "You're building a Flask web application but haven't properly configured session security, leaving your app vulnerable to session hijacking and other security attacks.",
+          symptoms: "No immediate error, but creates serious security vulnerabilities. Sessions may not work properly in production or be easily compromised.",
+          code: [
+            { text: "from flask import Flask, session, request, render_template", purpose: "Import Flask components for web application", isError: false },
+            { text: "from datetime import datetime", purpose: "Import datetime for timestamp handling", isError: false },
+            { text: "app = Flask(__name__)", purpose: "Create Flask application instance", isError: false },
+            { text: "# Missing or weak secret key configuration", purpose: "Comment highlighting security issue", isError: false },
+            { text: "app.secret_key = 'dev'", purpose: "ERROR: Weak secret key unsuitable for production", isError: true },
+            { text: "@app.route('/login', methods=['GET', 'POST'])", purpose: "Login route decorator", isError: false },
+            { text: "def login():", purpose: "Login function definition", isError: false },
+            { text: "    if request.method == 'POST':", purpose: "Check if form was submitted", isError: false },
+            { text: "        username = request.form['username']", purpose: "Get username from form", isError: false },
+            { text: "        password = request.form['password']", purpose: "Get password from form", isError: false },
+            { text: "        # Simplified authentication (for demo)", purpose: "Comment about authentication", isError: false },
+            { text: "        if username == 'admin' and password == 'secret':", purpose: "Basic password check", isError: false },
+            { text: "            session['user_id'] = username", purpose: "Store user in session", isError: false },
+            { text: "            session['login_time'] = datetime.now().isoformat()", purpose: "Store login timestamp", isError: false },
+            { text: "            return 'Login successful!'", purpose: "Return success message", isError: false },
+            { text: "        else:", purpose: "Handle invalid credentials", isError: false },
+            { text: "            return 'Invalid credentials'", purpose: "Return error message", isError: false },
+            { text: "    return render_template('login.html')", purpose: "Show login form", isError: false },
+            { text: "if __name__ == '__main__':", purpose: "Main execution block", isError: false },
+            { text: "    app.run(debug=True)", purpose: "Run Flask app in debug mode", isError: false }
+          ],
+          solution: "Use strong, random secret key: 'app.secret_key = os.environ.get('SECRET_KEY') or os.urandom(24)'. Configure session security: 'app.config.update(SESSION_COOKIE_SECURE=True, SESSION_COOKIE_HTTPONLY=True, SESSION_COOKIE_SAMESITE='Lax')' for production."
+        },
+        {
+          title: "Machine Learning Data Leakage Error",
+          type: "Data Science • Model Training",
+          description: "You're preprocessing your entire dataset before splitting into train/test sets, causing data leakage where future information contaminates your model training.",
+          symptoms: "Unrealistically high model performance during validation that doesn't translate to real-world performance. Model fails dramatically in production.",
+          code: [
+            { text: "import pandas as pd", purpose: "Import pandas for data manipulation", isError: false },
+            { text: "from sklearn.model_selection import train_test_split", purpose: "Import train/test splitting function", isError: false },
+            { text: "from sklearn.preprocessing import StandardScaler", purpose: "Import feature scaling", isError: false },
+            { text: "from sklearn.ensemble import RandomForestClassifier", purpose: "Import random forest classifier", isError: false },
+            { text: "from sklearn.metrics import accuracy_score", purpose: "Import accuracy metric", isError: false },
+            { text: "def train_model_with_leakage(df):", purpose: "Function demonstrating data leakage", isError: false },
+            { text: "    # Prepare features and target", purpose: "Comment about data preparation", isError: false },
+            { text: "    X = df.drop('target', axis=1)", purpose: "Separate features from target", isError: false },
+            { text: "    y = df['target']", purpose: "Extract target variable", isError: false },
+            { text: "    # WRONG: Scale entire dataset before splitting", purpose: "Comment highlighting the error", isError: false },
+            { text: "    scaler = StandardScaler()", purpose: "Create scaler instance", isError: false },
+            { text: "    X_scaled = scaler.fit_transform(X)", purpose: "ERROR: Fitting scaler on entire dataset causes leakage", isError: true },
+            { text: "    # Split AFTER preprocessing (wrong order)", purpose: "Comment about incorrect order", isError: false },
+            { text: "    X_train, X_test, y_train, y_test = train_test_split(", purpose: "Split the preprocessed data", isError: false },
+            { text: "        X_scaled, y, test_size=0.2, random_state=42", purpose: "Configure train/test split", isError: false },
+            { text: "    )", purpose: "Close train_test_split call", isError: false },
+            { text: "    # Train model", purpose: "Comment about model training", isError: false },
+            { text: "    model = RandomForestClassifier(random_state=42)", purpose: "Create random forest model", isError: false },
+            { text: "    model.fit(X_train, y_train)", purpose: "Train the model", isError: false },
+            { text: "    # Evaluate (will show inflated performance)", purpose: "Comment about evaluation", isError: false },
+            { text: "    predictions = model.predict(X_test)", purpose: "Make predictions on test set", isError: false },
+            { text: "    accuracy = accuracy_score(y_test, predictions)", purpose: "Calculate accuracy", isError: false },
+            { text: "    return model, accuracy", purpose: "Return trained model and accuracy", isError: false }
+          ],
+          solution: "Always split data BEFORE preprocessing: 'X_train, X_test, y_train, y_test = train_test_split(X, y, ...)' then 'scaler.fit(X_train)' and 'X_train_scaled = scaler.transform(X_train)'. Apply same scaler to test set: 'X_test_scaled = scaler.transform(X_test)'."
+        },
+		{
+      title: "Off-by-One Error in range()",
+      type: "CBSE • Loops & Indexing",
+      description: "You try to use the next element while iterating by index. It works… until the last iteration.",
+      symptoms: "IndexError: list index out of range on the final loop iteration.",
+      code: [
+        { text: "# Sum adjacent pairs", purpose: "Goal: add current element with its next", isError: false },
+        { text: "arr = [1, 2, 3, 4]", purpose: "List with 4 items (indices 0..3)", isError: false },
+        { text: "for i in range(len(arr)):", purpose: "Iterate indices 0..3", isError: false },
+        { text: "    s = arr[i] + arr[i+1]", purpose: "ERROR: i=3 → arr[4] blows up", isError: true },
+        { text: "    print(s)", purpose: "Would print pair sums", isError: false }
+      ],
+      solution: "Use range(len(arr)-1) or guard the access: for i in range(len(arr) - 1): s = arr[i] + arr[i+1]."
+    },
+    {
+      title: "String Comparison: 'is' vs '=='",
+      type: "CBSE • Strings & Operators",
+      description: "Identity operator 'is' is used instead of equality '==', which is unreliable for string comparison.",
+      symptoms: "Condition randomly fails even when the text looks identical.",
+      code: [
+        { text: "answer = input('Proceed (yes/no)? ')", purpose: "User enters a string", isError: false },
+        { text: "if answer is 'yes':", purpose: "ERROR: 'is' checks identity, not value", isError: true },
+        { text: "    print('Starting...')", purpose: "Intended branch", isError: false }
+      ],
+      solution: "Use value comparison: if answer.strip().lower() == 'yes': ..."
+    },
+    {
+      title: "Shadowing Built-ins (list, dict, etc.)",
+      type: "CBSE • Names & Scope",
+      description: "You named a variable 'list' and then tried to call list().",
+      symptoms: "TypeError: 'list' object is not callable.",
+      code: [
+        { text: "list = [1, 2, 3]", purpose: "ERROR: Shadows Python built-in 'list'", isError: true },
+        { text: "letters = list('abc')", purpose: "Now trying to call 'list' like a function", isError: false }
+      ],
+      solution: "Avoid naming variables after built-ins. Use names like items_list, data_list."
+    },
+    {
+      title: "Tuple Immutability Violation",
+      type: "CBSE • Tuples",
+      description: "Trying to modify a tuple element.",
+      symptoms: "TypeError: 'tuple' object does not support item assignment.",
+      code: [
+        { text: "t = (1, 2, 3)", purpose: "Tuple is immutable", isError: false },
+        { text: "t[0] = 99", purpose: "ERROR: Cannot assign to tuple elements", isError: true }
+      ],
+      solution: "Convert to list, modify, then back: lst = list(t); lst[0]=99; t = tuple(lst)."
+    },
+    {
+      title: "Slice Step Cannot Be Zero",
+      type: "CBSE • Slicing",
+      description: "A zero step is invalid in Python slicing.",
+      symptoms: "ValueError: slice step cannot be zero.",
+      code: [
+        { text: "s = 'hello'", purpose: "Simple string", isError: false },
+        { text: "print(s[::0])", purpose: "ERROR: step 0 is invalid", isError: true }
+      ],
+      solution: "Use a positive/negative non-zero step, e.g., s[::1] or s[::-1] for reverse."
+    },
+    {
+      title: "List Multiplication: Shared Rows",
+      type: "CBSE • Lists",
+      description: "Using [row] * n creates references to the same inner list.",
+      symptoms: "Editing one row edits all rows.",
+      code: [
+        { text: "row = [0]*3", purpose: "A single row", isError: false },
+        { text: "grid = [row]*3", purpose: "ERROR: 3 refs to the same row", isError: true },
+        { text: "grid[0][0] = 1", purpose: "Changes appear in all rows", isError: false },
+        { text: "print(grid)", purpose: "[[1,0,0],[1,0,0],[1,0,0]]", isError: false }
+      ],
+      solution: "Use list comprehension for independent rows: grid = [[0]*3 for _ in range(3)]."
+    },
+    {
+      title: "CSV Writer: Extra Blank Lines (Windows)",
+      type: "CBSE • File Handling (CSV)",
+      description: "Opening CSV files without newline='' on Windows inserts blank lines.",
+      symptoms: "File has empty rows between data rows.",
+      code: [
+        { text: "import csv", purpose: "CSV module", isError: false },
+        { text: "with open('data.csv', 'w') as f:", purpose: "ERROR: Missing newline=''", isError: true },
+        { text: "    writer = csv.writer(f)", purpose: "CSV writer", isError: false },
+        { text: "    writer.writerow(['name','marks'])", purpose: "Write a header row", isError: false }
+      ],
+      solution: "Open with newline='': with open('data.csv','w', newline='') as f: ..."
+    },
+    {
+      title: "CSV Parsed as One Column (Wrong Delimiter)",
+      type: "CBSE • File Handling (CSV)",
+      description: "The file uses ';' but you read with default ',' delimiter.",
+      symptoms: "Each row becomes a single giant string field.",
+      code: [
+        { text: "import csv", purpose: "CSV module", isError: false },
+        { text: "with open('scores.csv') as f:", purpose: "Open CSV", isError: false },
+        { text: "    reader = csv.reader(f)", purpose: "ERROR: Default delimiter is ','", isError: true },
+        { text: "    for row in reader: print(row)", purpose: "All data clumped", isError: false }
+      ],
+      solution: "Specify delimiter: reader = csv.reader(f, delimiter=';')."
+    },
+    {
+      title: "Writing str to Binary File",
+      type: "CBSE • File Modes",
+      description: "Opening a file in 'wb' expects bytes, not str.",
+      symptoms: "TypeError: a bytes-like object is required, not 'str'.",
+      code: [
+        { text: "with open('data.bin','wb') as f:", purpose: "Binary write mode", isError: false },
+        { text: "    f.write('hello')", purpose: "ERROR: Must write bytes", isError: true }
+      ],
+      solution: "Encode to bytes: f.write('hello'.encode('utf-8')), or use text mode 'w'."
+    },
+    {
+      title: "Pandas .loc vs .iloc Mix-up",
+      type: "CBSE • Pandas Indexing",
+      description: "Labels vs positions confusion after setting a custom index.",
+      symptoms: "KeyError when using .loc with a label that doesn’t exist.",
+      code: [
+        { text: "import pandas as pd", purpose: "Pandas", isError: false },
+        { text: "df = pd.DataFrame({'id':['A','B'], 'marks':[80,90]}).set_index('id')", purpose: "Index is labels 'A','B'", isError: false },
+        { text: "row = df.loc[1]", purpose: "ERROR: label 1 not in index", isError: true }
+      ],
+      solution: "Use .loc with labels (df.loc['A']) or .iloc with positions (df.iloc[1])."
+    },
+    {
+      title: "Pandas SettingWithCopy: Assignment Doesn't Stick",
+      type: "CBSE • Pandas Filtering",
+      description: "Assigning on a filtered view may not modify the original DataFrame.",
+      symptoms: "Warning and changes not reflected reliably.",
+      code: [
+        { text: "import pandas as pd", purpose: "Pandas", isError: false },
+        { text: "df = pd.DataFrame({'age':[16,19,21]})", purpose: "Sample data", isError: false },
+        { text: "adults = df[df['age'] >= 18]", purpose: "May create a view", isError: false },
+        { text: "adults['eligible'] = True", purpose: "ERROR: Chained assignment", isError: true }
+      ],
+      solution: "Use .loc on original: df.loc[df['age']>=18, 'eligible'] = True, or copy() then assign."
+    },
+    {
+      title: "read_csv: Header Misread (No Header File)",
+      type: "CBSE • Pandas I/O",
+      description: "File has no header but read_csv treats first row as header.",
+      symptoms: "First data row disappears into column names.",
+      code: [
+        { text: "# CSV (no header):  Alice,85", purpose: "First line is data", isError: false },
+        { text: "import pandas as pd", purpose: "Pandas", isError: false },
+        { text: "df = pd.read_csv('marks.csv')", purpose: "ERROR: header inferred incorrectly", isError: true },
+        { text: "print(df.head())", purpose: "Header = 'Alice','85'", isError: false }
+      ],
+      solution: "Specify header=None (and names=... if needed): pd.read_csv('marks.csv', header=None, names=['name','marks'])."
+    },
+    {
+      title: "Pandas: Lost Leading Zeros (Roll Numbers)",
+      type: "CBSE • Data Cleaning",
+      description: "Numeric inference turns '0012' into 12, losing leading zeros.",
+      symptoms: "IDs/roll numbers display without leading zeros.",
+      code: [
+        { text: "import pandas as pd", purpose: "Pandas", isError: false },
+        { text: "df = pd.read_csv('rolls.csv')", purpose: "ERROR: dtype inferred as int", isError: true },
+        { text: "print(df['roll_no'].head())", purpose: "Shows 12 not '0012'", isError: false }
+      ],
+      solution: "Force string dtype: pd.read_csv('rolls.csv', dtype={'roll_no': 'string'}) (or 'object') to preserve zeros."
+    },
+    {
+      title: "SQL UPDATE Without WHERE",
+      type: "CBSE • SQL (Logic Pitfall)",
+      description: "Forgetting WHERE updates every row in the table.",
+      symptoms: "All students suddenly get the same value.",
+      code: [
+        { text: "import sqlite3", purpose: "DB demo (SQLite)", isError: false },
+        { text: "cur = sqlite3.connect(':memory:').cursor()", purpose: "Temp DB", isError: false },
+        { text: "cur.execute(\"CREATE TABLE students(name TEXT, grade TEXT)\")", purpose: "Table", isError: false },
+        { text: "cur.execute(\"UPDATE students SET grade='F'\")", purpose: "ERROR: No WHERE → all rows affected", isError: true }
+      ],
+      solution: "Always add a WHERE (and test with SELECT first). Example: UPDATE students SET grade='F' WHERE grade IS NULL;"
+    },
+    {
+      title: "SQL: Quoting Identifiers vs Strings",
+      type: "CBSE • SQL Basics",
+      description: "Single quotes denote string literals, not column names.",
+      symptoms: "Query returns literal text instead of column values.",
+      code: [
+        { text: "cur.execute(\"SELECT 'name' FROM students\")", purpose: "ERROR: 'name' is a string literal", isError: true },
+        { text: "print(cur.fetchall())", purpose: "Returns rows of the word 'name'", isError: false }
+      ],
+      solution: "Use bare identifiers (or backticks in MySQL): SELECT name FROM students;"
+    },
+    {
+      title: "SQLite Placeholder Style Mismatch",
+      type: "CBSE • Python–SQL Connectivity",
+      description: "Using %s placeholders with sqlite3 (which expects '?').",
+      symptoms: "sqlite3.ProgrammingError: Incorrect number of bindings/syntax.",
+      code: [
+        { text: "import sqlite3", purpose: "SQLite demo", isError: false },
+        { text: "cur = sqlite3.connect(':memory:').cursor()", purpose: "Cursor", isError: false },
+        { text: "cur.execute(\"CREATE TABLE t(id INTEGER)\")", purpose: "Make table", isError: false },
+        { text: "cur.execute(\"INSERT INTO t(id) VALUES (%s)\", (5,))", purpose: "ERROR: %s is not valid in sqlite3", isError: true }
+      ],
+      solution: "Use '?': cur.execute(\"INSERT INTO t(id) VALUES (?)\", (5,)). (MySQL connectors use %s.)"
+    },
+    {
+      title: "OperationalError: No Such Table",
+      type: "CBSE • Databases",
+      description: "Querying a table that hasn’t been created or wrong DB selected.",
+      symptoms: "sqlite3.OperationalError: no such table: marks.",
+      code: [
+        { text: "cur.execute(\"SELECT * FROM marks\")", purpose: "ERROR: Table missing / wrong name", isError: true }
+      ],
+      solution: "Create the table first or connect to the correct database/schema; double-check spelling and migrations."
+    },
+    {
+      title: "Cyber Safety: Plaintext Passwords",
+      type: "CBSE • Cybersecurity Basics",
+      description: "Storing raw passwords is unsafe and non-compliant with best practices.",
+      symptoms: "No immediate error, but a critical security flaw.",
+      code: [
+        { text: "def save_user(u, p):", purpose: "Save credentials", isError: false },
+        { text: "    with open('users.txt','a') as f:", purpose: "Append to file", isError: false },
+        { text: "        f.write(f\"{u},{p}\\n\")", purpose: "ERROR: Plaintext password storage", isError: true }
+      ],
+      solution: "Store a salted hash, not the password: use hashlib (e.g., PBKDF2/bcrypt/argon2 via libraries), and never log or persist raw secrets."
+    }
+      ];
+	  
+      let currentIndex = 0;
+      const cardElement = document.getElementById('concept-card');
+      const tooltip = document.getElementById('tooltip');
+
+      const populateCard = (example) => {
+        // Front face
+        document.getElementById('card-title').textContent = example.title;
+        document.getElementById('error-type').textContent = example.type;
+        document.getElementById('card-description').textContent = example.description;
+        document.getElementById('symptoms').textContent = example.symptoms;
+
+        // Back face
+        document.getElementById('back-title').textContent = example.title;
+        document.getElementById('solution-text').textContent = example.solution;
+
+        // Code block with interactive lines
+        const codeBlock = document.getElementById('code-block');
+        codeBlock.innerHTML = '';
+
+        example.code.forEach((line, index) => {
+          const lineElement = document.createElement('span');
+          lineElement.className = `code-line ${line.isError ? 'error-line' : ''}`;
+          lineElement.textContent = line.text;
+          lineElement.dataset.purpose = line.purpose;
+          lineElement.dataset.isError = line.isError;
+          
+          lineElement.addEventListener('mouseenter', showTooltip);
+          lineElement.addEventListener('mouseleave', hideTooltip);
+          
+          codeBlock.appendChild(lineElement);
+          if (index < example.code.length - 1) {
+            codeBlock.appendChild(document.createTextNode('\n'));
+          }
+        });
+      };
+
+      function showTooltip(event) {
+        const line = event.target;
+        const purpose = line.dataset.purpose;
+        const isError = line.dataset.isError === 'true';
+        
+        tooltip.textContent = purpose;
+        tooltip.className = `tooltip ${isError ? 'error' : 'good'}`;
+        
+        const rect = line.getBoundingClientRect();
+        
+        // Smart positioning for responsive design
+        let left = rect.left;
+        let top = rect.top - tooltip.offsetHeight - 10;
+        
+        // Adjust horizontal position if tooltip goes off-screen
+        if (left + tooltip.offsetWidth > window.innerWidth) {
+          left = window.innerWidth - tooltip.offsetWidth - 10;
+        }
+        if (left < 10) {
+          left = 10;
+        }
+        
+        // Adjust vertical position if tooltip goes off-screen
+        if (top < 10) {
+          top = rect.bottom + 10;
+        }
+        
+        tooltip.style.left = left + 'px';
+        tooltip.style.top = top + 'px';
+        
+        setTimeout(() => {
+          tooltip.classList.add('show');
+        }, 50);
+      }
+
+      function hideTooltip() {
+        tooltip.classList.remove('show');
+      }
+
+      const showCard = (index) => {
+        if (errorExamples[index]) {
+          populateCard(errorExamples[index]);
+          document.getElementById('progress-indicator').innerHTML = 
+            `<option>Error ${index + 1} of ${errorExamples.length}</option>`;
+        }
+        cardElement.classList.remove('flipped');
+      };
+
+      const flipCard = () => {
+        cardElement.classList.toggle('flipped');
+      };
+
+      // Event Listeners
+      document.getElementById('flip-btn-front').addEventListener('click', flipCard);
+      document.getElementById('flip-btn-back').addEventListener('click', flipCard);
+      document.getElementById('next-btn').addEventListener('click', () => {
+        currentIndex = (currentIndex + 1) % errorExamples.length;
+        showCard(currentIndex);
+      });
+      document.getElementById('prev-btn').addEventListener('click', () => {
+        currentIndex = (currentIndex - 1 + errorExamples.length) % errorExamples.length;
+        showCard(currentIndex);
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') document.getElementById('prev-btn').click();
+        if (e.key === 'ArrowRight') document.getElementById('next-btn').click();
+        if (e.key === ' ' || e.key === 'Enter') {
+          e.preventDefault();
+          flipCard();
+        }
+      });
+      
+      // Initial Load
+      showCard(currentIndex);
+    });
+  </script>
+</body>
+</html>

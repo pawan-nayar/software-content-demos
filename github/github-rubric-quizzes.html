@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Optimized GitHub Rubric Quiz Series</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- Base Theme from Github Mastery file --- */
+        :root {
+            --text: #212529; --bg: #fff; --muted: #f8f9fa; --border: #e9ecef;
+            --accent: #fd7e14; --accent-2: #e87312; --header-bg: #2c3e50; --header-fg: #f8f9fa;
+            --ok: #16a34a; --ok-soft: #dcfce7; --bad: #dc2626; --bad-soft: #fee2e2;
+            --font-main: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: var(--font-main);
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--text);
+            line-height: 1.45; /* Reduced from 1.6 */
+            min-height: 100vh;
+        }
+
+        /* --- Layout & Header --- */
+        .site-header { background: var(--header-bg); color: var(--header-fg); text-align:center; padding: 1rem; font-size: 1.5rem; font-weight: bold; }
+        .quiz-container { padding: 1.75rem 1rem; /* Reduced from 2rem */ max-width: 850px; margin: auto; }
+        
+        /* --- Progress Bar --- */
+        .progress-bar-container { width: 100%; height: 10px; background-color: var(--border); border-radius: 999px; overflow: hidden; margin-bottom: 0.85rem; /* Reduced from 1rem */ }
+        .progress-bar-fill { height: 100%; background-color: var(--accent); transition: width 0.3s ease-in-out; }
+
+        /* --- Quiz Card Styling --- */
+        .quiz-card {
+            background: var(--bg);
+            border-radius: 12px;
+            padding: 1.3rem 1.8rem; /* Reduced from 1.5rem 2rem */
+            box-shadow: 0 6px 18px rgba(0,0,0,0.07);
+            border: 1px solid var(--border);
+        }
+        .quiz-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.4rem; /* Reduced from 0.5rem */ color: var(--accent-2); }
+        .quiz-prompt { font-size: 1.05rem; margin-bottom: 1.3rem; /* Reduced from 1.5rem */ color: #495057; border-left: 4px solid var(--accent); padding-left: 1rem; background: var(--muted); padding-top: 0.4rem; padding-bottom: 0.4rem; border-radius: 4px;}
+
+        /* --- Criteria Styling --- */
+        .criteria { margin-bottom: 1.1rem; /* Reduced from 1.25rem */ padding: 0.85rem; /* Reduced from 1rem */ border-radius: 8px; background: #fff; border: 1px solid var(--border); }
+        .criteria strong { color: var(--header-bg); }
+        .criteria p { margin: 0 0 0.4rem 0; /* Reduced from 0.5rem */ font-size: 0.95rem; color: #6c757d; }
+        .criteria label { display: block; padding: 0.4rem 0.75rem; /* Reduced from 0.5rem */ margin: 0.2rem 0; /* Reduced from 0.25rem */ border-radius: 6px; cursor: pointer; transition: background-color 0.2s; }
+        .criteria label:hover { background-color: #fef3e7; }
+        .criteria input[type="radio"] { margin-right: 0.5rem; }
+
+        /* --- Feedback Section --- */
+        .feedback-panel { margin-top: 1.3rem; /* Reduced from 1.5rem */ padding: 1.3rem; /* Reduced from 1.5rem */ border-radius: 8px; background: var(--muted); border: 1px solid var(--border); }
+        .feedback-panel h3 { margin-top: 0; color: var(--accent-2); font-size: 1.5rem; text-align: center; }
+        .rubric-table { width: 100%; border-collapse: collapse; margin: 0.85rem 0; /* Reduced from 1rem */ font-size: .9rem; background: #fff; }
+        .rubric-table th, .rubric-table td { border: 1px solid var(--border); padding: .65rem; /* Reduced from .75rem */ text-align: left; }
+        .rubric-table th { background: var(--muted); font-weight: 600; }
+        .rubric-table em { color: #6c757d; font-size: 0.85rem; }
+        .correct { background-color: var(--ok-soft); }
+        .partial { background-color: #fffbeb; }
+        .wrong { background-color: var(--bad-soft); }
+
+        /* --- Educational Notes --- */
+        .learning-note { margin-top: 0.85rem; /* Reduced from 1rem */ padding: 0.85rem; /* Reduced from 1rem */ border-left: 4px solid var(--header-bg); background: #fff; border-radius: 4px; }
+        .learning-note strong { color: var(--header-bg); }
+
+        /* --- Navigation --- */
+        .nav-buttons { display: flex; justify-content: space-between; margin-top: 1.3rem; /* Reduced from 1.5rem */ }
+        .nav-buttons button { padding: .75rem 1.5rem; border: none; border-radius: 8px; background: var(--accent); color: #fff; cursor: pointer; font-weight: 600; transition: background-color 0.2s; font-size: 1rem; }
+        .nav-buttons button:hover:not(:disabled) { background: var(--accent-2); }
+        .nav-buttons button:disabled { background: #ccc; cursor: not-allowed; }
+        #prev-btn { background: #6c757d; }
+        #prev-btn:hover:not(:disabled) { background: #5a6268; }
+
+        /* --- Results Screen --- */
+        .results-summary td.score-cell { font-weight: 700; text-align: right; }
+        .results-summary .final-score { font-size: 1.2rem; font-weight: 700; }
+    </style>
+</head>
+<body>
+    <header class="site-header">🔥 GitHub Mastery Rubric Quiz 🔥</header>
+    <main class="quiz-container">
+        <div id="progress-container"></div>
+        <div id="quiz-area"></div>
+        <div class="nav-buttons">
+            <button id="prev-btn" onclick="navigateQuiz(-1)">⬅ Prev</button>
+            <button id="nav-btn" onclick="handleSubmitOrNav()">Submit</button>
+        </div>
+    </main>
+
+    <script>
+    const quizzes = [
+        {
+            title:"Rubric Quiz 1: Git vs GitHub",
+            prompt:"You’re kicking off a group project. A teammate asks, ‘Are Git and GitHub the same?’ How do you set expectations and start the repo safely?",
+            criteria:[
+                {name:"Accuracy", desc:"Explain Git vs GitHub.", weight:40, levels:[
+                    {label:"Git is the hosting service", score:10, desc:"Minimal: confuses Git with hosting."},
+                    {label:"GitHub manages versions; Git is optional", score:20, desc:"Partial: mentions GitHub but ignores local VCS role."},
+                    {label:"Git is local version control; GitHub hosts/remotes", score:40, desc:"Full: correct separation of concerns."} ]},
+                {name:"Process", desc:"Start tracking a new project.", weight:30, levels:[
+                    {label:"add → init → commit", score:10, desc:"Wrong order: staging without repo."},
+                    {label:"commit → add → init", score:20, desc:"Partial: has steps but misordered."},
+                    {label:"init → add → commit", score:30, desc:"Full: correct bootstrap flow."} ]},
+                {name:"Clarity", desc:"Pick the clearest commit message.", weight:20, levels:[
+                    {label:"update stuff", score:5, desc:"Vague and unhelpful."},
+                    {label:"fix bug", score:10, desc:"Generic: lacks context."},
+                    {label:"Add null check in index.js", score:20, desc:"Specific and actionable."} ]},
+                {name:"Risk Awareness", desc:"Prevent destructive actions.", weight:10, levels:[
+                    {label:"Delete .git folder if confused", score:0, desc:"Catastrophic: nukes history."},
+                    {label:"Push before init to be safe", score:5, desc:"Confused and ineffective."},
+                    {label:"Keep .git; seek help/restore", score:10, desc:"Safest: preserve history."} ]}
+            ],
+            learning:"Clarifying Git (local) vs. GitHub (remote) avoids broken workflows. Use the `init → add → commit` ritual to capture intent early, write descriptive commit messages, and never delete the `.git` folder. These basics build confidence."
+        },
+        {
+            title:"Rubric Quiz 2: Commit & Staging",
+            prompt:"You modified a file to fix a bug. You want the change in history and visible to the team. How do you stage and commit effectively?",
+            criteria:[
+                {name:"Accuracy", desc:"What does 'git add' do?", weight:40, levels:[
+                    {label:"Saves to history immediately", score:10, desc:"Minimal: confuses add with commit."},
+                    {label:"Uploads changes to GitHub", score:20, desc:"Partial: confuses add with push."},
+                    {label:"Stages changes for the next commit", score:40, desc:"Full: correct role of staging."} ]},
+                {name:"Process", desc:"Order of operations.", weight:30, levels:[
+                    {label:"commit before add", score:10, desc:"Wrong: nothing staged."},
+                    {label:"skip both; push", score:0, desc:"Incorrect: bypasses Git entirely."},
+                    {label:"add then commit", score:30, desc:"Full: correct two-step flow."} ]},
+                {name:"Clarity", desc:"Choose the best commit message.", weight:20, levels:[
+                    {label:"update", score:5, desc:"Too vague to be useful."},
+                    {label:"fix typo in README", score:20, desc:"Clear and specific."},
+                    {label:"misc", score:0, desc:"No information conveyed."} ]},
+                {name:"Risk Awareness", desc:"Security hygiene.", weight:10, levels:[
+                    {label:"Commit API keys to repo", score:0, desc:"Severe risk: secrets exposure."},
+                    {label:"Commit generated logs", score:5, desc:"Noisy history; sometimes sensitive."},
+                    {label:"Avoid secrets; use .gitignore", score:10, desc:"Best practice: keep history clean."} ]}
+            ],
+            learning:"Separating staging from committing gives precise control over history. Use `.gitignore` to keep secrets and generated files out of the repo to avoid leaks and clutter. This discipline lowers bugs, speeds reviews, and makes rollbacks safer."
+        },
+        {
+            title:"Rubric Quiz 3: Branching Basics",
+            prompt:"You want to experiment with a login feature without breaking 'main'. What is a good branching approach?",
+            criteria:[
+                {name:"Accuracy", desc:"Purpose of branches.", weight:40, levels:[
+                    {label:"Branches are copies of the repo", score:10, desc:"Minimal: misses isolation of history pointers."},
+                    {label:"Branches are folders for features", score:20, desc:"Partial metaphor; lacks VCS meaning."},
+                    {label:"Branches isolate work by moving a pointer to commits", score:40, desc:"Full: correct concept."} ]},
+                {name:"Process", desc:"Create and start work on a feature branch.", weight:30, levels:[
+                    {label:"Edit on main directly", score:10, desc:"Risky: no isolation."},
+                    {label:"git branch feature/login; git checkout feature/login", score:20, desc:"Works, but two steps."},
+                    {label:"git switch -c feature/login (or checkout -b)", score:30, desc:"Full: create and switch in one."} ]},
+                {name:"Clarity", desc:"Choose the best branch name.", weight:20, levels:[
+                    {label:"new", score:5, desc:"Unclear purpose."},
+                    {label:"feature_login_form", score:10, desc:"Better, but conventions vary."},
+                    {label:"feature/login-form", score:20, desc:"Clear, follows common naming."} ]},
+                {name:"Risk Awareness", desc:"Protect 'main'.", weight:10, levels:[
+                    {label:"Commit WIP to main", score:0, desc:"Risk of breaking builds."},
+                    {label:"Push branch to remote", score:5, desc:"Safer, but needs PR/review."},
+                    {label:"Open PR from feature branch", score:10, desc:"Best: review gates changes."} ]}
+            ],
+            learning:"Branching lets teams code in parallel while keeping `main` stable. Use a one-command create-and-switch (`git switch -c`). When ready, open a PR so tests and peers can validate your idea before it lands. This workflow reduces breakage and increases confidence."
+        },
+        {
+            title:"Rubric Quiz 4: Merging Changes",
+            prompt:"Your teammate finished a feature on 'feature/checkout'. You want it in 'main' safely. What should happen before and during merge?",
+            criteria:[
+                {name:"Accuracy", desc:"Best path to merge.", weight:40, levels:[
+                    {label:"Merge locally without review", score:10, desc:"Minimal: bypasses safeguards."},
+                    {label:"Open PR; merge if CI green", score:40, desc:"Full: review + automation."},
+                    {label:"Force push main to include changes", score:0, desc:"Dangerous and wrong."} ]},
+                {name:"Process", desc:"Local steps to sync and merge.", weight:30, levels:[
+                    {label:"checkout main → merge → push (no pull)", score:10, desc:"Out-of-date base; risky."},
+                    {label:"checkout main → pull → merge feature → push", score:30, desc:"Full: up-to-date then merge."},
+                    {label:"work on feature then push to main", score:0, desc:"Incorrect procedure."} ]},
+                {name:"Clarity", desc:"PR description quality.", weight:20, levels:[
+                    {label:"merge my code", score:5, desc:"Unhelpful."},
+                    {label:"Add checkout flow; passes tests", score:10, desc:"Basic but thin on context."},
+                    {label:"Add checkout flow (routes, validation); tests added; closes #42", score:20, desc:"Complete and traceable."} ]},
+                {name:"Risk Awareness", desc:"Guardrails.", weight:10, levels:[
+                    {label:"Disable branch protection", score:0, desc:"Removes safety net."},
+                    {label:"Merge despite failing CI", score:5, desc:"Risky: regressions likely."},
+                    {label:"Require review + green CI", score:10, desc:"Best practice for stability."} ]}
+            ],
+            learning:"Review and CI catch defects before they hit `main`. Always `pull` the latest `main` before merging so your base is current, then push back the result. A thorough PR description speeds review and creates reliable history. Guardrails like branch protection institutionalize these habits."
+        },
+        {
+            title:"Rubric Quiz 5: Pull Requests",
+            prompt:"You’ve implemented a feature on 'feature/profile'. How do you open a high-quality PR that invites useful feedback?",
+            criteria:[
+                {name:"Accuracy", desc:"Purpose of a PR.", weight:40, levels:[
+                    {label:"A way to push to main", score:10, desc:"Minimal: PR ≠ push."},
+                    {label:"A request to merge with discussion", score:40, desc:"Full: feedback + review."},
+                    {label:"A place to upload binaries", score:0, desc:"Incorrect purpose."} ]},
+                {name:"Process", desc:"Ordering of steps.", weight:30, levels:[
+                    {label:"Open PR → commit → push", score:10, desc:"Wrong order."},
+                    {label:"Push branch → open PR → request review", score:30, desc:"Full: correct flow."},
+                    {label:"Merge locally → open PR", score:0, desc:"PR too late."} ]},
+                {name:"Clarity", desc:"Strong PR title/body.", weight:20, levels:[
+                    {label:"update things", score:5, desc:"Vague."},
+                    {label:"Profile page updates (UI only)", score:10, desc:"Some context, limited detail."},
+                    {label:"Add profile editing (forms, validation, tests); relates #58", score:20, desc:"Concrete and reviewable."} ]},
+                {name:"Risk Awareness", desc:"Merge conditions.", weight:10, levels:[
+                    {label:"Merge even if CI fails", score:0, desc:"Breaks stability."},
+                    {label:"Merge after self-review only", score:5, desc:"Still risky."},
+                    {label:"Merge after approvals + green CI", score:10, desc:"Best: multiple safeguards."} ]}
+            ],
+            learning:"Great PRs respect reviewers’ time. Explain the 'why' and 'what', link issues, and include test notes or screenshots. Treat failing checks as learning signals, not blockers to dodge. This discipline builds trust and speeds future reviews."
+        },
+        {
+            title:"Rubric Quiz 6: Handling Conflicts",
+            prompt:"Two of you edited the same function. Your PR shows merge conflicts. How do you resolve them correctly?",
+            criteria:[
+                {name:"Accuracy", desc:"What is a merge conflict?", weight:40, levels:[
+                    {label:"Git lost the file", score:10, desc:"Minimal: misunderstands conflicts."},
+                    {label:"Two commits changed the same lines; needs manual fix", score:40, desc:"Full: correct definition."},
+                    {label:"Server outage on GitHub", score:0, desc:"Unrelated to conflicts."} ]},
+                {name:"Process", desc:"Resolution steps.", weight:30, levels:[
+                    {label:"Close PR and re-open later", score:10, desc:"Avoids resolution."},
+                    {label:"Open files → edit markers → stage → commit → push", score:30, desc:"Full: correct sequence."},
+                    {label:"Force push main to overwrite", score:0, desc:"Dangerous and wrong."} ]},
+                {name:"Clarity", desc:"Commit message for resolution.", weight:20, levels:[
+                    {label:"fix stuff", score:5, desc:"No detail."},
+                    {label:"resolve conflicts in utils.js", score:10, desc:"Some detail."},
+                    {label:"Resolve conflicts in utils.js; kept newer parse(), added tests", score:20, desc:"Clear outcome explained."} ]},
+                {name:"Risk Awareness", desc:"Preserve teammates’ work.", weight:10, levels:[
+                    {label:"Delete the other code", score:0, desc:"May lose important logic."},
+                    {label:"Use 'ours' blindly", score:5, desc:"One-sided resolution."},
+                    {label:"Combine intent; run tests", score:10, desc:"Best: integrate both where needed."} ]}
+            ],
+            learning:"Treat conflicts as collaboration, not emergencies. Read both sides to understand intent. Keep or blend the right logic, then run tests to confirm behavior. Your resolution commit should explain the decision so future readers can follow it."
+        },
+        {
+            title:"Rubric Quiz 7: Forking Projects",
+            prompt:"You want to contribute to an open-source repo you don’t have write access to. What’s the right starting workflow?",
+            criteria:[
+                {name:"Accuracy", desc:"Fork vs clone.", weight:40, levels:[
+                    {label:"Clone gives me my own repo online", score:10, desc:"Minimal: clone is local copy."},
+                    {label:"Fork creates my own remote copy I control", score:40, desc:"Full: correct distinction."},
+                    {label:"Fork deletes the original repo", score:0, desc:"Incorrect."} ]},
+                {name:"Process", desc:"Contribute via fork.", weight:30, levels:[
+                    {label:"Clone upstream directly and push", score:10, desc:"Won’t have permissions."},
+                    {label:"Fork → clone fork → branch → commit → push → PR to upstream", score:30, desc:"Full: standard flow."},
+                    {label:"Email patches", score:0, desc:"Not typical for GitHub."} ]},
+                {name:"Clarity", desc:"PR content.", weight:20, levels:[
+                    {label:"Here are changes", score:5, desc:"Too short."},
+                    {label:"Implements feature; tests included", score:10, desc:"Better, still brief."},
+                    {label:"Implements feature X; tests; docs; Fixes #123", score:20, desc:"Complete and linked."} ]},
+                {name:"Risk Awareness", desc:"Repository hygiene.", weight:10, levels:[
+                    {label:"Push to upstream main directly", score:0, desc:"No permission/unsafe."},
+                    {label:"Work on default branch of fork", score:5, desc:"Works, less clean."},
+                    {label:"Work on feature branches in fork", score:10, desc:"Best: clean PRs."} ]}
+            ],
+            learning:"Open-source contribution respects maintainers’ workflow. Forking keeps your experiments isolated while enabling collaboration. Clear PRs with tests and docs lower the cost of review and increase acceptance. Working on feature branches in your fork lets you run multiple contributions in parallel."
+        },
+        {
+            title:"Rubric Quiz 8: Issues & Boards",
+            prompt:"Your team wants visibility into bugs and features. How do you use GitHub Issues and a project board effectively?",
+            criteria:[
+                {name:"Accuracy", desc:"Issue vs PR vs Project.", weight:40, levels:[
+                    {label:"Issues are the same as PRs", score:10, desc:"Minimal: conflates artifacts."},
+                    {label:"Issue tracks work; PR proposes code; Project organizes issues/PRs", score:40, desc:"Full: correct roles."},
+                    {label:"Project boards hold source code", score:0, desc:"Incorrect."} ]},
+                {name:"Process", desc:"From problem to done.", weight:30, levels:[
+                    {label:"Code first; write issue later", score:10, desc:"Backwards; poor traceability."},
+                    {label:"Create issue → labels/assignee → add to board → PR references issue → auto-close on merge", score:30, desc:"Full lifecycle."},
+                    {label:"Create PR without issue", score:20, desc:"Sometimes fine, less organized."} ]},
+                {name:"Clarity", desc:"Good issue title/body.", weight:20, levels:[
+                    {label:"not working", score:5, desc:"Too vague."},
+                    {label:"Fix login bug", score:10, desc:"Needs details."},
+                    {label:"Login fails on empty password; expected message; steps to reproduce", score:20, desc:"Actionable details."} ]},
+                {name:"Risk Awareness", desc:"Work tracking pitfalls.", weight:10, levels:[
+                    {label:"No acceptance criteria", score:0, desc:"Ambiguity causes churn."},
+                    {label:"Unlabeled issues", score:5, desc:"Hard to filter/assign."},
+                    {label:"Use labels, assignees, milestones", score:10, desc:"Best: make work visible."} ]}
+            ],
+            learning:"Project hygiene is teamwork. Clear issues reduce back-and-forth. Using labels and assignees clarifies ownership, while boards surface bottlenecks early. Use keywords like ‘Fixes #ID’ so PRs automatically close issues on merge. These habits scale and keep everyone aligned."
+        },
+        {
+            title:"Rubric Quiz 9: Collaboration & Reviews",
+            prompt:"Your teammate opens a PR that touches complex logic. How do you perform a constructive review?",
+            criteria:[
+                {name:"Accuracy", desc:"What a good review checks.", weight:40, levels:[
+                    {label:"Only style and typos", score:10, desc:"Minimal: ignores correctness."},
+                    {label:"Readability and basic tests", score:20, desc:"Partial: misses deeper concerns."},
+                    {label:"Correctness, tests, design, security, docs", score:40, desc:"Full: comprehensive review."} ]},
+                {name:"Process", desc:"Reviewer workflow.", weight:30, levels:[
+                    {label:"Comment 'LGTM' immediately", score:10, desc:"Surface-level."},
+                    {label:"Pull branch locally; run tests; then comment", score:30, desc:"Full: validate changes."},
+                    {label:"Rewrite code and push to main", score:0, desc:"Overreach and unsafe."} ]},
+                {name:"Clarity", desc:"Actionable feedback.", weight:20, levels:[
+                    {label:"vague: make this better", score:5, desc:"Not helpful."},
+                    {label:"ask: can we add a test?", score:10, desc:"Some guidance."},
+                    {label:"specific: add unit test for null path; suggest guard at line 42", score:20, desc:"Actionable and kind."} ]},
+                {name:"Risk Awareness", desc:"Tone and safety.", weight:10, levels:[
+                    {label:"Sarcastic comments", score:0, desc:"Harms team culture."},
+                    {label:"Nitpicks only", score:5, desc:"Misses bigger issues."},
+                    {label:"Respectful, high-impact first", score:10, desc:"Best: prioritize essentials."} ]}
+            ],
+            learning:"Good reviews are more than gatekeeping. Reproduce the change locally and run tests. Use examples and point to lines so authors can act quickly. Lead with correctness and security; leave style nits to linters. A kind tone increases acceptance and speeds iteration."
+        },
+        {
+            title:"Rubric Quiz 10: Capstone Workflow",
+            prompt:"Simulate the full flow for a feature: fork/clone (if needed) → branch → commit → push → PR → review → merge → tag/release. What ensures a smooth, safe delivery?",
+            criteria:[
+                {name:"Accuracy", desc:"End-to-end understanding.", weight:40, levels:[
+                    {label:"Push straight to main when done", score:10, desc:"Minimal: bypasses review/CI."},
+                    {label:"Branch and PR but ignore tests", score:20, desc:"Partial: misses quality gates."},
+                    {label:"Branch + PR + green CI + approvals + merge", score:40, desc:"Full: safe delivery."} ]},
+                {name:"Process", desc:"Order matters.", weight:30, levels:[
+                    {label:"commit → PR → branch → push", score:10, desc:"Out of order."},
+                    {label:"branch → commit → push → PR → merge", score:30, desc:"Full: correct high-level order."},
+                    {label:"merge → PR → branch", score:0, desc:"Doesn’t make sense."} ]},
+                {name:"Clarity", desc:"Release notes / changelog.", weight:20, levels:[
+                    {label:"no notes", score:5, desc:"Hard to track changes."},
+                    {label:"basic summary", score:10, desc:"Some value."},
+                    {label:"scope, impact, migration steps, issue refs", score:20, desc:"Professional quality."} ]},
+                {name:"Risk Awareness", desc:"Stability and traceability.", weight:10, levels:[
+                    {label:"merge with failing CI", score:0, desc:"Unstable release."},
+                    {label:"no tag or version bump", score:5, desc:"Hard to trace builds."},
+                    {label:"semantic version/tag + protected main", score:10, desc:"Best: traceable release."} ]}
+            ],
+            learning:"A good release is a well-told story. The right sequence avoids chaos; CI and review maintain quality; and tagging creates a reliable anchor for support and rollbacks. Release notes explain impact to users and future maintainers. These practices make your project resilient."
+        }
+    ];
+
+    // Application State
+    const quizState = {
+        currentIndex: 0,
+        scores: new Array(quizzes.length).fill(null),
+        submitted: false
+    };
+
+    // DOM Elements
+    const quizArea = document.getElementById('quiz-area');
+    const progressContainer = document.getElementById('progress-container');
+    const navBtn = document.getElementById('nav-btn');
+    const prevBtn = document.getElementById('prev-btn');
+
+    function renderQuiz() {
+        if (quizState.currentIndex >= quizzes.length) {
+            renderResults();
+            return;
+        }
+
+        const quiz = quizzes[quizState.currentIndex];
+        quizState.submitted = false;
+
+        // Render Progress Bar
+        const progressPercent = (quizState.currentIndex / quizzes.length) * 100;
+        progressContainer.innerHTML = `
+            <div class="progress-bar-container">
+                <div class="progress-bar-fill" style="width: ${progressPercent}%;"></div>
+            </div>
+        `;
+        
+        // Render Quiz Card
+        let html = `<div class='quiz-card'><div class='quiz-title'>${quiz.title}</div><div class='quiz-prompt'>${quiz.prompt}</div>`;
+        quiz.criteria.forEach((crit, cIndex) => {
+            html += `<div class='criteria'><strong>${crit.name}</strong> (${crit.weight}%): <p>${crit.desc}</p>`;
+            crit.levels.forEach(level => {
+                html += `<label><input type='radio' name='q${quizState.currentIndex}-c${cIndex}' value='${level.score}' data-label='${level.label}' data-desc='${level.desc}'> ${level.label}</label>`;
+            });
+            html += `</div>`;
+        });
+        html += `<div id='feedback-area' class='feedback-panel' style="display:none;"></div></div>`;
+        quizArea.innerHTML = html;
+
+        updateNavButtons();
+    }
+    
+    function gradeQuiz() {
+        const quiz = quizzes[quizState.currentIndex];
+        let totalScore = 0;
+        let feedbackRows = [];
+
+        quiz.criteria.forEach((crit, cIndex) => {
+            const chosen = document.querySelector(`input[name='q${quizState.currentIndex}-c${cIndex}']:checked`);
+            if (chosen) {
+                const score = parseInt(chosen.value);
+                totalScore += score;
+                const scoreClass = score === crit.weight ? 'correct' : score > 0 ? 'partial' : 'wrong';
+                feedbackRows.push(`
+                    <tr class="${scoreClass}">
+                        <td><strong>${crit.name}</strong></td>
+                        <td>${chosen.dataset.label} (+${score})</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"><em>${chosen.dataset.desc}</em></td>
+                    </tr>
+                `);
+            } else {
+                feedbackRows.push(`<tr class="wrong"><td><strong>${crit.name}</strong></td><td>Not answered (0)</td></tr>`);
+            }
+        });
+
+        quizState.scores[quizState.currentIndex] = totalScore;
+        quizState.submitted = true;
+
+        const feedbackHTML = `
+            <h3>Your Score: ${totalScore} / 100</h3>
+            <table class='rubric-table'>
+                <tr><th>Criterion</th><th>Your Evaluation</th></tr>
+                ${feedbackRows.join('')}
+            </table>
+            <div class='learning-note'><strong>Key Takeaway:</strong> ${quiz.learning}</div>
+        `;
+        
+        const feedbackArea = document.getElementById('feedback-area');
+        feedbackArea.innerHTML = feedbackHTML;
+        feedbackArea.style.display = 'block';
+
+        // Disable radio buttons after submission
+        document.querySelectorAll('.criteria input').forEach(input => input.disabled = true);
+        
+        updateNavButtons();
+    }
+
+    function renderResults() {
+        let totalScore = 0;
+        const resultsRows = quizzes.map((quiz, index) => {
+            const score = quizState.scores[index] || 0;
+            totalScore += score;
+            return `<tr><td>${quiz.title}</td><td class="score-cell">${score} / 100</td></tr>`;
+        }).join('');
+        
+        const averageScore = Math.round(totalScore / quizzes.length);
+
+        quizArea.innerHTML = `
+            <div class="quiz-card results-summary">
+                <h2 class="quiz-title">Quiz Series Complete!</h2>
+                <p class="quiz-prompt">Here's your performance summary across all topics.</p>
+                <table class="rubric-table">
+                    <thead><tr><th>Quiz Topic</th><th>Score</th></tr></thead>
+                    <tbody>${resultsRows}</tbody>
+                    <tfoot>
+                        <tr class="final-score">
+                            <td><strong>Average Score</strong></td>
+                            <td class="score-cell"><strong>${averageScore} / 100</strong></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        `;
+        
+        // Update nav buttons for the final screen
+        progressContainer.innerHTML = `<div class="progress-bar-container"><div class="progress-bar-fill" style="width: 100%;"></div></div>`;
+        prevBtn.style.display = 'none';
+        navBtn.innerText = 'Try Again';
+        navBtn.onclick = resetQuiz;
+    }
+    
+    function handleSubmitOrNav() {
+        if (!quizState.submitted) {
+            gradeQuiz();
+        } else {
+            navigateQuiz(1);
+        }
+    }
+    
+    function navigateQuiz(direction) {
+        const newIndex = quizState.currentIndex + direction;
+        if (newIndex >= 0 && newIndex <= quizzes.length) {
+            quizState.currentIndex = newIndex;
+            renderQuiz();
+        }
+    }
+
+    function updateNavButtons() {
+        prevBtn.disabled = quizState.currentIndex === 0;
+        
+        if (quizState.submitted) {
+            navBtn.innerText = quizState.currentIndex < quizzes.length - 1 ? "Next Quiz ➡" : "See Results";
+        } else {
+            navBtn.innerText = "Submit";
+        }
+    }
+    
+    function resetQuiz() {
+        quizState.currentIndex = 0;
+        quizState.scores.fill(null);
+        quizState.submitted = false;
+        prevBtn.style.display = 'flex';
+        navBtn.onclick = handleSubmitOrNav;
+        renderQuiz();
+    }
+
+    // Initial render
+    document.addEventListener('DOMContentLoaded', renderQuiz);
+    </script>
+</body>
+</html>

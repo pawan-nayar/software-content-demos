@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Network Topology Diagrams: The Complete Guide</title>
+  <meta name="description" content="A comprehensive guide to Computer Network Topologies for Class 11 students. Explore Star, Bus, Ring, Mesh, and Hybrid topologies with interactive diagrams.">
+  <meta name="keywords" content="Network Topology, Computer Networks, Star Topology, Bus Topology, Ring Topology, Mesh Topology, Class 11 Computer Science, CBSE">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ================= Base / Theme (Compact Redesign) ================= */
+    :root {
+      --text:#212529; --bg:#fff; --muted:#f8f9fa; --border:#e9ecef;
+      --accent:#fd7e14; --accent-2:#e87312; --header-bg:#212529; --header-fg:#f8f9fa;
+      --ok:#16a34a; --ok-soft:#dcfce7; --bad:#dc2626; --bad-soft:#fee2e2;
+      --device:#4dabf7; --connection:#6b7280; --hub:#16a34a; --server:#8b5cf6;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.6; font-size: 15px;}
+    .container{max-width:800px;margin:auto;padding:16px;background:#fff}
+    a{color:var(--accent);text-decoration:none}
+    a:hover{text-decoration:underline}
+
+    /* ================= Header / Footer / Breadcrumbs ================= */
+    .site-header,.site-footer{background:var(--header-bg);color:var(--header-fg);padding:12px 16px}
+    .site-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;position:sticky;top:0;z-index:60}
+    .logo{font-weight:700;font-size:1.1rem;color:#fff}
+    .site-header nav{display:flex;gap:12px; font-size: 0.9rem;}
+    .site-header nav a{color:#ced4da}
+    .site-header nav a:hover{color:#fff}
+    .site-footer{text-align:center;margin-top:40px;padding:30px}
+    .breadcrumbs{margin-bottom:16px;font-size:0.85rem;color:#6c757d}
+    .breadcrumbs a{color:var(--accent)}
+
+    /* ================= Typography & Layout (Compact) ================= */
+    h1{font-size:clamp(1.8rem,5vw,2.2rem);text-align:left;margin-bottom:6px;color:var(--text);line-height:1.2}
+    .byline{font-size:clamp(1rem,3vw,1.1rem);font-style:italic;color:#4a5568;margin-bottom:16px}
+    h2{font-size:clamp(1.4rem,4vw,1.7rem);color:var(--text);margin:40px 0 12px;border-bottom:2px solid var(--border);padding-bottom:6px}
+    h3{font-size:clamp(1.1rem,3vw,1.3rem);color:var(--text);margin-top:24px;margin-bottom:10px}
+    h4{font-size:clamp(1rem,2.5vw,1.1rem);font-weight:bold;color:var(--accent-2);margin-bottom:8px}
+    p{margin-bottom:12px;word-wrap:break-word}
+    ul{margin-left:20px;margin-bottom:16px;list-style-type:'🧩';padding-left:1em}
+    li{margin-bottom:10px;padding-left:0.5em}
+    .intro{font-size:1rem;line-height:1.7;background:var(--muted);padding:16px;border-radius:8px;border-left:4px solid var(--accent);margin:16px 0}
+    .img-frame{position:relative;width:100%;padding-top:50%;overflow:hidden;border-radius:8px;margin:16px 0;box-shadow:0 2px 10px rgba(0,0,0,0.1)}
+    .img-frame img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover}
+    .img-tooltip{position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,0.8);color:#fff;padding:6px 10px;border-radius:4px;font-size:0.8rem;opacity:0;visibility:hidden;transition:all 0.3s ease;pointer-events:none;z-index:10}
+    .img-frame:hover .img-tooltip{opacity:1;visibility:visible}
+    .btn{background:var(--accent);color:#fff;border:none;padding:8px 12px;border-radius:6px;font-weight:600;cursor:pointer; transition: background-color 0.2s ease; font-size:0.9rem;}
+    .btn:hover { background-color: var(--accent-2); }
+    .btn:disabled { background-color: #ced4da; cursor: not-allowed; }
+    
+    /* ================= Interactive & Structural Elements (Compact) ================= */
+    .interactive-box{background:#f8f9fa;border:1px solid var(--border);border-radius:8px;padding:16px;margin:16px 0}
+
+    /* --- Network Topology SVG Styles --- */
+    .topology-container{display:flex;flex-direction:column;gap:16px;margin:24px 0}
+    .topology-selector{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:20px}
+    .topology-btn{background:var(--muted);border:2px solid var(--border);padding:10px 16px;border-radius:8px;cursor:pointer;font-weight:600;transition:all 0.3s ease;color:var(--text)}
+    .topology-btn:hover{border-color:var(--accent);background:#fff7ed}
+    .topology-btn.active{background:var(--accent);color:#fff;border-color:var(--accent-2)}
+    .topology-display{background:#fff;border:1px solid var(--border);border-radius:12px;padding:20px;min-height:400px;position:relative}
+    .topology-svg{width:100%;height:380px;display:block;margin:auto}
+    .hotspot{cursor:pointer;outline:none}
+    .hotspot:focus .halo,.hotspot:hover .halo{stroke:var(--accent);stroke-width:2;fill:transparent}
+    .halo{stroke:transparent;stroke-width:2;fill:transparent}
+    .network-device{fill:var(--device);stroke:#fff;stroke-width:2}
+    .network-hub{fill:var(--hub);stroke:#fff;stroke-width:2}
+    .network-server{fill:var(--server);stroke:#fff;stroke-width:2}
+    .network-connection{stroke:var(--connection);stroke-width:2;fill:none}
+    .device-label{font-size:10px;fill:#fff;font-weight:600;text-anchor:middle}
+    .topology-info{background:var(--muted);padding:12px;border-radius:8px;border-left:4px solid var(--accent);margin-top:16px}
+
+    /* Tooltip */
+    .tooltip{
+      position:fixed;
+      pointer-events:none; z-index:70;
+      background:#fff; color:#111; border:1px solid var(--border);
+      border-left:4px solid var(--accent); border-radius:8px; padding:12px 16px; max-width:320px;
+      box-shadow:0 8px 24px rgba(0,0,0,0.15); font-size:.9rem; line-height:1.5; display:none;
+    }
+    .tooltip-title{font-weight:600;color:var(--accent-2);margin-bottom:6px;font-size:1rem}
+    .tooltip-description{margin-bottom:8px}
+    .tooltip-specs{background:#f0f9ff;padding:8px;border-radius:4px;margin-top:8px;border-left:3px solid var(--device)}
+
+    /* Mobile responsive tooltips */
+    @media (max-width:768px){
+      .tooltip{
+        position:fixed;
+        top:10px !important;
+        left:10px !important;
+        right:10px !important;
+        max-width:none;
+        width:auto;
+        transform:none;
+      }
+    }
+
+    /* === Quiz Styles === */
+    .quiz-container{padding:20px;border:2px solid var(--border);border-radius:12px;background:#fff}
+    .quiz-navigation{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border)}
+    .quiz-body{display:none;}
+    .quiz-body.active{display:block}
+    .quiz-options{display:grid; gap:12px;}
+    .quiz-option label{display:flex; align-items:center; gap:12px; padding:14px;border:2px solid var(--border);border-radius:8px;cursor:pointer;background:#f8f9fa}
+    .quiz-option input[type="radio"]{flex-shrink:0;}
+    .quiz-option .explanation{display:none;margin-top:10px;padding:15px;border-radius:6px;border-left:4px solid #a0aec0}
+    .quiz-option.selected.correct label{background:var(--ok-soft);border-color:var(--ok)}
+    .quiz-option.selected.wrong label{background:var(--bad-soft);border-color:var(--bad)}
+    .quiz-option.correct .explanation{border-left-color:var(--ok);background:#f0fff4}
+    .quiz-option.wrong .explanation{border-left-color:var(--bad);background:#fff5f5}
+
+    /* === FAQ Styles === */
+    .accordion{display:grid;gap:8px}
+    .accordion-header{width:100%;text-align:left;background:var(--muted);border:1px solid var(--border);padding:16px 20px;border-radius:8px;cursor:pointer;font-size:1.1rem;font-weight:bold;display:flex;align-items:center}
+    .accordion-header .accordion-title { margin-right: auto; padding-right: 1rem; }
+    .accordion-header::after{content:'+';color:#6c757d}
+    .accordion-header[aria-expanded="true"]{background:#e9ecef;border-bottom-left-radius:0;border-bottom-right-radius:0}
+    .accordion-header[aria-expanded="true"]::after{content:'−'}
+    .accordion-content{padding:20px;display:none;border:1px solid var(--border);border-top:none;border-radius:0 0 8px 8px}
+
+    /* === Glossary Styles === */
+    .glossary-cloud{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px;justify-content:center}
+    .glossary-chip{position:relative;display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:999px;background:#fff7ed;border:1px solid #ffd8a8;color:#d9480f;font-weight:600;cursor:help;box-shadow:0 2px 6px rgba(253,126,20,.12);transition:all 0.2s ease}
+    .glossary-chip:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(253,126,20,.2)}
+    .glossary-chip:focus{outline:3px solid rgba(253,126,20,.35)}
+    .chip-tip{position:fixed;z-index:80;min-width:240px;max-width:min(92vw,420px);background:var(--accent);color:#fff;padding:12px 14px;border-radius:12px;box-shadow:0 12px 28px rgba(253,126,20,.35);opacity:0;visibility:hidden;transition:.15s;line-height:1.45}
+    .chip-tip.show{opacity:1;visibility:visible}
+    .chip-tip .arrow{position:absolute;width:12px;height:12px;background:var(--accent);transform:rotate(45deg)}
+    .glossary-hint{text-align:center;margin-top:12px;padding:8px;background:var(--muted);border-radius:6px;font-size:0.9rem;color:#6c757d;border-top:2px solid var(--accent)}
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+      <a href="#" class="logo">Beyond Dictionary</a>
+      <nav><a href="#">What's New</a><a href="#">Learning</a><a href="#">Games & Quizzes</a><a href="#">Blog</a></nav>
+  </header>
+
+  <div class="container">
+    
+    <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="#">CBSE</a> &gt; <a href="#">Class 11</a> &gt; <a href="#">Computer Science</a> &gt; Network Topology Diagrams</nav>
+
+    <h1>Network Topology Diagrams</h1>
+    <p class="byline">Understanding How Devices Connect: The Architecture of Computer Networks</p>
+    <div class="article-meta"><span class="author-emoji">🌐</span><span>Network Expert &nbsp; | &nbsp; Updated for CBSE 2025-26 Curriculum</span></div>
+    <p class="intro">Network topology refers to the physical and logical arrangement of devices in a computer network. It defines how computers, servers, and other network devices are connected and communicate with each other. Understanding different topologies is crucial for network design, troubleshooting, and optimization. Each topology has its own advantages, disadvantages, and specific use cases. From simple star networks in homes to complex mesh networks in data centers, topology choice impacts performance, cost, reliability, and scalability.</p>
+    
+    <div class="img-frame">
+        <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=80&w=2134&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Network cables and connections representing network topology" onerror="this.onerror=null;this.src='https://placehold.co/1470x735/000000/FFFFFF?text=Network+Topology';">
+        <div class="img-tooltip">Source = Unsplash</div>
+    </div>
+    
+    <section id="interactive-topologies">
+        <h2>Interactive Network Topology Explorer</h2>
+        <p>Explore different network topologies by clicking the buttons below. Hover over devices and connections to learn about their roles and characteristics in each topology.</p>
+        
+        <div class="topology-container">
+            <div class="topology-selector">
+                <button class="topology-btn active" data-topology="star">Star Topology</button>
+                <button class="topology-btn" data-topology="bus">Bus Topology</button>
+                <button class="topology-btn" data-topology="ring">Ring Topology</button>
+                <button class="topology-btn" data-topology="mesh">Mesh Topology</button>
+                <button class="topology-btn" data-topology="hybrid">Hybrid Topology</button>
+            </div>
+            
+            <div class="topology-display">
+                <svg class="topology-svg" viewBox="0 0 600 360" role="img" aria-labelledby="topology-title topology-desc">
+                    <title id="topology-title">Interactive Network Topology Diagram</title>
+                    <desc id="topology-desc">Hover over devices and connections to learn about network topology components</desc>
+                    <g id="topology-content">
+                        <!-- Content will be dynamically generated -->
+                    </g>
+                </svg>
+                
+                <div class="topology-info" id="topology-info">
+                    <h4>Star Topology</h4>
+                    <p><strong>Description:</strong> All devices connect to a central hub or switch. This is the most common topology in modern networks.</p>
+                    <p><strong>Advantages:</strong> Easy to install, centralized management, failure of one device doesn't affect others.</p>
+                    <p><strong>Disadvantages:</strong> Single point of failure (central hub), requires more cable than bus topology.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="topology-comparison">
+        <h2>Network Topology Comparison</h2>
+        <p>Understanding the trade-offs between different topologies helps in making informed network design decisions.</p>
+        
+        <h3>Key Characteristics Comparison</h3>
+        <div class="interactive-box">
+            <table style="width:100%;border-collapse:collapse;font-size:0.9rem">
+                <thead>
+                    <tr style="background:var(--header-bg);color:#fff">
+                        <th style="padding:12px;border:1px solid var(--border);text-align:left">Topology</th>
+                        <th style="padding:12px;border:1px solid var(--border);text-align:center">Cost</th>
+                        <th style="padding:12px;border:1px solid var(--border);text-align:center">Reliability</th>
+                        <th style="padding:12px;border:1px solid var(--border);text-align:center">Performance</th>
+                        <th style="padding:12px;border:1px solid var(--border);text-align:center">Scalability</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="background:#f8f9fa">
+                        <td style="padding:10px;border:1px solid var(--border);font-weight:600">Star</td>
+                        <td style="padding:10px;border:1px solid var(--border);text-align:center">Medium</td>
+                        <td style="padding:10px;border:1px solid var(--border);text-align:center">High</td>
+                        <td style="padding:10px;border:1px solid var(--border);text-align:center">Good</td>
+                        <td style="padding:10px;border:1px solid var(--border);text-align:center">Excellent</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:10px;border:1px solid var(--border);font-weight:600">Bus</td>
+                        <td style="padding:10px;border:1px solid var(--border);text-align:center">Low</td>
+                        <td style="padding:10px;border:1px solid var(--border);text-align:center">Low</td>
+                        <td style="padding:10px;border:1px solid var(--border);text-align:center">Poor</td>
+                        <td style="padding:10px;border:1px solid var(--border);text-align:center">Limited</td>
+                    </tr>
+                    <tr style="background:#f8f9fa">
+                        <td style="padding:10px;border:1px solid var(--border);font-weight:600">Ring</td>
+                        <td style="padding:10px;border:1px solid var(--border);text-align:center">Medium</td>
+                        <td style="padding:10px;border:1px solid var(--border);text-align:center">Medium</td>
+                        <td style="padding:10px;border:1px solid var(--border);text-align:center">Good</td>
+                        <td style="padding:10px;border:1px solid var(--border);text-align:center">Good</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:10px;border:1px solid var(--border);font-weight:600">Mesh</td>
+                        <td style="padding:10px;border:1px solid var(--border);text-align:center">High</td>
+                        <td style="padding:10px;border:1px solid var(--border);text-align:center">Excellent</td>
+                        <td style="padding:10px;border:1px solid var(--border);text-align:center">Excellent</td>
+                        <td style="padding:10px;border:1px solid var(--border);text-align:center">Complex</td>
+                    </tr>
+                    <tr style="background:#f8f9fa">
+                        <td style="padding:10px;border:1px solid var(--border);font-weight:600">Hybrid</td>
+                        <td style="padding:10px;border:1px solid var(--border);text-align:center">Variable</td>
+                        <td style="padding:10px;border:1px solid var(--border);text-align:center">High</td>
+                        <td style="padding:10px;border:1px solid var(--border);text-align:center">Excellent</td>
+                        <td style="padding:10px;border:1px solid var(--border);text-align:center">Excellent</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section id="quiz-main">
+        <h2>Test Your Knowledge: Network Topology Quiz</h2>
+        <div class="quiz-container">
+            <div class="quiz-navigation">
+                <button class="btn" id="mainPrevBtn">←</button>
+                <span class="question-counter"><span id="mainCurrentQ">1</span> of <span id="mainTotalQ">8</span></span>
+                <button class="btn" id="mainNextBtn">→</button>
+            </div>
+            <div id="quiz-body-container"></div>
+        </div>
+    </section>
+
+    <section id="faq">
+        <h2>Frequently Asked Questions</h2>
+        <div id="faq-accordion-container"></div>
+    </section>
+
+    <section id="keywords-section">
+        <h2>Master These Network Terms</h2>
+        <div class="glossary-cloud" id="glossaryCloud"></div>
+        <div class="glossary-hint">💡 Hover over any term to see its definition</div>
+    </section>
+
+  </div>
+
+  <footer class="site-footer">
+    <p class="footer-copy">© 2025 Beyond Dictionary. All Rights Reserved.</p>
+  </footer>
+
+  <div id="tooltip" class="tooltip" role="status" aria-live="polite"></div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // --- DATA ---
+      const topologyData = {
+        star: {
+          title: "Star Topology",
+          description: "All devices connect to a central hub or switch. This is the most common topology in modern networks.",
+          advantages: "Easy to install, centralized management, failure of one device doesn't affect others.",
+          disadvantages: "Single point of failure (central hub), requires more cable than bus topology.",
+          devices: [
+            { id: "hub", x: 300, y: 180, type: "hub", label: "Hub/Switch", tooltip: "Central Hub/Switch: All network traffic passes through this device. Acts as a repeater and manages data flow to connected devices." },
+            { id: "pc1", x: 150, y: 80, type: "device", label: "PC 1", tooltip: "Computer 1: Connected directly to the central hub. Has dedicated bandwidth and independent connection." },
+            { id: "pc2", x: 450, y: 80, type: "device", label: "PC 2", tooltip: "Computer 2: Each device has its own cable to the hub, preventing collisions and ensuring reliable communication." },
+            { id: "pc3", x: 150, y: 280, type: "device", label: "PC 3", tooltip: "Computer 3: If this device fails, others continue to function normally due to independent connections." },
+            { id: "pc4", x: 450, y: 280, type: "device", label: "PC 4", tooltip: "Computer 4: Easy to add new devices by connecting them to available hub ports." },
+            { id: "server", x: 300, y: 320, type: "server", label: "Server", tooltip: "Network Server: Provides shared resources and services to all connected devices through the central hub." }
+          ],
+          connections: [
+            { from: "hub", to: "pc1", tooltip: "Hub-to-PC Connection: Dedicated link providing full bandwidth to this device." },
+            { from: "hub", to: "pc2", tooltip: "Star Connection: Direct link ensures no data collisions with other devices." },
+            { from: "hub", to: "pc3", tooltip: "Individual Connection: Each device has private communication path to hub." },
+            { from: "hub", to: "pc4", tooltip: "Dedicated Link: Failure of one connection doesn't affect others." },
+            { from: "hub", to: "server", tooltip: "Server Connection: Central server accessible to all devices through hub." }
+          ]
+        },
+        bus: {
+          title: "Bus Topology",
+          description: "All devices connect to a single central cable (backbone). Data travels in both directions along the bus.",
+          advantages: "Low cost, easy to implement, requires minimal cable.",
+          disadvantages: "Single point of failure, performance degrades with more devices, difficult to troubleshoot.",
+          devices: [
+            { id: "pc1", x: 100, y: 180, type: "device", label: "PC 1", tooltip: "Computer 1: Connected to the bus backbone. Shares bandwidth with all other devices on the network." },
+            { id: "pc2", x: 200, y: 180, type: "device", label: "PC 2", tooltip: "Computer 2: Receives all data transmitted on the bus but only processes packets addressed to it." },
+            { id: "pc3", x: 300, y: 180, type: "device", label: "PC 3", tooltip: "Computer 3: Must wait for the bus to be free before transmitting to avoid data collisions." },
+            { id: "pc4", x: 400, y: 180, type: "device", label: "PC 4", tooltip: "Computer 4: Uses CSMA/CD protocol to detect and handle data collisions on the shared medium." },
+            { id: "pc5", x: 500, y: 180, type: "device", label: "PC 5", tooltip: "Computer 5: Performance decreases as more devices are added due to increased collision probability." }
+          ],
+          connections: [
+            { from: "backbone", fromX: 50, fromY: 180, to: "backbone", toX: 550, toY: 180, tooltip: "Bus Backbone: Single cable that carries all network traffic. Break in this cable brings down entire network." }
+          ]
+        },
+        ring: {
+          title: "Ring Topology",
+          description: "Devices are connected in a circular chain. Data travels in one direction around the ring.",
+          advantages: "No collisions, predictable performance, equal access for all devices.",
+          disadvantages: "Single point of failure, difficult to troubleshoot, adding devices requires network downtime.",
+          devices: [
+            { id: "pc1", x: 300, y: 80, type: "device", label: "PC 1", tooltip: "Computer 1: Receives data from PC 5 and forwards to PC 2. Acts as both receiver and repeater." },
+            { id: "pc2", x: 450, y: 150, type: "device", label: "PC 2", tooltip: "Computer 2: Data flows unidirectionally. Each device regenerates the signal before forwarding." },
+            { id: "pc3", x: 450, y: 280, type: "device", label: "PC 3", tooltip: "Computer 3: Token-based access ensures no collisions. Only device with token can transmit." },
+            { id: "pc4", x: 300, y: 320, type: "device", label: "PC 4", tooltip: "Computer 4: Failure of any device breaks the ring unless dual-ring configuration is used." },
+            { id: "pc5", x: 150, y: 200, type: "device", label: "PC 5", tooltip: "Computer 5: Equal access time for all devices makes performance predictable and fair." }
+          ],
+          connections: [
+            { from: "pc1", to: "pc2", tooltip: "Ring Connection: Data flows clockwise. Each connection is critical for network operation." },
+            { from: "pc2", to: "pc3", tooltip: "Unidirectional Link: Data travels in one direction only, preventing collisions." },
+            { from: "pc3", to: "pc4", tooltip: "Sequential Path: Each device must be operational for ring to function properly." },
+            { from: "pc4", to: "pc5", tooltip: "Ring Segment: Break in any connection disables entire network communication." },
+            { from: "pc5", to: "pc1", tooltip: "Completion Link: This connection completes the ring structure." }
+          ]
+        },
+        mesh: {
+          title: "Mesh Topology",
+          description: "Each device connects to multiple other devices. Can be full mesh (all-to-all) or partial mesh.",
+          advantages: "High reliability, multiple paths for data, excellent fault tolerance.",
+          disadvantages: "Very expensive, complex to implement, difficult to manage.",
+          devices: [
+            { id: "pc1", x: 150, y: 120, type: "device", label: "PC 1", tooltip: "Computer 1: Connected to multiple devices providing redundant paths for data transmission." },
+            { id: "pc2", x: 450, y: 120, type: "device", label: "PC 2", tooltip: "Computer 2: Multiple connections ensure network remains operational even if several links fail." },
+            { id: "pc3", x: 300, y: 200, type: "device", label: "PC 3", tooltip: "Computer 3: Mesh topology provides automatic load balancing and optimal path selection." },
+            { id: "pc4", x: 150, y: 280, type: "device", label: "PC 4", tooltip: "Computer 4: High redundancy makes this topology ideal for critical applications and data centers." },
+            { id: "pc5", x: 450, y: 280, type: "device", label: "PC 5", tooltip: "Computer 5: Each device can communicate with others through multiple independent paths." }
+          ],
+          connections: [
+            { from: "pc1", to: "pc2", tooltip: "Mesh Link: One of many redundant connections providing fault tolerance." },
+            { from: "pc1", to: "pc3", tooltip: "Direct Connection: Mesh provides multiple paths between any two devices." },
+            { from: "pc1", to: "pc4", tooltip: "Redundant Path: Backup route available if primary connection fails." },
+            { from: "pc2", to: "pc3", tooltip: "Cross Connection: Mesh topology eliminates single points of failure." },
+            { from: "pc2", to: "pc5", tooltip: "Alternative Route: Multiple paths allow for load distribution and failover." },
+            { from: "pc3", to: "pc4", tooltip: "Interconnection: Complex wiring increases cost but improves reliability." },
+            { from: "pc3", to: "pc5", tooltip: "Mesh Link: Provides automatic rerouting when network segments fail." },
+            { from: "pc4", to: "pc5", tooltip: "Full Connectivity: Every device can reach others through multiple paths." }
+          ]
+        },
+        hybrid: {
+          title: "Hybrid Topology",
+          description: "Combines multiple topology types. For example, star-bus or star-ring combinations.",
+          advantages: "Combines benefits of different topologies, highly scalable, fault tolerant.",
+          disadvantages: "Complex design, expensive to implement, requires skilled management.",
+          devices: [
+            { id: "hub1", x: 200, y: 120, type: "hub", label: "Hub 1", tooltip: "Primary Hub: Central connection point for the star portion of this hybrid network." },
+            { id: "hub2", x: 400, y: 120, type: "hub", label: "Hub 2", tooltip: "Secondary Hub: Connected to primary hub, extending network reach and capacity." },
+            { id: "pc1", x: 120, y: 80, type: "device", label: "PC 1", tooltip: "Computer 1: Part of star topology connected to Hub 1." },
+            { id: "pc2", x: 200, y: 60, type: "device", label: "PC 2", tooltip: "Computer 2: Benefits from star topology's centralized management." },
+            { id: "pc3", x: 280, y: 80, type: "device", label: "PC 3", tooltip: "Computer 3: Star configuration provides easy troubleshooting and maintenance." },
+            { id: "pc4", x: 400, y: 60, type: "device", label: "PC 4", tooltip: "Computer 4: Connected to second hub in the hybrid network structure." },
+            { id: "server", x: 300, y: 200, type: "server", label: "Server", tooltip: "Network Server: Accessible to all network segments through interconnected hubs." },
+            { id: "pc5", x: 180, y: 280, type: "device", label: "PC 5", tooltip: "Computer 5: Part of ring segment in this hybrid topology configuration." },
+            { id: "pc6", x: 300, y: 320, type: "device", label: "PC 6", tooltip: "Computer 6: Ring topology portion provides predictable access patterns." },
+            { id: "pc7", x: 420, y: 280, type: "device", label: "PC 7", tooltip: "Computer 7: Hybrid design allows optimal topology choice for each network segment." }
+          ],
+          connections: [
+            { from: "hub1", to: "hub2", tooltip: "Backbone Connection: Links different topology segments in hybrid network." },
+            { from: "hub1", to: "pc1", tooltip: "Star Connection: Hub-based connections provide centralized control." },
+            { from: "hub1", to: "pc2", tooltip: "Star Link: Easy to manage and troubleshoot individual connections." },
+            { from: "hub1", to: "pc3", tooltip: "Hub Connection: Star topology benefits in hybrid configuration." },
+            { from: "hub2", to: "pc4", tooltip: "Extended Star: Second hub extends network without performance loss." },
+            { from: "hub1", to: "server", tooltip: "Server Access: Central server available to all network segments." },
+            { from: "pc5", to: "pc6", tooltip: "Ring Segment: Ring topology provides predictable performance." },
+            { from: "pc6", to: "pc7", tooltip: "Ring Connection: Different topology types optimized for specific needs." },
+            { from: "pc7", to: "pc5", tooltip: "Ring Completion: Combines multiple topology advantages in one network." }
+          ]
+        }
+      };
+
+      const quizQuestions = [
+        { q: "In which topology do all devices connect through a central hub or switch?", correct: 0, options: [
+          { text: "Star Topology", explanation: "✅ Correct! Star topology has all devices connected to a central hub or switch, making it the most common modern network design." },
+          { text: "Bus Topology", explanation: "Incorrect. Bus topology uses a single central cable that all devices share." },
+          { text: "Ring Topology", explanation: "Incorrect. Ring topology connects devices in a circular chain." },
+          { text: "Mesh Topology", explanation: "Incorrect. Mesh topology has devices connected to multiple other devices." }
+        ]},
+        { q: "What is the main disadvantage of bus topology?", correct: 2, options: [
+          { text: "High cost", explanation: "Incorrect. Bus topology is actually low cost due to minimal cable requirements." },
+          { text: "Complex installation", explanation: "Incorrect. Bus topology is relatively simple to install." },
+          { text: "Single point of failure in the backbone cable", explanation: "✅ Correct! If the main backbone cable breaks, the entire network goes down." },
+          { text: "Limited to only two devices", explanation: "Incorrect. Bus topology can support multiple devices on the same backbone." }
+        ]},
+        { q: "Which topology provides the highest fault tolerance?", correct: 3, options: [
+          { text: "Star Topology", explanation: "Incorrect. While star has good fault tolerance, it still has a single point of failure at the hub." },
+          { text: "Bus Topology", explanation: "Incorrect. Bus topology has poor fault tolerance due to shared backbone." },
+          { text: "Ring Topology", explanation: "Incorrect. Ring topology fails if any single connection breaks." },
+          { text: "Mesh Topology", explanation: "✅ Correct! Mesh topology provides multiple paths between devices, offering the highest fault tolerance." }
+        ]},
+        { q: "In ring topology, how does data travel?", correct: 1, options: [
+          { text: "In both directions simultaneously", explanation: "Incorrect. Standard ring topology uses unidirectional data flow." },
+          { text: "In one direction around the ring", explanation: "✅ Correct! Data travels in one direction around the ring, typically using token-based access." },
+          { text: "Randomly to any device", explanation: "Incorrect. Ring topology has a specific sequential path." },
+          { text: "Only between adjacent devices", explanation: "Incorrect. Data can travel to any device by passing through the ring." }
+        ]},
+        { q: "What is a hybrid topology?", correct: 2, options: [
+          { text: "A topology that uses only wireless connections", explanation: "Incorrect. Hybrid refers to combining different topology types, not connection methods." },
+          { text: "A topology that changes dynamically", explanation: "Incorrect. Hybrid topology refers to static combinations of different topologies." },
+          { text: "A combination of two or more different topology types", explanation: "✅ Correct! Hybrid topology combines different topologies like star-bus or star-ring to leverage advantages of each." },
+          { text: "A topology used only in large corporations", explanation: "Incorrect. Hybrid topologies can be used in networks of any size." }
+        ]},
+        { q: "Which topology is most commonly used in modern home and office networks?", correct: 0, options: [
+          { text: "Star Topology", explanation: "✅ Correct! Star topology with switches/hubs is the standard for modern Ethernet networks." },
+          { text: "Bus Topology", explanation: "Incorrect. Bus topology was common in older networks but is rarely used today." },
+          { text: "Ring Topology", explanation: "Incorrect. Ring topology is mainly used in specialized applications like FDDI." },
+          { text: "Mesh Topology", explanation: "Incorrect. Full mesh is too expensive for typical home/office use." }
+        ]},
+        { q: "What happens in a star topology if the central hub fails?", correct: 3, options: [
+          { text: "Only one device stops working", explanation: "Incorrect. Hub failure affects all connected devices." },
+          { text: "The network automatically switches to bus topology", explanation: "Incorrect. Star topology cannot automatically change to another topology." },
+          { text: "Only half the devices stop working", explanation: "Incorrect. All devices lose connectivity when the central hub fails." },
+          { text: "The entire network stops functioning", explanation: "✅ Correct! The central hub is a single point of failure - if it fails, all devices lose network connectivity." }
+        ]},
+        { q: "Which topology uses the least amount of cable?", correct: 1, options: [
+          { text: "Star Topology", explanation: "Incorrect. Star requires individual cables from each device to the central hub." },
+          { text: "Bus Topology", explanation: "✅ Correct! Bus topology uses minimal cable as all devices share a single backbone cable." },
+          { text: "Ring Topology", explanation: "Incorrect. Ring requires cables between each adjacent pair of devices." },
+          { text: "Mesh Topology", explanation: "Incorrect. Mesh topology requires the most cables due to multiple connections per device." }
+        ]}
+      ];
+
+      const faqs = [
+        { q: "What's the difference between physical and logical topology?", a: "<strong>Physical topology</strong> refers to the actual physical layout of cables and devices - how they're physically connected. <strong>Logical topology</strong> refers to how data flows through the network - the path data takes from source to destination. For example, a network might be physically wired as a star but logically operate as a ring." },
+        { q: "Why isn't bus topology used much anymore?", a: "Bus topology has several limitations that make it unsuitable for modern networks: <strong>1. Collision issues:</strong> All devices share the same cable, leading to data collisions. <strong>2. Performance degradation:</strong> More devices mean more collisions and slower performance. <strong>3. Single point of failure:</strong> If the main cable breaks, the entire network fails. <strong>4. Troubleshooting difficulty:</strong> Hard to isolate problems. Modern switched star topology eliminated these issues." },
+        { q: "Can you mix different topologies in the same network?", a: "Yes! This is called a <strong>hybrid topology</strong>. Large networks often combine different topologies to leverage the advantages of each. For example, you might have star topology in each department connected via a backbone ring, or multiple star networks connected in a mesh configuration for redundancy." },
+        { q: "What is the difference between a hub and a switch in star topology?", a: "Both are central connection points, but they work differently: <strong>Hub:</strong> Operates at physical layer, simply repeats data to all ports (collision domain shared). <strong>Switch:</strong> Operates at data link layer, intelligently forwards data only to the intended recipient (separate collision domains). Switches have largely replaced hubs due to better performance and security." },
+        { q: "How do you choose the right topology for a network?", a: "Consider these factors: <strong>1. Cost:</strong> Budget for equipment and cabling. <strong>2. Reliability requirements:</strong> How critical is uptime? <strong>3. Performance needs:</strong> Bandwidth and latency requirements. <strong>4. Scalability:</strong> Future growth plans. <strong>5. Management complexity:</strong> Available technical expertise. <strong>6. Physical constraints:</strong> Building layout and cable routing limitations." },
+        { q: "What is token passing in ring topology?", a: "Token passing is an access control method where a special data packet called a 'token' circulates around the ring. Only the device that has the token can transmit data. After transmission, the device releases the token to continue around the ring. This eliminates collisions and provides fair access to all devices." },
+        { q: "Are wireless networks considered a topology type?", a: "Wireless is a <strong>transmission medium</strong>, not a topology type. Wireless networks can implement various topologies: <strong>Infrastructure mode</strong> (similar to star with access point as hub), <strong>Ad-hoc mode</strong> (peer-to-peer, similar to mesh), or <strong>mesh networks</strong> where nodes relay data for each other." },
+        { q: "What is meant by 'collision domain' and 'broadcast domain'?", a: "<strong>Collision domain:</strong> A network segment where data collisions can occur (devices compete for the same medium). <strong>Broadcast domain:</strong> A network segment where broadcast messages reach all devices. Switches separate collision domains but maintain the same broadcast domain. Routers separate both collision and broadcast domains." },
+        { q: "How does mesh topology handle routing?", a: "Mesh networks use routing algorithms to find the best path between devices: <strong>1. Distance vector:</strong> Devices share routing tables with neighbors. <strong>2. Link state:</strong> Each device has complete network topology map. <strong>3. Dynamic routing:</strong> Automatically adapts to link failures and finds alternative paths. <strong>4. Load balancing:</strong> Distributes traffic across multiple paths for optimal performance." },
+        { q: "What are the security implications of different topologies?", a: "Each topology has different security characteristics: <strong>Bus:</strong> All data visible to all devices (security risk). <strong>Star:</strong> Central point for monitoring and control (good for security). <strong>Ring:</strong> Data passes through multiple devices (potential eavesdropping). <strong>Mesh:</strong> Multiple paths make interception harder but more points to secure. <strong>Switches vs hubs:</strong> Switches provide better security by creating separate collision domains." }
+      ];
+
+      const keywords = [
+        { term: "Network Topology", emoji: "🌐", def: "The physical and logical arrangement of devices and connections in a computer network." },
+        { term: "Star Topology", emoji: "⭐", def: "A network layout where all devices connect to a central hub or switch." },
+        { term: "Bus Topology", emoji: "🚌", def: "A network where all devices share a single central cable backbone." },
+        { term: "Ring Topology", emoji: "💍", def: "A network where devices are connected in a circular chain, with data traveling in one direction." },
+        { term: "Mesh Topology", emoji: "🕸️", def: "A network where devices have multiple connections to other devices, providing redundant paths." },
+        { term: "Hybrid Topology", emoji: "🔄", def: "A network that combines two or more different topology types." },
+        { term: "Hub", emoji: "🔗", def: "A central connection device that repeats data to all connected ports in a star topology." },
+        { term: "Switch", emoji: "🔀", def: "An intelligent central device that forwards data only to the intended recipient." },
+        { term: "Backbone", emoji: "🦴", def: "The main cable or connection that carries the majority of network traffic." },
+        { term: "Node", emoji: "📍", def: "Any device connected to a network, such as computers, printers, or servers." },
+        { term: "Collision Domain", emoji: "💥", def: "A network segment where data collisions can occur when devices transmit simultaneously." },
+        { term: "Broadcast Domain", emoji: "📡", def: "A network segment where broadcast messages reach all connected devices." },
+        { term: "Token Passing", emoji: "🎫", def: "An access control method where devices must possess a token to transmit data." },
+        { term: "Fault Tolerance", emoji: "🛡️", def: "The ability of a network to continue operating despite component failures." },
+        { term: "Scalability", emoji: "📈", def: "The ability to add more devices or expand network capacity without significant redesign." },
+        { term: "Bandwidth", emoji: "📶", def: "The maximum data transmission capacity of a network connection." },
+        { term: "Latency", emoji: "⏱️", def: "The time delay between sending and receiving data across a network." },
+        { term: "Redundancy", emoji: "🔁", def: "Having backup systems or multiple paths to ensure network reliability." },
+        { term: "Single Point of Failure", emoji: "⚠️", def: "A component whose failure would cause the entire network to stop functioning." },
+        { term: "Network Segment", emoji: "🧩", def: "A portion of a network that is separated from other parts by bridges, switches, or routers." }
+      ];
+
+      // --- TOOLTIP FUNCTIONALITY ---
+      const tip = document.getElementById('tooltip');
+      let currentTooltipTimeout;
+      
+      const showTip = (content, x, y, isMobile = false) => {
+        clearTimeout(currentTooltipTimeout);
+        
+        tip.innerHTML = content;
+        tip.style.display = 'block';
+        
+        // Mobile-first positioning
+        if (window.innerWidth <= 768 || isMobile) {
+          tip.style.position = 'fixed';
+          tip.style.top = '10px';
+          tip.style.left = '10px';
+          tip.style.right = '10px';
+          tip.style.width = 'auto';
+          tip.style.maxWidth = 'none';
+          return;
+        }
+        
+        // Desktop positioning
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+        const tipWidth = 320;
+        const tipHeight = 200;
+        
+        let left = x + 15;
+        let top = y - 60;
+        
+        if (left + tipWidth > viewportWidth - 20) {
+          left = x - tipWidth - 15;
+        }
+        if (left < 10) {
+          left = 10;
+        }
+        
+        if (top < 10) {
+          top = y + 15;
+        }
+        if (top + tipHeight > viewportHeight - 20) {
+          top = viewportHeight - tipHeight - 20;
+        }
+        
+        tip.style.left = left + 'px';
+        tip.style.top = top + 'px';
+      };
+      
+      const hideTip = () => { 
+        clearTimeout(currentTooltipTimeout);
+        currentTooltipTimeout = setTimeout(() => {
+          tip.style.display = 'none';
+        }, 100);
+      };
+
+      // --- TOPOLOGY VISUALIZATION ---
+      function renderTopology(topologyKey) {
+        const topology = topologyData[topologyKey];
+        const container = document.getElementById('topology-content');
+        const infoDiv = document.getElementById('topology-info');
+        
+        // Update info panel
+        infoDiv.innerHTML = `
+          <h4>${topology.title}</h4>
+          <p><strong>Description:</strong> ${topology.description}</p>
+          <p><strong>Advantages:</strong> ${topology.advantages}</p>
+          <p><strong>Disadvantages:</strong> ${topology.disadvantages}</p>
+        `;
+        
+        // Clear previous content
+        container.innerHTML = '';
+        
+        // Draw connections first (so they appear behind devices)
+        topology.connections.forEach(conn => {
+          if (conn.from === "backbone") {
+            // Special case for bus topology backbone
+            const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            line.setAttribute("x1", conn.fromX);
+            line.setAttribute("y1", conn.fromY);
+            line.setAttribute("x2", conn.toX);
+            line.setAttribute("y2", conn.toY);
+            line.setAttribute("class", "network-connection hotspot");
+            line.setAttribute("stroke-width", "4");
+            line.setAttribute("tabindex", "0");
+            
+            // Add halo for hover effect
+            const halo = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            halo.setAttribute("x1", conn.fromX);
+            halo.setAttribute("y1", conn.fromY);
+            halo.setAttribute("x2", conn.toX);
+            halo.setAttribute("y2", conn.toY);
+            halo.setAttribute("class", "halo");
+            halo.setAttribute("stroke-width", "8");
+            
+            const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
+            group.appendChild(line);
+            group.appendChild(halo);
+            container.appendChild(group);
+            
+            // Add event listeners
+            addTooltipEvents(group, conn.tooltip);
+          } else {
+            // Regular device-to-device connections
+            const fromDevice = topology.devices.find(d => d.id === conn.from);
+            const toDevice = topology.devices.find(d => d.id === conn.to);
+            
+            if (fromDevice && toDevice) {
+              const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+              line.setAttribute("x1", fromDevice.x);
+              line.setAttribute("y1", fromDevice.y);
+              line.setAttribute("x2", toDevice.x);
+              line.setAttribute("y2", toDevice.y);
+              line.setAttribute("class", "network-connection hotspot");
+              line.setAttribute("tabindex", "0");
+              
+              // Add halo for hover effect
+              const halo = document.createElementNS("http://www.w3.org/2000/svg", "line");
+              halo.setAttribute("x1", fromDevice.x);
+              halo.setAttribute("y1", fromDevice.y);
+              halo.setAttribute("x2", toDevice.x);
+              halo.setAttribute("y2", toDevice.y);
+              halo.setAttribute("class", "halo");
+              halo.setAttribute("stroke-width", "6");
+              
+              const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
+              group.appendChild(line);
+              group.appendChild(halo);
+              container.appendChild(group);
+              
+              // Add event listeners
+              addTooltipEvents(group, conn.tooltip);
+            }
+          }
+        });
+        
+        // Draw devices
+        topology.devices.forEach(device => {
+          const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
+          group.setAttribute("class", "hotspot");
+          group.setAttribute("tabindex", "0");
+          
+          // Create device shape based on type
+          let shape;
+          if (device.type === "hub" || device.type === "server") {
+            shape = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+            shape.setAttribute("x", device.x - 25);
+            shape.setAttribute("y", device.y - 15);
+            shape.setAttribute("width", "50");
+            shape.setAttribute("height", "30");
+            shape.setAttribute("rx", "5");
+            shape.setAttribute("class", device.type === "hub" ? "network-hub" : "network-server");
+          } else {
+            shape = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            shape.setAttribute("cx", device.x);
+            shape.setAttribute("cy", device.y);
+            shape.setAttribute("r", "20");
+            shape.setAttribute("class", "network-device");
+          }
+          
+          // Create halo for hover effect
+          let halo;
+          if (device.type === "hub" || device.type === "server") {
+            halo = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+            halo.setAttribute("x", device.x - 27);
+            halo.setAttribute("y", device.y - 17);
+            halo.setAttribute("width", "54");
+            halo.setAttribute("height", "34");
+            halo.setAttribute("rx", "5");
+          } else {
+            halo = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            halo.setAttribute("cx", device.x);
+            halo.setAttribute("cy", device.y);
+            halo.setAttribute("r", "22");
+          }
+          halo.setAttribute("class", "halo");
+          
+          // Create label
+          const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+          label.setAttribute("x", device.x);
+          label.setAttribute("y", device.y + 4);
+          label.setAttribute("class", "device-label");
+          label.textContent = device.label;
+          
+          group.appendChild(halo);
+          group.appendChild(shape);
+          group.appendChild(label);
+          container.appendChild(group);
+          
+          // Add event listeners
+          addTooltipEvents(group, device.tooltip);
+        });
+        
+        // Add bus topology connection points
+        if (topologyKey === 'bus') {
+          topology.devices.forEach(device => {
+            const connector = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            connector.setAttribute("x1", device.x);
+            connector.setAttribute("y1", device.y + 20);
+            connector.setAttribute("x2", device.x);
+            connector.setAttribute("y2", 180);
+            connector.setAttribute("class", "network-connection");
+            connector.setAttribute("stroke-width", "2");
+            container.appendChild(connector);
+          });
+        }
+      }
+      
+      function addTooltipEvents(element, tooltipText) {
+        // Mouse events
+        element.addEventListener('mouseenter', e => {
+          clearTimeout(currentTooltipTimeout);
+          const content = `<div class="tooltip-description">${tooltipText}</div>`;
+          showTip(content, e.clientX, e.clientY);
+        });
+        element.addEventListener('mousemove', e => {
+          if (tip.style.display === 'block' && window.innerWidth > 768) {
+            const content = `<div class="tooltip-description">${tooltipText}</div>`;
+            showTip(content, e.clientX, e.clientY);
+          }
+        });
+        element.addEventListener('mouseleave', hideTip);
+        
+        // Touch events for mobile
+        element.addEventListener('touchstart', e => {
+          e.preventDefault();
+          const touch = e.touches[0];
+          const content = `<div class="tooltip-description">${tooltipText}</div>`;
+          showTip(content, touch.clientX, touch.clientY, true);
+        });
+        element.addEventListener('touchend', e => {
+          setTimeout(hideTip, 3000);
+        });
+        
+        // Click events
+        element.addEventListener('click', e => {
+          e.preventDefault();
+          const content = `<div class="tooltip-description">${tooltipText}</div>`;
+          showTip(content, e.clientX, e.clientY, window.innerWidth <= 768);
+          setTimeout(hideTip, 5000);
+        });
+        
+        // Keyboard events
+        element.addEventListener('focus', e => {
+          const rect = e.target.getBoundingClientRect();
+          const content = `<div class="tooltip-description">${tooltipText}</div>`;
+          showTip(content, rect.left + rect.width/2, rect.top);
+        });
+        element.addEventListener('blur', hideTip);
+      }
+
+      // --- INITIALIZATION ---
+      function initializeAll() {
+        setupTopologySelector();
+        setupQuiz();
+        setupAccordions();
+        setupGlossary();
+        renderTopology('star'); // Default topology
+      }
+      
+      function setupTopologySelector() {
+        const buttons = document.querySelectorAll('.topology-btn');
+        buttons.forEach(btn => {
+          btn.addEventListener('click', () => {
+            // Update active button
+            buttons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            // Render selected topology
+            const topology = btn.getAttribute('data-topology');
+            renderTopology(topology);
+          });
+        });
+      }
+
+      function setupQuiz() {
+        const bodyContainer = document.querySelector('#quiz-body-container');
+        const prevBtn = document.querySelector('#mainPrevBtn');
+        const nextBtn = document.querySelector('#mainNextBtn');
+        const currentQSpan = document.querySelector('#mainCurrentQ');
+        const totalQSpan = document.querySelector('#mainTotalQ');
+        
+        if (!bodyContainer) return;
+        let currentQuestionIndex = 0;
+        totalQSpan.textContent = quizQuestions.length;
+
+        function renderQuestion() {
+            const qData = quizQuestions[currentQuestionIndex];
+            let optionsHTML = qData.options.map((opt, index) => `
+                <div class="quiz-option" data-option-index="${index}">
+                    <label>
+                        <input type="radio" name="q${currentQuestionIndex}" value="${index}">
+                        <span>${opt.text}</span>
+                    </label>
+                    <div class="explanation">${opt.explanation}</div>
+                </div>`).join('');
+            bodyContainer.innerHTML = `<div class="quiz-body active"><p><strong>Q${currentQuestionIndex + 1}:</strong> ${qData.q}</p><div class="quiz-options">${optionsHTML}</div></div>`;
+            currentQSpan.textContent = currentQuestionIndex + 1;
+            prevBtn.disabled = currentQuestionIndex === 0;
+            nextBtn.disabled = currentQuestionIndex === quizQuestions.length - 1;
+            bodyContainer.querySelectorAll('.quiz-option input').forEach(radio => radio.addEventListener('change', handleOptionSelect));
+        }
+
+        function handleOptionSelect(e) {
+            const selectedOptionIndex = parseInt(e.target.value);
+            const qData = quizQuestions[currentQuestionIndex];
+            const parentQuestionDiv = e.target.closest('.quiz-body');
+            parentQuestionDiv.querySelectorAll('.quiz-option').forEach(optDiv => {
+                optDiv.classList.remove('selected', 'correct', 'wrong');
+                optDiv.querySelector('.explanation').style.display = 'none';
+            });
+            const selectedOptionDiv = e.target.closest('.quiz-option');
+            selectedOptionDiv.classList.add('selected');
+            selectedOptionDiv.querySelector('.explanation').style.display = 'block';
+            if (selectedOptionIndex === qData.correct) {
+                selectedOptionDiv.classList.add('correct');
+            } else {
+                selectedOptionDiv.classList.add('wrong');
+                parentQuestionDiv.querySelector(`.quiz-option[data-option-index="${qData.correct}"]`).classList.add('correct');
+            }
+        }
+        prevBtn.addEventListener('click', () => { if (currentQuestionIndex > 0) { currentQuestionIndex--; renderQuestion(); } });
+        nextBtn.addEventListener('click', () => { if (currentQuestionIndex < quizQuestions.length - 1) { currentQuestionIndex++; renderQuestion(); } });
+        renderQuestion();
+      }
+      
+      function setupAccordions() {
+        const faqContainer = document.getElementById('faq-accordion-container');
+        if (faqContainer) {
+          let html = '<div class="accordion">';
+          html += faqs.map((faq, i) => `
+              <div class="accordion-item">
+                  <button class="accordion-header" aria-expanded="false" aria-controls="faq-${i}"><span class="accordion-title"><strong>Q${i+1}:</strong> ${faq.q}</span></button>
+                  <div class="accordion-content" id="faq-${i}"><p><strong>A:</strong> ${faq.a}</p></div>
+              </div>
+          `).join('');
+          html += '</div>';
+          faqContainer.innerHTML = html;
+        }
+        
+        document.querySelectorAll('.accordion-header').forEach(h => h.addEventListener('click', () => {
+            const expanded = h.getAttribute('aria-expanded') === 'true';
+            h.setAttribute('aria-expanded', !expanded);
+            h.nextElementSibling.style.display = expanded ? 'none' : 'block';
+        }));
+      }
+
+      function setupGlossary() {
+        const cloud = document.getElementById('glossaryCloud');
+        if (!cloud) return;
+        cloud.innerHTML = keywords.map(kw => `<button class="glossary-chip" type="button"><span class="icon">${kw.emoji || '🔸'}</span><span>${kw.term}</span></button>`).join('');
+        
+        const tip = document.createElement('div');
+        tip.className = 'chip-tip';
+        tip.innerHTML = '<div class="arrow" aria-hidden="true"></div><div class="tip-content"></div>';
+        document.body.appendChild(tip);
+        const tipContent = tip.querySelector('.tip-content');
+        const tipArrow = tip.querySelector('.arrow');
+        let openBtn = null;
+        
+        function clamp(n, min, max){ return Math.max(min, Math.min(n, max)); }
+        
+        function positionTipFor(btn){
+          const rect = btn.getBoundingClientRect();
+          const vw = window.innerWidth;
+          const pad = 8;
+          tip.style.maxWidth = Math.min(vw - pad*2, 420) + 'px';
+          const tipRect = tip.getBoundingClientRect();
+          const preferTop = rect.top > (window.innerHeight - rect.bottom);
+          const top = preferTop ? rect.top - tipRect.height - 12 : rect.bottom + 12;
+          const left = clamp(rect.left + rect.width/2 - tipRect.width/2, pad, vw - tipRect.width - pad);
+          tip.style.top = Math.max(8, top) + 'px';
+          tip.style.left = left + 'px';
+          tipArrow.style.top = preferTop ? (tipRect.height - 6) + 'px' : '-6px';
+          tipArrow.style.left = clamp(rect.left + rect.width/2 - left - 6, 10, tipRect.width - 22) + 'px';
+        }
+        
+        function openTip(btn, text){ 
+          tipContent.textContent = text; 
+          tip.classList.add('show'); 
+          positionTipFor(btn); 
+          openBtn = btn; 
+        }
+        
+        function closeTip(){ 
+          tip.classList.remove('show'); 
+          openBtn = null; 
+        }
+        
+        cloud.querySelectorAll('.glossary-chip').forEach((btn,i)=>{
+          const def = keywords[i].def;
+          btn.addEventListener('mouseenter',()=>{ openTip(btn, def); });
+          btn.addEventListener('mouseleave',()=>{ closeTip(); });
+          btn.addEventListener('focus',()=>{ openTip(btn, def); });
+          btn.addEventListener('blur',()=>{ closeTip(); });
+        });
+        
+        window.addEventListener('resize',()=>{ if(openBtn) positionTipFor(openBtn); });
+        window.addEventListener('scroll',()=>{ if(openBtn) positionTipFor(openBtn); }, {passive:true});
+        document.addEventListener('click',(e)=>{ if(openBtn && !openBtn.contains(e.target) && !tip.contains(e.target)) closeTip(); });
+      }
+
+      // --- RUN ---
+      initializeAll();
+    });
+  </script>
+</body>
+</html>

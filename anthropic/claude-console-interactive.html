@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive SVG Workbench</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            padding: 2rem;
+        }
+        .interactive-svg-container {
+            width: 100%;
+            max-width: 1200px;
+            aspect-ratio: 16 / 9;
+        }
+        svg .clickable {
+            cursor: pointer;
+            transition: opacity 0.2s ease-in-out;
+        }
+        svg .clickable:hover {
+            opacity: 0.8;
+        }
+        svg .sidebar-text {
+            fill: #a0a0a0;
+            font-size: 14px;
+        }
+        svg .sidebar-text:hover {
+            fill: #ffffff;
+        }
+        svg .sidebar-active-text {
+             fill: #ffffff;
+             font-weight: 500;
+        }
+        svg .run-button:hover rect {
+            filter: brightness(1.1);
+        }
+        /* Tooltip style */
+        .tooltip {
+            position: absolute;
+            background-color: #3a3a3a;
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 13px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+            white-space: normal; /* Allow word wrapping */
+            width: 100%;
+            max-width: 280px; /* Control max width */
+            border: 1px solid #4a4a4a;
+            z-index: 10;
+            line-height: 1.5;
+        }
+        .tooltip-title {
+            font-weight: bold;
+            font-size: 14px;
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+        }
+        .tooltip-section-title {
+            font-weight: 500;
+            color: #a0a0a0;
+            margin-top: 0.75rem;
+            margin-bottom: 0.25rem;
+            font-size: 12px;
+        }
+        .tooltip ul {
+            list-style-position: inside;
+            padding-left: 0;
+            margin: 0;
+        }
+        .tooltip li {
+            padding-left: 0;
+        }
+        @media (max-width: 640px) {
+            body {
+                padding: 0.5rem;
+            }
+            .interactive-svg-container {
+                width: 100%;
+                max-width: 100%;
+                aspect-ratio: unset;
+                min-height: 90vh;
+            }
+            .tooltip {
+                max-width: calc(100vw - 30px);
+                font-size: 12px;
+                padding: 0.75rem;
+            }
+        }
+    </style>
+     <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="interactive-svg-container">
+        <!-- This SVG recreates the UI from the provided image and adds interactivity -->
+        <svg id="workbench-svg" width="100%" height="100%" viewBox="0 0 1200 675" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Background -->
+            <rect width="1200" height="675" rx="12" fill="#282828"/>
+
+            <!-- Left Sidebar -->
+            <g id="left-sidebar">
+                <rect width="220" height="675" rx="12" fill="#1f1f1f"/>
+                <!-- Logo/Header -->
+                <g id="logo" class="clickable">
+                    <text x="24" y="45" font-family="Inter, sans-serif" font-size="16" font-weight="bold" fill="white">ANTHROP\C</text>
+                    <path d="M190 35 L200 40 L190 45 Z" fill="#a0a0a0"/>
+                </g>
+                
+                <!-- Build Section -->
+                <g id="build-section-header" class="clickable">
+                    <rect x="16" y="75" width="188" height="25" fill="transparent"/>
+                    <text x="24" y="90" font-family="Inter, sans-serif" font-size="12" font-weight="bold" fill="#7a7a7a">BUILD</text>
+                </g>
+                <g id="btn-dashboard" class="clickable">
+                    <rect x="16" y="105" width="188" height="30" rx="6" fill="transparent"/>
+                    <text x="24" y="124" class="sidebar-text">Dashboard</text>
+                </g>
+                <g id="btn-workbench" class="clickable">
+                    <rect x="16" y="135" width="188" height="30" rx="6" fill="#333333"/>
+                    <text x="24" y="154" class="sidebar-active-text">Workbench</text>
+                </g>
+                 <g id="btn-files" class="clickable">
+                    <rect x="16" y="165" width="188" height="30" rx="6" fill="transparent"/>
+                    <text x="24" y="184" class="sidebar-text">Files</text>
+                </g>
+
+                <!-- Analytics Section -->
+                <text x="24" y="230" font-family="Inter, sans-serif" font-size="12" font-weight="bold" fill="#7a7a7a">ANALYTICS</text>
+                 <g id="btn-usage" class="clickable">
+                    <rect x="16" y="245" width="188" height="30" rx="6" fill="transparent"/>
+                    <text x="24" y="264" class="sidebar-text">Usage</text>
+                </g>
+                 <g id="btn-cost" class="clickable">
+                    <rect x="16" y="275" width="188" height="30" rx="6" fill="transparent"/>
+                    <text x="24" y="294" class="sidebar-text">Cost</text>
+                </g>
+                <g id="btn-logs" class="clickable">
+                    <rect x="16" y="305" width="188" height="30" rx="6" fill="transparent"/>
+                    <text x="24" y="324" class="sidebar-text">Logs</text>
+                </g>
+                <g id="btn-batches" class="clickable">
+                    <rect x="16" y="335" width="188" height="30" rx="6" fill="transparent"/>
+                    <text x="24" y="354" class="sidebar-text">Batches</text>
+                </g>
+                <g id="btn-documentation" class="clickable">
+                    <rect x="16" y="380" width="188" height="30" rx="6" fill="transparent"/>
+                    <text x="24" y="399" class="sidebar-text">Documentation</text>
+                </g>
+
+                <!-- User Profile -->
+                <g id="btn-user-profile" class="clickable">
+                    <rect x="16" y="610" width="188" height="50" rx="8" fill="#111111"/>
+                    <circle cx="40" cy="635" r="12" fill="#4a90e2"/>
+                    <text x="35" y="640" font-family="Inter, sans-serif" font-size="14" fill="white">AN</text>
+                    <text x="64" y="630" font-family="Inter, sans-serif" font-size="12" font-weight="500" fill="white">Aadhiraj Nayar</text>
+                    <text x="64" y="648" font-family="Inter, sans-serif" font-size="10" fill="#a0a0a0">CRETORIAL MEDIA S...</text>
+                    <path d="M188 630 L193 635 L188 640 Z" fill="#a0a0a0" transform="rotate(90 190.5 635)"/>
+                </g>
+            </g>
+
+            <!-- Main Content -->
+            <g id="main-content">
+                <!-- Header -->
+                <g id="workspace-selector" class="clickable">
+                    <rect x="250" y="45" width="100" height="30" rx="6" fill="#3a3a3a"/>
+                    <text x="260" y="64" font-family="Inter, sans-serif" font-size="14" fill="white">Default</text>
+                    <path d="M330 60 L335 65 L340 60" stroke="white" stroke-width="1.5" fill="none"/>
+                </g>
+                
+                <text id="main-title" class="clickable" x="250" y="100" font-family="Inter, sans-serif" font-size="24" font-weight="bold" fill="white">Untitled</text>
+                <text id="last-saved-info" class="clickable" x="250" y="125" font-family="Inter, sans-serif" font-size="12" fill="#a0a0a0">Last saved Aug 31 at 11:50 PM</text>
+                
+                <g id="model-selector" class="clickable">
+                    <text x="450" y="125" font-family="Inter, sans-serif" font-size="12" fill="#a0a0a0">claude-sonnet-4-20250514</text>
+                </g>
+
+                <!-- Top Buttons -->
+                 <g id="mode-toggle" class="clickable">
+                    <rect x="750" y="45" width="140" height="40" rx="8" fill="#1f1f1f"/>
+                    <rect x="752" y="47" width="68" height="36" rx="6" fill="#3a3a3a"/>
+                    <text x="765" y="70" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="white">Prompt</text>
+                    <text x="828" y="70" font-family="Inter, sans-serif" font-size="14" fill="#a0a0a0">Evaluate</text>
+                </g>
+                <g id="btn-get-code" class="clickable">
+                    <rect x="900" y="45" width="100" height="40" rx="8" fill="#3a3a3a"/>
+                    <text x="923" y="70" font-family="Inter, sans-serif" font-size="14" fill="white">Get Code</text>
+                </g>
+                <g id="btn-run" class="clickable run-button">
+                    <rect x="1010" y="45" width="160" height="40" rx="8" fill="#4a90e2"/>
+                    <text x="1065" y="70" font-family="Inter, sans-serif" font-size="14" font-weight="bold" fill="white">Run</text>
+                     <path d="M1030 62.5 L1040 67.5 L1030 72.5 Z" fill="white"/>
+                </g>
+
+                <!-- Prompt Area -->
+                <rect x="250" y="150" width="550" height="450" rx="8" fill="#1f1f1f"/>
+                <g id="system-prompt-area" class="clickable">
+                    <text x="270" y="180" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="white">System Prompt</text>
+                    <text x="270" y="200" font-family="Inter, sans-serif" font-size="12" fill="#a0a0a0">Define a role, tone or context (optional)</text>
+                </g>
+                <line x1="270" y1="230" x2="780" y2="230" stroke="#3a3a3a" stroke-width="1"/>
+                
+                <g id="user-prompt-area" class="clickable">
+                    <text x="270" y="260" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="white">User</text>
+                    <text x="270" y="300" font-family="Inter, sans-serif" font-size="14" fill="#a0a0a0">or enter instructions or prompt for Claude...</text>
+                </g>
+
+                <g id="btn-prefill" class="clickable">
+                     <text x="270" y="580" font-family="Inter, sans-serif" font-size="12" fill="#a0a0a0">Pre-fill response</text>
+                </g>
+                 <g id="btn-add-pair" class="clickable">
+                     <text x="400" y="580" font-family="Inter, sans-serif" font-size="12" fill="#a0a0a0">Add message pair</text>
+                </g>
+                
+                <!-- Status/Output area -->
+                <text id="output-text" x="270" y="480" font-family="monospace" font-size="14" fill="#4a90e2"></text>
+            </g>
+
+            <!-- Right Sidebar -->
+            <g id="right-sidebar" class="clickable">
+                <rect x="830" y="150" width="340" height="450" rx="8" fill="#1f1f1f"/>
+                <text x="850" y="180" font-family="Inter, sans-serif" font-size="16" font-weight="bold" fill="white">Welcome to Workbench</text>
+                 <g class="info-text">
+                    <text x="850" y="220" font-family="Inter, sans-serif" font-size="13" fill="#e0e0e0">
+                        <tspan x="850" dy="0">→ Write a prompt in the left column, and</tspan>
+                        <tspan x="850" dy="1.4em">   click ▶ Run to see Claude's response</tspan>
+                    </text>
+                 </g>
+            </g>
+        </svg>
+    </div>
+    <div id="tooltip" class="tooltip"></div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const svg = document.getElementById('workbench-svg');
+        const outputText = document.getElementById('output-text');
+        const mainTitle = document.getElementById('main-title');
+        const tooltip = document.getElementById('tooltip');
+
+        let outputTimeout;
+
+        function showOutput(message, duration = 3000) {
+            clearTimeout(outputTimeout);
+            outputText.textContent = `> ${message}`;
+            outputTimeout = setTimeout(() => {
+                outputText.textContent = '';
+            }, duration);
+        }
+        
+        // --- Sidebar Interactions ---
+        const sidebarButtons = ['btn-dashboard', 'btn-workbench', 'btn-files', 'btn-usage', 'btn-cost', 'btn-logs', 'btn-batches', 'btn-documentation'];
+        sidebarButtons.forEach(id => {
+            const btn = document.getElementById(id);
+            if (btn) {
+                btn.addEventListener('click', () => {
+                    // Update active state visuals
+                    sidebarButtons.forEach(bId => {
+                         const buttonEl = document.getElementById(bId);
+                         if (buttonEl && buttonEl.querySelector('rect')) {
+                            buttonEl.querySelector('rect').setAttribute('fill', 'transparent');
+                         }
+                         if(buttonEl && buttonEl.querySelector('text')) {
+                            buttonEl.querySelector('text').setAttribute('class', 'sidebar-text');
+                         }
+                    });
+                    if (btn.querySelector('rect') && btn.querySelector('text')) {
+                        btn.querySelector('rect').setAttribute('fill', '#333333');
+                        btn.querySelector('text').setAttribute('class', 'sidebar-active-text');
+                    }
+                    
+                    // Update main title
+                    const buttonText = btn.querySelector('text').textContent;
+                    mainTitle.textContent = buttonText;
+                    showOutput(`Mapsd to ${buttonText}.`);
+                });
+            }
+        });
+
+
+        // --- Button Interactions ---
+        const btnRun = document.getElementById('btn-run');
+        if (btnRun) {
+            btnRun.addEventListener('click', () => {
+                showOutput('Running script...');
+            });
+        }
+        
+        const btnGetCode = document.getElementById('btn-get-code');
+        if (btnGetCode) {
+            btnGetCode.addEventListener('click', () => {
+                showOutput('Generating code snippet...');
+            });
+        }
+        
+        // --- Tooltip Logic ---
+        const clickableElements = svg.querySelectorAll('.clickable');
+        const tooltipsContent = {
+            'logo': {
+                title: 'ANTHROPIC Logo',
+                whatItIs: "Think of this as the hospital name on your prescription pad. It’s the brand heading.",
+                impact: "Identifies the platform you are using but isn't an interactive element for your workflow.",
+                thingsToDo: [ 'Acknowledge the platform.', 'Focus on the tools below for action.', 'Not a clickable button.' ]
+            },
+            'build-section-header': {
+                title: 'BUILD Section',
+                whatItIs: "This is your main toolkit. It contains the primary areas where you create, manage, and organize your work with the AI.",
+                impact: "These are the most frequently used tools for constructing your AI interactions and managing your projects.",
+                thingsToDo: [ 'Go to Dashboard for an overview.', 'Use Workbench to create prompts.', 'Store your work in Files.' ]
+            },
+            'btn-dashboard': {
+                title: 'Dashboard',
+                whatItIs: "Like your hospital’s central noticeboard. It provides an overall summary of activity and projects.",
+                impact: "Gives a high-level overview without needing to check individual reports.",
+                thingsToDo: [ 'Check your recent usage summary.', 'View your current costs at a glance.', 'Get a quick overview of activity.' ]
+            },
+            'btn-workbench': {
+                title: 'Workbench',
+                whatItIs: "Your OPD desk where you actually see patients/cases. It's your creative canvas for instructing the AI.",
+                impact: "This is the primary area for writing, testing, and refining your instructions (prompts) to get results.",
+                thingsToDo: [ 'Write a new prompt in the "User" area.', 'Adjust parameters for different results.', 'Compare different versions of your prompts.' ]
+            },
+            'btn-files': {
+                title: 'Files',
+                whatItIs: "Your case records or stored reports. You can upload or save project-related documents here.",
+                impact: "Keeps your work organized and allows you to provide more context to the AI by using stored information.",
+                thingsToDo: [ 'Upload a document for analysis.', 'Save a prompt you\'ve created.', 'Organize your past work into folders.' ]
+            },
+            'btn-usage': {
+                title: 'Usage',
+                whatItIs: "Represents the number of cases you’ve handled this week. It tracks your interaction volume.",
+                impact: "Helps you understand your workload and how frequently you are using the AI.",
+                thingsToDo: [ 'Review your weekly activity.', 'Identify your busiest periods.', 'Plan your resource allocation based on data.' ]
+            },
+            'btn-cost': {
+                title: 'Cost',
+                whatItIs: "The billing sheet—what it cost per investigation or interaction with the AI.",
+                impact: "Allows you to monitor your expenses and understand the cost associated with your tasks.",
+                thingsToDo: [ 'Check the cost per interaction.', 'Set budget alerts to manage spending.', 'Optimize expensive prompts for efficiency.' ]
+            },
+            'btn-logs': {
+                title: 'Logs',
+                whatItIs: "The case notes history—who said what, and when. It’s a detailed record of your interactions.",
+                impact: "Provides a complete audit trail, which is crucial for debugging and reviewing conversations.",
+                thingsToDo: [ 'Review past conversations step-by-step.', 'Debug unexpected AI responses.', 'Track a specific session\'s history.' ]
+            },
+            'btn-batches': {
+                title: 'Batches',
+                whatItIs: "For bulk investigations, like sending 50 blood samples at once. Process many prompts simultaneously.",
+                impact: "Saves a significant amount of time by running large-scale tasks in the background.",
+                thingsToDo: [ 'Prepare a dataset of prompts.', 'Upload the file to run a batch job.', 'Check back later for the compiled results.' ]
+            },
+            'btn-documentation': {
+                title: 'Documentation',
+                whatItIs: "The hospital manual. Contains guidelines and official information if you need a reference.",
+                impact: "Your go-to resource for troubleshooting, learning advanced features, and understanding best practices.",
+                thingsToDo: [ 'Search for a specific feature.', 'Read guides on prompt engineering.', 'Look up API integration details.' ]
+            },
+            'btn-user-profile': {
+                title: 'User Profile',
+                whatItIs: "Your doctor ID badge. It confirms who is signed in and manages account settings.",
+                impact: "Controls your personal information, security settings, and billing details.",
+                thingsToDo: [ 'Update your personal details.', 'Change your password.', 'Manage your subscription.' ]
+            },
+            'workspace-selector': {
+                title: 'Workspace Selector',
+                whatItIs: "Lets you switch between clinics or departments (e.g., Cardiology OPD, Medicine OPD).",
+                impact: "Separates different projects, patient pools, and budgets, keeping your work organized.",
+                thingsToDo: [ 'Create a new workspace for a new project.', 'Switch to a shared workspace to collaborate.', 'Manage workspace-specific settings.' ]
+            },
+            'main-title': {
+                title: 'Session Title (Untitled)',
+                whatItIs: "Your case sheet label. Give your current session a memorable name.",
+                impact: "Helps you easily identify and find this specific chat or task later on.",
+                thingsToDo: [ 'Click to rename it.', 'Use a descriptive name (e.g., "Chest Pain Sim").', 'Keep it concise for clarity.' ]
+            },
+            'last-saved-info': {
+                title: 'Last Saved Info',
+                whatItIs: "A timestamp noting when you last updated the patient’s chart or your work.",
+                impact: "Confirms that your work is being saved automatically, preventing data loss.",
+                thingsToDo: [ 'Glance at it to confirm your work is saved.', 'Use the "Save changes" link to force a save.', 'Note the time for version control.' ]
+            },
+            'model-selector': {
+                title: 'Model Selector',
+                whatItIs: "Lets you choose which junior resident is on duty. Different models have different skills.",
+                impact: "Directly affects the quality, speed, and cost of the response. A crucial setting to adjust.",
+                thingsToDo: [ 'Choose a faster model for simple tasks.', 'Select a more powerful model for complex analysis.', 'Experiment with different models.' ]
+            },
+            'system-prompt-area': {
+                title: 'System Prompt',
+                whatItIs: "Your intern briefing before rounds. You set the AI's role, personality, and tone here.",
+                impact: "Fundamentally guides all subsequent responses from the AI within the session.",
+                thingsToDo: [ 'Define a role (e.g., "You are a cardiology intern").', 'Set a tone (e.g., "Explain clearly to patients").', 'Provide context that applies to the whole chat.' ]
+            },
+            'user-prompt-area': {
+                title: 'User Prompt',
+                whatItIs: "Where you dictate the actual case request or your specific instruction to the AI.",
+                impact: "This is the primary input for getting an immediate, single response from the AI.",
+                thingsToDo: [ 'Type your question or command here.', 'Be as clear and specific as possible.', 'Click "Run" to get the answer.' ]
+            },
+            'btn-prefill': {
+                title: 'Pre-fill Response',
+                whatItIs: "A tool for pretend chat. You write what the patient might say first to guide the AI's response.",
+                impact: "Excellent for creating practice scenarios, tutorials, or steering the conversation in a specific direction.",
+                thingsToDo: [ 'Write the user\'s side of the conversation.', 'Let the AI generate its response based on that.', 'Build realistic dialogue examples.' ]
+            },
+            'btn-add-pair': {
+                title: 'Add Message Pair',
+                whatItIs: "Lets you add both sides of a conversation (e.g., patient + doctor) to test longer interactions.",
+                impact: "Useful for providing the AI with a conversational history, so its responses are context-aware.",
+                thingsToDo: [ 'Add a user message.', 'Add a corresponding AI response.', 'Build a conversational history for context.' ]
+            },
+            'mode-toggle': {
+                title: 'Prompt / Evaluate Toggle',
+                whatItIs: "Switches between standard instruction mode (Prompt) and a comparison mode (Evaluate).",
+                impact: "Evaluate mode lets you compare two different AI responses side-by-side, which is great for testing.",
+                thingsToDo: [ 'Use "Prompt" for standard chat.', 'Switch to "Evaluate" to test two prompts.', 'Compare answers to find the best approach.' ]
+            },
+            'btn-get-code': {
+                title: 'Get Code Button',
+                whatItIs: 'This is the "hand to IT" button. It translates your prompt into a reusable code snippet.',
+                impact: 'Allows developers to integrate your AI interaction directly into a real application.',
+                thingsToDo: [ 'Finalize your prompt for the best result.', 'Click this to generate the code.', 'Copy the code to share with your software team.' ]
+            },
+            'btn-run': {
+                title: 'Run Button',
+                whatItIs: 'Your stethoscope button. You press it to make the AI "listen" and reply to your instruction.',
+                impact: 'This is the main action to execute your prompt and get a response from the AI.',
+                thingsToDo: [ 'Click after writing your prompt.', 'Use the shortcut (Ctrl + Enter).', 'Wait for the result to appear.' ]
+            },
+            'right-sidebar': {
+                title: 'Welcome to Workbench',
+                whatItIs: "The orientation sheet for first-time interns or a quick-reference guide.",
+                impact: "Provides helpful tips and examples on how to effectively use the Workbench.",
+                thingsToDo: [ 'Read the tips to get started.', 'Learn how to use variables.', 'Understand how to structure conversations.' ]
+            }
+        };
+
+        clickableElements.forEach(el => {
+            const content = tooltipsContent[el.id];
+            if (!content) return;
+
+            let tooltipTimer;
+
+            const updateTooltipPosition = (e) => {
+                if (window.innerWidth <= 640) {
+                    tooltip.style.left = '50%';
+                    tooltip.style.top = 'auto';
+                    tooltip.style.bottom = '15px';
+                    tooltip.style.transform = 'translateX(-50%)';
+                    return;
+                }
+                
+                tooltip.style.bottom = 'auto';
+                tooltip.style.transform = 'none';
+
+                const isTouchEvent = e.type.startsWith('touch');
+                const eventX = isTouchEvent ? e.touches[0].pageX : e.pageX;
+                const eventY = isTouchEvent ? e.touches[0].pageY : e.pageY;
+                
+                const x = eventX + 15;
+                const y = eventY + 15;
+                const clientWidth = document.documentElement.clientWidth;
+                const clientHeight = document.documentElement.clientHeight;
+                const { offsetWidth, offsetHeight } = tooltip;
+
+                let left = (x + offsetWidth > clientWidth) ? `${x - offsetWidth - 30}px` : `${x}px`;
+                let top = (y + offsetHeight > clientHeight) ? `${y - offsetHeight - 30}px` : `${y}px`;
+                
+                if (parseInt(left) < 0) left = '15px';
+                if (parseInt(top) < 0) top = '15px';
+
+                tooltip.style.left = left;
+                tooltip.style.top = top;
+            };
+
+            const showTooltip = (e) => {
+                if(!content) return;
+                tooltip.innerHTML = `
+                    <div class="tooltip-title">${content.title}</div>
+                    <div class="tooltip-section-title">What it is</div>
+                    <p>${content.whatItIs}</p>
+                    <div class="tooltip-section-title">How it impacts</div>
+                    <p>${content.impact}</p>
+                    <div class="tooltip-section-title">3 things to do</div>
+                    <ul>
+                        ${content.thingsToDo.map(item => `<li>- ${item}</li>`).join('')}
+                    </ul>
+                `;
+                tooltip.style.opacity = '1';
+                if (e) {
+                    updateTooltipPosition(e);
+                }
+            };
+
+            const hideTooltip = () => {
+                clearTimeout(tooltipTimer);
+                tooltip.style.opacity = '0';
+            };
+
+            el.addEventListener('mouseenter', showTooltip);
+            el.addEventListener('mousemove', updateTooltipPosition);
+            el.addEventListener('mouseleave', hideTooltip);
+
+            el.addEventListener('touchstart', e => {
+                tooltipTimer = setTimeout(() => {
+                    showTooltip(e);
+                }, 500); 
+            }, { passive: true });
+
+            el.addEventListener('touchend', hideTooltip);
+            el.addEventListener('touchcancel', hideTooltip);
+        });
+
+    });
+</script>
+
+</body>
+</html>
+

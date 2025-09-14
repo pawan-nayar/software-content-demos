@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CBSE Python Learning Runner</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- Sacrosanct Base / Theme --- */
+        :root {
+            --text: #212529; --bg: #fff; --muted: #f8f9fa; --border: #e9ecef;
+            --accent: #fd7e14; --accent-2: #e87312; --header-bg: #212529; --header-fg: #f8f9fa;
+            --ok: #16a34a; --ok-soft: #dcfce7; --bad: #dc2626; --bad-soft: #fee2e2;
+            --code-bg: #2d3748; --code-fg: #e2e8f0;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; background: var(--muted); color: var(--text); line-height: 1.7; }
+        body { display: flex; flex-direction: column; min-height: 100vh; }
+
+        /* --- Header / Footer --- */
+        .site-header, .site-footer { background: var(--header-bg); color: var(--header-fg); padding: 14px 24px; flex-shrink: 0; }
+        .site-header { display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+        .logo { font-weight: 700; font-size: 1.15rem; color: #fff; text-decoration: none; }
+        .site-footer { text-align: center; margin-top: auto; padding: 30px; }
+
+        /* --- Main App Layout --- */
+        .app-container {
+            display: grid;
+            grid-template-columns: 45% 55%;
+            gap: 24px;
+            padding: 24px;
+            flex-grow: 1;
+            overflow: hidden;
+        }
+        .left-column, .right-column { display: flex; flex-direction: column; gap: 24px; height: calc(100vh - 150px); }
+        
+        /* --- UI Panels & Cards --- */
+        .panel { background: #fff; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; }
+        .panel-header { padding: 12px 16px; border-bottom: 1px solid var(--border); background: var(--muted); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+        .panel-title { font-weight: 600; font-size: 1.1rem; color: var(--text); }
+        .panel-body { padding: 16px; flex-grow: 1; overflow-y: auto; }
+
+        /* --- Introduction Panel --- */
+        .intro-panel { grid-column: 1 / -1; background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 24px; border-left: 5px solid var(--accent); }
+        .intro-panel h1 { font-size: 1.8rem; color: var(--accent-2); margin-bottom: 8px; }
+        .intro-panel p { font-size: 1.05rem; }
+
+        /* --- Code Viewer --- */
+        .code-viewer-container { font-family: 'Courier New', Courier, monospace; font-size: 0.9rem; line-height: 1.6; background-color: var(--code-bg); color: var(--code-fg); display: flex; }
+        .line-numbers { padding: 16px 8px; text-align: right; color: #718096; user-select: none; border-right: 1px solid #4a5568;}
+        .code-content { padding: 16px; flex-grow: 1; }
+        .code-line { display: block; padding: 1px 4px; margin: 0 -4px; border-radius: 4px; transition: background-color 0.2s; cursor: help; }
+        .code-line:hover { background-color: rgba(253, 126, 20, 0.2); }
+
+        /* --- Explanation Section --- */
+        .tab-nav { display: flex; border-bottom: 1px solid var(--border); padding: 0 16px; }
+        .tab-btn { background: none; border: none; padding: 12px 16px; font-size: 0.95rem; font-weight: 600; cursor: pointer; border-bottom: 3px solid transparent; }
+        .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .explanation-section h3 { font-size: 1.2rem; color: var(--accent-2); margin-top: 24px; margin-bottom: 12px; padding-bottom: 6px; border-bottom: 2px solid var(--accent); }
+        .explanation-section h3:first-child { margin-top: 0; }
+        
+        /* Concept Cards */
+        .concept-card { border: 1px solid var(--border); border-radius: 12px; margin-top: 16px; }
+        .concept-card-header { background: var(--muted); padding: 12px; border-bottom: 1px solid var(--border); }
+        .concept-card-header h4 { font-size: 1.1rem; margin: 0; color: var(--text); }
+        .concept-card-header code { background: var(--accent-2); color: white; padding: 3px 6px; border-radius: 5px; font-size: 0.9em; }
+        .concept-card-body { padding: 12px; }
+        .comparison-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
+        .comparison-card { border: 1px solid var(--border); border-radius: 8px; padding: 12px; }
+        .comparison-card h5 { font-size: 1rem; margin: 0 0 8px 0; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+        .comparison-card.correct { border-left: 4px solid var(--ok); }
+        .comparison-card.correct h5 { color: var(--ok); }
+        .comparison-card.incorrect { border-left: 4px solid var(--bad); }
+        .comparison-card.incorrect h5 { color: var(--bad); }
+        .comparison-card pre { background: var(--code-bg); color: var(--code-fg); padding: 10px; border-radius: 6px; font-size: 0.85rem; white-space: pre-wrap; margin: 0; }
+        .comparison-card .why-wrong { background: var(--bad-soft); padding: 8px; border-radius: 4px; margin-top: 10px; font-size: 0.9rem; }
+
+        /* Spot the Mistake */
+        .mistake-item { border: 1px solid var(--border); border-radius: 8px; margin-top: 16px; padding: 12px; }
+        .mistake-item pre { background: var(--code-bg); color: var(--code-fg); padding: 10px; border-radius: 6px; }
+        .mistake-reveal-btn { background: var(--accent); color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; margin-top: 8px; }
+        .mistake-explanation { display: none; margin-top: 10px; padding: 10px; background: var(--ok-soft); border-left: 4px solid var(--ok); border-radius: 4px; }
+
+        /* Quiz */
+        .quiz-question { margin-top: 16px; }
+        .quiz-option { display: block; margin: 8px 0; padding: 10px; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; }
+        .quiz-option:hover { background: var(--muted); }
+        .quiz-feedback { display: none; margin-top: 8px; padding: 8px; border-radius: 4px; }
+        .quiz-feedback.correct { background: var(--ok-soft); border-left: 4px solid var(--ok); }
+        .quiz-feedback.incorrect { background: var(--bad-soft); border-left: 4px solid var(--bad); }
+
+        /* FAQ & Glossary */
+        .accordion-item { border-bottom: 1px solid var(--border); }
+        .accordion-header { background: none; border: none; width: 100%; text-align: left; padding: 12px 0; font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .accordion-header::after { content: '+'; font-size: 1.2rem; color: var(--accent); }
+        .accordion-header.active::after { content: '−'; }
+        .accordion-content { display: none; padding-bottom: 12px; }
+
+        /* --- Output & Status --- */
+        .output-box { background: var(--code-bg); color: var(--code-fg); border: 1px solid var(--border); border-radius: 8px; }
+        .output-content { font-family: 'Courier New', Courier, monospace; padding: 12px; white-space: pre-wrap; }
+        .status-chip { font-size: 0.85rem; font-weight: 600; padding: 4px 10px; border-radius: 999px; }
+        .status-chip.success { background: var(--ok-soft); color: var(--ok); }
+        
+        /* --- Tooltip --- */
+        .code-tooltip { position: fixed; z-index: 1000; background: var(--accent); color: #fff; padding: 10px 14px; border-radius: 8px; font-size: 0.9rem; line-height: 1.5; max-width: 350px; pointer-events: none; opacity: 0; transition: opacity 0.2s; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+
+        /* --- Responsive Design --- */
+        @media (max-width: 1024px) {
+            .app-container { grid-template-columns: 1fr; }
+            .left-column, .right-column { height: auto; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="site-header">
+        <a href="#" class="logo">CBSE Python Runner</a>
+    </header>
+
+    <div class="intro-panel">
+        <h1>Welcome to the Python Learning Runner</h1>
+        <p>This tool is designed for CBSE Class 11 & 12 students to master Python programming. Instead of just running code, we break down every example to explain the <strong>purpose</strong>, the <strong>process</strong>, and the <strong>pitfalls</strong>. Our goal is to resolve every common point of confusion so you can build a strong, confident foundation in Python.</p>
+    </div>
+
+    <main class="app-container">
+        <!-- Left Column: Code and Output -->
+        <div class="left-column">
+            <div class="panel" style="flex-grow: 1;">
+                <div class="panel-header">
+                    <h2 id="sample-title" class="panel-title"></h2>
+                </div>
+                <div id="code-viewer" class="code-viewer-container">
+                    <div id="line-numbers" class="line-numbers"></div>
+                    <pre id="code-display" class="code-content"></pre>
+                </div>
+            </div>
+            <div class="panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">🖥️ Console Output</h2>
+                    <span id="status-chip" class="status-chip"></span>
+                </div>
+                <div class="panel-body">
+                     <div id="output-display" class="output-content output-box"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Learning Module -->
+        <div class="right-column">
+            <div class="panel" style="flex-grow: 1;">
+                <div class="tab-nav">
+                    <button class="tab-btn active" data-tab="concepts">Concepts</button>
+                    <button class="tab-btn" data-tab="mistakes">Spot the Mistake</button>
+                    <button class="tab-btn" data-tab="quiz">Mastery Quiz</button>
+                    <button class="tab-btn" data-tab="faq">Exhaustive FAQ</button>
+                    <button class="tab-btn" data-tab="glossary">Glossary</button>
+                </div>
+                <div id="explanation-display" class="panel-body explanation-section">
+                    <!-- Tab content will be injected here -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>© 2025 Beyond Dictionary. For CBSE Class 11/12 Computer Science.</p>
+    </footer>
+
+    <div id="code-tooltip" class="code-tooltip"></div>
+
+    <script>
+        // --- DATA STORE (EXPANDED FOR NEW FEATURES) ---
+        const samples = [
+            {
+                "id": "c11-basics-input-print-001",
+                "title": "Basic Input, Print, and Variables",
+                "mode": "success",
+                "code": "name = input(\"Enter your name: \")\nage_str = input(\"Enter your age: \")\n\nage = int(age_str)\n\nyear_of_birth = 2025 - age\n\nprint(\"Hello,\", name)\nprint(\"You will be\", age + 1, \"on your next birthday.\")\nprint(\"You were likely born in\", year_of_birth)",
+                "stdin": ["Amit", "16"],
+                "expected_output": "Enter your name: Amit\nEnter your age: 16\nHello, Amit\nYou will be 17 on your next birthday.\nYou were likely born in 2009\n",
+                "explain": {
+                    "introduction": "This first program covers the three most essential building blocks of any interactive program: asking the user for information (`input`), remembering that information (`variables`), and showing a result (`print`). Mastering these is the first step to writing useful code.",
+                    "line_by_line": {
+                        "1": "The `input()` function displays the text \"Enter your name: \" and waits for the user. Whatever the user types is stored as a <strong>string</strong> in the `name` variable.",
+                        "2": "This line also uses `input()`. Even if the user types `16`, Python stores it as the <strong>string</strong> `\"16\"`.",
+                        "4": "This is a critical step. The `int()` function <strong>converts</strong> the string `\"16\"` into the integer number `16`, which is necessary for math.",
+                        "6": "Now that `age` is a number, we can perform arithmetic subtraction to estimate the `year_of_birth`.",
+                        "8": "The `print()` function displays output. The comma automatically adds a space between \"Hello,\" and the value of `name`.",
+                        "9": "This shows you can do math (`age + 1`) directly inside a `print()` statement.",
+                        "10": "This final line prints the last piece of calculated information."
+                    },
+                    "concept_cards": [
+                        {
+                            "concept": "Variables",
+                            "explanation": "Variables are containers for storing data values. Think of them as labeled boxes. You use the assignment operator (`=`) to put a value into a variable.",
+                            "dos": [{ "title": "Use Descriptive Names", "code": "user_name = \"Amit\"" }],
+                            "donts": [{ "title": "Use Keywords or Start with Numbers", "code": "class = \"11th\" # BAD\n1st_name = \"Amit\" # BAD", "why": "Python reserves keywords (like `class`) for its own use. Variable names must start with a letter or an underscore (_)." }]
+                        },
+                        {
+                            "concept": "The `input()` function",
+                            "explanation": "This function gets input from the user and always returns it as a string.",
+                            "dos": [{ "title": "Provide a Clear Prompt", "code": "age = input(\"Please enter your age: \")" }],
+                            "donts": [{ "title": "Assume it's a Number", "code": "age_str = input(\"Enter age: \")\nresult = age_str + 1 # BAD: TypeError!", "why": "You can't add a string (`\"16\"`) and a number (`1`). You must convert the string first using `int()`." }]
+                        },
+                        {
+                            "concept": "The `int()` function",
+                            "explanation": "This function converts a string or a number into an integer (a whole number).",
+                            "dos": [{ "title": "Convert Valid Strings", "code": "age_num = int(\"16\") # Good" }],
+                            "donts": [{ "title": "Convert Non-Numeric Strings", "code": "age_num = int(\"sixteen\") # BAD: ValueError!", "why": "`int()` can't understand words. It will crash if the string doesn't look like a whole number." }]
+                        },
+                        {
+                            "concept": "The `print()` function",
+                            "explanation": "This function displays information to the screen. Separate items with commas to print them on the same line with spaces in between.",
+                            "dos": [{ "title": "Mix Text and Variables", "code": "name = \"Amit\"\nprint(\"Hello,\", name)" }],
+                            "donts": [{ "title": "Forget Parentheses", "code": "print \"Hello\" # BAD: SyntaxError!", "why": "In Python 3 (which CBSE uses), `print` is a function and requires parentheses `()`." }]
+                        }
+                    ],
+                    "spot_the_mistake": [
+                        { "code": "name = input(\"Enter name: \")\nprint(\"Hello, name\")", "mistake": "The variable `name` was printed as a string literal because it was inside the quotes.", "fix": "print(\"Hello,\", name)" },
+                        { "code": "age = input(\"Enter age: \")\nprint(age - 5)", "mistake": "`age` is a string from `input()`. You cannot subtract a number from a string.", "fix": "age = int(input(\"Enter age: \"))\nprint(age - 5)" },
+                        { "code": "print('Hello World)", "mistake": "The string starts with a single quote but ends with no quote.", "fix": "print('Hello World')" },
+                        { "code": "my variable = 10", "mistake": "Variable names cannot contain spaces.", "fix": "my_variable = 10" },
+                        { "code": "age = 16\nprint(\"You are\" + age)", "mistake": "You cannot use `+` to concatenate a string and a number directly.", "fix": "print(\"You are\", age) or print(\"You are \" + str(age))" },
+                        { "code": "Print(\"Hello\")", "mistake": "Python is case-sensitive. The function is `print`, not `Print`.", "fix": "print(\"Hello\")" },
+                        { "code": "x = 10\ny = 20\nx = y", "mistake": "This code assigns the value of `y` to `x`. It does not check for equality.", "fix": "if x == y: print(\"Equal\")" },
+                        { "code": "num = int(input(\"Enter num: \"))", "mistake": "This code is correct, but will crash if the user enters text.", "fix": "Use try-except for robust input." },
+                        { "code": "x=10\ny=20\nprint(x,y)", "mistake": "Technically correct, but poor style. Use spaces around operators for readability.", "fix": "x = 10\ny = 20\nprint(x, y)" },
+                        { "code": "name = \"Amit\"\n# print(name)", "mistake": "The `#` symbol creates a comment. The line is ignored by Python and will not run.", "fix": "Remove the `#` to make the line executable." }
+                    ],
+                    "quiz": [
+                        { "q": "What data type does the `input()` function always return?", "options": ["Integer", "Float", "String", "Boolean"], "correct": 2, "feedback": "`input()` always returns a string, even if you type numbers." },
+                        { "q": "Which line of code will cause a `TypeError`?", "options": ["`print(\"Age: \" + \"16\")`", "`print(10 + 5)`", "`print(\"Age: \" + 16)`", "`print(10 - 5)`"], "correct": 2, "feedback": "You cannot concatenate a string and an integer with the `+` operator." },
+                        { "q": "What is the purpose of the `=` symbol in Python?", "options": ["To check for equality", "To assign a value to a variable", "To create a comment", "To end a statement"], "correct": 1, "feedback": "The single equals sign `=` is the assignment operator." },
+                        { "q": "Which of the following is a valid variable name?", "options": ["`2nd_name`", "`user name`", "`user_name`", "`for`"], "correct": 2, "feedback": "Variable names must start with a letter or underscore and cannot be keywords." },
+                        { "q": "What will `int(\"25.5\")` produce?", "options": ["`25`", "`25.5`", "A `ValueError`", "A `TypeError`"], "correct": 2, "feedback": "`int()` cannot convert a string containing a decimal point. You would need to use `float()` first." },
+                        { "q": "How do you print multiple items on the same line?", "options": ["Use multiple `print()` statements", "Separate items with a comma in one `print()`", "Use the `&` symbol", "It's not possible"], "correct": 1, "feedback": "Separating items with a comma in a `print()` statement is the standard way." },
+                        { "q": "Python is case-sensitive. True or False?", "options": ["True", "False"], "correct": 0, "feedback": "True. `myVar` and `myvar` are considered two different variables." },
+                        { "q": "What is the output of `print(\"Hello\" * 3)`?", "options": ["An error", "`Hello Hello Hello`", "`Hello3`", "`HelloHelloHello`"], "correct": 3, "feedback": "The `*` operator can be used to repeat a string." },
+                        { "q": "Which function converts a value to a string?", "options": ["`string()`", "`str()`", "`convert.string()`", "`text()`"], "correct": 1, "feedback": "The `str()` function is used for string conversion." },
+                        { "q": "A comment in Python starts with which symbol?", "options": ["`//`", "`/*`", "`--`", "`#`"], "correct": 3, "feedback": "The `#` symbol is used for single-line comments in Python." },
+                        { "q": "What is the primary role of a variable?", "options": ["To perform calculations", "To display output", "To store data in memory", "To define a function"], "correct": 2, "feedback": "Variables act as named containers for storing data." },
+                        { "q": "If `x = \"5\"`, what is the data type of `x`?", "options": ["`int`", "`str`", "`float`", "`char`"], "correct": 1, "feedback": "Anything inside quotes is a string (`str`)." }
+                    ],
+                    "faqs": [
+                        { "q": "What is a 'variable'?", "a": "A variable is like a labeled box where you can store information. The name of the box is the variable name (e.g., `name`), and the information inside is its value (e.g., `\"Amit\"`)." },
+                        { "q": "What is a 'string'?", "a": "A string is a sequence of characters, essentially just text. In Python, you create strings by putting quotes (`\"` or `'`) around the text." },
+                        { "q": "Why did the code crash when I typed 'sixteen' for my age?", "a": "The `int()` function can only convert strings that look like numbers (e.g., `\"16\"`). It doesn't know how to convert word-based numbers like `\"sixteen\"`, so it raises a `ValueError`." },
+                        { "q": "What's the difference between `int()` and `float()`?", "a": "`int()` converts a string to an integer (a whole number, like 16). `float()` converts a string to a floating-point number (a number with a decimal, like 16.0 or 16.5)." },
+                        { "q": "Can I combine the input and conversion in one line?", "a": "Yes, and it's very common! You can write `age = int(input(\"Enter your age: \"))`. This does the same thing but is more compact. We showed it in two steps to make the conversion process extra clear for this first lesson." },
+                        { "q": "Why do some people use single quotes (`'`) and others use double quotes (`\"`)?", "a": "In Python, they work exactly the same way for creating strings. The key is to be consistent. If your string contains a single quote (like `\"I'm learning\"`), it's easier to wrap it in double quotes, and vice-versa." },
+                        { "q": "What is an 'operator'?", "a": "An operator is a symbol that performs an operation on one or more values. Examples include arithmetic operators (`+`, `-`), assignment operators (`=`), and comparison operators (`==`, `>`)." },
+                        { "q": "What is a 'function'?", "a": "A function is a reusable block of code that performs a specific task. `print()` and `input()` are built-in functions. You call a function by using its name followed by parentheses `()`." },
+                        { "q": "What does 'syntax' mean?", "a": "Syntax refers to the rules that define the structure of a language. A `SyntaxError` means you've broken one of Python's grammatical rules, like forgetting a parenthesis." },
+                        { "q": "What is a 'prompt'?", "a": "A prompt is the text displayed by the `input()` function to tell the user what to enter. For example, in `input(\"Enter your name: \")`, the prompt is \"Enter your name: \"." },
+                        { "q": "How does the computer remember the value of a variable?", "a": "When you create a variable, Python allocates a small amount of the computer's memory (RAM) to store its value. The variable name acts as a pointer to that memory location." },
+                        { "q": "What is the difference between an 'integer' and a 'float'?", "a": "An integer (`int`) is a whole number without a decimal point (e.g., `10`, `-5`). A float (`float`) is a number that has a decimal point (e.g., `10.5`, `-5.0`)." },
+                        { "q": "Can I reuse a variable name?", "a": "Yes, you can. If you assign a new value to an existing variable, it will overwrite the old value. For example, `x = 10` followed by `x = 20` means `x` now holds the value `20`." },
+                        { "q": "What is 'concatenation'?", "a": "Concatenation is the process of joining strings together. The `+` operator does this. For example, `\"Hello\" + \" \" + \"World\"` results in `\"Hello World\"`." },
+                        { "q": "What is an 'argument' or 'parameter'?", "a": "An argument is a value that you pass into a function when you call it. For example, in `print(\"Hello\")`, the string `\"Hello\"` is the argument." },
+                        { "q": "Why is Python called a 'high-level' language?", "a": "It's called high-level because its syntax is closer to human language and abstracts away complex computer operations like memory management. This makes it easier to read and write than low-level languages like Assembly." },
+                        { "q": "What does it mean that Python is 'dynamically typed'?", "a": "It means you don't have to declare the data type of a variable. A variable's type is determined at runtime based on the value you assign to it. For example, `x = 10` makes `x` an integer, and later `x = \"hello\"` makes the same variable a string." },
+                        { "q": "What is a `ValueError`?", "a": "A `ValueError` occurs when a function receives an argument of the correct data type but an inappropriate value. For example, `int(\"abc\")` raises a `ValueError` because the `int` function can't convert that specific string." },
+                        { "q": "What is a `TypeError`?", "a": "A `TypeError` occurs when an operation is performed on an object of an inappropriate type. For example, `\"16\" - 5` raises a `TypeError` because the subtraction operator `-` is not supported between a string and an integer." },
+                        { "q": "What is a `SyntaxError`?", "a": "A `SyntaxError` occurs when the Python interpreter finds code that violates the language's rules. For example, `print(\"Hello\"` (missing a closing parenthesis) will cause a `SyntaxError`." },
+                        { "q": "How can I see the data type of a variable?", "a": "You can use the built-in `type()` function. For example, `x = 10; print(type(x))` will output `<class 'int'>`." },
+                        { "q": "What are 'keywords' in Python?", "a": "Keywords are reserved words that have special meaning in Python. You cannot use them as variable names. Examples include `if`, `for`, `while`, `def`, and `class`." },
+                        { "q": "What is the difference between `print(\"Hello\", \"World\")` and `print(\"Hello\" + \"World\")`?", "a": "The comma version `print(\"Hello\", \"World\")` will output `Hello World` (with a space). The plus version `print(\"Hello\" + \"World\")` will output `HelloWorld` (with no space)." },
+                        { "q": "Can I write multi-line strings?", "a": "Yes, by using triple quotes (`\"\"\"` or `'''`). For example: `my_string = \"\"\"This is a string that spans multiple lines.\"\"\"`." },
+                        { "q": "What is 'whitespace'?", "a": "Whitespace refers to any non-printing character, such as spaces, tabs, and newlines. In Python, whitespace at the beginning of a line (indentation) is very important for defining code blocks." }
+                    ],
+                    "glossary": [
+                        { "term": "Variable", "def": "A named location in memory used to store data." },
+                        { "term": "String", "def": "A data type representing a sequence of characters (text)." },
+                        { "term": "Integer", "def": "A data type representing a whole number." },
+                        { "term": "Float", "def": "A data type representing a number with a decimal point." },
+                        { "term": "Function", "def": "A reusable block of code that performs a specific action." },
+                        { "term": "Argument", "def": "A value passed to a function when it is called." },
+                        { "term": "Assignment", "def": "The act of placing a value into a variable using the `=` operator." },
+                        { "term": "Operator", "def": "A symbol that performs an operation (e.g., `+`, `-`, `=`)." },
+                        { "term": "Data Type", "def": "A category for values, which determines the operations that can be performed on them." },
+                        { "term": "Type Conversion", "def": "Changing a value from one data type to another (e.g., using `int()`)." },
+                        { "term": "Syntax", "def": "The set of rules that defines the structure of a programming language." },
+                        { "term": "Error", "def": "An issue in a program that prevents it from running correctly." },
+                        { "term": "Debugging", "def": "The process of finding and fixing errors in a program." },
+                        { "term": "Prompt", "def": "Text displayed to the user to request input." },
+                        { "term": "Concatenation", "def": "The operation of joining strings together." },
+                        { "term": "Keyword", "def": "A reserved word in Python that has a special meaning." },
+                        { "term": "Case-Sensitive", "def": "Distinguishing between uppercase and lowercase letters." },
+                        { "term": "Comment", "def": "Text in a program that is ignored by the interpreter, used for explanations." },
+                        { "term": "Literal", "def": "A fixed value in source code, like `\"Hello\"` or `16`." },
+                        { "term": "Expression", "def": "A combination of values, variables, and operators that evaluates to a single value." }
+                    ]
+                }
+            }
+        ];
+
+        // --- APPLICATION LOGIC ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentSample = samples[0];
+            if (currentSample) {
+                renderSample(currentSample);
+            }
+            setupTooltip();
+            setupTabs();
+        });
+
+        function renderSample(sample) {
+            document.getElementById('sample-title').textContent = `Sample 1: ${sample.title}`;
+            
+            const code = sample.code;
+            const lines = code.split('\n');
+            document.getElementById('code-display').innerHTML = lines.map((line, i) => `<span class="code-line" data-line="${i + 1}">${line}</span>`).join('\n');
+            document.getElementById('line-numbers').innerHTML = lines.map((_, i) => `<div>${i + 1}</div>`).join('');
+
+            const statusChip = document.getElementById('status-chip');
+            statusChip.textContent = sample.mode.charAt(0).toUpperCase() + sample.mode.slice(1);
+            statusChip.className = `status-chip ${sample.mode}`;
+            document.getElementById('output-display').textContent = sample.expected_output;
+
+            renderExplanationTabs(sample.explain);
+        }
+
+        function renderExplanationTabs(ex) {
+            const container = document.getElementById('explanation-display');
+            container.innerHTML = `
+                <div id="tab-concepts" class="tab-content active"></div>
+                <div id="tab-mistakes" class="tab-content"></div>
+                <div id="tab-quiz" class="tab-content"></div>
+                <div id="tab-faq" class="tab-content"></div>
+                <div id="tab-glossary" class="tab-content"></div>
+            `;
+
+            // Render Concepts Tab
+            let conceptsHtml = `<p>${ex.introduction}</p><h3>Concepts in this Sample</h3>`;
+            ex.concept_cards.forEach(card => {
+                conceptsHtml += `<div class="concept-card">
+                    <div class="concept-card-header"><h4>Concept: <code>${card.concept}</code></h4></div>
+                    <div class="concept-card-body">
+                        <p>${card.explanation}</p>
+                        <div class="comparison-grid">
+                            ${card.dos.map(item => `<div class="comparison-card correct"><h5>✅ Do: ${item.title}</h5><pre>${item.code}</pre></div>`).join('')}
+                            ${card.donts.map(item => `<div class="comparison-card incorrect"><h5>❌ Don't: ${item.title}</h5><pre>${item.code}</pre><div class="why-wrong"><strong>Why it's wrong:</strong> ${item.why}</div></div>`).join('')}
+                        </div>
+                    </div>
+                </div>`;
+            });
+            document.getElementById('tab-concepts').innerHTML = conceptsHtml;
+
+            // Render Spot the Mistake Tab
+            let mistakesHtml = `<h3>Spot the Mistake</h3><p>Each example below has one common error. Can you find it?</p>`;
+            ex.spot_the_mistake.forEach((item, index) => {
+                mistakesHtml += `<div class="mistake-item">
+                    <pre>${item.code}</pre>
+                    <button class="mistake-reveal-btn" data-mistake-id="${index}">Reveal Mistake</button>
+                    <div class="mistake-explanation" id="mistake-exp-${index}">
+                        <strong>Mistake:</strong> ${item.mistake}<br>
+                        <strong>Correct Code:</strong> <code>${item.fix}</code>
+                    </div>
+                </div>`;
+            });
+            document.getElementById('tab-mistakes').innerHTML = mistakesHtml;
+
+            // Render Quiz Tab
+            let quizHtml = `<h3>Mastery Quiz</h3>`;
+            ex.quiz.forEach((item, index) => {
+                quizHtml += `<div class="quiz-question" id="quiz-q-${index}">
+                    <p><strong>${index + 1}. ${item.q}</strong></p>
+                    ${item.options.map((opt, optIndex) => `
+                        <label class="quiz-option">
+                            <input type="radio" name="q${index}" value="${optIndex}"> ${opt}
+                        </label>
+                    `).join('')}
+                    <div class="quiz-feedback"></div>
+                </div>`;
+            });
+            document.getElementById('tab-quiz').innerHTML = quizHtml;
+
+            // Render FAQ Tab
+            let faqHtml = `<h3>Exhaustive FAQ</h3>`;
+            ex.faqs.forEach(item => {
+                faqHtml += `<div class="accordion-item">
+                    <button class="accordion-header"><span>${item.q}</span></button>
+                    <div class="accordion-content"><p>${item.a}</p></div>
+                </div>`;
+            });
+            document.getElementById('tab-faq').innerHTML = faqHtml;
+
+            // Render Glossary Tab
+            let glossaryHtml = `<h3>Glossary of Terms</h3>`;
+            ex.glossary.forEach(item => {
+                glossaryHtml += `<div class="accordion-item">
+                    <button class="accordion-header"><span>${item.term}</span></button>
+                    <div class="accordion-content"><p>${item.def}</p></div>
+                </div>`;
+            });
+            document.getElementById('tab-glossary').innerHTML = glossaryHtml;
+
+            // Add event listeners for dynamic content
+            addTabEventListeners();
+        }
+        
+        function addTabEventListeners() {
+            // Mistake reveal
+            document.querySelectorAll('.mistake-reveal-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const expId = `mistake-exp-${btn.dataset.mistakeId}`;
+                    const expDiv = document.getElementById(expId);
+                    expDiv.style.display = 'block';
+                    btn.style.display = 'none';
+                });
+            });
+
+            // Quiz logic
+            document.querySelectorAll('.quiz-question input[type="radio"]').forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    const questionDiv = e.target.closest('.quiz-question');
+                    const selectedIndex = parseInt(e.target.value);
+                    const questionIndex = parseInt(questionDiv.id.split('-')[2]);
+                    const feedbackDiv = questionDiv.querySelector('.quiz-feedback');
+                    const correctAnswer = samples[0].explain.quiz[questionIndex].correct;
+
+                    if (selectedIndex === correctAnswer) {
+                        feedbackDiv.className = 'quiz-feedback correct';
+                        feedbackDiv.innerHTML = `<strong>Correct!</strong> ${samples[0].explain.quiz[questionIndex].feedback}`;
+                    } else {
+                        feedbackDiv.className = 'quiz-feedback incorrect';
+                        feedbackDiv.innerHTML = `<strong>Not quite.</strong> ${samples[0].explain.quiz[questionIndex].feedback}`;
+                    }
+                    feedbackDiv.style.display = 'block';
+                });
+            });
+            
+            // Accordion (FAQ & Glossary)
+            document.querySelectorAll('.accordion-header').forEach(header => {
+                header.addEventListener('click', () => {
+                    const content = header.nextElementSibling;
+                    header.classList.toggle('active');
+                    content.style.display = content.style.display === 'block' ? 'none' : 'block';
+                });
+            });
+        }
+
+        function setupTooltip() {
+            const tooltip = document.getElementById('code-tooltip');
+            const codeContainer = document.getElementById('code-viewer');
+            
+            codeContainer.addEventListener('mouseover', (e) => {
+                if (e.target.classList.contains('code-line')) {
+                    const lineNum = e.target.dataset.line;
+                    const explanation = samples[0].explain.line_by_line[lineNum];
+                    if (explanation) {
+                        tooltip.innerHTML = explanation;
+                        tooltip.style.opacity = '1';
+                    }
+                }
+            });
+
+            codeContainer.addEventListener('mousemove', (e) => {
+                if (tooltip.style.opacity === '1') {
+                    const x = e.clientX;
+                    const y = e.clientY;
+                    const tooltipRect = tooltip.getBoundingClientRect();
+                    const viewportWidth = window.innerWidth;
+                    
+                    let left = x + 15;
+                    if (left + tooltipRect.width > viewportWidth - 10) {
+                        left = x - tooltipRect.width - 15;
+                    }
+                    tooltip.style.left = `${left}px`;
+                    tooltip.style.top = `${y + 15}px`;
+                }
+            });
+
+            codeContainer.addEventListener('mouseout', (e) => {
+                if (e.target.classList.contains('code-line')) {
+                    tooltip.style.opacity = '0';
+                }
+            });
+        }
+
+        function setupTabs() {
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+
+                    const tabId = `tab-${button.dataset.tab}`;
+                    tabContents.forEach(content => {
+                        content.classList.toggle('active', content.id === tabId);
+                    });
+                });
+            });
+        }
+    </script>
+
+</body>
+</ht

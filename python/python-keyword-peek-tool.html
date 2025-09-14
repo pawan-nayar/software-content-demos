@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Python Keyword Peek Tool: The Complete Guide</title>
+  <meta name="description" content="Master Python keywords and identifier naming rules with interactive visualization and real-time validation for Class 11 Computer Science students.">
+  <meta name="keywords" content="Python Keywords, Identifiers, Reserved Words, Python Programming, Class 11 Computer Science, CBSE, keyword module">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ================= Base / Theme (Compact Redesign) ================= */
+    :root {
+      --text:#212529; --bg:#fff; --muted:#f8f9fa; --border:#e9ecef;
+      --accent:#fd7e14; --accent-2:#e87312; --header-bg:#212529; --header-fg:#f8f9fa;
+      --ok:#16a34a; --ok-soft:#dcfce7; --bad:#dc2626; --bad-soft:#fee2e2;
+      --warning:#f59e0b; --warning-soft:#fef3c7;
+      --control:#6366f1; --boolean:#8b5cf6; --function:#10b981; --import:#ef4444; --exception:#f59e0b;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.6; font-size: 15px;}
+    .container{max-width:800px;margin:auto;padding:16px;background:#fff}
+    a{color:var(--accent);text-decoration:none}
+    a:hover{text-decoration:underline}
+
+    /* ================= Header / Footer / Breadcrumbs ================= */
+    .site-header,.site-footer{background:var(--header-bg);color:var(--header-fg);padding:12px 16px}
+    .site-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;position:sticky;top:0;z-index:60}
+    .logo{font-weight:700;font-size:1.1rem;color:#fff}
+    .site-header nav{display:flex;gap:12px; font-size: 0.9rem;}
+    .site-header nav a{color:#ced4da}
+    .site-header nav a:hover{color:#fff}
+    .site-footer{text-align:center;margin-top:40px;padding:30px}
+    .breadcrumbs{margin-bottom:16px;font-size:0.85rem;color:#6c757d}
+    .breadcrumbs a{color:var(--accent)}
+
+    /* ================= Typography & Layout (Compact) ================= */
+    h1{font-size:clamp(1.8rem,5vw,2.2rem);text-align:left;margin-bottom:6px;color:var(--text);line-height:1.2}
+    .byline{font-size:clamp(1rem,3vw,1.1rem);font-style:italic;color:#4a5568;margin-bottom:16px}
+    h2{font-size:clamp(1.4rem,4vw,1.7rem);color:var(--text);margin:40px 0 12px;border-bottom:2px solid var(--border);padding-bottom:6px}
+    h3{font-size:clamp(1.1rem,3vw,1.3rem);color:var(--text);margin-top:24px;margin-bottom:10px}
+    h4{font-size:clamp(1rem,2.5vw,1.1rem);font-weight:bold;color:var(--accent-2);margin-bottom:8px}
+    p{margin-bottom:12px;word-wrap:break-word}
+    ul{margin-left:20px;margin-bottom:16px;list-style-type:'🐍';padding-left:1em}
+    li{margin-bottom:10px;padding-left:0.5em}
+    .intro{font-size:1rem;line-height:1.7;background:var(--muted);padding:16px;border-radius:8px;border-left:4px solid var(--accent);margin:16px 0}
+    .img-frame{position:relative;width:100%;padding-top:50%;overflow:hidden;border-radius:8px;margin:16px 0;box-shadow:0 2px 10px rgba(0,0,0,0.1)}
+    .img-frame img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover}
+    .img-tooltip{position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,0.8);color:#fff;padding:6px 10px;border-radius:4px;font-size:0.8rem;opacity:0;visibility:hidden;transition:all 0.3s ease;pointer-events:none;z-index:10}
+    .img-frame:hover .img-tooltip{opacity:1;visibility:visible}
+    .btn{background:var(--accent);color:#fff;border:none;padding:8px 12px;border-radius:6px;font-weight:600;cursor:pointer; transition: background-color 0.2s ease; font-size:0.9rem;}
+    .btn:hover { background-color: var(--accent-2); }
+    .btn:disabled { background-color: #ced4da; cursor: not-allowed; }
+    
+    /* ================= Interactive & Structural Elements (Compact) ================= */
+    .interactive-box{background:#f8f9fa;border:1px solid var(--border);border-radius:8px;padding:16px;margin:16px 0}
+
+    /* --- Keyword Visualization Styles --- */
+    .keyword-explorer{display:flex;flex-direction:column;gap:16px;margin:24px 0}
+    .keyword-controls{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:20px}
+    .category-filter{background:var(--muted);border:2px solid var(--border);padding:8px 14px;border-radius:20px;cursor:pointer;font-weight:600;transition:all 0.3s ease;color:var(--text);font-size:0.85rem}
+    .category-filter:hover{border-color:var(--accent);background:#fff7ed}
+    .category-filter.active{background:var(--accent);color:#fff;border-color:var(--accent-2)}
+    .keyword-visualization{background:#fff;border:1px solid var(--border);border-radius:12px;padding:20px;min-height:400px;position:relative}
+    .keyword-svg{width:100%;height:380px;display:block;margin:auto}
+    .hotspot{cursor:pointer;outline:none}
+    .hotspot:focus .halo,.hotspot:hover .halo{stroke:var(--accent);stroke-width:2;fill:transparent}
+    .halo{stroke:transparent;stroke-width:2;fill:transparent}
+    .keyword-bubble{stroke:#fff;stroke-width:2;transition:all 0.2s ease}
+    .keyword-text{font-size:11px;fill:#fff;font-weight:600;text-anchor:middle;pointer-events:none}
+    .category-control{fill:var(--control)}
+    .category-boolean{fill:var(--boolean)}
+    .category-function{fill:var(--function)}
+    .category-import{fill:var(--import)}
+    .category-exception{fill:var(--exception)}
+    .category-other{fill:#6b7280}
+    .search-highlight{stroke:var(--accent);stroke-width:3;animation:pulse 1s infinite}
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+
+    /* --- Identifier Validator Styles --- */
+    .validator-section{background:#f8f9fa;border:1px solid var(--border);border-radius:12px;padding:20px;margin:24px 0}
+    .validator-input{display:flex;flex-direction:column;gap:12px;margin-bottom:20px}
+    .validator-input label{font-weight:600;color:var(--text)}
+    .validator-input input{
+      padding:12px 16px;border-radius:8px;border:2px solid var(--border);width:100%;font-size:1rem;
+      font-family:monospace;transition:all 0.3s ease;background:#fff
+    }
+    .validator-input input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 2px rgba(253, 126, 20, 0.1)}
+    .validator-input input.valid{border-color:var(--ok);background:var(--ok-soft)}
+    .validator-input input.invalid{border-color:var(--bad);background:var(--bad-soft)}
+    .validator-input input.warning{border-color:var(--warning);background:var(--warning-soft)}
+    .validation-result{padding:12px;border-radius:8px;margin-top:12px;font-weight:600;display:none}
+    .validation-result.valid{background:var(--ok-soft);color:var(--ok);border-left:4px solid var(--ok)}
+    .validation-result.invalid{background:var(--bad-soft);color:var(--bad);border-left:4px solid var(--bad)}
+    .validation-result.warning{background:var(--warning-soft);color:var(--warning);border-left:4px solid var(--warning)}
+    .suggestion-box{background:#fff;border:1px solid var(--border);border-radius:8px;padding:12px;margin-top:12px;display:none}
+    .suggestion-title{font-weight:600;margin-bottom:8px;color:var(--accent-2)}
+    .suggestion-list{display:flex;flex-wrap:wrap;gap:8px}
+    .suggestion-item{background:var(--accent);color:#fff;padding:4px 8px;border-radius:4px;font-size:0.85rem;cursor:pointer;transition:all 0.2s ease}
+    .suggestion-item:hover{background:var(--accent-2)}
+
+    /* Tooltip */
+    .tooltip{
+      position:fixed;
+      pointer-events:none; z-index:70;
+      background:#fff; color:#111; border:1px solid var(--border);
+      border-left:4px solid var(--accent); border-radius:8px; padding:12px 16px; max-width:320px;
+      box-shadow:0 8px 24px rgba(0,0,0,0.15); font-size:.9rem; line-height:1.5; display:none;
+    }
+    .tooltip-title{font-weight:600;color:var(--accent-2);margin-bottom:6px;font-size:1rem}
+    .tooltip-category{font-size:0.8rem;color:var(--accent);font-weight:600;margin-bottom:4px}
+    .tooltip-description{margin-bottom:8px}
+    .tooltip-example{background:#f0f9ff;padding:8px;border-radius:4px;margin-top:8px;border-left:3px solid var(--accent);font-family:monospace;font-size:0.85rem}
+
+    /* Mobile responsive tooltips */
+    @media (max-width:768px){
+      .tooltip{
+        position:fixed;
+        top:10px !important;
+        left:10px !important;
+        right:10px !important;
+        max-width:none;
+        width:auto;
+        transform:none;
+      }
+    }
+
+    /* === Quiz Styles === */
+    .quiz-container{padding:20px;border:2px solid var(--border);border-radius:12px;background:#fff}
+    .quiz-navigation{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border)}
+    .quiz-body{display:none;}
+    .quiz-body.active{display:block}
+    .quiz-options{display:grid; gap:12px;}
+    .quiz-option label{display:flex; align-items:center; gap:12px; padding:14px;border:2px solid var(--border);border-radius:8px;cursor:pointer;background:#f8f9fa}
+    .quiz-option input[type="radio"]{flex-shrink:0;}
+    .quiz-option .explanation{display:none;margin-top:10px;padding:15px;border-radius:6px;border-left:4px solid #a0aec0}
+    .quiz-option.selected.correct label{background:var(--ok-soft);border-color:var(--ok)}
+    .quiz-option.selected.wrong label{background:var(--bad-soft);border-color:var(--bad)}
+    .quiz-option.correct .explanation{border-left-color:var(--ok);background:#f0fff4}
+    .quiz-option.wrong .explanation{border-left-color:var(--bad);background:#fff5f5}
+
+    /* === FAQ Styles === */
+    .accordion{display:grid;gap:8px}
+    .accordion-header{width:100%;text-align:left;background:var(--muted);border:1px solid var(--border);padding:16px 20px;border-radius:8px;cursor:pointer;font-size:1.1rem;font-weight:bold;display:flex;align-items:center}
+    .accordion-header .accordion-title { margin-right: auto; padding-right: 1rem; }
+    .accordion-header::after{content:'+';color:#6c757d}
+    .accordion-header[aria-expanded="true"]{background:#e9ecef;border-bottom-left-radius:0;border-bottom-right-radius:0}
+    .accordion-header[aria-expanded="true"]::after{content:'−'}
+    .accordion-content{padding:20px;display:none;border:1px solid var(--border);border-top:none;border-radius:0 0 8px 8px}
+
+    /* === Glossary Styles === */
+    .glossary-cloud{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px;justify-content:center}
+    .glossary-chip{position:relative;display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:999px;background:#fff7ed;border:1px solid #ffd8a8;color:#d9480f;font-weight:600;cursor:help;box-shadow:0 2px 6px rgba(253,126,20,.12);transition:all 0.2s ease}
+    .glossary-chip:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(253,126,20,.2)}
+    .glossary-chip:focus{outline:3px solid rgba(253,126,20,.35)}
+    .chip-tip{position:fixed;z-index:80;min-width:240px;max-width:min(92vw,420px);background:var(--accent);color:#fff;padding:12px 14px;border-radius:12px;box-shadow:0 12px 28px rgba(253,126,20,.35);opacity:0;visibility:hidden;transition:.15s;line-height:1.45}
+    .chip-tip.show{opacity:1;visibility:visible}
+    .chip-tip .arrow{position:absolute;width:12px;height:12px;background:var(--accent);transform:rotate(45deg)}
+    .glossary-hint{text-align:center;margin-top:12px;padding:8px;background:var(--muted);border-radius:6px;font-size:0.9rem;color:#6c757d;border-top:2px solid var(--accent)}
+
+    /* Legend */
+    .keyword-legend{
+      display:flex;
+      flex-wrap:wrap;
+      gap:16px;
+      margin:16px 0;
+      padding:12px;
+      background:var(--muted);
+      border-radius:8px;
+      font-size:0.9rem;
+    }
+    .legend-item{
+      display:flex;
+      align-items:center;
+      gap:6px;
+    }
+    .legend-color{
+      width:16px;
+      height:16px;
+      border-radius:50%;
+      border:2px solid #fff;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+      <a href="#" class="logo">Beyond Dictionary</a>
+      <nav><a href="#">What's New</a><a href="#">Learning</a><a href="#">Games & Quizzes</a><a href="#">Blog</a></nav>
+  </header>
+
+  <div class="container">
+    
+    <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="#">CBSE</a> &gt; <a href="#">Class 11</a> &gt; <a href="#">Computer Science</a> &gt; Python Keywords & Identifiers</nav>
+
+    <h1>Python Keyword Peek Tool</h1>
+    <p class="byline">Master Reserved Words and Identifier Rules with Interactive Validation</p>
+    <div class="article-meta"><span class="author-emoji">🐍</span><span>Python Expert &nbsp; | &nbsp; Updated for CBSE 2025-26 Curriculum</span></div>
+    <p class="intro">In Python programming, keywords are reserved words that have special meanings and cannot be used as identifiers (variable names, function names, etc.). Understanding these keywords and proper identifier naming rules is crucial for writing correct Python code. This interactive tool helps you explore all Python keywords visually, understand their categories and purposes, and validate identifier names in real-time. Master the keyword module concepts and avoid common naming mistakes that can cause syntax errors or unexpected behavior in your programs.</p>
+    
+    <div class="img-frame">
+        <img src="https://images.unsplash.com/photo-1526379095098-d400fd0bf935?q=80&w=2064&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Python code on screen showing keywords and syntax highlighting" onerror="this.onerror=null;this.src='https://placehold.co/1470x735/000000/FFFFFF?text=Python+Keywords';">
+        <div class="img-tooltip">Source = Unsplash</div>
+    </div>
+
+    <!-- Keyword Category Legend -->
+    <div class="keyword-legend">
+      <div class="legend-item">
+        <div class="legend-color" style="background-color:var(--control)"></div>
+        <span>Control Flow</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background-color:var(--boolean)"></div>
+        <span>Boolean/None</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background-color:var(--function)"></div>
+        <span>Functions/Classes</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background-color:var(--import)"></div>
+        <span>Import/Module</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background-color:var(--exception)"></div>
+        <span>Exception Handling</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background-color:#6b7280"></div>
+        <span>Other</span>
+      </div>
+    </div>
+    
+    <section id="keyword-explorer">
+        <h2>Interactive Python Keywords Explorer</h2>
+        <p>Explore Python's 35 reserved keywords organized by category. Click category filters to focus on specific types, or hover over any keyword to learn about its purpose and see usage examples.</p>
+        
+        <div class="keyword-explorer">
+            <div class="keyword-controls">
+                <button class="category-filter active" data-category="all">All Keywords</button>
+                <button class="category-filter" data-category="control">Control Flow</button>
+                <button class="category-filter" data-category="boolean">Boolean/None</button>
+                <button class="category-filter" data-category="function">Functions/Classes</button>
+                <button class="category-filter" data-category="import">Import/Module</button>
+                <button class="category-filter" data-category="exception">Exception Handling</button>
+                <button class="category-filter" data-category="other">Other</button>
+            </div>
+            
+            <div class="keyword-visualization">
+                <svg class="keyword-svg" viewBox="0 0 800 360" role="img" aria-labelledby="keyword-title keyword-desc">
+                    <title id="keyword-title">Python Keywords Visualization</title>
+                    <desc id="keyword-desc">Interactive display of Python reserved keywords organized by category</desc>
+                    <g id="keyword-content">
+                        <!-- Content will be dynamically generated -->
+                    </g>
+                </svg>
+            </div>
+        </div>
+    </section>
+
+    <section id="identifier-validator">
+        <h2>Real-Time Identifier Validator</h2>
+        <p>Test your understanding by entering potential variable names, function names, or class names. The validator will check against Python keywords and naming rules, providing instant feedback and suggestions.</p>
+        
+        <div class="validator-section">
+            <div class="validator-input">
+                <label for="identifier-input">Enter an identifier to validate:</label>
+                <input type="text" id="identifier-input" placeholder="e.g., my_variable, class, user_name, 2invalid" autocomplete="off">
+            </div>
+            
+            <div class="validation-result" id="validation-result"></div>
+            
+            <div class="suggestion-box" id="suggestion-box">
+                <div class="suggestion-title">💡 Suggested alternatives:</div>
+                <div class="suggestion-list" id="suggestion-list"></div>
+            </div>
+            
+            <div class="interactive-box">
+                <h4>Identifier Naming Rules</h4>
+                <ul>
+                    <li><strong>Must start with:</strong> Letter (a-z, A-Z) or underscore (_)</li>
+                    <li><strong>Can contain:</strong> Letters, digits (0-9), and underscores</li>
+                    <li><strong>Cannot be:</strong> Python keywords or built-in function names</li>
+                    <li><strong>Case sensitive:</strong> 'Variable' and 'variable' are different</li>
+                    <li><strong>Best practices:</strong> Use descriptive names, snake_case for variables, PascalCase for classes</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section id="keyword-categories">
+        <h2>Python Keyword Categories</h2>
+        <p>Understanding the purpose and context of each keyword category helps in writing better Python code and avoiding naming conflicts.</p>
+        
+        <h3>Control Flow Keywords</h3>
+        <div class="interactive-box">
+            <p><strong>Purpose:</strong> Control the execution flow of your program</p>
+            <p><strong>Keywords:</strong> <code>if</code>, <code>elif</code>, <code>else</code>, <code>for</code>, <code>while</code>, <code>break</code>, <code>continue</code>, <code>pass</code></p>
+            <p><strong>Usage:</strong> These keywords create conditional statements, loops, and control execution paths in your programs.</p>
+        </div>
+
+        <h3>Function and Class Keywords</h3>
+        <div class="interactive-box">
+            <p><strong>Purpose:</strong> Define functions, classes, and manage scope</p>
+            <p><strong>Keywords:</strong> <code>def</code>, <code>class</code>, <code>return</code>, <code>yield</code>, <code>lambda</code>, <code>global</code>, <code>nonlocal</code></p>
+            <p><strong>Usage:</strong> Essential for creating reusable code blocks, object-oriented programming, and managing variable scope.</p>
+        </div>
+
+        <h3>Exception Handling Keywords</h3>
+        <div class="interactive-box">
+            <p><strong>Purpose:</strong> Handle errors and exceptions gracefully</p>
+            <p><strong>Keywords:</strong> <code>try</code>, <code>except</code>, <code>finally</code>, <code>raise</code>, <code>assert</code></p>
+            <p><strong>Usage:</strong> Implement robust error handling to prevent program crashes and provide meaningful error messages.</p>
+        </div>
+    </section>
+
+    <section id="quiz-main">
+        <h2>Test Your Knowledge: Python Keywords Quiz</h2>
+        <div class="quiz-container">
+            <div class="quiz-navigation">
+                <button class="btn" id="mainPrevBtn">←</button>
+                <span class="question-counter"><span id="mainCurrentQ">1</span> of <span id="mainTotalQ">8</span></span>
+                <button class="btn" id="mainNextBtn">→</button>
+            </div>
+            <div id="quiz-body-container"></div>
+        </div>
+    </section>
+
+    <section id="faq">
+        <h2>Frequently Asked Questions</h2>
+        <div id="faq-accordion-container"></div>
+    </section>
+
+    <section id="keywords-section">
+        <h2>Master These Python Terms</h2>
+        <div class="glossary-cloud" id="glossaryCloud"></div>
+        <div class="glossary-hint">💡 Hover over any term to see its definition</div>
+    </section>
+
+  </div>
+
+  <footer class="site-footer">
+    <p class="footer-copy">© 2025 Beyond Dictionary. All Rights Reserved.</p>
+  </footer>
+
+  <div id="tooltip" class="tooltip" role="status" aria-live="polite"></div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // --- PYTHON KEYWORDS DATA ---
+      const pythonKeywords = {
+        control: [
+          { word: 'if', description: 'Conditional statement for decision making', example: 'if age >= 18:\n    print("Adult")' },
+          { word: 'elif', description: 'Else-if condition for multiple choices', example: 'elif age >= 13:\n    print("Teen")' },
+          { word: 'else', description: 'Default condition when others fail', example: 'else:\n    print("Child")' },
+          { word: 'for', description: 'Loop for iterating over sequences', example: 'for i in range(5):\n    print(i)' },
+          { word: 'while', description: 'Loop that continues while condition is true', example: 'while x < 10:\n    x += 1' },
+          { word: 'break', description: 'Exit from loop immediately', example: 'for i in range(10):\n    if i == 5:\n        break' },
+          { word: 'continue', description: 'Skip current iteration, continue loop', example: 'for i in range(5):\n    if i == 2:\n        continue\n    print(i)' },
+          { word: 'pass', description: 'Empty placeholder statement', example: 'if True:\n    pass  # TODO: implement' }
+        ],
+        boolean: [
+          { word: 'True', description: 'Boolean constant representing truth', example: 'is_valid = True\nif is_valid:' },
+          { word: 'False', description: 'Boolean constant representing falsehood', example: 'is_empty = False\nif not is_empty:' },
+          { word: 'None', description: 'Represents absence of value or null', example: 'result = None\nif result is None:' }
+        ],
+        function: [
+          { word: 'def', description: 'Define a function', example: 'def greet(name):\n    return f"Hello, {name}"' },
+          { word: 'return', description: 'Return value from function', example: 'def add(a, b):\n    return a + b' },
+          { word: 'yield', description: 'Generate values in generator function', example: 'def count():\n    yield 1\n    yield 2' },
+          { word: 'lambda', description: 'Create anonymous function', example: 'square = lambda x: x**2' },
+          { word: 'class', description: 'Define a class', example: 'class Person:\n    def __init__(self, name):\n        self.name = name' },
+          { word: 'global', description: 'Declare global variable', example: 'count = 0\ndef increment():\n    global count\n    count += 1' },
+          { word: 'nonlocal', description: 'Declare nonlocal variable', example: 'def outer():\n    x = 1\n    def inner():\n        nonlocal x\n        x += 1' }
+        ],
+        import: [
+          { word: 'import', description: 'Import modules or packages', example: 'import math\nprint(math.pi)' },
+          { word: 'from', description: 'Import specific items from module', example: 'from math import pi, sqrt' },
+          { word: 'as', description: 'Alias for imported module/item', example: 'import numpy as np\nfrom math import pi as PI' }
+        ],
+        exception: [
+          { word: 'try', description: 'Begin exception handling block', example: 'try:\n    result = 10/0\nexcept:' },
+          { word: 'except', description: 'Handle specific exceptions', example: 'except ZeroDivisionError:\n    print("Cannot divide by zero")' },
+          { word: 'finally', description: 'Code that always executes', example: 'finally:\n    print("Cleanup done")' },
+          { word: 'raise', description: 'Manually raise an exception', example: 'if age < 0:\n    raise ValueError("Age cannot be negative")' },
+          { word: 'assert', description: 'Test condition, raise AssertionError if false', example: 'assert age >= 0, "Age must be positive"' }
+        ],
+        other: [
+          { word: 'and', description: 'Logical AND operator', example: 'if age >= 18 and has_license:\n    print("Can drive")' },
+          { word: 'or', description: 'Logical OR operator', example: 'if day == "Saturday" or day == "Sunday":\n    print("Weekend")' },
+          { word: 'not', description: 'Logical NOT operator', example: 'if not is_empty:\n    process_data()' },
+          { word: 'in', description: 'Membership test operator', example: 'if "python" in languages:\n    print("Found")' },
+          { word: 'is', description: 'Identity comparison operator', example: 'if value is None:\n    return default' },
+          { word: 'with', description: 'Context manager for resource handling', example: 'with open("file.txt") as f:\n    content = f.read()' },
+          { word: 'del', description: 'Delete objects or items', example: 'del my_list[0]\ndel variable' },
+          { word: 'async', description: 'Define asynchronous function', example: 'async def fetch_data():\n    await api_call()' },
+          { word: 'await', description: 'Wait for asynchronous operation', example: 'result = await fetch_data()' }
+        ]
+      };
+
+      // Flatten all keywords for easy access
+      const allKeywords = [];
+      Object.keys(pythonKeywords).forEach(category => {
+        pythonKeywords[category].forEach(keyword => {
+          allKeywords.push({...keyword, category});
+        });
+      });
+
+      const quizQuestions = [
+        { q: "Which of the following is NOT a Python keyword?", correct: 3, options: [
+          { text: "def", explanation: "Incorrect. 'def' is a Python keyword used to define functions." },
+          { text: "class", explanation: "Incorrect. 'class' is a Python keyword used to define classes." },
+          { text: "import", explanation: "Incorrect. 'import' is a Python keyword used to import modules." },
+          { text: "variable", explanation: "✅ Correct! 'variable' is not a Python keyword. It can be used as an identifier." }
+        ]},
+        { q: "What happens if you try to use a Python keyword as a variable name?", correct: 1, options: [
+          { text: "The program runs normally", explanation: "Incorrect. Using keywords as variable names causes syntax errors." },
+          { text: "You get a SyntaxError", explanation: "✅ Correct! Python keywords cannot be used as identifiers and will cause a SyntaxError." },
+          { text: "The keyword loses its special meaning", explanation: "Incorrect. Keywords always retain their special meaning and cannot be redefined." },
+          { text: "Only a warning is displayed", explanation: "Incorrect. It's a syntax error, not just a warning." }
+        ]},
+        { q: "Which keyword is used to create a generator function?", correct: 2, options: [
+          { text: "return", explanation: "Incorrect. 'return' ends function execution and returns a value." },
+          { text: "def", explanation: "Incorrect. 'def' defines a function, but 'yield' makes it a generator." },
+          { text: "yield", explanation: "✅ Correct! 'yield' creates generator functions that can pause and resume execution." },
+          { text: "generate", explanation: "Incorrect. 'generate' is not a Python keyword." }
+        ]},
+        { q: "Which identifier naming rule is CORRECT?", correct: 0, options: [
+          { text: "Identifiers can start with a letter or underscore", explanation: "✅ Correct! Valid identifiers must start with a letter (a-z, A-Z) or underscore (_)." },
+          { text: "Identifiers can start with a number", explanation: "Incorrect. Identifiers cannot start with digits." },
+          { text: "Identifiers can contain spaces", explanation: "Incorrect. Spaces are not allowed in identifiers." },
+          { text: "Identifiers are not case-sensitive", explanation: "Incorrect. Python identifiers are case-sensitive." }
+        ]},
+        { q: "What is the purpose of the 'pass' keyword?", correct: 1, options: [
+          { text: "To skip the current iteration in a loop", explanation: "Incorrect. That's what 'continue' does." },
+          { text: "To serve as a placeholder for empty code blocks", explanation: "✅ Correct! 'pass' is a null operation used as a placeholder when syntax requires a statement." },
+          { text: "To exit from a function", explanation: "Incorrect. That's what 'return' does." },
+          { text: "To exit from a loop", explanation: "Incorrect. That's what 'break' does." }
+        ]},
+        { q: "Which keywords are used for exception handling?", correct: 3, options: [
+          { text: "if, elif, else", explanation: "Incorrect. These are conditional keywords, not for exception handling." },
+          { text: "for, while, break", explanation: "Incorrect. These are loop control keywords." },
+          { text: "def, class, return", explanation: "Incorrect. These are function and class definition keywords." },
+          { text: "try, except, finally", explanation: "✅ Correct! These keywords form Python's exception handling mechanism." }
+        ]},
+        { q: "What does the 'global' keyword do?", correct: 2, options: [
+          { text: "Creates a new global variable", explanation: "Incorrect. 'global' doesn't create variables, it declares access to existing ones." },
+          { text: "Deletes a global variable", explanation: "Incorrect. 'global' doesn't delete variables." },
+          { text: "Allows modification of a global variable inside a function", explanation: "✅ Correct! 'global' declares that a variable refers to the global scope, allowing modification." },
+          { text: "Makes a local variable accessible globally", explanation: "Incorrect. It declares access to existing global variables." }
+        ]},
+        { q: "Which of these is a valid Python identifier?", correct: 1, options: [
+          { text: "2variable", explanation: "Incorrect. Identifiers cannot start with a digit." },
+          { text: "_private_var", explanation: "✅ Correct! Identifiers can start with underscore and contain letters and underscores." },
+          { text: "my-variable", explanation: "Incorrect. Hyphens are not allowed in identifiers." },
+          { text: "class", explanation: "Incorrect. 'class' is a reserved keyword and cannot be used as an identifier." }
+        ]}
+      ];
+
+      const faqs = [
+        { q: "How can I check if a word is a Python keyword programmatically?", a: "You can use Python's <code>keyword</code> module: <br><code>import keyword<br>print(keyword.iskeyword('if'))  # True<br>print(keyword.kwlist)  # List all keywords</code><br>This is useful for validating user input or building code analysis tools." },
+        { q: "Why can't I use keywords as variable names?", a: "Keywords have special meanings in Python syntax and are reserved by the language. Using them as identifiers would create ambiguity - the interpreter wouldn't know if you mean the keyword or your variable. For example, if 'if' could be a variable name, <code>if = 5</code> would conflict with <code>if condition:</code> statements." },
+        { q: "What's the difference between keywords and built-in functions?", a: "<strong>Keywords</strong> are part of Python's syntax and cannot be redefined (like <code>if</code>, <code>for</code>, <code>def</code>). <strong>Built-in functions</strong> like <code>print()</code>, <code>len()</code>, <code>max()</code> can technically be redefined (though it's not recommended). Keywords cause SyntaxError if used as identifiers, built-ins just get shadowed." },
+        { q: "Are there different types of keywords in Python?", a: "Yes! Keywords can be categorized by purpose: <strong>Control flow</strong> (if, for, while), <strong>Function/Class</strong> (def, class, return), <strong>Exception handling</strong> (try, except, finally), <strong>Boolean/Logic</strong> (True, False, and, or, not), <strong>Import</strong> (import, from, as), and <strong>Others</strong> (with, del, async, await)." },
+        { q: "What are soft keywords in Python?", a: "Starting from Python 3.9, Python introduced 'soft keywords' like <code>match</code> and <code>case</code> (for pattern matching). These are contextual - they act as keywords only in specific contexts but can still be used as identifiers elsewhere. This maintains backward compatibility while adding new language features." },
+        { q: "How should I name my variables to avoid conflicts?", a: "Follow these best practices: <strong>1. Use descriptive names</strong> (user_age vs a), <strong>2. Follow conventions</strong> (snake_case for variables, PascalCase for classes), <strong>3. Avoid built-in names</strong> (don't use list, dict, str), <strong>4. Use prefixes/suffixes</strong> (my_list instead of list), <strong>5. Check against keyword list</strong> before finalizing names." },
+        { q: "Can keywords change between Python versions?", a: "Yes, but rarely. New keywords are added occasionally (like <code>async</code>/<code>await</code> in Python 3.5, <code>match</code>/<code>case</code> in Python 3.10). Python developers are very careful about this to maintain backward compatibility. Always check the keyword list for your Python version using <code>keyword.kwlist</code>." },
+        { q: "What's the difference between 'is' and '==' operators?", a: "<code>is</code> checks if two variables refer to the same object in memory (identity), while <code>==</code> checks if their values are equal (equality). Example: <code>a = [1,2]; b = [1,2]; a == b</code> is True, but <code>a is b</code> is False. Use <code>is</code> primarily with None: <code>if value is None:</code>" },
+        { q: "When should I use 'global' vs 'nonlocal' keywords?", a: "<code>global</code> refers to module-level variables, while <code>nonlocal</code> refers to variables in enclosing function scope. Use <code>global</code> to modify module variables inside functions. Use <code>nonlocal</code> in nested functions to modify variables from the outer function. Both should be used sparingly as they can make code harder to understand." },
+        { q: "How do async/await keywords work?", a: "<code>async def</code> creates coroutine functions for asynchronous programming. <code>await</code> pauses execution until an awaitable completes. Example: <code>async def fetch(): data = await api_call(); return data</code>. These enable concurrent programming for I/O-bound tasks, improving performance by not blocking on slow operations like network requests." }
+      ];
+
+      const keywords = [
+        { term: "Keyword", emoji: "🔑", def: "Reserved words in Python that have special meanings and cannot be used as identifiers." },
+        { term: "Identifier", emoji: "🏷️", def: "Names used to identify variables, functions, classes, modules, or other objects in Python." },
+        { term: "Reserved Word", emoji: "🚫", def: "Words that are set aside by the programming language and cannot be used for naming variables or functions." },
+        { term: "Snake Case", emoji: "🐍", def: "Naming convention using lowercase letters with underscores (e.g., my_variable_name)." },
+        { term: "PascalCase", emoji: "📝", def: "Naming convention where each word starts with a capital letter (e.g., MyClassName)." },
+        { term: "Syntax Error", emoji: "❌", def: "Error that occurs when Python code doesn't follow the correct syntax rules." },
+        { term: "Global Scope", emoji: "🌍", def: "The outermost scope in a Python program where variables are accessible from anywhere." },
+        { term: "Local Scope", emoji: "🏠", def: "Variables defined inside a function that are only accessible within that function." },
+        { term: "Built-in Function", emoji: "🔧", def: "Pre-defined functions provided by Python (like print, len, max) that are always available." },
+        { term: "Generator", emoji: "⚡", def: "Special function that uses yield to produce a sequence of values lazily." },
+        { term: "Context Manager", emoji: "🎭", def: "Object that defines methods for use with the 'with' statement for resource management." },
+        { term: "Exception", emoji: "💥", def: "Error that occurs during program execution that can be caught and handled." },
+        { term: "Boolean", emoji: "⚡", def: "Data type that represents True or False values in Python." },
+        { term: "None Type", emoji: "⭕", def: "Special data type representing the absence of a value or null in Python." },
+        { term: "Lambda Function", emoji: "λ", def: "Anonymous function defined using the lambda keyword for simple operations." },
+        { term: "Coroutine", emoji: "🔄", def: "Function defined with async def that can be paused and resumed for asynchronous programming." },
+        { term: "Soft Keyword", emoji: "🔀", def: "Words that act as keywords only in specific contexts (like match, case in pattern matching)." },
+        { term: "Hard Keyword", emoji: "🔒", def: "Traditional keywords that are always reserved and cannot be used as identifiers anywhere." },
+        { term: "Variable", emoji: "📦", def: "Named storage location that holds data values that can change during program execution." },
+        { term: "Constant", emoji: "🎯", def: "Value that doesn't change during program execution (by convention, named in ALL_CAPS)." }
+      ];
+
+      // --- TOOLTIP FUNCTIONALITY ---
+      const tip = document.getElementById('tooltip');
+      let currentTooltipTimeout;
+      
+      const showTip = (content, x, y, isMobile = false) => {
+        clearTimeout(currentTooltipTimeout);
+        
+        tip.innerHTML = content;
+        tip.style.display = 'block';
+        
+        // Mobile-first positioning
+        if (window.innerWidth <= 768 || isMobile) {
+          tip.style.position = 'fixed';
+          tip.style.top = '10px';
+          tip.style.left = '10px';
+          tip.style.right = '10px';
+          tip.style.width = 'auto';
+          tip.style.maxWidth = 'none';
+          return;
+        }
+        
+        // Desktop positioning
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+        const tipWidth = 320;
+        const tipHeight = 200;
+        
+        let left = x + 15;
+        let top = y - 60;
+        
+        if (left + tipWidth > viewportWidth - 20) {
+          left = x - tipWidth - 15;
+        }
+        if (left < 10) {
+          left = 10;
+        }
+        
+        if (top < 10) {
+          top = y + 15;
+        }
+        if (top + tipHeight > viewportHeight - 20) {
+          top = viewportHeight - tipHeight - 20;
+        }
+        
+        tip.style.left = left + 'px';
+        tip.style.top = top + 'px';
+      };
+      
+      const hideTip = () => { 
+        clearTimeout(currentTooltipTimeout);
+        currentTooltipTimeout = setTimeout(() => {
+          tip.style.display = 'none';
+        }, 100);
+      };
+
+      // --- KEYWORD VISUALIZATION ---
+      function renderKeywords(filterCategory = 'all') {
+        const container = document.getElementById('keyword-content');
+        container.innerHTML = '';
+        
+        // Filter keywords based on category
+        let keywordsToShow = allKeywords;
+        if (filterCategory !== 'all') {
+          keywordsToShow = allKeywords.filter(k => k.category === filterCategory);
+        }
+        
+        // Create bubbles for keywords
+        const bubblePositions = generateBubblePositions(keywordsToShow.length);
+        
+        keywordsToShow.forEach((keyword, index) => {
+          const position = bubblePositions[index];
+          const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
+          group.setAttribute("class", "hotspot");
+          group.setAttribute("tabindex", "0");
+          
+          // Create bubble
+          const bubble = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+          bubble.setAttribute("cx", position.x);
+          bubble.setAttribute("cy", position.y);
+          bubble.setAttribute("r", position.r);
+          bubble.setAttribute("class", `keyword-bubble category-${keyword.category}`);
+          
+          // Create halo for hover effect
+          const halo = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+          halo.setAttribute("cx", position.x);
+          halo.setAttribute("cy", position.y);
+          halo.setAttribute("r", position.r + 2);
+          halo.setAttribute("class", "halo");
+          
+          // Create text
+          const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+          text.setAttribute("x", position.x);
+          text.setAttribute("y", position.y + 4);
+          text.setAttribute("class", "keyword-text");
+          text.textContent = keyword.word;
+          
+          group.appendChild(halo);
+          group.appendChild(bubble);
+          group.appendChild(text);
+          container.appendChild(group);
+          
+          // Add tooltip events
+          addKeywordTooltipEvents(group, keyword);
+        });
+      }
+      
+      function generateBubblePositions(count) {
+        const positions = [];
+        const viewBox = { width: 800, height: 360 };
+        const margin = 40;
+        
+        for (let i = 0; i < count; i++) {
+          const angle = (i * 2.4) % (Math.PI * 2);
+          const radius = 80 + (i % 3) * 60;
+          const centerX = viewBox.width / 2 + Math.cos(angle) * radius;
+          const centerY = viewBox.height / 2 + Math.sin(angle) * radius;
+          
+          // Ensure bubbles stay within bounds
+          const x = Math.max(margin, Math.min(viewBox.width - margin, centerX));
+          const y = Math.max(margin, Math.min(viewBox.height - margin, centerY));
+          
+          // Bubble size based on word length
+          const r = Math.max(20, Math.min(35, 15 + count * 0.5));
+          
+          positions.push({ x, y, r });
+        }
+        
+        return positions;
+      }
+      
+      function addKeywordTooltipEvents(element, keyword) {
+        const tooltipContent = `
+          <div class="tooltip-title">${keyword.word}</div>
+          <div class="tooltip-category">${keyword.category.toUpperCase()} KEYWORD</div>
+          <div class="tooltip-description">${keyword.description}</div>
+          <div class="tooltip-example">${keyword.example}</div>
+        `;
+        
+        // Mouse events
+        element.addEventListener('mouseenter', e => {
+          clearTimeout(currentTooltipTimeout);
+          showTip(tooltipContent, e.clientX, e.clientY);
+        });
+        element.addEventListener('mousemove', e => {
+          if (tip.style.display === 'block' && window.innerWidth > 768) {
+            showTip(tooltipContent, e.clientX, e.clientY);
+          }
+        });
+        element.addEventListener('mouseleave', hideTip);
+        
+        // Touch events for mobile
+        element.addEventListener('touchstart', e => {
+          e.preventDefault();
+          const touch = e.touches[0];
+          showTip(tooltipContent, touch.clientX, touch.clientY, true);
+        });
+        element.addEventListener('touchend', e => {
+          setTimeout(hideTip, 3000);
+        });
+        
+        // Click events
+        element.addEventListener('click', e => {
+          e.preventDefault();
+          showTip(tooltipContent, e.clientX, e.clientY, window.innerWidth <= 768);
+          setTimeout(hideTip, 5000);
+        });
+        
+        // Keyboard events
+        element.addEventListener('focus', e => {
+          const rect = e.target.getBoundingClientRect();
+          showTip(tooltipContent, rect.left + rect.width/2, rect.top);
+        });
+        element.addEventListener('blur', hideTip);
+      }
+
+      // --- IDENTIFIER VALIDATOR ---
+      function setupIdentifierValidator() {
+        const input = document.getElementById('identifier-input');
+        const result = document.getElementById('validation-result');
+        const suggestionBox = document.getElementById('suggestion-box');
+        const suggestionList = document.getElementById('suggestion-list');
+        
+        input.addEventListener('input', (e) => {
+          const identifier = e.target.value.trim();
+          
+          if (identifier === '') {
+            hideValidationResult();
+            return;
+          }
+          
+          const validation = validateIdentifier(identifier);
+          showValidationResult(validation, identifier);
+        });
+        
+        function validateIdentifier(identifier) {
+          // Check if it's a Python keyword
+          const keywordMatch = allKeywords.find(k => k.word === identifier);
+          if (keywordMatch) {
+            return {
+              status: 'invalid',
+              message: `'${identifier}' is a Python keyword and cannot be used as an identifier.`,
+              suggestions: generateSuggestions(identifier),
+              details: `This is a ${keywordMatch.category} keyword: ${keywordMatch.description}`
+            };
+          }
+          
+          // Check naming rules
+          if (!/^[a-zA-Z_]/.test(identifier)) {
+            return {
+              status: 'invalid',
+              message: 'Identifiers must start with a letter (a-z, A-Z) or underscore (_).',
+              suggestions: generateSuggestions(identifier)
+            };
+          }
+          
+          if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(identifier)) {
+            return {
+              status: 'invalid',
+              message: 'Identifiers can only contain letters, digits, and underscores.',
+              suggestions: generateSuggestions(identifier)
+            };
+          }
+          
+          // Check for built-in function names (warning)
+          const builtins = ['print', 'input', 'len', 'str', 'int', 'float', 'list', 'dict', 'set', 'tuple', 'range', 'max', 'min', 'sum', 'abs', 'round'];
+          if (builtins.includes(identifier)) {
+            return {
+              status: 'warning',
+              message: `'${identifier}' is a built-in function name. Using it as an identifier will shadow the built-in function.`,
+              suggestions: generateSuggestions(identifier)
+            };
+          }
+          
+          // Check naming conventions (warnings)
+          if (identifier.length === 1) {
+            return {
+              status: 'warning',
+              message: 'Single-letter variable names are not recommended except for loop counters.',
+              suggestions: []
+            };
+          }
+          
+          if (/^[A-Z]/.test(identifier) && !/^[A-Z_]+$/.test(identifier)) {
+            return {
+              status: 'warning',
+              message: 'Variables starting with uppercase should follow PascalCase (for classes) or UPPER_CASE (for constants).',
+              suggestions: [identifier.toLowerCase(), identifier.toUpperCase()]
+            };
+          }
+          
+          return {
+            status: 'valid',
+            message: `'${identifier}' is a valid Python identifier! ✓`,
+            suggestions: []
+          };
+        }
+        
+        function generateSuggestions(identifier) {
+          const suggestions = [];
+          
+          // If it's a keyword, suggest alternatives
+          if (allKeywords.find(k => k.word === identifier)) {
+            suggestions.push(`${identifier}_var`);
+            suggestions.push(`my_${identifier}`);
+            suggestions.push(`user_${identifier}`);
+          }
+          
+          // If starts with digit, suggest adding prefix
+          if (/^[0-9]/.test(identifier)) {
+            suggestions.push(`var_${identifier}`);
+            suggestions.push(`num_${identifier}`);
+          }
+          
+          // If contains invalid chars, suggest cleaned version
+          const cleaned = identifier.replace(/[^a-zA-Z0-9_]/g, '_');
+          if (cleaned !== identifier && cleaned.length > 0) {
+            suggestions.push(cleaned);
+          }
+          
+          return suggestions.filter(s => s !== identifier).slice(0, 4);
+        }
+        
+        function showValidationResult(validation, identifier) {
+          const input = document.getElementById('identifier-input');
+          
+          // Update input styling
+          input.classList.remove('valid', 'invalid', 'warning');
+          input.classList.add(validation.status);
+          
+          // Show result message
+          result.classList.remove('valid', 'invalid', 'warning');
+          result.classList.add(validation.status);
+          result.innerHTML = `
+            <strong>${validation.status === 'valid' ? '✓' : validation.status === 'warning' ? '⚠️' : '❌'} ${validation.message}</strong>
+            ${validation.details ? `<br><small>${validation.details}</small>` : ''}
+          `;
+          result.style.display = 'block';
+          
+          // Show suggestions if any
+          if (validation.suggestions && validation.suggestions.length > 0) {
+            suggestionList.innerHTML = validation.suggestions
+              .map(suggestion => `<span class="suggestion-item" onclick="applySuggestion('${suggestion}')">${suggestion}</span>`)
+              .join('');
+            suggestionBox.style.display = 'block';
+          } else {
+            suggestionBox.style.display = 'none';
+          }
+        }
+        
+        function hideValidationResult() {
+          const input = document.getElementById('identifier-input');
+          input.classList.remove('valid', 'invalid', 'warning');
+          result.style.display = 'none';
+          suggestionBox.style.display = 'none';
+        }
+        
+        // Make applySuggestion globally accessible
+        window.applySuggestion = function(suggestion) {
+          input.value = suggestion;
+          input.dispatchEvent(new Event('input'));
+          input.focus();
+        };
+      }
+
+      // --- INITIALIZATION ---
+      function initializeAll() {
+        setupCategoryFilters();
+        setupIdentifierValidator();
+        setupQuiz();
+        setupAccordions();
+        setupGlossary();
+        renderKeywords(); // Default: show all keywords
+      }
+      
+      function setupCategoryFilters() {
+        const filters = document.querySelectorAll('.category-filter');
+        filters.forEach(filter => {
+          filter.addEventListener('click', () => {
+            // Update active filter
+            filters.forEach(f => f.classList.remove('active'));
+            filter.classList.add('active');
+            
+            // Render filtered keywords
+            const category = filter.getAttribute('data-category');
+            renderKeywords(category);
+          });
+        });
+      }
+
+      function setupQuiz() {
+        const bodyContainer = document.querySelector('#quiz-body-container');
+        const prevBtn = document.querySelector('#mainPrevBtn');
+        const nextBtn = document.querySelector('#mainNextBtn');
+        const currentQSpan = document.querySelector('#mainCurrentQ');
+        const totalQSpan = document.querySelector('#mainTotalQ');
+        
+        if (!bodyContainer) return;
+        let currentQuestionIndex = 0;
+        totalQSpan.textContent = quizQuestions.length;
+
+        function renderQuestion() {
+            const qData = quizQuestions[currentQuestionIndex];
+            let optionsHTML = qData.options.map((opt, index) => `
+                <div class="quiz-option" data-option-index="${index}">
+                    <label>
+                        <input type="radio" name="q${currentQuestionIndex}" value="${index}">
+                        <span>${opt.text}</span>
+                    </label>
+                    <div class="explanation">${opt.explanation}</div>
+                </div>`).join('');
+            bodyContainer.innerHTML = `<div class="quiz-body active"><p><strong>Q${currentQuestionIndex + 1}:</strong> ${qData.q}</p><div class="quiz-options">${optionsHTML}</div></div>`;
+            currentQSpan.textContent = currentQuestionIndex + 1;
+            prevBtn.disabled = currentQuestionIndex === 0;
+            nextBtn.disabled = currentQuestionIndex === quizQuestions.length - 1;
+            bodyContainer.querySelectorAll('.quiz-option input').forEach(radio => radio.addEventListener('change', handleOptionSelect));
+        }
+
+        function handleOptionSelect(e) {
+            const selectedOptionIndex = parseInt(e.target.value);
+            const qData = quizQuestions[currentQuestionIndex];
+            const parentQuestionDiv = e.target.closest('.quiz-body');
+            parentQuestionDiv.querySelectorAll('.quiz-option').forEach(optDiv => {
+                optDiv.classList.remove('selected', 'correct', 'wrong');
+                optDiv.querySelector('.explanation').style.display = 'none';
+            });
+            const selectedOptionDiv = e.target.closest('.quiz-option');
+            selectedOptionDiv.classList.add('selected');
+            selectedOptionDiv.querySelector('.explanation').style.display = 'block';
+            if (selectedOptionIndex === qData.correct) {
+                selectedOptionDiv.classList.add('correct');
+            } else {
+                selectedOptionDiv.classList.add('wrong');
+                parentQuestionDiv.querySelector(`.quiz-option[data-option-index="${qData.correct}"]`).classList.add('correct');
+            }
+        }
+        prevBtn.addEventListener('click', () => { if (currentQuestionIndex > 0) { currentQuestionIndex--; renderQuestion(); } });
+        nextBtn.addEventListener('click', () => { if (currentQuestionIndex < quizQuestions.length - 1) { currentQuestionIndex++; renderQuestion(); } });
+        renderQuestion();
+      }
+      
+      function setupAccordions() {
+        const faqContainer = document.getElementById('faq-accordion-container');
+        if (faqContainer) {
+          let html = '<div class="accordion">';
+          html += faqs.map((faq, i) => `
+              <div class="accordion-item">
+                  <button class="accordion-header" aria-expanded="false" aria-controls="faq-${i}"><span class="accordion-title"><strong>Q${i+1}:</strong> ${faq.q}</span></button>
+                  <div class="accordion-content" id="faq-${i}"><p><strong>A:</strong> ${faq.a}</p></div>
+              </div>
+          `).join('');
+          html += '</div>';
+          faqContainer.innerHTML = html;
+        }
+        
+        document.querySelectorAll('.accordion-header').forEach(h => h.addEventListener('click', () => {
+            const expanded = h.getAttribute('aria-expanded') === 'true';
+            h.setAttribute('aria-expanded', !expanded);
+            h.nextElementSibling.style.display = expanded ? 'none' : 'block';
+        }));
+      }
+
+      function setupGlossary() {
+        const cloud = document.getElementById('glossaryCloud');
+        if (!cloud) return;
+        cloud.innerHTML = keywords.map(kw => `<button class="glossary-chip" type="button"><span class="icon">${kw.emoji || '🔸'}</span><span>${kw.term}</span></button>`).join('');
+        
+        const tip = document.createElement('div');
+        tip.className = 'chip-tip';
+        tip.innerHTML = '<div class="arrow" aria-hidden="true"></div><div class="tip-content"></div>';
+        document.body.appendChild(tip);
+        const tipContent = tip.querySelector('.tip-content');
+        const tipArrow = tip.querySelector('.arrow');
+        let openBtn = null;
+        
+        function clamp(n, min, max){ return Math.max(min, Math.min(n, max)); }
+        
+        function positionTipFor(btn){
+          const rect = btn.getBoundingClientRect();
+          const vw = window.innerWidth;
+          const pad = 8;
+          tip.style.maxWidth = Math.min(vw - pad*2, 420) + 'px';
+          const tipRect = tip.getBoundingClientRect();
+          const preferTop = rect.top > (window.innerHeight - rect.bottom);
+          const top = preferTop ? rect.top - tipRect.height - 12 : rect.bottom + 12;
+          const left = clamp(rect.left + rect.width/2 - tipRect.width/2, pad, vw - tipRect.width - pad);
+          tip.style.top = Math.max(8, top) + 'px';
+          tip.style.left = left + 'px';
+          tipArrow.style.top = preferTop ? (tipRect.height - 6) + 'px' : '-6px';
+          tipArrow.style.left = clamp(rect.left + rect.width/2 - left - 6, 10, tipRect.width - 22) + 'px';
+        }
+        
+        function openTip(btn, text){ 
+          tipContent.textContent = text; 
+          tip.classList.add('show'); 
+          positionTipFor(btn); 
+          openBtn = btn; 
+        }
+        
+        function closeTip(){ 
+          tip.classList.remove('show'); 
+          openBtn = null; 
+        }
+        
+        cloud.querySelectorAll('.glossary-chip').forEach((btn,i)=>{
+          const def = keywords[i].def;
+          btn.addEventListener('mouseenter',()=>{ openTip(btn, def); });
+          btn.addEventListener('mouseleave',()=>{ closeTip(); });
+          btn.addEventListener('focus',()=>{ openTip(btn, def); });
+          btn.addEventListener('blur',()=>{ closeTip(); });
+        });
+        
+        window.addEventListener('resize',()=>{ if(openBtn) positionTipFor(openBtn); });
+        window.addEventListener('scroll',()=>{ if(openBtn) positionTipFor(openBtn); }, {passive:true});
+        document.addEventListener('click',(e)=>{ if(openBtn && !openBtn.contains(e.target) && !tip.contains(e.target)) closeTip(); });
+      }
+
+      // --- RUN ---
+      initializeAll();
+    });
+  </script>
+</body>
+</html>

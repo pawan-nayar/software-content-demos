@@ -1,0 +1,1301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Git & GitHub with Claude Code: Your AI Coding Assistant</title>
+    <!-- 12 Meta Tags -->
+    <meta name="description" content="A beginner's guide to using Anthropic's Claude Code with Git and GitHub. Learn how professionals can leverage AI to build, fix, and manage projects without being coding experts.">
+    <meta name="keywords" content="Claude Code, GitHub for Beginners, AI Coding Assistant, Anthropic, Git Tutorial, AI for Professionals, No-Code, Low-Code, Software Development for Beginners">
+    <meta name="author" content="AI Learning Guides">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="Unlock Your Ideas: A Guide to Building with Claude Code and GitHub">
+    <meta property="og:description" content="See how doctors, teachers, and entrepreneurs are using an AI assistant to turn ideas into reality on GitHub.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://example.com/claude-code-github-guide">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1580894742597-87bc8789db3d?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Claude Code + GitHub = Your New Superpower">
+    <meta name="twitter:description" content="Learn how to automate coding tasks with simple English commands and bring your projects to life.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <style>
+      :root {
+        --text:#212529; --bg:#fff; --muted:#f8f9fa; --border:#e9ecef;
+        --accent:#d9480f; --accent-2:#c9400a; --header-bg:#212529; --header-fg:#f8f9fa;
+        --ok:#198754; --ok-soft:#d1e7dd; --bad:#dc3545; --bad-soft:#f8d7da;
+        --myth-color: #6c757d; --myth-soft: #e9ecef;
+      }
+      *{box-sizing:border-box;margin:0;padding:0}
+      html,body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.8;}
+      .container{max-width:900px;margin:auto;padding:24px;background:#fff}
+      a{color:var(--accent);text-decoration:none}
+      a:hover{text-decoration:underline}
+
+      /* Header / Footer / Breadcrumbs */
+      .site-header,.site-footer{background:var(--header-bg);color:var(--header-fg);padding:14px 24px}
+      .site-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;position:sticky;top:0;z-index:100}
+      .logo{font-weight:700;font-size:1.15rem;color:#fff}
+      .site-header nav{display:flex;gap:14px} .site-header nav a{color:#ced4da} .site-header nav a:hover{color:#fff}
+      .site-footer{text-align:center;margin-top:50px;padding:40px}
+      .breadcrumbs{margin-bottom:24px;font-size:0.9rem;color:#6c757d} .breadcrumbs a{color:var(--accent)}
+
+      /* Typography & Layout */
+      h1{font-size:clamp(2rem,5vw,2.8rem);text-align:left;margin-bottom:8px;color:var(--text);line-height:1.2}
+      .byline{font-size:clamp(1rem,3vw,1.25rem);font-style:italic;color:#4a5568;margin-bottom:24px}
+      h2{font-size:clamp(1.5rem,4vw,2.2rem);color:var(--text);margin:64px 0 24px;border-bottom:2px solid var(--border);padding-bottom:12px}
+      h3{font-size:clamp(1.2rem,3vw,1.6rem);color:var(--text);margin-top:48px;margin-bottom:16px}
+      p, ul, li {font-size: 1.1rem; max-width: 75ch;}
+      p{margin-bottom:20px;word-wrap:break-word; line-height: 1.9;}
+      ul{margin-left:24px;margin-bottom:24px;padding-left:1em}
+      li{margin-bottom:16px;padding-left:0.5em}
+      .article-meta{display:flex;align-items:center;gap:12px;color:#6c757d;margin-bottom:32px;font-size:0.95rem}
+      .author-emoji{font-size:32px;line-height:1}
+      .intro{font-size:1.2rem;line-height:1.8;background:var(--muted);padding:24px;border-radius:12px;border-left:4px solid var(--accent);margin:24px 0}
+      strong { font-weight: 600; }
+      .highlight-accent { color: var(--accent-2); font-weight: 600; }
+      .transition-bridge { text-align: center; font-style: italic; color: var(--myth-color); padding: 3rem 1rem; margin: 3rem 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); background: var(--muted); border-radius: 12px; }
+      .conclusion-cta { background: var(--ok-soft); border: 1px solid var(--ok); border-radius: 12px; padding: 2rem; margin-top: 2rem; text-align: center;}
+      .conclusion-cta p { font-size: 1.2rem; margin-bottom: 1rem;}
+      .conclusion-cta code { background: rgba(0,0,0,0.1); padding: 4px 8px; border-radius: 6px; font-family: 'Roboto Mono', monospace;}
+
+      /* Structural & Media Elements */
+      .img-frame{position:relative;width:100%;overflow:hidden;border-radius:12px;margin:24px 0;box-shadow:0 4px 15px rgba(0,0,0,0.1); text-align: center; background: #f8f9fa; padding: 20px;}
+      .img-frame img {max-width: 100%; border-radius: 8px;}
+      .img-frame figcaption {font-size: 0.9rem; color: var(--myth-color); margin-top: 12px; font-style: italic;}
+      .table-wrap{position:relative;border:1px solid var(--border);border-radius:12px;background:#fff;margin:24px 0}
+      .table-scroll{position:relative;overflow-x:auto}
+      table.data-table{width:100%;border-collapse:collapse;}
+      table.data-table th, table.data-table td{padding:12px 15px;border:1px solid var(--border);text-align:left;vertical-align:top;}
+      table.data-table thead th{background:var(--muted);font-weight:600;}
+      table.data-table tbody tr:nth-child(even){background:#f8f9fa;}
+      
+      /* Progress tracker */
+      .progress-tracker{display:flex;align-items:center;gap:8px;margin:32px 0;padding:16px;background:var(--muted);border-radius:8px}
+      .progress-step{width:24px;height:24px;border-radius:50%;background:var(--border);color:#6c757d;display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:600}
+      .progress-step.completed{background:var(--ok);color:#fff}
+      .progress-step.current{background:var(--accent);color:#fff}
+      .progress-line{flex:1;height:2px;background:var(--border)}
+      .progress-line.completed{background:var(--ok)}
+      
+      /* --- Interactive Components --- */
+      .accordion{display:grid;gap:8px}
+      .accordion-header{width:100%;text-align:left;background:var(--muted);border:1px solid var(--border);padding:16px 20px;border-radius:8px;cursor:pointer;font-size:1.1rem;font-weight:bold;display:flex;align-items:center}
+      .accordion-header .accordion-title { margin-right: auto; padding-right: 1rem; }
+      .accordion-header::after{content:'+';color:#6c757d; font-size: 1.5rem; transition: transform 0.2s;}
+      .accordion-header[aria-expanded="true"]{background:#e9ecef;}
+      .accordion-header[aria-expanded="true"]::after{transform: rotate(45deg);}
+      .accordion-content{padding:0 20px; max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out, padding 0.3s ease-out;}
+      .accordion-content p { color: #343a40; }
+      .quiz-container, .poll-container {padding:2rem;border:1px solid var(--border);border-radius:12px;margin-top:2rem;background:var(--muted);}
+      .quiz-navigation{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
+      .btn{background:var(--accent);color:#fff;border:none;padding:10px 18px;border-radius:8px;font-weight:600;cursor:pointer;transition:background-color 0.2s ease;}
+      .btn:hover{background-color:var(--accent-2);}
+      .btn:disabled{background-color:#adb5bd;cursor:not-allowed;}
+      .quiz-option label{display:flex;align-items:center;padding:14px;border:2px solid var(--border);border-radius:8px;cursor:pointer;background:#fff;margin-bottom:10px;transition: background-color 0.2s, border-color 0.2s;}
+      .quiz-option label input[type="radio"]{margin-right:16px;flex-shrink:0;}
+      .quiz-option label:hover {background-color: #f1f3f5;}
+      .quiz-option.selected.correct label{background:var(--ok-soft);border-color:var(--ok);}
+      .quiz-option.selected.wrong label{background:var(--bad-soft);border-color:var(--bad);}
+      .explanation{display:none;margin-top:8px;padding:10px;font-size:0.9rem;border-radius:6px;}
+      .quiz-option.selected.correct .explanation{display:block;background:var(--ok-soft);}
+      .quiz-option.selected.wrong .explanation{display:block;background:var(--bad-soft);}
+      .glossary-cloud{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px;justify-content:center}
+      .glossary-chip{position:relative;display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:999px;background:#fff7ed;border:1px solid #ffd8a8;color:#d9480f;font-weight:600;cursor:pointer;box-shadow:0 2px 6px rgba(253,126,20,.12)}
+      .glossary-chip:hover, .glossary-chip:focus{background:#ffecde;}
+      .chip-tip{position:fixed;z-index:101;min-width:240px;max-width:min(92vw,420px);background:var(--accent);color:#fff;padding:12px 14px;border-radius:12px;box-shadow:0 12px 28px rgba(253,126,20,.35);opacity:0;visibility:hidden;transition:.15s;line-height:1.45}
+      .chip-tip.show{opacity:1;visibility:visible}
+      .chip-tip .arrow{position:absolute;width:12px;height:12px;background:var(--accent);transform:rotate(45deg)}
+      .code-wrapper { margin: 24px 0; }
+      .code-output { background: var(--muted); border: 1px solid var(--border); border-radius: 8px; margin-top: -1px; padding: 1.2em; font-family: 'Roboto Mono', monospace; color: #495057; white-space: pre-wrap; text-align: left;}
+      .code-block { background: var(--ok-soft); color: var(--text); border: 1px solid var(--ok); border-radius: 8px; padding: 1.2em; font-family: 'Inter', sans-serif; white-space: pre-wrap; text-align: left; }
+      .code-block p, .code-output p { margin-bottom: 0; line-height: 1.7; }
+      
+      /* --- Carousel Styles --- */
+      .carousel-container { position: relative; padding: 0 40px; }
+      .carousel-deck { position: relative; height: 260px; }
+      .flip-card { background-color: transparent; height: 250px; perspective: 1000px; cursor: pointer; position: absolute; width: 100%; top:0; left:0; opacity: 0; transition: opacity 0.5s, transform 0.5s; transform: scale(0.95); }
+      .flip-card.active { opacity: 1; transform: scale(1); z-index: 10; }
+      .flip-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s; transform-style: preserve-3d; }
+      .flip-card.flipped .flip-card-inner { transform: rotateY(180deg); }
+      .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
+      .flip-card-front { background: #fff; border: 1px solid var(--border); }
+      .flip-card-front-icon { font-size: 2.5rem; margin-bottom: 1rem; color: var(--accent); }
+      .flip-card-front p { font-size: 1.2rem; font-weight: 600; margin: 0; }
+      .flip-card-front span { font-size: 0.9rem; color: var(--myth-color); margin-top: 10px; }
+      .flip-card-back { background-color: var(--header-bg); color: white; transform: rotateY(180deg); text-align: left; align-items: flex-start; }
+      .flip-card-back h4 { margin: 0 0 10px 0; color: var(--accent); font-family: 'Roboto Mono', monospace; font-size: 1rem; border-bottom: 1px solid #495057; padding-bottom: 8px; width: 100%; }
+      .flip-card-back p { font-size: 1rem; margin: 0; font-family: 'Roboto Mono', monospace; color: #ced4da; width: 100%;}
+      .carousel-nav { position: absolute; top: 50%; transform: translateY(-50%); background-color: var(--accent); color: white; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 24px; cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center; }
+      .carousel-nav:hover { background-color: var(--accent-2); }
+      .carousel-prev { left: 0; }
+      .carousel-next { right: 0; }
+      .carousel-counter { text-align: center; margin-top: 1rem; font-weight: 600; color: var(--myth-color); }
+      
+      /* SVG Artefact Styles */
+      .svg-artefact { background-color: var(--muted); border-radius: 12px; padding: 2rem; margin: 3rem auto; text-align: center; max-width: 100%;}
+      .svg-artefact p { font-size: 1rem; color: var(--myth-color); margin-top: 1rem; }
+      #git-flow-svg .branch-line { stroke-dasharray: 450; stroke-dashoffset: 450; animation: draw-line 2s ease-out forwards; }
+      #git-flow-svg .commit-dot { opacity: 0; animation: fade-in 0.5s ease-out forwards; }
+      #git-flow-svg .interactive-elem { cursor: pointer; transition: filter 0.2s ease; }
+      #git-flow-svg .interactive-elem:hover { filter: brightness(1.2); }
+      .radar-chart-toggles { display: flex; justify-content: center; gap: 10px; margin-top: 1.5rem; flex-wrap: wrap; }
+      .radar-chart-toggles button { background: #fff; border: 1px solid var(--border); padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: 500; }
+      .radar-chart-toggles button.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+      #comparison-radar-chart .radar-polygon { transition: opacity 0.4s ease; }
+      @keyframes draw-line { to { stroke-dashoffset: 0; } }
+      @keyframes fade-in { to { opacity: 1; } }
+      @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+ <header class="site-header">
+     <a href="#" class="logo">Beyond Dictionary</a>
+     <nav><a href="#">What's New</a><a href="#">Learning</a><a href="#">Games & Quizzes</a><a href="#">Blog</a></nav>
+ </header>
+
+ <div class="container">
+   
+   <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="#">AI Tools</a> > <a href="#">Development</a> > <a href="#">Claude Code</a> > Git & GitHub Guide</nav>
+
+   <h1>Git & GitHub with Claude Code</h1>
+   <p class="byline">Your Personal AI Assistant for Turning Ideas into Reality</p>
+   <div class="article-meta"><span class="author-emoji">🤖</span><span>For Professionals & Curious Beginners &nbsp; | &nbsp; Your First AI Project</span></div>
+   
+   <p class="intro">
+    This guide is for two groups of people. <strong>For the non-programmer—the doctor, teacher, or entrepreneur</strong>—this is your bridge from idea to execution. It’s about translating your domain expertise into a functional application without spending years learning syntax. <strong>For the existing programmer,</strong> this is your leap from being a coder to being an architect. It’s about automating the boilerplate, delegating the routine tasks, and amplifying your output tenfold, allowing you to focus on the complex challenges that truly matter.
+   </p>
+
+    <!-- Progress Tracker -->
+    <div class="progress-tracker">
+       <div class="progress-step current">1</div>
+       <div class="progress-line"></div>
+       <div class="progress-step">2</div>
+       <div class="progress-line"></div>
+       <div class="progress-step">3</div>
+       <div class="progress-line"></div>
+       <div class="progress-step">4</div>
+       <div class="progress-line"></div>
+       <div class="progress-step">5</div>
+       <span style="margin-left:12px;font-size:0.9rem;color:#6c757d;">Introduction → Foundations → In Action → Comparisons → Mastery</span>
+    </div>
+
+   <section id="introduction">
+        <h2>Let's Start with an Analogy: Building a Custom House</h2>
+        <p>
+            Before we dive into the technical details, let's understand the core concepts. Imagine you want to build a custom house. You have the vision—the layout, the number of rooms, the style. But you aren't an architect, an electrician, or a plumber. You need tools and a team. In the world of software, it's the exact same story.
+        </p>
+        <ul style="list-style-type: '🏠';">
+            <li>Your <strong>Idea</strong> (a patient management app, an interactive lesson planner, a small business website) is the <strong>Blueprint</strong> for your house.</li>
+            <li><strong>Git</strong> is the detailed <strong>Construction Logbook</strong>. Every single change, from laying the foundation to painting a wall, is recorded with a note about who did it, when, and why. If a wall is built in the wrong place, you can instantly look at the logbook and revert to the version from yesterday. It's your ultimate safety net.</li>
+            <li><strong>GitHub</strong> is the <strong>Shared Project Site Office</strong>. It's an online hub where the master blueprint and the logbook are stored. Everyone on your team—the architect, the plumber, the interior designer—can access the latest plans, propose changes, and discuss issues. It's the single source of truth that prevents chaos.</li>
+            <li>And <strong>Claude Code</strong>? It's your <strong>AI General Contractor</strong>. You don't need to know how to mix concrete or wire an outlet. You just walk into the site office, point to the blueprint, and say, "Build the kitchen according to these specs." Claude understands, gathers the materials (writes the code), does the work, and updates the logbook (makes a Git commit) for you.</li>
+        </ul>
+   </section>
+
+   <section id="foundations">
+        <h2>🔧 Foundations: A Quick Refresher on Git & GitHub</h2>
+        <p>
+            To truly appreciate what Claude Code automates, it's helpful to understand the core tools it works with. Git and GitHub are the undisputed backbone of modern software development. Even if you plan to let the AI handle most of the work, knowing these concepts will make you a much more effective project owner.
+        </p>
+
+        <h3>Why Does Version Control Matter? The "Save As..." Problem</h3>
+        <p>
+            Have you ever worked on a major report or presentation and ended up with a folder full of files like this?
+        </p>
+        <ul style="list-style-type: '📂';">
+            <li>`Report_Draft_v1.docx`</li>
+            <li>`Report_Draft_v2_with_edits.docx`</li>
+            <li>`Report_Final.docx`</li>
+            <li>`Report_Final_FINAL_I_mean_it_this_time.docx`</li>
+        </ul>
+        <p>
+            This is a chaotic, unreliable way to track changes. Which one is truly the latest version? What if you need a paragraph from `v1` but the charts from `v2`? This is the problem that <strong>version control</strong> solves. Git doesn't just save over your work; it tracks a complete history of every change, forever. For programmers, this is non-negotiable. It means they can experiment freely, knowing they can always rewind to a stable version if something breaks. For a non-programmer, it provides an incredible safety net, ensuring your project's history is never lost.
+        </p>
+
+        <h3>The Four Key Concepts You Need to Know</h3>
+        <p>Let's map the essential Git/GitHub terms to our house-building analogy.</p>
+        
+        <h4>1. Repository (Repo)</h4>
+        <ul style="list-style-type: '🗂️';">
+            <li><strong>Analogy:</strong> The entire <strong>Project Binder</strong> for your house.</li>
+            <li><strong>What it is:</strong> A folder that contains all your project's files (code, images, notes) and, crucially, the entire history of changes to those files (the `.git` logbook inside). When you create a project on GitHub, you are creating a remote repository where this binder will be stored online.</li>
+            <li><strong>For Programmers:</strong> This is the root of your project, the central source of truth. Cloning a repo means getting a full copy of the code and its history.</li>
+        </ul>
+
+        <h4>2. Commit</h4>
+        <ul style="list-style-type: '📝';">
+            <li><strong>Analogy:</strong> A single, dated entry in the <strong>Construction Logbook</strong>.</li>
+            <li><strong>What it is:</strong> A snapshot of your files at a specific point in time. Every commit has a unique ID and a commit message—a short note explaining what change was made (e.g., "Installed the kitchen sink" or "Fixed typo on the contact page"). This is the fundamental action in Git. You don't just "save"; you "commit" a meaningful change.</li>
+            <li><strong>For Programmers:</strong> Atomic commits are a best practice. Each commit should represent a single logical change, making the history clean and easy to understand.</li>
+        </ul>
+
+        <h4>3. Branch</h4>
+        <ul style="list-style-type: '🌿';">
+            <li><strong>Analogy:</strong> Creating a <strong>Separate Copy of the Blueprints</strong> to experiment on.</li>
+            <li><strong>What it is:</strong> A parallel version of your repository. The main, official branch is usually called `main` or `master`. If you want to work on a new feature (like adding a swimming pool to the house plan), you create a new branch (e.g., `feature/swimming-pool`). You can make all your changes on this experimental copy without affecting the official "main" blueprint.</li>
+            <li><strong>For Programmers:</strong> Branching is the cornerstone of collaborative workflows. The "GitFlow" or "GitHub Flow" models are popular strategies for managing branches for features, bug fixes, and releases.</li>
+        </ul>
+
+        <h4>4. Pull Request (PR)</h4>
+        <ul style="list-style-type: '🔀';">
+            <li><strong>Analogy:</strong> Submitting your experimental blueprint copy for <strong>Official Review and Approval</strong>.</li>
+            <li><strong>What it is:</strong> This is a feature of GitHub (not Git itself). Once you're done working on your branch, you open a Pull Request. This is a formal request that says, "I've finished my changes on the `feature/swimming-pool` branch. Please review my work and, if it's good, merge it into the official `main` blueprint." It opens a forum where your team can discuss the changes, suggest improvements, and ultimately approve the integration.</li>
+            <li><strong>For Programmers:</strong> The PR is the heart of code review and quality assurance. Automated checks (CI/CD), linter validation, and peer reviews all happen here before code is merged into the main branch.</li>
+        </ul>
+
+        <!-- NEW: SVG Artefact for Git Flow -->
+        <div class="svg-artefact">
+            <svg id="git-flow-svg" viewBox="0 0 600 200" xmlns="http://www.w3.org/2000/svg" aria-label="Interactive Git Flow Diagram showing main and feature branches, commits, and a pull request.">
+                <title>Interactive Git Flow Diagram</title>
+                <defs>
+                    <marker id="arrow-ok" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--ok)"/></marker>
+                </defs>
+                <!-- Main Branch -->
+                <line x1="50" y1="100" x2="550" y2="100" stroke="#212529" stroke-width="3" />
+                <text x="50" y="120" font-size="12" font-family="Inter" fill="#212529">main branch</text>
+                <!-- Feature Branch -->
+                <path d="M 150 100 Q 200 100, 250 50 L 350 50 Q 400 50, 450 100" stroke="var(--accent)" stroke-width="3" fill="none" class="branch-line" />
+                <text x="270" y="35" font-size="12" font-family="Inter" fill="var(--accent)">feature branch</text>
+                <!-- Commits -->
+                <g class="interactive-elem" data-info="Commit: A saved snapshot of the project. This is a stable point in the main history.">
+                    <circle cx="100" cy="100" r="8" fill="#212529" class="commit-dot" style="animation-delay: 0s;"/><title>Commit</title>
+                </g>
+                 <g class="interactive-elem" data-info="Branch: A new line of development is created to work on a feature without disrupting the main branch.">
+                    <circle cx="200" cy="100" r="8" fill="#212529" class="commit-dot" style="animation-delay: 0.2s;"/><title>Branch Point</title>
+                </g>
+                <g class="interactive-elem" data-info="Feature Commit: Work is done safely on the separate branch. Multiple commits can be made here.">
+                    <circle cx="300" cy="50" r="8" fill="var(--accent)" class="commit-dot" style="animation-delay: 0.8s;"/><title>Feature Commit</title>
+                </g>
+                <g class="interactive-elem" data-info="Pull Request: The feature is complete. A PR is opened to review the changes before merging.">
+                     <path d="M 450 95 L 450 70" stroke="var(--ok)" stroke-width="2" stroke-dasharray="4 2" marker-end="url(#arrow-ok)" class="commit-dot" style="animation-delay: 1.2s;" /><title>Pull Request</title>
+                </g>
+                <g class="interactive-elem" data-info="Merge Commit: The feature is approved and merged back into the main branch, incorporating the new work.">
+                    <circle cx="500" cy="100" r="8" fill="var(--ok)" class="commit-dot" style="animation-delay: 1.5s;"/><title>Merge Commit</title>
+                </g>
+            </svg>
+            <p id="git-flow-info">Hover over the elements to learn about the typical workflow for adding a new feature.</p>
+        </div>
+   </section>
+
+    <div class="transition-bridge">
+        <p>Now that we've explored Git and GitHub's basics, let's see how Claude transforms these mechanics into a natural language workflow.</p>
+    </div>
+
+    <section id="claude-code-workflow">
+        <h2>🔄 Interactive Claude Code Workflow</h2>
+        <p style="text-align:center; font-size:1.2rem; max-width:900px; margin:0 auto 20px;">
+            Understanding how Claude Code transforms your development process requires seeing the full workflow in action. Click on different steps to see how Claude automates each part of your development process.
+        </p>
+
+        <div class="workflow-container" style="display: flex; gap: 20px; min-height: 600px; padding: 20px; background: var(--muted); border-radius: 12px; margin: 24px 0;">
+            <div class="workflow-section" style="flex: 0 0 65%; display: flex; flex-direction: column; justify-content: center; align-items: center; background: white; border-radius: 15px; padding: 20px; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);">
+                <div class="instruction" style="text-align: center; margin-bottom: 20px; color: #6c757d; font-size: 1.2rem;">Click on different steps to learn about the Claude Code workflow!</div>
+
+                <svg class="workflow-svg" viewBox="0 0 800 300" style="width:100%; height:auto;">
+                    <rect width="800" height="300" fill="#f8f9fa" opacity="0.3" rx="10"/>
+
+                    <!-- Step 1 -->
+                    <g class="workflow-step" data-step="task" style="cursor: pointer;">
+                        <rect x="20" y="50" width="100" height="60" fill="#2d2d2d" stroke="#333" stroke-width="2" rx="5"/>
+                        <text x="70" y="75" text-anchor="middle" fill="#00ff41" font-family="monospace" font-size="16">$ claude</text>
+                        <text x="70" y="95" text-anchor="middle" fill="#00ff41" font-family="monospace" font-size="14">"fix bug"</text>
+                        <text x="70" y="125" text-anchor="middle" fill="#6c757d" font-size="14">Developer</text>
+                    </g>
+
+                    <!-- Arrow 1 -->
+                    <path d="M 120 80 L 150 80" stroke="#6c757d" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+                    <!-- Step 2 -->
+                    <g class="workflow-step" data-step="read" style="cursor: pointer;">
+                        <rect x="150" y="50" width="100" height="60" fill="#fff" stroke="#6c757d" stroke-width="2" rx="5"/>
+                        <text x="200" y="85" text-anchor="middle" fill="#212529" font-size="14">Reads Repo</text>
+                    </g>
+
+                    <!-- Arrow 2 -->
+                    <path d="M 250 80 L 280 80" stroke="#6c757d" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+                    <!-- Step 3 -->
+                    <g class="workflow-step" data-step="modify" style="cursor: pointer;">
+                        <rect x="280" y="50" width="100" height="60" fill="#fff" stroke="#6c757d" stroke-width="2" rx="5"/>
+                        <text x="330" y="85" text-anchor="middle" fill="#212529" font-size="14">Edits Files</text>
+                    </g>
+
+                    <!-- Arrow 3 -->
+                    <path d="M 380 80 L 410 80" stroke="#6c757d" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+                    <!-- Step 4 -->
+                    <g class="workflow-step" data-step="commit" style="cursor: pointer;">
+                        <rect x="410" y="50" width="100" height="60" fill="#fff" stroke="#6c757d" stroke-width="2" rx="5"/>
+                        <text x="460" y="85" text-anchor="middle" fill="#212529" font-size="14">Git Commit</text>
+                    </g>
+
+                    <!-- Arrow 4 -->
+                    <path d="M 510 80 L 540 80" stroke="#6c757d" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+                    <!-- Step 5 -->
+                    <g class="workflow-step" data-step="pr" style="cursor: pointer;">
+                        <rect x="540" y="50" width="100" height="60" fill="#fff" stroke="#6c757d" stroke-width="2" rx="5"/>
+                        <text x="590" y="85" text-anchor="middle" fill="#212529" font-size="14">GitHub PR</text>
+                    </g>
+
+                    <!-- Arrow 5 (down to review) -->
+                    <path d="M 590 110 Q 590 150 560 150 L 280 150 Q 250 150 250 170" stroke="#6c757d" stroke-width="2" marker-end="url(#arrowhead)" fill="none"/>
+
+                    <!-- Step 6 -->
+                    <g class="workflow-step" data-step="review" style="cursor: pointer;">
+                        <rect x="200" y="180" width="100" height="60" fill="#fff" stroke="#6c757d" stroke-width="2" rx="5"/>
+                        <text x="250" y="215" text-anchor="middle" fill="#212529" font-size="14">Review</text>
+                    </g>
+
+                    <!-- Arrow 6 -->
+                    <path d="M 300 210 L 380 210" stroke="#6c757d" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+                    <!-- Step 7 -->
+                    <g class="workflow-step" data-step="merge" style="cursor: pointer;">
+                        <rect x="380" y="180" width="100" height="60" fill="#fff" stroke="#6c757d" stroke-width="2" rx="5"/>
+                        <text x="430" y="215" text-anchor="middle" fill="#212529" font-size="14">Merge</text>
+                    </g>
+
+                    <!-- Arrow defs -->
+                    <defs>
+                        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#6c757d" />
+                        </marker>
+                    </defs>
+
+                    <!-- Labels -->
+                    <text x="400" y="25" text-anchor="middle" fill="#212529" font-size="20" font-weight="bold">Claude Code Workflow</text>
+                    <text x="75" y="285" fill="#6c757d" font-size="16">Start</text>
+                    <text x="460" y="285" fill="#6c757d" font-size="16">Complete</text>
+                </svg>
+            </div>
+
+            <div class="info-section" style="flex: 0 0 35%; display: flex; flex-direction: column; background: white; border-radius: 15px; padding: 20px; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);">
+                <div class="info-content" style="flex:1; display:flex; flex-direction:column; justify-content:center;">
+                    <div class="default-message" id="defaultWorkflowMessage" style="text-align: center; color: #6c757d; font-size: 1.2rem; font-style: italic; opacity: 0.9;">
+                        <h2 style="color: #212529; margin-bottom: 15px;">Claude Code Workflow</h2>
+                        <p>Click on different steps to see how Claude automates your development process</p>
+                    </div>
+                    <div class="step-info" id="stepInfo" style="display: none; animation: fadeIn 0.3s ease; font-size: 1.1rem;">
+                        <h3 id="stepTitle" style="color: var(--accent); margin-bottom: 10px;">Step Name</h3>
+                        <p id="stepDescription" style="margin-bottom: 15px;">Description goes here</p>
+                        <p><strong>How it works:</strong> <span id="stepDetails">Additional details</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+   <section id="what-is-claude-code">
+        <h2>🤖 What is Claude Code? The AI General Contractor</h2>
+        <p>
+            Now that we understand the construction site (GitHub) and the logbook (Git), let's get to know our AI General Contractor, Claude Code, in more detail. The market is full of AI coding tools, but Claude Code is fundamentally different in its design and philosophy.
+        </p>
+        
+        <h3>It's Not Just Autocomplete; It's an Agent</h3>
+        <p>
+            Many AI tools you might have seen, like GitHub Copilot, are incredible autocompletion engines. They act like a brilliant assistant sitting next to you, suggesting the next few lines of code as you type. They are reactive.
+        </p>
+        <p>
+            Claude Code is designed to be an <span class="highlight-accent">agent</span>. It is proactive. You don't just get suggestions; you delegate entire tasks. The difference is subtle but profound:
+        </p>
+        <ul style="list-style-type: '➡️';">
+            <li><strong>Autocomplete says:</strong> "You've typed `def calculate_average`, are you trying to write a function that sums a list and divides by its length? Here's the code."</li>
+            <li><strong>An Agent (Claude Code) says:</strong> "You told me to 'calculate the average score from the `scores.csv` file and display the result.' I have now opened the file, read the data, written the averaging function, called it, and printed the formatted result. The task is complete."</li>
+        </ul>
+        <p>
+            This ability to understand a high-level goal and execute the multiple steps required to achieve it is what makes Claude Code feel less like a tool and more like a team member.
+        </p>
+
+        <h3>Terminal-First Design: Meeting You Where You Work</h3>
+        <p>
+            Claude Code was designed to live in the terminal—the command-line interface that is the native habitat of many experienced developers. For a non-programmer, the terminal can seem intimidating, but Claude turns this on its head. It transforms the terminal from a place where you must know cryptic commands (`git commit -m "..."`) into a conversational interface. The terminal becomes a chat window with your AI assistant. This is powerful because it integrates directly into the most fundamental layer of development without forcing you into a new, complex application or website.
+        </p>
+        
+        <h3>Context is Everything: Repo-Awareness and `CLAUDE.md`</h3>
+        <p>
+            An AI's biggest challenge is understanding context. A generic chatbot doesn't know your project's goals, its coding style, or its existing structure. Claude Code is designed to be <strong>repo-aware</strong>. When you invoke it, it can scan your entire project folder to understand the bigger picture. It learns from your existing code to match its style.
+        </p>
+        <p>
+            To make this even more explicit, you can create a special file in your project called <strong>`CLAUDE.md`</strong>. This is a plain text file where you can write rules and guidelines for the AI in English. For example, you could write:
+        </p>
+        <ul style="list-style-type: '룰';">
+            <li>"When creating web pages, always use the Inter font and make sure all buttons are orange."</li>
+            <li>"All Python functions must include a docstring explaining what they do."</li>
+            <li>"Commit messages should follow the Conventional Commits specification."</li>
+        </ul>
+        <p>
+            Claude will read this file every time it works on your project, ensuring that its contributions are not just functional, but also consistent with your team's specific standards and preferences. It’s like giving your new AI team member an onboarding manual for your project.
+        </p>
+   </section>
+
+   <section id="practical-magic">
+        <h2>Practical Magic: What Your AI Assistant Can Do</h2>
+        <p>So, what does this look like in practice? Here are 15 real-world tasks you can hand off to Claude Code. Navigate through the examples to see the simple English command for each one.</p>
+        <div class="carousel-container">
+            <button class="carousel-nav carousel-prev">‹</button>
+            <div class="carousel-deck">
+                <!-- Cards will be injected by JS -->
+            </div>
+            <button class="carousel-nav carousel-next">›</button>
+        </div>
+        <div class="carousel-counter"></div>
+   </section>
+
+   <section id="myth-busting">
+        <h2>Myth Busting: Common Worries About AI Coding</h2>
+        <p>It's natural to have questions or concerns. Let's address some common myths about using an AI assistant like Claude Code.</p>
+        <div class="accordion">
+            <div class="accordion-item"><button class="accordion-header" aria-expanded="false"><span class="accordion-title">Myth: The AI will take over my project and I'll lose control.</span></button><div class="accordion-content"><p><strong>Reality:</strong> You are always in control. Claude Code is an assistant that follows your instructions. It proposes changes through standard GitHub workflows like Pull Requests, which you and your team must review and approve before they become official. It only does what you ask it to do.</p></div></div>
+            <div class="accordion-item"><button class="accordion-header" aria-expanded="false"><span class="accordion-title">Myth: I need to be an expert programmer to use this.</span></button><div class="accordion-content"><p><strong>Reality:</strong> Quite the opposite! Claude Code is designed to lower the barrier to entry. By handling complex Git commands and code syntax through natural language, it allows you to focus on your idea (the "what") while it handles the technical details (the "how"). It’s a powerful learning tool.</p></div></div>
+            <div class="accordion-item"><button class="accordion-header" aria-expanded="false"><span class="accordion-title">Myth: Using an AI for coding is cheating or will make me lazy.</span></button><div class="accordion-content"><p><strong>Reality:</strong> Think of it like using a calculator for complex math or a spell-checker for writing. It automates tedious and repetitive tasks, freeing up your mental energy to focus on the creative, strategic, and high-level aspects of your project. It's about augmenting your ability, not replacing it.</p></div></div>
+            <div class="accordion-item"><button class="accordion-header" aria-expanded="false"><span class="accordion-title">Myth: My code and ideas won't be secure or private.</span></button><div class="accordion-content"><p><strong>Reality:</strong> Security is a top priority. When running in GitHub Actions, your code executes on GitHub's secure runners. Relevant context is sent via API to Anthropic to process your request, but only the portions needed for the task. You control this data flow through workflow scope and GitHub Secrets, and for maximum security, enterprise solutions allow for self-hosting.</p></div></div>
+        </div>
+   </section>
+
+   <section id="integration-scenarios">
+        <h2>Claude Code in Action: Three Perspectives</h2>
+        <p>The true power of this integration comes to life when we see how different people use it. Let's explore three detailed scenarios, from a complete beginner to a seasoned expert.</p>
+        
+        <h3>Perspective 1: The Beginner's Journey (Non-Programmer to Programmer)</h3>
+        <p>Meet Dr. Anya Sharma, a clinician who wants to build a simple tool to track patient feedback. She knows what she wants but has only basic computer skills and finds the world of coding intimidating.</p>
+        <ul style="list-style-type: '🎯';">
+            <li><strong>The Goal:</strong> Create a web page with a simple form to collect and save patient feedback.</li>
+            <li><strong>Her Challenge:</strong> She doesn't know HTML, CSS, JavaScript, or Git commands. The learning curve seems vertical.</li>
+        </ul>
+        <div style="background: var(--muted); border-radius: 12px; padding: 20px; margin: 20px 0;">
+            <h4 style="text-align: center; margin-bottom: 20px; color: var(--accent);">🏥 Anya's Patient Feedback Tool Journey</h4>
+            <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 15px; align-items: center; max-width: 800px; margin: 0 auto;">
+                
+                <!-- Step 1 -->
+                <div style="background: white; border-radius: 8px; padding: 15px; border-left: 4px solid var(--accent);">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                        <span style="font-size: 1.2rem;">👩‍⚕️</span>
+                        <strong style="color: var(--accent);">Anya:</strong>
+                    </div>
+                    <p style="margin: 0; font-size: 0.9rem;">"Create a patient feedback tool with HTML form"</p>
+                </div>
+                <div style="text-align: center; color: var(--accent); font-size: 1.5rem;">⚡</div>
+                <div style="background: white; border-radius: 8px; padding: 15px; border-left: 4px solid var(--ok);">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                        <span style="font-size: 1.2rem;">🤖</span>
+                        <strong style="color: var(--ok);">Claude:</strong>
+                    </div>
+                    <p style="margin: 0; font-size: 0.9rem;">Creates <code>index.html</code> with form</p>
+                </div>
+
+                <!-- Step 2 -->
+                <div style="background: white; border-radius: 8px; padding: 15px; border-left: 4px solid var(--accent);">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                        <span style="font-size: 1.2rem;">👩‍⚕️</span>
+                        <strong style="color: var(--accent);">Anya:</strong>
+                    </div>
+                    <p style="margin: 0; font-size: 0.9rem;">"Style it professionally with Inter font & blue button"</p>
+                </div>
+                <div style="text-align: center; color: var(--accent); font-size: 1.5rem;">⚡</div>
+                <div style="background: white; border-radius: 8px; padding: 15px; border-left: 4px solid var(--ok);">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                        <span style="font-size: 1.2rem;">🤖</span>
+                        <strong style="color: var(--ok);">Claude:</strong>
+                    </div>
+                    <p style="margin: 0; font-size: 0.9rem;">Creates <code>style.css</code> & links it</p>
+                </div>
+
+                <!-- Step 3 -->
+                <div style="background: white; border-radius: 8px; padding: 15px; border-left: 4px solid var(--accent);">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                        <span style="font-size: 1.2rem;">👩‍⚕️</span>
+                        <strong style="color: var(--accent);">Anya:</strong>
+                    </div>
+                    <p style="margin: 0; font-size: 0.9rem;">"Save to GitHub as 'patient-feedback-tool'"</p>
+                </div>
+                <div style="text-align: center; color: var(--accent); font-size: 1.5rem;">⚡</div>
+                <div style="background: white; border-radius: 8px; padding: 15px; border-left: 4px solid var(--ok);">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                        <span style="font-size: 1.2rem;">🤖</span>
+                        <strong style="color: var(--ok);">Claude:</strong>
+                    </div>
+                    <p style="margin: 0; font-size: 0.9rem;">Executes <code>git init</code>, <code>git add</code>, <code>git commit</code>, creates repo & pushes</p>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 15px; color: var(--myth-color); font-size: 0.9rem;">
+                <span style="font-size: 1.2rem;">🎉</span> <strong>Result:</strong> From idea to live GitHub project in 3 conversations
+            </div>
+        </div>
+        <p>For Dr. Sharma, Claude Code didn't just write code; it completely abstracted away the intimidating mechanics of modern software development, allowing her to go directly from idea to a shareable, version-controlled project.</p>
+        
+        <h3>Perspective 2: The Expert's Amplifier (Programmer to Super-Programmer)</h3>
+        <p>Now meet Ben, a senior software engineer working on a large, complex application. He is a master of Git workflows, CI/CD pipelines, and his team's coding standards. His challenge isn't a lack of knowledge, but a lack of time.</p>
+        <ul style="list-style-type: '🎯';">
+            <li><strong>The Goal:</strong> Fix a reported bug, add unit tests, and refactor a related module for better performance.</li>
+            <li><strong>His Challenge:</strong> This is tedious, time-consuming work that prevents him from focusing on a critical new architectural design.</li>
+        </ul>
+        <div style="background: var(--muted); border-radius: 12px; padding: 20px; margin: 20px 0;">
+            <h4 style="text-align: center; margin-bottom: 20px; color: var(--accent);">⚡ Ben's Expert Workflow</h4>
+            <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 15px; align-items: center; max-width: 800px; margin: 0 auto;">
+                
+                <!-- Step 1 -->
+                <div style="background: white; border-radius: 8px; padding: 15px; border-left: 4px solid var(--accent);">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                        <span style="font-size: 1.2rem;">👨‍💻</span>
+                        <strong style="color: var(--accent);">Ben:</strong>
+                    </div>
+                    <p style="margin: 0; font-size: 0.9rem;">"@claude fix apostrophe bug + add Jest test"</p>
+                </div>
+                <div style="text-align: center; color: var(--accent); font-size: 1.5rem;">⚡</div>
+                <div style="background: white; border-radius: 8px; padding: 15px; border-left: 4px solid var(--ok);">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                        <span style="font-size: 1.2rem;">🤖</span>
+                        <strong style="color: var(--ok);">Claude:</strong>
+                    </div>
+                    <p style="margin: 0; font-size: 0.9rem;">Creates PR with fix, test & description</p>
+                </div>
+
+                <!-- Step 2 -->
+                <div style="background: white; border-radius: 8px; padding: 15px; border-left: 4px solid var(--accent);">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                        <span style="font-size: 1.2rem;">👨‍💻</span>
+                        <strong style="color: var(--accent);">Ben:</strong>
+                    </div>
+                    <p style="margin: 0; font-size: 0.9rem;">"Refactor to async/await + follow CLAUDE.md"</p>
+                </div>
+                <div style="text-align: center; color: var(--accent); font-size: 1.5rem;">⚡</div>
+                <div style="background: white; border-radius: 8px; padding: 15px; border-left: 4px solid var(--ok);">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                        <span style="font-size: 1.2rem;">🤖</span>
+                        <strong style="color: var(--ok);">Claude:</strong>
+                    </div>
+                    <p style="margin: 0; font-size: 0.9rem;">Rewrites module with modern syntax & team standards</p>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 15px; color: var(--myth-color); font-size: 0.9rem;">
+                <span style="font-size: 1.2rem;">🎯</span> <strong>Result:</strong> Hours of coding → Minutes of delegation
+            </div>
+        </div>
+        <p>Ben reviews the final, polished PR, merges it, and moves on to his high-level architectural work. He completed several hours of routine coding, testing, and refactoring in a matter of minutes by acting as a director and delegating the implementation to his AI assistant.</p>
+        
+        <h3>Perspective 3: The Collaborative Team</h3>
+        <p>Finally, consider a startup team that has been using Claude locally. They now want to integrate it into their shared GitHub workflow to streamline collaboration.</p>
+         <ul style="list-style-type: '🎯';">
+            <li><strong>The Goal:</strong> Ensure all code pushed to their main repository is automatically reviewed for common errors and style issues.</li>
+            <li><strong>Their Challenge:</strong> Human code reviews are slow and can be a bottleneck. Junior developers are sometimes hesitant to ask for reviews on small changes.</li>
+        </ul>
+        <div style="background: var(--muted); border-radius: 12px; padding: 20px; margin: 20px 0;">
+            <h4 style="text-align: center; margin-bottom: 20px; color: var(--accent);">👥 Team Collaboration Workflow</h4>
+            <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 15px; align-items: center; max-width: 800px; margin: 0 auto;">
+                
+                <!-- Step 1 -->
+                <div style="background: white; border-radius: 8px; padding: 15px; border-left: 4px solid var(--accent);">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                        <span style="font-size: 1.2rem;">👶</span>
+                        <strong style="color: var(--accent);">Junior Dev:</strong>
+                    </div>
+                    <p style="margin: 0; font-size: 0.9rem;">"@claude review this PR before senior devs"</p>
+                </div>
+                <div style="text-align: center; color: var(--accent); font-size: 1.5rem;">⚡</div>
+                <div style="background: white; border-radius: 8px; padding: 15px; border-left: 4px solid var(--ok);">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                        <span style="font-size: 1.2rem;">🤖</span>
+                        <strong style="color: var(--ok);">Claude:</strong>
+                    </div>
+                    <p style="margin: 0; font-size: 0.9rem;">Posts formal review: "null pointer on line 42 + linting errors"</p>
+                </div>
+
+                <!-- Step 2 -->
+                <div style="background: white; border-radius: 8px; padding: 15px; border-left: 4px solid var(--accent);">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                        <span style="font-size: 1.2rem;">👶</span>
+                        <strong style="color: var(--accent);">Junior Dev:</strong>
+                    </div>
+                    <p style="margin: 0; font-size: 0.9rem;">"@claude yes please fix those issues"</p>
+                </div>
+                <div style="text-align: center; color: var(--accent); font-size: 1.5rem;">⚡</div>
+                <div style="background: white; border-radius: 8px; padding: 15px; border-left: 4px solid var(--ok);">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                        <span style="font-size: 1.2rem;">🤖</span>
+                        <strong style="color: var(--ok);">Claude:</strong>
+                    </div>
+                    <p style="margin: 0; font-size: 0.9rem;">Commits fixes directly to PR</p>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 15px; color: var(--myth-color); font-size: 0.9rem;">
+                <span style="font-size: 1.2rem;">🚀</span> <strong>Result:</strong> Instant feedback loop + improved team velocity
+            </div>
+        </div>
+   </section>
+
+   <section id="comparative-analysis">
+        <h2>📊 Comparison: Claude Code vs. Other AI & Cloud Tools</h2>
+        <p>The landscape of developer tools is evolving rapidly. To understand where Claude Code fits, it's essential to compare it to other popular solutions. They are not all direct competitors; in fact, they often solve different problems or can even be used together.</p>
+        
+        <h3>Claude Code vs. ChatGPT: Agent vs. Advisor</h3>
+        <p>This is the most important distinction. While both are powerful, their integration philosophy is different.</p>
+        <ul style="list-style-type: '🤖';">
+            <li><strong>ChatGPT is an Advisor.</strong> You use it in a separate window. You copy your code, paste it into the chat, and ask questions. It gives you explanations or code snippets that you then copy back into your project. Its GitHub connector can <span class="highlight-accent">read</span> your repository to provide context-aware answers, but it cannot write back. It tells you what to do; you do it.</li>
+            <li><strong>Claude Code is an Agent.</strong> It lives inside your project. You give it a command, and it <span class="highlight-accent">performs the actions</span>—editing files, running tests, committing code—autonomously. It doesn't just tell you how to fix a bug; it creates a new branch, writes the fix, and opens a Pull Request for you.</li>
+        </ul>
+        
+        <h3>Claude Code vs. GitHub Copilot: Agent vs. Assistant</h3>
+        <p>This is another key nuance. While both help write code, they operate at different levels of autonomy.</p>
+         <ul style="list-style-type: '🤖';">
+            <li><strong>GitHub Copilot is an Inline Assistant.</strong> It works inside your code editor (like VS Code). As you type, it suggests lines or entire functions. The newer Copilot Chat feature allows you to ask questions, explain code, or even ask it to refactor a file you have open. It's an incredibly powerful pair programmer, but its actions are scoped to the file you are currently editing.</li>
+            <li><strong>Claude Code is a Repo-Level Agent.</strong> Its scope is the entire project and the entire workflow. It operates not just on the code, but on the version control system (Git) and the collaboration platform (GitHub). It can create new files, run commands, and manage pull requests—tasks that are outside the scope of an in-editor assistant.</li>
+        </ul>
+
+        <div class="poll-container" id="poll-container-1"></div>
+
+        <h3>Feature Matrix: A Head-to-Head Look</h3>
+        <div class="table-wrap">
+           <div class="table-scroll">
+               <table class="data-table">
+                   <thead>
+                       <tr>
+                           <th>Feature / Aspect</th>
+                           <th>Anthropic Claude Code</th>
+                           <th>OpenAI ChatGPT (with GitHub Connector)</th>
+                           <th>GitHub Codespaces (with Copilot)</th>
+                           <th>Replit (with Ghostwriter)</th>
+                           <th>Google Cloud Code (with Duet AI)</th>
+                       </tr>
+                   </thead>
+                   <tbody>
+                       <tr>
+                           <td><strong>Primary Purpose</strong></td>
+                           <td>AI agent for autonomous coding tasks</td>
+                           <td>AI advisor for conversational assistance & analysis</td>
+                           <td>Cloud-based development environment</td>
+                           <td>In-browser IDE & collaboration platform</td>
+                           <td>IDE extension for Google Cloud development</td>
+                       </tr>
+                       <tr>
+                           <td><strong>Core Interaction</strong></td>
+                           <td>Natural language commands in terminal or GitHub comments</td>
+                           <td>Conversational chat in a web UI</td>
+                           <td>Full VS Code editor in the cloud</td>
+                           <td>Simplified IDE in a web browser</td>
+                           <td>Assistance within your local VS Code/IntelliJ</td>
+                       </tr>
+                       <tr>
+                           <td><strong>GitHub Integration</strong></td>
+                           <td><strong>Deep & Active:</strong> Can read, write, commit, and open PRs autonomously via GitHub Actions.</td>
+                           <td><strong>Read-Only:</strong> Can analyze a repo to answer questions but cannot write back or make commits.</td>
+                           <td><strong>Native:</strong> Is a feature of GitHub itself. The environment is directly tied to a repo.</td>
+                           <td><strong>Connected:</strong> Can import from and push to GitHub repos, often via a simplified UI.</td>
+                           <td><strong>Standard:</strong> Uses the IDE's built-in Git functionality to connect to any Git remote, including GitHub.</td>
+                       </tr>
+                       <tr>
+                           <td><strong>AI Capability</strong></td>
+                           <td><span class="highlight-accent">Agentic</span> - executes multi-step tasks from high-level goals. Repo-aware.</td>
+                           <td><span class="highlight-accent">Advisory</span> - generates explanations, plans, and code snippets on request.</td>
+                           <td><span class="highlight-accent">Autocomplete & Chat</span> - Suggests code inline and answers questions within the editor.</td>
+                           <td><span class="highlight-accent">Integrated Assistant</span> - Code completion, generation, and debugging built into the platform.</td>
+                           <td><span class="highlight-accent">Cloud-Specific Autocomplete</span> - Specializes in suggesting code for Google Cloud services and APIs.</td>
+                       </tr>
+                       <tr>
+                           <td><strong>Best For...</strong></td>
+                           <td>Automating development workflows, from bug fixes to feature implementation, for both beginners and experts.</td>
+                           <td>Understanding complex codebases, planning new features, and getting expert-level explanations.</td>
+                           <td>Standardizing development environments across a team and enabling instant, zero-setup coding on any device.</td>
+                           <td>Beginners, students, and rapid prototyping where a simple, all-in-one solution is needed.</td>
+                           <td>Developers building and deploying applications specifically on the Google Cloud Platform.</td>
+                       </tr>
+                   </tbody>
+               </table>
+           </div>
+       </div>
+        <!-- NEW: Radar Chart SVG -->
+        <div class="svg-artefact">
+            <div id="comparison-radar-chart-container" style="max-width: 500px; margin: auto;"></div>
+            <div id="radar-chart-toggles" class="radar-chart-toggles"></div>
+            <p>Toggle the tools above to visually compare their strengths across key areas.</p>
+        </div>
+   </section>
+   
+   <section id="use-cases">
+        <h2>Use Cases & Benefits: Who Gains the Most?</h2>
+        <p>The impact of an agentic AI assistant isn't uniform; it provides different kinds of value depending on the user and the context.</p>
+        
+        <h3>For Solo Developers & Entrepreneurs</h3>
+        <p>For individuals turning an idea into a product, Claude Code acts as a force multiplier. It becomes the co-founder who handles the technical execution. A solo founder can focus on product vision, user feedback, and business strategy while delegating the entire initial build-out, bug fixing, and feature iteration to the AI. This dramatically lowers the barrier to entry for creating a minimum viable product (MVP) and allows non-technical founders to build without immediately needing to hire an expensive engineering team.</p>
+
+        <h3>For Teams (Startups vs. Enterprises)</h3>
+        <ul style="list-style-type: '🤝';">
+            <li><strong>Startups:</strong> In a fast-moving startup, speed is everything. Claude Code accelerates development cycles by automating the creation of boilerplate code, writing tests, and handling code reviews. This allows a small team to punch far above its weight, delivering features faster and iterating on user feedback more quickly. It also helps standardize code quality from day one, preventing the accumulation of "technical debt" that can slow down future development.</li>
+            <li><strong>Enterprises:</strong> Large organizations benefit from consistency and compliance. Claude Code, guided by a well-defined `CLAUDE.md` file, can ensure that all contributions—even automated ones—adhere to strict corporate coding standards, security guidelines, and documentation requirements. This is invaluable for maintaining quality across massive codebases and hundreds of developers. It can also be used to modernize legacy codebases, a task that is often too resource-intensive to tackle manually.</li>
+        </ul>
+
+        <h3>For Onboarding and Education</h3>
+        <p>Bringing a new developer up to speed on a complex project can take weeks. With Claude Code, a new hire can be productive from day one. Instead of getting lost in the codebase, they can ask Claude questions like, "Explain how our authentication system works" or "Where is the code that handles payment processing?" Furthermore, by observing the pull requests and code that Claude generates, they organically learn the project's architecture and best practices in a practical, hands-on way.</p>
+   </section>
+
+    <section id="challenges">
+        <h2>🚧 Challenges & Limitations: A Realistic View</h2>
+        <p>While powerful, AI coding agents are not magic. It's crucial to understand their limitations to use them effectively and responsibly.</p>
+        <ul style="list-style-type: '❌';">
+            <li><strong>AI Reliability & Hallucinations:</strong> Like all large language models, Claude can occasionally make mistakes or "hallucinate"—inventing functions or code patterns that don't exist. This is why human oversight is non-negotiable. The code it produces, especially for complex logic, must be tested and reviewed by a human.</li>
+            <li><strong>Complex Problem Solving:</strong> Claude excels at well-defined, modular tasks. It can fix a specific bug or add a standard feature. It struggles with highly abstract or novel architectural challenges. You can't tell it to "invent a new, more efficient database algorithm." That still requires human creativity and deep expertise.</li>
+            <li><strong>Merge Conflicts:</strong> If two developers (or a developer and Claude) change the same lines of code in different branches, it creates a merge conflict. While Claude can <span class="highlight-accent">assist</span> with merge conflicts by proposing resolutions, these should always be carefully reviewed by a human, as complex logical conflicts require a final strategic decision.</li>
+            <li><strong>Cost and API Quotas:</strong> Using Claude Code, especially via the GitHub Action, involves making calls to Anthropic's API. For heavy usage, this can incur costs and is subject to rate limits and quotas based on your plan. Teams need to monitor their usage to manage budgets effectively.</li>
+            <li><strong>The Necessity of Human Oversight:</strong> The most important limitation to remember is that Claude Code is a tool to <strong>augment</strong>, not replace, a skilled developer. The final responsibility for the quality, security, and correctness of the code always lies with the human developer who reviews and merges the pull request.</li>
+        </ul>
+    </section>
+
+    <div class="transition-bridge">
+        <p>But every limitation also hints at what’s next — and this is where we turn to the future of AI in development.</p>
+    </div>
+
+    <section id="future-outlook">
+        <h2>🚀 The Future Outlook: Your Proactive AI Teammate</h2>
+        <p>The current state of "agentic AI" is just the beginning. The trajectory of tools like Claude Code points towards a future where the AI evolves from a reactive assistant to a proactive teammate.</p>
+        
+        <h3>From Reactive Commands to Proactive Guardianship</h3>
+        <p>Imagine a future where you don't even need to ask. The AI could act as a proactive guardian of your repository. These are speculative but likely future capabilities:</p>
+        <ul style="list-style-type: '🔮';">
+            <li><strong>Automated Dependency Management:</strong> An AI agent could constantly monitor for security vulnerabilities in your project's dependencies. When a new vulnerability is announced, it could automatically create a branch, update the package, run tests to ensure nothing breaks, and open a pull request for your approval—all before you've even read the security advisory.</li>
+            <li><strong>Performance Monitoring:</strong> The agent could analyze performance metrics from your live application. If it detects that a specific function is becoming a bottleneck, it could proactively open an issue, suggest a refactor, and even draft the optimized code for you to review.</li>
+            <li><strong>Intelligent Issue Triage:</strong> When a new bug report is filed on GitHub, the AI could perform the initial investigation, attempting to reproduce the bug, identifying the relevant lines of code, and tagging the correct team members to look at it, saving valuable triage time.</li>
+        </ul>
+
+        <h3>The Dawn of AI Agent Collaboration</h3>
+        <p>The next frontier is agents collaborating with other agents. A design agent could take a Figma file and translate it into React components. A coding agent (like Claude Code) could take those components and wire them up to a backend API. A testing agent could then write and execute end-to-end tests for the new feature. And finally, a deployment agent could manage the release process. This entire pipeline, orchestrated by humans but executed by a team of specialized AIs, represents a paradigm shift in how quickly we can move from concept to production.</p>
+    </section>
+    
+    <div class="transition-bridge">
+        <p>From foundations to futures, the story of Claude and GitHub is really the story of developers learning to collaborate with AI.</p>
+    </div>
+
+    <section id="conclusion">
+        <h2>Conclusion: Human Creativity, Amplified by AI Speed</h2>
+        <p>The integration of Git and GitHub with advanced AI like Claude Code is not just another incremental improvement; it's a fundamental change in the creative process. For decades, the bottleneck between a great idea and a functional product has been the complex, manual process of writing and managing code. Agentic AI acts as a universal translator, turning human intent into machine instructions at an unprecedented scale and speed.</p>
+        
+        <h3>Who Should Adopt This Now?</h3>
+        <ul style="list-style-type: '✅';">
+            <li><strong>Non-technical founders and professionals</strong> should adopt it immediately. It is the most direct path to building an MVP and validating an idea without a massive upfront investment in hiring.</li>
+            <li><strong>Small, agile development teams</strong> will see immediate productivity gains. By automating chores, they can focus their limited resources on building the features that matter most to their users.</li>
+            <li><strong>Large enterprises</strong> should begin experimenting in controlled environments. The potential for enforcing standards and modernizing legacy systems is enormous, but requires a thoughtful approach to governance and security.</li>
+        </ul>
+        <p>Ultimately, this new era is not about replacing human ingenuity but about amplifying it. The best results will come from a hybrid future—a partnership where human creativity, strategic vision, and domain expertise guide powerful AI agents that handle the technical execution with precision and speed. The journey from non-programmer to programmer, and from programmer to super-programmer, has never been shorter or more exciting.</p>
+        <div class="conclusion-cta">
+            <p>Ready to start your journey?</p>
+            <p>👉 Try installing Claude Code today (<code>npm install -g @anthropic-ai/claude-code</code>) and give it one task in your next GitHub repo. Start small, then grow.</p>
+        </div>
+    </section>
+
+   <section id="mastery-and-practice">
+        <h2>🎯 Mastery & Practice: Your Next Steps</h2>
+        <p>You've learned the theory; now it's time to put it into practice. This final section provides quizzes to test your knowledge, FAQs to answer lingering questions, and a glossary to solidify your understanding of key terms.</p>
+        
+        <div class="quiz-container" id="quiz-container-1">
+            <h3>Knowledge Check: The Essentials</h3>
+        </div>
+
+        <section id="possibilities">
+            <h3>🔮 Possibilities for Claude Code + GitHub</h3>
+             <p>Having grasped the basics, let's explore what becomes possible when an AI agent is a permanent team member. This isn't just about speed; it's about fundamentally new ways of working.</p>
+            <ul style="list-style-type: '🤖';">
+                <li><strong>Self-Healing Repositories:</strong> Imagine Claude detecting failing tests in your continuous integration pipeline, automatically opening a new branch, proposing a fix, and running the tests again—all before a human engineer even sees the failure notification. You could wake up to find bugs were fixed overnight.</li>
+                <li><strong>Proactive Code Reviews:</strong> Instead of only reacting to Pull Requests, a future Claude could periodically scan the entire repository for "code smells"—risky patterns, accumulating technical debt, or outdated dependencies. It could then automatically file detailed issues with suggestions for improvement, helping teams stay ahead of maintenance.</li>
+                <li><strong>AI-Driven Onboarding:</strong> A new contributor could join a project and, instead of reading through weeks of documentation, simply type, "@claude explain this repo." The AI could provide a personalized, interactive walkthrough of the architecture, key modules, local setup steps, and team-specific workflows, cutting onboarding time from weeks to hours.</li>
+                <li><strong>Spec-to-Code Transformation:</strong> The workflow of writing a detailed specification in a GitHub issue can be directly connected to code generation. A project manager could write, "Implement an OAuth login flow with Google and GitHub providers," and Claude could generate the initial branch, API routes, UI components, and documentation, leaving only the final review and integration for the human developer.</li>
+            </ul>
+        </section>
+
+        <div class="poll-container" id="poll-container-2"></div>
+
+        <div class="quiz-container" id="quiz-container-2">
+            <h3>Advanced Quiz: The Power User</h3>
+        </div>
+
+        <div id="faq-container">
+            <h2>Frequently Asked Questions</h2>
+            <div class="accordion">
+            </div>
+        </div>
+
+        <div id="glossary-container">
+             <h2>Key Terms to Know</h2>
+             <div class="glossary-cloud" id="glossaryCloud">
+             </div>
+        </div>
+   </section>
+
+ </div>
+
+ <footer class="site-footer">
+   <p>© 2025 Beyond Dictionary. All Rights Reserved. Building the future, one guide at a time.</p>
+ </footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // --- Data Store ---
+    const cardData = [
+        { icon: '🚀', title: "Start a New Project", command: "Create a complete file structure for a new React website using Vite." },
+        { icon: '🐛', title: "Fix a Bug", command: "The login form throws a 'null reference' error. Find and fix it in `login.js`." },
+        { icon: '✨', title: "Add a Feature", command: "Add a dark mode toggle that saves the user's preference in localStorage." },
+        { icon: '📜', title: "Write Documentation", command: "Scan the `api/` directory and generate a Markdown file documenting all endpoints." },
+        { icon: '🎓', title: "Explain Code", command: "Explain the `useMemo` hook in `Dashboard.jsx` like I'm a beginner." },
+        { icon: '💾', title: "Automate Commits", command: "Commit staged changes with the message 'feat: Implement user profile page'." },
+        { icon: '🔧', title: "Refactor Code", command: "Refactor the long function in `utils.py` into smaller, pure functions." },
+        { icon: '🧪', title: "Write Tests", command: "Write Jest unit tests for the `calculateTotal` function, covering edge cases." },
+        { icon: '📦', title: "Update Dependencies", command: "Check for outdated NPM packages and create a new branch with the updates." },
+        { icon: '💬', title: "Respond to Feedback", command: "@claude make the button blue, as requested in the review." },
+        { icon: '🔀', title: "Create a Pull Request", command: "Push this branch and open a pull request titled 'User Profile Feature'." },
+        { icon: '🔄', title: "Translate Languages", command: "Convert the `data_processor.py` script to an equivalent script in TypeScript." },
+        { icon: '📋', title: "Generate Data", command: "Create a `mock-users.json` file with 50 realistic but fake user profiles." },
+        { icon: '🗃️', title: "Set Up a Database", command: "Write a SQL schema for a blog with `posts` and `comments` tables." },
+        { icon: '🌐', title: "Search the Web", command: "Find the latest Stripe API docs for checkout sessions and create an example." }
+    ];
+
+    const quizData1 = [
+        { q: "What is the primary role of GitHub?", correct: 1, options: [{text: "To run code on your computer", exp: "Not quite. GitHub is a web platform for hosting code; the code itself runs on local computers or servers."}, {text: "To host code online and help teams collaborate", exp: "Correct! GitHub is a central, web-based hub where developers store their code, track all changes using Git, and collaborate on projects with features like Pull Requests and Issues."}, {text: "To automatically write code for you", exp: "Incorrect. While AI tools integrated with GitHub can write code, GitHub's core purpose is to store, manage, and version-control the code that is written."}, {text: "A type of AI assistant", exp: "Incorrect. GitHub is the platform or 'office' where development happens, while an AI assistant is a tool that works within that platform."}] },
+        { q: "What is a 'commit' in Git?", correct: 0, options: [{text: "A saved snapshot of your work with a message", exp: "Correct! A commit is the fundamental unit of saving in Git. It permanently stores a snapshot of your project's files at a specific point in time, along with a message describing the change."}, {text: "A request to add a new feature", exp: "Incorrect. Describing a new feature is typically done in a GitHub Issue. A commit is the act of saving the code written for that feature."}, {text: "An error in the code", exp: "Incorrect. A commit saves the state of your work, which could include bugs, but the commit itself is the act of saving, not the error."}, {text: "A conversation on GitHub", exp: "Incorrect. Conversations about code changes happen within Pull Requests or Issues, not in the commits themselves."}] },
+        { q: "How do you typically give instructions to Claude Code?", correct: 2, options: [{text: "By writing complex code", exp: "Incorrect. The primary advantage of Claude Code is that it understands natural language, allowing you to avoid writing complex code for routine tasks."}, {text: "By clicking buttons in a graphical interface", exp: "Incorrect. Claude Code is designed as a 'terminal-first' tool, meaning its primary interface is text-based commands rather than a graphical UI."}, {text: "By writing plain English commands in a terminal or comment", exp: "Correct! You interact with Claude Code by giving it high-level instructions in plain English, either directly in your computer's terminal or by mentioning it in a GitHub comment."}, {text: "By sending an email", exp: "Incorrect. All interactions with Claude Code happen directly within your development environment (the terminal) or your collaboration platform (GitHub)."}] },
+        { q: "What is a 'Pull Request' on GitHub?", correct: 3, options: [{text: "A command to delete code", exp: "Incorrect. A Pull Request is a proposal to add or change code. While these changes might involve deleting lines, its main purpose is review and integration."}, {text: "An invoice for your work", exp: "Incorrect. A Pull Request is a core collaboration feature related to code changes and has no financial function."}, {text: "A way to download a project", exp: "Incorrect. To download a project's code, you would typically use the `git clone` command or download a ZIP file from the repository page."}, {text: "A formal proposal to add your changes to the main project", exp: "Correct! A Pull Request is a dedicated place on GitHub to discuss, review, and approve a set of commits before they are merged into the main codebase."}] },
+        { q: "Can Claude Code fix bugs automatically?", correct: 0, options: [{text: "Yes, if you provide the error message or describe the bug", exp: "Correct! This is a key feature of an agentic AI. You can give it an error log or a description of the unwanted behavior, and it will analyze the code, propose a fix, and even create a commit for it."}, {text: "No, it can only write new code", exp: "Incorrect. Claude Code is capable of both creating new files and intelligently modifying existing code to fix issues or add features."}, {text: "Only for Python code", exp: "Incorrect. Claude is a polyglot AI, proficient in many popular programming languages, not just Python."}, {text: "No, that requires a human", exp: "Incorrect. While a human must always review and approve the final fix, the AI is capable of generating the initial fix on its own."}] },
+        { q: "Which file helps you tell Claude Code about your project's specific rules?", correct: 1, options: [{text: "README.md", exp: "Incorrect. The README.md file is the general instruction manual for human developers who want to understand and use the project."}, {text: "CLAUDE.md", exp: "Correct! The `CLAUDE.md` file is a special convention used to provide project-specific context, style guides, and instructions directly to the AI."}, {text: "SETTINGS.yml", exp: "Incorrect. While YAML files are used for configuration (like in GitHub Actions), they are not used for providing stylistic instructions to Claude."}, {text: "RULES.txt", exp: "Incorrect. This is not a standard convention. Claude is specifically programmed to look for a file named `CLAUDE.md` for its guidance."}] },
+        { q: "Is Claude Code a replacement for human developers?", correct: 2, options: [{text: "Yes, it will eventually write all code", exp: "Incorrect. The goal of current AI tools is to handle repetitive or well-defined tasks, augmenting human creativity, not replacing it entirely."}, {text: "Yes, for small projects", exp: "Incorrect. Even on small projects, human oversight, strategic direction, and final approval are essential for a successful outcome."}, {text: "No, it's an assistant designed to augment human developers", exp: "Correct! Claude Code acts as a force multiplier, handling the tedious 'how' so human developers can focus on the creative and architectural 'what' and 'why'."}, {text: "Only for web development", exp: "Incorrect. Claude Code is a general-purpose coding assistant that can be used for many types of software development across various languages."}] },
+        { q: "How can you trigger Claude Code within a GitHub Pull Request?", correct: 0, options: [{text: "By mentioning '@claude' in a comment", exp: "Correct! This 'at-mention' is the standard way to invoke the Claude Code GitHub Action, which listens for such comments on Pull Requests and Issues."}, {text: "By approving the Pull Request", exp: "Incorrect. Approving a Pull Request is the final human step to merge the code; it does not trigger the AI to do more work."}, {text: "By sending a direct message to Anthropic", exp: "Incorrect. The integration is designed to work seamlessly within your GitHub repository's collaboration features, not through external communication."}, {text: "By starting a video call", exp: "Incorrect. All interactions with the Claude Code GitHub Action are text-based, happening within GitHub comments and issues."}] },
+        { q: "The difference between an 'agent' and an 'advisor' AI is...", correct: 3, options: [{text: "The agent is free and the advisor is paid", exp: "Incorrect. The pricing model does not define the capability. The distinction is about how the AI functions, not how it is billed."}, {text: "The agent writes Python, the advisor writes JavaScript", exp: "Incorrect. Both types of AI tools are typically capable of working with multiple programming languages."}, {text: "An agent is for beginners, an advisor is for experts", exp: "Incorrect. Both agentic and advisory tools can provide significant value to developers at all skill levels, just in different ways."}, {text: "An agent takes action (writes files), while an advisor gives suggestions", exp: "Correct! This is the key philosophical difference. An agent performs tasks autonomously, while an advisor provides information or code for a human to implement."}] },
+        { q: "Do you need to be a coding expert to benefit from Claude Code?", correct: 1, options: [{text: "Yes, it's only for senior developers", exp: "Incorrect. While it's a powerful tool for experts, it is also designed to significantly lower the barrier to entry for beginners."}, {text: "No, it can help beginners by handling complex syntax and commands", exp: "Correct! It allows beginners to achieve results by focusing on their goals described in plain English, rather than getting stuck on technical syntax."}, {text: "Yes, you need at least 5 years of experience", exp: "Incorrect. You can start using Claude Code with zero prior programming experience to help you learn and build."}, {text: "Only if you're a data scientist", exp: "Incorrect. Claude Code is a general-purpose coding assistant suitable for web development, app development, data science, and more."}] },
+        { q: "What is the main advantage of a `CLAUDE.md` file?", correct: 2, options: [{text: "It makes your project look more professional", exp: "Incorrect. While having standards is professional, the file itself is functional, not aesthetic. Its purpose is to instruct the AI."}, {text: "It's required by GitHub to run any AI", exp: "Incorrect. This is a feature specific to the Claude Code integration and is not a general GitHub requirement for all AI tools."}, {text: "It ensures the AI's contributions match your team's coding style", exp: "Correct! The file provides crucial context and rules, leading to more consistent and higher-quality AI-generated code that fits your project."}, {text: "It hides your secret API keys", exp: "Incorrect. You must never put secret keys in any file within your repository. They should always be stored as encrypted GitHub Secrets."}] },
+        { q: "Should you always trust and accept the code Claude Code produces without looking at it?", correct: 1, options: [{text: "Yes, the AI is always correct", exp: "Incorrect. Like any tool, or even any human developer, an AI can make mistakes, misunderstand context, or produce suboptimal code."}, {text: "No, you should always review its suggestions like you would a human's work", exp: "Correct! The final responsibility for the quality, security, and correctness of the code always lies with the human developer who reviews and merges the changes."}, {text: "Only if the change is very small", exp: "Incorrect. Even a one-line change can introduce a critical bug, so every modification should be reviewed before being merged."}, {text: "Yes, if you have a paid plan", exp: "Incorrect. A paid plan provides access and higher usage limits, but it does not guarantee that every output will be perfect."}] },
+    ];
+    const quizData2 = [
+        { q: "Which file does Claude Code use to learn your team’s coding standards?", correct: 1, options: [{text:"README.md", exp:"Incorrect. The README.md file is a general-purpose document intended for human developers to understand the project's setup and usage."}, {text:"CLAUDE.md", exp:"Correct! Claude Code is specifically designed to look for a `CLAUDE.md` file in the repository's root to find project-specific guidelines, style conventions, and architectural context."}, {text:"CONFIG.json", exp:"Incorrect. While a project might use a CONFIG.json for its own settings, this is not the conventional file for providing instructions to the Claude AI."}, {text:"GITRULES.txt", exp:"Incorrect. This is not a standard file that Claude Code recognizes for its operational instructions."}] },
+        { q: "What is the primary mechanism that enables invoking Claude via repository events on GitHub?", correct: 0, options: [{text:"A `claude.yml` workflow file", exp:"Correct! The YAML workflow file, located in the `.github/workflows` directory, defines the specific GitHub Actions triggers (like a comment being created on a pull request) that will execute the Claude Code assistant."}, {text:"A file named `actions.yml`", exp:"Incorrect. While it relates to the concept of actions, the workflow configuration that defines the triggers and steps is what activates the process for a specific repository."}, {text:"A `workflow.json` file", exp:"Incorrect. GitHub Actions workflows are defined using the YAML (`.yml`) syntax, not JSON."}, {text:"A file named `pipeline.yaml`", exp:"Incorrect. This is a common filename in other CI/CD systems like GitLab, but GitHub specifically uses the workflow file structure within the `.github/workflows` directory."}] },
+        { q: "How should you securely provide your Anthropic API key to a GitHub Actions workflow?", correct: 2, options: [{text:"Commit it directly into the `claude.yml` file", exp:"Incorrect. This is a major security risk. Committing any secret key to a repository, even a private one, exposes it in the Git history and is a very dangerous practice."}, {text:"Save it in the `README.md` file", exp:"Incorrect. This is also highly insecure and would make your key public to anyone who can view the repository."}, {text:"Store it as an encrypted GitHub Secret", exp:"Correct! GitHub Secrets are the secure, standard way to provide sensitive credentials like API keys to actions. The action can then access the secret at runtime without it ever being exposed in the code."}, {text:"Add it as a comment in the `CLAUDE.md` file", exp:"Incorrect. This is insecure and not how the action is designed to read credentials. The `CLAUDE.md` file is for instructions, not secrets."}] },
+        { q: "When asked in plain English, which commands can Claude Code execute?", correct: 3, options: [{text:"Only `npm install`", exp:"Incorrect. The AI's capabilities are much broader and are not limited to a single, specific command."}, {text:"Only Python scripts", exp:"Incorrect. Claude is language-agnostic and can execute any shell commands, allowing it to work with projects in any language."}, {text:"Only `git commit`", exp:"Incorrect. Claude can handle a wide range of Git operations, including branching, adding files, and pushing, not just committing."}, {text:"Any shell/Git commands within the project's context", exp:"Correct! As a true agent, Claude can execute arbitrary commands in the terminal to fulfill a request, such as running build scripts, installing dependencies, running tests, or performing complex Git operations."}] },
+        { q: "What is the most likely outcome when you comment '@claude fix bug' on a PR?", correct: 0, options: [{text:"Claude attempts the fix and proposes a new commit to the PR", exp:"Correct! The GitHub Action is designed to be agentic. It takes the instruction and directly contributes a potential solution back to the same Pull Request, making the workflow interactive and efficient."}, {text:"Claude sends you an email with a patch file", exp:"Incorrect. The entire workflow is designed to be integrated and contained within GitHub, not rely on external communication channels like email."}, {text:"Claude writes suggestions as comments but cannot commit code", exp:"Incorrect. This describes the behavior of an 'advisor' AI. As an 'agent,' Claude Code's key feature is its ability to take action and commit code directly."}, {text:"Nothing happens unless you pre-approve the action", exp:"Incorrect. The comment containing the '@claude' mention is the trigger. No separate pre-approval for that specific run is needed once the workflow has been set up in the repository."}] },
+        { q: "Which statement best describes the difference between Claude Code and GitHub Copilot?", correct: 1, options: [{text:"Both are primarily for autocompleting single lines of code", exp:"Incorrect. This description is more accurate for Copilot's original primary function, but not for Claude Code's agentic capabilities."}, {text:"Claude is agentic (acts on tasks), while Copilot is suggestive (autocompletes)", exp:"Correct! This captures the core philosophical difference. Claude performs entire tasks from start to finish (e.g., creating a PR), whereas Copilot assists a developer who is actively typing code by suggesting the next block."}, {text:"Copilot is the one that can commit code, while Claude only advises", exp:"Incorrect. The roles are reversed; Claude is the agent designed to commit code and manage Git workflows, whereas Copilot operates within the editor."}, {text:"They are identical in purpose and functionality", exp:"Incorrect. They represent two distinct and complementary approaches to AI assistance in software development."}] },
+        { q: "What is the safest way to integrate Claude Code in a sensitive, private repository?", correct: 2, options: [{text:"Push the API key directly in the code for easy access", exp:"Incorrect. This is an extremely insecure practice that should never be followed."}, {text:"Allow the GitHub Action to be triggered by any public comment", exp:"Incorrect. This would allow unauthorized or malicious users to run your actions and consume your API quota, which is a security and financial risk."}, {text:"Use GitHub Secrets for the API key and restrict action triggers to trusted users", exp:"Correct! This combination of secure credential storage (Secrets) and controlled trigger permissions (e.g., only allowing maintainers to run the action) is the standard best practice for security."}, {text:"Disable all Pull Request reviews to speed up the process", exp:"Incorrect. Disabling reviews is a dangerous practice, especially when working with AI-generated code, as human oversight is a critical part of the process."}] },
+        { q: "Claude Code can participate in a Pull Request review by...", correct: 0, options: [{text:"Analyzing the code differences (diffs) and posting comments with suggestions", exp:"Correct! You can invoke Claude on a Pull Request and ask it to perform a review. It will analyze the changes and provide feedback in the form of comments, just like a human reviewer."}, {text:"Running VS Code extensions on the code", exp:"Incorrect. The GitHub Action runs in a non-graphical server environment (a runner) and does not have access to a visual IDE like VS Code or its extensions."}, {text:"Emailing the repository maintainers directly", exp:"Incorrect. All interactions are designed to happen transparently on the GitHub platform, not through external communication."}, {text:"Exporting patches to a Slack channel only", exp:"Incorrect. While you could build a custom integration to send notifications to Slack, its native review function is to comment directly on the GitHub Pull Request."}] },
+        { q: "Which sequence of Git commands does Claude abstract when you say 'save my work and push it to a new branch'?", correct: 1, options: [{text:"`git status`", exp:"Incorrect. `git status` only shows the current state of files; it does not save or push anything to a new branch."}, {text:"`git branch`, `git add`, `git commit`, `git push`", exp:"Correct! To fulfill this request, Claude would need to perform a sequence of actions: create a new branch, stage the changed files, commit them with a message, and finally push the new branch to the remote repository."}, {text:"`git merge`", exp:"Incorrect. Merging is the process of combining different branches, not saving and pushing new work."}, {text:"`git log`", exp:"Incorrect. The `git log` command is for viewing the history of past commits, not creating new ones."}] },
+        { q: "What is a potential limitation of Claude's repo-awareness in a very large monorepo?", correct: 2, options: [{text:"It is unable to open new issues on GitHub", exp:"Incorrect. Claude can interact with the GitHub API to perform actions like opening issues, provided it is instructed to do so."}, {text:"It is unable to refactor code", exp:"Incorrect. Refactoring existing code based on a set of rules or goals is one of its key strengths."}, {text:"The model's context window may limit how much of the codebase it can 'see' at once", exp:"Correct! For extremely large and complex repositories, the AI might not be able to load the entire project's context into its working memory, which could affect the quality of its suggestions for highly interconnected code."}, {text:"It is unable to run tests", exp:"Incorrect. Claude can execute any command-line script available in the environment, which includes running testing frameworks like Jest, Pytest, etc."}] },
+        { q: "How does Claude Code typically integrate into a CI/CD pipeline?", correct: 0, options: [{text:"As a step in a GitHub Actions workflow", exp:"Correct! It can be defined as a job within your existing CI/CD YAML file. For example, it could be triggered after tests pass to automatically generate documentation, or after tests fail to attempt an automatic fix."}, {text:"Via direct SSH access to the production server", exp:"Incorrect. This would be a very insecure and unconventional integration method. All interactions should happen through managed CI/CD platforms."}, {text:"Through the GitHub Copilot API", exp:"Incorrect. Claude Code and Copilot are separate products developed by different companies and have their own distinct APIs."}, {text:"It cannot integrate with CI/CD pipelines", exp:"Incorrect. Its command-line nature and official GitHub Action make it highly suitable and designed for integration with CI/CD pipelines."}] },
+        { q: "What is the primary benefit of an 'agentic' AI like Claude in a GitHub workflow?", correct: 3, options: [{text:"It only provides advice, which is safer", exp:"Incorrect. Its main benefit is that it goes beyond just providing advice and can actually take action to implement that advice."}, {text:"It completely replaces the need for all developers", exp:"Incorrect. It is a tool designed to augment and accelerate the work of human developers, not replace them."}, {text:"It works completely outside of established developer workflows", exp:"Incorrect. Its greatest strength is that it works *inside* and respects established developer workflows, such as creating branches and opening Pull Requests for review."}, {text:"It automates real actions (commits, PRs, reviews) directly within the workflow", exp:"Correct! It transitions from being a passive tool that a developer consults to an active participant in the development lifecycle."}] }
+    ];
+    const pollData1 = {
+        question: "What is the biggest barrier for you when starting a new software project?",
+        options: ["Understanding Git and GitHub", "Writing the initial boilerplate code", "Choosing the right technology", "Finding time to get started"]
+    };
+     const pollData2 = {
+        question: "After learning about agentic AI, what are you most excited to automate?",
+        options: ["Writing unit tests", "Fixing minor bugs", "Documenting code", "Refactoring old code"]
+    };
+    const faqData = [
+        {q: "How do I install Claude Code locally?", a: "Claude Code is a command-line tool (CLI), which means it runs in your terminal. Installation is typically handled by a package manager like npm, which comes with Node.js. You would run a command like `npm install -g @anthropic-ai/claude-code`. After the installation is complete, you'll usually run a one-time login command, such as `claude login`, which will open a browser window to authenticate with your Anthropic account. Once that's done, you can navigate to any of your project folders in the terminal and start giving Claude instructions."},
+        {q: "Do I need admin rights on my GitHub repository to set up the full integration?", a: "Yes, for the initial setup, you do. The integration works by installing the 'Claude GitHub App' on your repository or organization. This process requires administrator-level permissions because you are granting the application the ability to read your code and act on your behalf (like creating branches and commenting on pull requests). Once the app is installed, any user with write permissions to the repo can typically trigger the AI via comments, though this can be configured in the workflow file."},
+        {q: "Is my private repository data safe when using the GitHub integration?", a: "Security is a primary design consideration. When the GitHub Action runs, it executes on a secure, ephemeral virtual machine hosted by GitHub (an 'Action runner'). Your codebase itself isn't cloned to a persistent third-party server. Relevant context from your files and your prompt are sent via a secure API call to Anthropic for processing. Both GitHub and Anthropic have robust data privacy and security policies. For maximum control in an enterprise setting, you can use self-hosted runners or explore private deployment options to ensure data never leaves your own infrastructure."},
+        {q: "What happens if Claude’s automated changes break my code or have a bug?", a: "This is a critical point and highlights the importance of human oversight. Claude's contributions are designed to be part of the standard development workflow, not to bypass it. The AI will commit its changes to a separate branch and open a Pull Request. This is your safety gate. Your team's existing CI pipeline will run tests against its changes, and you must review the code just like you would for a human teammate. If the code is buggy or incorrect, you can comment on the PR with further instructions ('@claude this doesn't handle negative numbers, please add a check') or simply reject the changes and fix them yourself. The AI's work is never merged automatically without your explicit approval."},
+        {q: "Can Claude Code handle complex merge conflicts?", a: "It can assist, but human judgment is key. If a merge conflict is simple (e.g., changes in different parts of a file), you can instruct Claude to attempt a resolution, and it can often succeed. However, for complex logical conflicts where two developers have implemented competing solutions, a human is still required to make the final strategic decision. Think of Claude as capable of handling the mechanical parts of a merge, but you should always review the result carefully. It's best to use Claude to avoid conflicts in the first place by having it work on isolated features in separate branches."},
+        {q: "Does Claude Code work with other platforms like GitLab or Bitbucket?", a: "While the most polished, out-of-the-box integration is the official GitHub Action, the core Claude Code tool is a command-line interface (CLI). This makes it highly versatile. You can integrate it into any CI/CD system that can execute shell scripts, which includes GitLab CI/CD, Bitbucket Pipelines, Jenkins, and others. You would simply write a script in your pipeline's configuration file that installs the Claude CLI and then calls it with the appropriate prompts, using environment variables to securely provide your API key. It requires more manual setup but is absolutely possible."},
+        {q: "What is the cost of using Claude Code in my projects?", a: "The cost is separated from your GitHub subscription. Using Claude Code involves making calls to Anthropic's API, and the pricing is based on your usage. This is often measured in 'tokens,' which represent pieces of words or code processed by the model. The total cost will depend on how frequently your team invokes the AI and the complexity of the tasks you assign it. You should refer to Anthropic’s official pricing page for details on their API plans and any free tiers they might offer. It's important to set up budget alerts and monitor your usage, especially when first integrating it with an active team."},
+        {q: "Can Claude Code be used completely offline?", a: "No, the standard version of Claude Code requires a live internet connection to communicate with Anthropic's powerful AI models, which run on their servers. The intelligence is in the cloud, not on your local machine. However, for large enterprise customers with strict data residency or security requirements, Anthropic offers solutions that can be deployed on-premise or in a private cloud environment (like AWS Bedrock). This provides the power of the AI within your own network but is a specialized enterprise solution."},
+        {q: "How is Claude Code fundamentally different from GitHub Copilot Chat?", a: "This is a key distinction in AI tool philosophy. Copilot Chat works as an 'advisor' inside your editor (like VS Code). You can highlight code and ask it questions, or ask it to generate a function, which it will then place in your editor for you to review and save. Claude Code works as an 'agent'. It operates on the entire project and can execute a full sequence of actions. You can tell it to 'fix a bug and open a PR,' and it will perform the git commands, edit files, commit, and create the Pull Request on GitHub autonomously. Copilot helps you write the code; Claude can do the entire job for you."},
+        {q: "Can I restrict Claude to only respond to repository maintainers or specific team members?", a: "Yes, absolutely. This is a crucial feature for managing public or large repositories. You can configure the `claude.yml` GitHub Actions workflow file to control who can trigger the AI. For example, you can add a condition that checks if the author of the comment (`github.event.comment.user.login`) is a member of a specific team or has a certain role (like 'maintainer' or 'owner'). This prevents unauthorized users from triggering actions and using your API resources."},
+        {q: "What is the ideal size for a task given to Claude?", a: "Claude works best with well-defined, modular tasks. Instead of 'Build my app,' break it down. Good tasks include: 'Create a React component for a login form,' 'Write a Python function to parse a CSV file,' or 'Fix the bug described in issue #42.' For larger features, you can guide it sequentially: first ask it to create the files, then to write the main logic, then to add styling, and finally to write tests. Thinking like a project manager delegating to a junior developer is a very effective mental model."},
+        {q: "How does the AI handle ambiguity in my instructions?", a: "If your instructions are too vague, the AI will make its best guess based on the context from your repository, which might not be what you wanted. This is why being specific is key. For example, instead of 'make the button look better,' a much better prompt is 'make the login button larger, with a blue background, white text, and rounded corners.' If it's truly unsure, it may ask for clarification, but providing clear, actionable instructions will always yield better and more predictable results."},
+        {q: "Can Claude Code learn from my private repositories to improve its general model?", a: "No. Anthropic has a strong commitment to data privacy. The prompts and code you send to the API are used to generate a response for you, but they are not used to train their general-purpose models. Your proprietary code remains your own. This is a standard and critical policy for enterprise-grade AI services, ensuring that your trade secrets do not become part of the public model's knowledge base."},
+        {q: "What programming languages does Claude Code support?", a: "Claude is a polyglot, meaning it's proficient in a wide array of popular programming languages, including Python, JavaScript, TypeScript, Java, C++, Go, Rust, and many more. It also understands markup and styling languages like HTML and CSS, as well as database languages like SQL. Because it works at the file and command-line level, it can operate on any text-based project, regardless of the specific technology stack you are using."},
+        {q: "What is the best way to get started if I've never used a command line before?", a: "The best first step is to open the terminal application on your computer (Terminal on macOS/Linux, or PowerShell/WSL on Windows) and learn a few basic commands like `ls` (list files), `cd` (change directory), and `mkdir` (make directory). There are many free, excellent online tutorials for this. Once you are comfortable navigating your file system, you can install Claude Code. The key insight is that Claude actually makes the terminal *easier* to use, because you can replace complex commands with plain English instructions once it's installed."},
+        {q: "How can I monitor and control Claude Code's API usage to manage costs?", a: "You can set up monitoring through Anthropic's dashboard, which provides detailed usage analytics including token consumption, API calls, and estimated costs. Set up budget alerts to receive notifications when usage exceeds your thresholds. For teams, consider implementing usage quotas per user or project. You can also use environment variables to set daily or monthly limits, and configure your workflow files to include usage tracking in commit messages or PR descriptions."},
+        {q: "What's the difference between Claude Code and traditional code completion tools?", a: "Traditional code completion tools like IntelliSense or basic autocomplete suggest the next few characters or lines based on context. Claude Code is fundamentally different - it's an autonomous agent that can understand complex requirements, plan multi-step tasks, execute commands, and complete entire features. While completion tools help you type faster, Claude Code can build entire applications, fix bugs across multiple files, write documentation, and even create pull requests with proper commit messages."},
+        {q: "Can Claude Code work with legacy codebases that have poor documentation?", a: "Yes, Claude Code is particularly effective with legacy codebases because it can analyze the entire codebase to understand patterns, conventions, and architecture. It can reverse-engineer documentation by examining the code structure, variable names, and function relationships. You can ask it to 'analyze this legacy system and create documentation' or 'refactor this old code while maintaining the same behavior.' It's often better at understanding undocumented legacy code than human developers who are new to the project."},
+        {q: "How does Claude Code handle different coding styles and conventions across a team?", a: "Claude Code can adapt to your team's specific coding conventions through the CLAUDE.md file, where you can specify style guides, naming conventions, architectural patterns, and preferred libraries. It can also learn from existing code patterns in your repository. For example, if your team uses camelCase for variables, specific indentation styles, or particular error handling patterns, Claude will follow these conventions in its generated code. You can also provide examples of 'good' and 'bad' code to help it understand your preferences."},
+        {q: "What happens if Claude Code makes changes that conflict with my team's workflow?", a: "Claude Code is designed to integrate with your existing workflow, not replace it. It creates branches, follows your branching strategy, and opens pull requests that go through your normal review process. If its changes don't align with your workflow, you can reject the PR and provide feedback. You can also configure it to follow specific patterns - for example, if your team uses feature flags, you can instruct Claude to always wrap new features in flags. The key is clear communication in your prompts and CLAUDE.md file about your team's specific requirements."},
+        {q: "Can Claude Code help with database migrations and schema changes?", a: "Absolutely. Claude Code can analyze your current database schema, understand the relationships between tables, and generate appropriate migration scripts. It can handle complex migrations like adding new columns with proper constraints, creating indexes, or restructuring relationships. It's particularly good at maintaining data integrity during migrations and can generate both the migration scripts and the corresponding rollback procedures. However, always review database changes carefully and test them in a development environment first."},
+        {q: "How does Claude Code handle security-sensitive code and secrets?", a: "Claude Code is designed with security in mind. It won't expose secrets or API keys in its responses, and it understands common security patterns. However, you should never include actual secrets in your prompts or repository. Use environment variables, GitHub Secrets, or other secure credential management systems. Claude can help you implement proper security practices like input validation, authentication checks, and secure coding patterns, but it's your responsibility to ensure sensitive data is properly protected in your actual implementation."},
+        {q: "Can Claude Code help with testing and quality assurance?", a: "Yes, Claude Code excels at testing. It can write unit tests, integration tests, and end-to-end tests based on your code. It understands testing frameworks like Jest, Pytest, or JUnit, and can generate comprehensive test suites that cover edge cases, error conditions, and happy paths. It can also help with test-driven development by writing tests first, then implementing the code to pass those tests. Additionally, it can analyze code coverage, suggest improvements, and help refactor code to make it more testable."},
+        {q: "What's the best way to provide feedback when Claude Code doesn't meet expectations?", a: "Be specific and constructive in your feedback. Instead of 'this is wrong,' explain what you expected and why the current approach doesn't work. Use the PR comment system to provide detailed feedback like 'The error handling should use try-catch blocks instead of if statements' or 'This function should return a Promise to match our async pattern.' You can also update your CLAUDE.md file with new guidelines based on the feedback. Claude learns from context, so the more specific you are about your requirements and preferences, the better it will perform in future tasks."}
+    ];
+    const glossaryData = [
+        {term: "Repository (Repo)", def: "The main project folder containing all files and the entire history of changes, managed by Git."},
+        {term: "Commit", def: "A snapshot of your project at a specific point in time, saved with a descriptive message to the logbook."},
+        {term: "Branch", def: "A parallel line of development within a repository, allowing you to work on features without affecting the main codebase."},
+        {term: "Pull Request (PR)", def: "A GitHub feature to propose merging changes from your branch into another, initiating a code review."},
+        {term: "Merge Conflict", def: "An issue that arises when two branches have changed the same part of a file, requiring human intervention to resolve."},
+        {term: "GitHub Actions", def: "An automation platform built into GitHub that allows you to run workflows in response to repository events."},
+        {term: "Claude Code", def: "Anthropic’s agentic AI coding assistant that can execute tasks and perform actions in your development environment."},
+        {term: "Agentic AI", def: "An AI that can perform multi-step tasks and take actions to achieve a goal, rather than just providing suggestions."},
+        {term: "CLAUDE.md", def: "A special file in your repository where you provide project-specific guidelines and style rules for the Claude AI to follow."},
+        {term: "CI/CD", def: "Continuous Integration/Continuous Deployment. An automated software development practice for building, testing, and deploying code."},
+        {term: "Copilot", def: "GitHub’s AI pair-programmer, which primarily functions as a powerful code suggestion and autocompletion tool inside your editor."},
+        {term: "Codespaces", def: "A cloud-based development environment hosted by GitHub, providing a full VS Code experience in your browser."},
+        {term: "Replit", def: "An online, in-browser IDE focused on ease of use, collaboration, and rapid prototyping."},
+        {term: "Ghostwriter", def: "The name for Replit’s integrated AI coding assistant, similar in function to Copilot."},
+        {term: "Duet AI", def: "Google Cloud’s AI assistant, specializing in providing help and generating code for Google Cloud Platform services."},
+        {term: "Refactor", def: "The process of restructuring and improving existing computer code without changing its external behavior."},
+        {term: "Linting", def: "The process of automatically checking source code for programmatic and stylistic errors."},
+        {term: "API Key", def: "A secret token used to authenticate with a service's API, proving you have permission to use it."},
+        {term: "GitHub Secrets", def: "A feature in GitHub for storing sensitive information like API keys in an encrypted way for use in Actions."},
+        {term: "Version Control", def: "A system that records changes to a file or set of files over time so that you can recall specific versions later."},
+        {term: "Context Window", def: "The amount of text and code an AI model can 'see' and process at one time to understand a request."},
+        {term: "Issue Tracker", def: "A feature on platforms like GitHub used to manage and track tasks, bug reports, and feature requests."},
+        {term: "Diff", def: "A visual representation of the differences between two versions of a file or two sets of commits."},
+        {term: "Fork", def: "A personal copy of another user's repository, allowing you to freely experiment with changes without affecting the original project."},
+        {term: "Workflow File", def: "A YAML (`.yml`) configuration file that defines the triggers, jobs, and steps for a GitHub Actions process."}
+    ];
+    
+    // --- Setup Functions ---
+    function setupAllAccordions(containerSelector) {
+        const container = document.querySelector(containerSelector);
+        if(!container) return;
+        container.addEventListener('click', e => {
+            const header = e.target.closest('.accordion-header');
+            if (!header) return;
+            const content = header.nextElementSibling;
+            const isExpanded = header.getAttribute('aria-expanded') === 'true';
+            
+            header.closest('.accordion').querySelectorAll('.accordion-header').forEach(h => {
+                if (h !== header) {
+                    h.setAttribute('aria-expanded', 'false');
+                    h.nextElementSibling.style.maxHeight = "0";
+                    h.nextElementSibling.style.padding = "0 20px";
+                }
+            });
+
+            header.setAttribute('aria-expanded', !isExpanded);
+            if (!isExpanded) {
+                content.style.maxHeight = content.scrollHeight + "px";
+                content.style.padding = "10px 20px 20px";
+            } else {
+                content.style.maxHeight = "0";
+                content.style.padding = "0 20px";
+            }
+        });
+    }
+
+    function setupQuiz(containerId, questions) {
+        const container = document.getElementById(containerId);
+        if (!container || !questions || questions.length === 0) return;
+        let currentQ = 0;
+        const render = () => {
+            if (!questions[currentQ]) return;
+            const q = questions[currentQ];
+            const optionsHtml = q.options.map((opt, i) => `
+                <div class="quiz-option" data-index="${i}"><label><input type="radio" name="q${containerId}${currentQ}" value="${i}"><span>${opt.text}</span></label><div class="explanation">${opt.exp}</div></div>`).join('');
+            container.innerHTML = `<h3>${container.querySelector('h3').textContent}</h3><div class="quiz-navigation"><button class="btn prev-btn" ${currentQ === 0 ? 'disabled' : ''}>&larr; Prev</button><span>Question ${currentQ + 1} of ${questions.length}</span><button class="btn next-btn" ${currentQ === questions.length - 1 ? 'disabled' : ''}>Next &rarr;</button></div><h4>${q.q}</h4><div class="quiz-options">${optionsHtml}</div>`;
+        };
+        container.addEventListener('change', e => {
+            if (e.target.type === 'radio') {
+                const selectedIndex = parseInt(e.target.value);
+                const isCorrect = selectedIndex === questions[currentQ].correct;
+                container.querySelectorAll('.quiz-option').forEach(div => div.classList.remove('selected', 'correct', 'wrong'));
+                const selectedDiv = e.target.closest('.quiz-option');
+                selectedDiv.classList.add('selected', isCorrect ? 'correct' : 'wrong');
+            }
+        });
+        container.addEventListener('click', e => {
+            if (e.target.classList.contains('next-btn') && currentQ < questions.length - 1) { currentQ++; render(); }
+            if (e.target.classList.contains('prev-btn') && currentQ > 0) { currentQ--; render(); }
+        });
+        render();
+    }
+    
+    function setupPoll(containerId, data) {
+        const container = document.getElementById(containerId);
+        if(!container || !data) return;
+        const optionsHtml = data.options.map((opt, i) => `<div class="quiz-option"><label><input type="radio" name="poll-${containerId}" value="${i}"> <span>${opt}</span></label></div>`).join('');
+        container.innerHTML = `<h3>Community Poll</h3><h4>${data.question}</h4>${optionsHtml}<button class="btn" style="margin-top:1rem;">Vote</button>`;
+        container.querySelector('button').addEventListener('click', () => {
+            container.innerHTML = '<h3>Community Poll</h3><h4>Thank you for your feedback!</h4><p>Your response helps shape the future of AI tools.</p>';
+        });
+    }
+
+    function setupFaqs(containerId, data) {
+        const container = document.getElementById(containerId).querySelector('.accordion');
+        if(!container || !data) return;
+        container.innerHTML = data.map(faq => `<div class="accordion-item"><button class="accordion-header" aria-expanded="false"><span class="accordion-title">${faq.q}</span></button><div class="accordion-content"><p>${faq.a}</p></div></div>`).join('');
+    }
+
+    function setupGlossary(containerId, data) {
+        const cloud = document.getElementById(containerId);
+        if (!cloud || !data) return;
+        cloud.innerHTML = data.map(kw => `<button class="glossary-chip" type="button"><span>${kw.term}</span></button>`).join('');
+        const tip = document.createElement('div');
+        tip.className = 'chip-tip';
+        tip.innerHTML = '<div class="arrow" aria-hidden="true"></div><div class="tip-content"></div>';
+        document.body.appendChild(tip);
+        const tipContent = tip.querySelector('.tip-content');
+        const tipArrow = tip.querySelector('.arrow');
+        let openBtn = null;
+        let isTipOpenByKey = false;
+        function clamp(n, min, max){ return Math.max(min, Math.min(n, max)); }
+        function positionTipFor(btn){
+          const rect = btn.getBoundingClientRect(); const vw = window.innerWidth; const pad = 8;
+          tip.style.maxWidth = Math.min(vw - pad*2, 420) + 'px';
+          const tipRect = tip.getBoundingClientRect();
+          const preferTop = rect.top > (window.innerHeight - rect.bottom);
+          const top = preferTop ? rect.top - tipRect.height - 12 : rect.bottom + 12;
+          const left = clamp(rect.left + rect.width/2 - tipRect.width/2, pad, vw - tipRect.width - pad);
+          tip.style.top = Math.max(8, top) + 'px'; tip.style.left = left + 'px';
+          tipArrow.style.top = preferTop ? (tipRect.height - 6) + 'px' : '-6px';
+          tipArrow.style.left = clamp(rect.left + rect.width/2 - left - 6, 10, tipRect.width - 22) + 'px';
+        }
+        function openTip(btn, text){ tipContent.innerHTML = text; tip.classList.add('show'); positionTipFor(btn); openBtn = btn; }
+        function closeTip(){ if(!isTipOpenByKey) { tip.classList.remove('show'); openBtn = null; } }
+        
+        cloud.querySelectorAll('.glossary-chip').forEach((btn,i)=>{
+          const def = data[i].def;
+          btn.addEventListener('mouseenter', () => openTip(btn, def));
+          btn.addEventListener('focus', () => openTip(btn, def));
+          btn.addEventListener('mouseleave', closeTip);
+          btn.addEventListener('blur', () => { isTipOpenByKey = false; closeTip(); });
+          btn.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                isTipOpenByKey = !tip.classList.contains('show') || openBtn !== btn;
+                if(isTipOpenByKey) {
+                    openTip(btn, def);
+                } else {
+                    tip.classList.remove('show');
+                    openBtn = null;
+                }
+            }
+          });
+        });
+        window.addEventListener('resize',()=>{ if(openBtn) positionTipFor(openBtn); });
+        window.addEventListener('scroll',()=>{ if(openBtn) positionTipFor(openBtn); }, {passive:true});
+    }
+
+    function setupGitFlowSVG() {
+        const svg = document.getElementById('git-flow-svg');
+        const infoP = document.getElementById('git-flow-info');
+        if (!svg || !infoP) return;
+        const defaultText = infoP.textContent;
+        svg.querySelectorAll('.interactive-elem').forEach(elem => {
+            elem.addEventListener('mouseover', () => {
+                infoP.textContent = elem.dataset.info;
+            });
+            elem.addEventListener('mouseout', () => {
+                infoP.textContent = defaultText;
+            });
+        });
+    }
+
+    function setupRadarChart() {
+        const container = document.getElementById('comparison-radar-chart-container');
+        const togglesContainer = document.getElementById('radar-chart-toggles');
+        if (!container || !togglesContainer) return;
+
+        const data = {
+            Claude:    { "AI Autonomy": 0.9, "GitHub Integration": 0.9, "Ease for Beginners": 0.8, "Enterprise Fit": 0.8, "In-IDE Experience": 0.3 },
+            ChatGPT:   { "AI Autonomy": 0.3, "GitHub Integration": 0.4, "Ease for Beginners": 0.9, "Enterprise Fit": 0.6, "In-IDE Experience": 0.2 },
+            Copilot:   { "AI Autonomy": 0.4, "GitHub Integration": 0.7, "Ease for Beginners": 0.7, "Enterprise Fit": 0.9, "In-IDE Experience": 0.9 },
+            Replit:    { "AI Autonomy": 0.6, "GitHub Integration": 0.6, "Ease for Beginners": 1.0, "Enterprise Fit": 0.4, "In-IDE Experience": 0.8 }
+        };
+        const colors = { Claude: "#d9480f", ChatGPT: "#74aa9c", Copilot: "#8c8c8c", Replit: "#5f7e97" };
+        const labels = Object.keys(data.Claude);
+        const numAxes = labels.length;
+        const width = 500, height = 400;
+        const radius = Math.min(width, height) / 2 - 60;
+        const centerX = width / 2;
+        const centerY = height / 2;
+
+        let svg = `<svg id="comparison-radar-chart" width="100%" height="100%" viewBox="0 0 ${width} ${height}" aria-label="Radar chart comparing AI coding tools.">`;
+        
+        for (let i = 1; i <= 5; i++) {
+            const r = radius * (i / 5);
+            let points = "";
+            for (let j = 0; j < numAxes; j++) {
+                const angle = (Math.PI * 2 * j) / numAxes - Math.PI / 2;
+                const x = centerX + r * Math.cos(angle);
+                const y = centerY + r * Math.sin(angle);
+                points += `${x},${y} `;
+            }
+            svg += `<polygon points="${points}" fill="none" stroke="${i===5 ? '#999' : '#e0e0e0'}"/>`;
+        }
+
+        labels.forEach((label, i) => {
+            const angle = (Math.PI * 2 * i) / numAxes - Math.PI / 2;
+            const x = centerX + (radius + 10) * Math.cos(angle);
+            const y = centerY + (radius + 20) * Math.sin(angle);
+            svg += `<text x="${x}" y="${y}" dy="0.35em" text-anchor="${x > centerX + 5 ? 'start' : x < centerX - 5 ? 'end' : 'middle'}" font-size="12" font-family="Inter">${label}</text>`;
+            const lineX = centerX + radius * Math.cos(angle);
+            const lineY = centerY + radius * Math.sin(angle);
+            svg += `<line x1="${centerX}" y1="${centerY}" x2="${lineX}" y2="${lineY}" stroke="#e0e0e0"/>`;
+        });
+
+        for (const tool in data) {
+            let points = "";
+            labels.forEach((label, i) => {
+                const value = data[tool][label];
+                const r = radius * value;
+                const angle = (Math.PI * 2 * i) / numAxes - Math.PI / 2;
+                const x = centerX + r * Math.cos(angle);
+                const y = centerY + r * Math.sin(angle);
+                points += `${x},${y} `;
+            });
+            svg += `<polygon id="radar-${tool}" class="radar-polygon" points="${points}" fill="${colors[tool]}40" stroke="${colors[tool]}" stroke-width="2" style="opacity: 0;"/>`;
+        }
+        svg += `</svg>`;
+        container.innerHTML = svg;
+
+        togglesContainer.innerHTML = Object.keys(data).map(tool => `<button data-tool="${tool}">${tool}</button>`).join('');
+        
+        togglesContainer.querySelectorAll('button').forEach(button => {
+            button.addEventListener('click', () => {
+                const tool = button.dataset.tool;
+                const polygon = document.getElementById(`radar-${tool}`);
+                const isActive = button.classList.toggle('active');
+                polygon.style.opacity = isActive ? '1' : '0';
+            });
+        });
+        
+        togglesContainer.querySelector('button[data-tool="Claude"]').click();
+    }
+
+    function setupCarousel(containerSelector, cardData) {
+        const container = document.querySelector(containerSelector);
+        if(!container) return;
+
+        const deck = container.querySelector('.carousel-deck');
+        const prevBtn = container.querySelector('.carousel-prev');
+        const nextBtn = container.querySelector('.carousel-next');
+        const counter = container.querySelector('.carousel-counter');
+        
+        deck.innerHTML = cardData.map((card, i) => `
+            <div class="flip-card" data-index="${i}">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front">
+                        <div class="flip-card-front-icon">${card.icon}</div>
+                        <p>${card.title}</p>
+                        <span>Task</span>
+                    </div>
+                    <div class="flip-card-back">
+                        <h4>Your Command:</h4>
+                        <p>${card.command}</p>
+                    </div>
+                </div>
+            </div>`).join('');
+        
+        const cards = deck.querySelectorAll('.flip-card');
+        let currentIndex = 0;
+
+        function showCard(index) {
+            cards.forEach((card, i) => {
+                card.classList.toggle('active', i === index);
+                if (i !== index) card.classList.remove('flipped');
+            });
+            counter.textContent = `Example ${index + 1} of ${cards.length}`;
+        }
+        
+        deck.addEventListener('click', (e) => {
+             const card = e.target.closest('.flip-card.active');
+             if(card) {
+                card.classList.toggle('flipped');
+             }
+        });
+
+        prevBtn.addEventListener('click', () => {
+            currentIndex = (currentIndex - 1 + cards.length) % cards.length;
+            showCard(currentIndex);
+        });
+
+        nextBtn.addEventListener('click', () => {
+            currentIndex = (currentIndex + 1) % cards.length;
+            showCard(currentIndex);
+        });
+        
+        showCard(0);
+    }
+
+    // --- Interactive Workflow Setup ---
+    function setupInteractiveWorkflow() {
+        const workflowSteps = {
+            'task': {
+                name: 'Developer Gives Task',
+                description: 'Describe what you want in plain English — no complex commands needed.',
+                details: 'Type "claude" followed by your request like "fix login bug" or "add dark mode".'
+            },
+            'read': {
+                name: 'Claude Reads Context',
+                description: 'Claude scans your codebase and CLAUDE.md to learn rules.',
+                details: 'Understands structure, standards, and context to make fitting changes.'
+            },
+            'modify': {
+                name: 'Claude Modifies Files',
+                description: 'Claude edits or creates files to complete your task.',
+                details: 'It can add components, fix bugs, or refactor code automatically.'
+            },
+            'commit': {
+                name: 'Claude Commits Changes',
+                description: 'Claude stages and commits all changes with a clear message.',
+                details: 'No need to manually add/commit — messages follow best practices.'
+            },
+            'pr': {
+                name: 'Claude Opens PR',
+                description: 'Claude pushes changes to a new branch and opens a Pull Request.',
+                details: 'PR includes a detailed description, fitting into your review process.'
+            },
+            'review': {
+                name: 'Developer Reviews Work',
+                description: 'You review Claude\'s changes as if it were a teammate.',
+                details: 'Request edits, approve, or reject. Human oversight ensures quality.'
+            },
+            'merge': {
+                name: 'Changes Merged',
+                description: 'Approved changes merge into main branch.',
+                details: 'Your idea becomes working code in history without Git commands.'
+            }
+        };
+
+        const elements = document.querySelectorAll('.workflow-step');
+        const defaultMsg = document.getElementById('defaultWorkflowMessage');
+        const stepInfo = document.getElementById('stepInfo');
+        const stepTitle = document.getElementById('stepTitle');
+        const stepDescription = document.getElementById('stepDescription');
+        const stepDetails = document.getElementById('stepDetails');
+        let activeStep = null;
+
+        elements.forEach(el => {
+            el.addEventListener('click', () => {
+                const stepName = el.getAttribute('data-step');
+                const data = workflowSteps[stepName];
+                if (activeStep === stepName) {
+                    activeStep = null;
+                    stepInfo.style.display = 'none';
+                    defaultMsg.style.display = 'block';
+                } else {
+                    activeStep = stepName;
+                    stepTitle.textContent = data.name;
+                    stepDescription.textContent = data.description;
+                    stepDetails.textContent = data.details;
+                    defaultMsg.style.display = 'none';
+                    stepInfo.style.display = 'block';
+                }
+            });
+
+            el.addEventListener('mouseenter', () => {
+                el.style.filter = 'brightness(1.3) drop-shadow(0 0 10px #d9480f)';
+            });
+
+            el.addEventListener('mouseleave', () => {
+                el.style.filter = 'none';
+            });
+        });
+    }
+
+    // --- Initialization ---
+    setupAllAccordions('#faq-container .accordion');
+    setupAllAccordions('#myth-busting .accordion');
+    setupQuiz('quiz-container-1', quizData1);
+    setupQuiz('quiz-container-2', quizData2);
+    setupPoll('poll-container-1', pollData1);
+    setupPoll('poll-container-2', pollData2);
+    setupFaqs('faq-container', faqData);
+    setupGlossary('glossaryCloud', glossaryData);
+    setupGitFlowSVG();
+    setupRadarChart();
+    setupCarousel('#practical-magic', cardData);
+    setupInteractiveWorkflow();
+});
+</script>
+
+</body>
+</html>

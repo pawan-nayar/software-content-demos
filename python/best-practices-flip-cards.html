@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>⚡ 25 Best Practices for CS Students</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+    body { background-color: #f3f4f6; font-family: 'Inter', sans-serif; }
+    .flip-card { perspective: 1000px; width: 100%; max-width: 420px; height: 520px; }
+    .flip-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; }
+    .flipped .flip-inner { transform: rotateY(180deg); }
+    .flip-front, .flip-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 1rem; box-shadow: 0 8px 20px rgba(0,0,0,0.12); background: white; padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; }
+    .flip-back { transform: rotateY(180deg); }
+    pre { background: #1e1e1e; color: #d4d4d4; padding: 0.6rem; border-radius: 0.5rem; font-size: 0.8rem; margin-top: 0.5rem; margin-bottom: 0.5rem; white-space: pre-wrap; word-wrap: break-word; }
+    .pill-btn { border-radius: 9999px; padding: 0.5rem 1rem; font-size: 0.85rem; font-weight: 600; transition: all 0.25s ease; background-color: #f97316; color: #fff; border: none; cursor: pointer; }
+    .pill-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(0,0,0,0.15); }
+    .pill-btn:active { transform: scale(0.97); }
+    .label { font-size: 0.75rem; font-weight: 600; color: #6b7280; text-transform: uppercase; margin-top: 0.75rem; margin-bottom: 0.25rem; }
+    .header-ribbon { font-size: 0.7rem; font-weight: 700; color: white; background-color: #f97316; padding: 0.25rem 0.6rem; border-radius: 0.4rem; display: inline-block; }
+  </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+<div class="flip-card" id="card">
+  <div class="flip-inner">
+    <!-- Front -->
+    <div class="flip-front" id="frontContent"></div>
+    <!-- Back -->
+    <div class="flip-back" id="backContent"></div>
+  </div>
+</div>
+
+<script>
+const practices = [
+  {
+    practice: "Use Meaningful Variable Names",
+    emoji: "📝",
+    why: "Choose descriptive names so code is self-documenting and easier to understand.",
+    feelsLike: "Like labeling jars in your kitchen instead of guessing the contents.",
+    examples: ["❌ let x = 25;", "✅ let userAge = 25;"],
+    chart: { type: "bar", labels: ["Confusing", "Descriptive"], values: [40, 90] },
+    quiz: { question: "Which variable name follows best practice?", options: ["userAge", "ua", "xyz123", "var1"], answer: "userAge", explanation: "`userAge` clearly describes the data it holds. Short or cryptic names like 'ua' or 'var1' make the code harder to read and maintain." }
+  },
+  {
+    practice: "Handle Errors Gracefully",
+    emoji: "⚠️",
+    why: "Anticipate potential failures and provide clear error handling to prevent crashes.",
+    feelsLike: "Like having airbags in your car for when things go wrong.",
+    examples: ["❌ crashApp();", "✅ try { doTask(); } catch(e) { logError(e); }"],
+    chart: { type: "doughnut", labels: ["Crashes", "Recoveries"], values: [80, 20] },
+    quiz: { question: "What’s a good error handling approach?", options: ["Let it crash", "Use try/catch with recovery", "Ignore the error", "Hide it silently"], answer: "Use try/catch with recovery", explanation: "A `try/catch` block allows you to gracefully handle errors, log them, and prevent the entire application from crashing, ensuring a better user experience." }
+  },
+  {
+    practice: "Write Unit Tests",
+    emoji: "🧪",
+    why: "Verify individual pieces of code work as expected. This reduces bugs and increases confidence.",
+    feelsLike: "Like a safety net for a tightrope walker.",
+    examples: ["❌ deployWithoutTests();", "✅ runUnitTests(); deploy();"],
+    chart: { type: "line", labels: ["No tests", "Basic", "Extensive"], values: [50, 25, 10] },
+    quiz: { question: "Why should you write unit tests?", options: ["They reduce bugs over time", "They slow progress", "They confuse devs", "They replace docs"], answer: "They reduce bugs over time", explanation: "Unit tests act as a safety net, catching bugs early in development and giving you confidence to refactor and add new features without breaking existing functionality." }
+  },
+  {
+    practice: "Don't Repeat Yourself (DRY)",
+    emoji: "👯",
+    why: "Avoid duplicating code. Use functions or classes to reuse logic, making code more maintainable.",
+    feelsLike: "Creating one recipe card instead of rewriting the steps every time.",
+    examples: ["❌ copyPasteCode();", "✅ createReusableFunction();"],
+    chart: { type: "bar", labels: ["WET Code", "DRY Code"], values: [85, 20] },
+    quiz: { question: "What does the DRY principle prevent?", options: ["Code duplication", "Code comments", "Function calls", "Variable declaration"], answer: "Code duplication", explanation: "The DRY principle aims to reduce repetition of software patterns. When code is duplicated, a single change requires updates in multiple places, increasing the risk of bugs." }
+  },
+  {
+    practice: "Keep It Simple (KISS)",
+    emoji: "👍",
+    why: "Prefer simple, straightforward solutions. Complex code is harder to debug and maintain.",
+    feelsLike: "Using a screwdriver instead of a complex machine to tighten one screw.",
+    examples: ["❌ overlyComplexAlgorithm();", "✅ simpleForLoop();"],
+    chart: { type: "line", labels: ["Complex Bugs", "Simple Bugs"], values: [70, 30] },
+    quiz: { question: "The KISS principle advocates for...", options: ["Complexity", "Simplicity", "Speed at all costs", "More features"], answer: "Simplicity", explanation: "Simplicity is key. Simple, clear code is easier for you and others to read, debug, and maintain in the long run. Unnecessary complexity often introduces hidden bugs." }
+  },
+  {
+    practice: "Comment Your Code Wisely",
+    emoji: "💬",
+    why: "Explain the 'why' behind complex logic, not the 'what' the code is doing.",
+    feelsLike: "Leaving helpful notes in a textbook for the next person.",
+    examples: ["❌ // This adds 1 to i", "✅ // Offset index to account for header row"],
+    chart: { type: "doughnut", labels: ["Confusing Code", "Clear Code"], values: [60, 40] },
+    quiz: { question: "What should a good comment explain?", options: ["The 'why'", "The 'what'", "Who wrote it", "The date"], answer: "The 'why'", explanation: "Your code should clearly explain *what* it's doing. Comments are for the high-level context: *why* a certain approach was taken or the purpose of a complex algorithm." }
+  },
+  {
+    practice: "Use Version Control (like Git)",
+    emoji: "🗂️",
+    why: "Track changes, collaborate with others, and safely revert to previous versions of your code.",
+    feelsLike: "Having unlimited 'Undo' and 'Redo' for your entire project.",
+    examples: ["❌ code_final_v3_real.js", "✅ git commit -m 'feat: Add user login'"],
+    chart: { type: "bar", labels: ["Lost Work", "Saved Work"], values: [90, 15] },
+    quiz: { question: "What is a primary benefit of using Git?", options: ["Tracking changes", "Making code complex", "Deleting old code", "It is a text editor"], answer: "Tracking changes", explanation: "Version control systems like Git provide a complete history of your project, allowing you to track every change, revert mistakes, and collaborate effectively with a team." }
+  },
+  {
+    practice: "Refactor Regularly",
+    emoji: "🔧",
+    why: "Improve the design and structure of existing code without changing its external behavior.",
+    feelsLike: "Tidying up your room regularly to keep it clean and organized.",
+    examples: ["❌ 'It works, so don't touch it!'", "✅ 'Let's clean this up for clarity.'"],
+    chart: { type: "line", labels: ["High Debt", "Low Debt"], values: [75, 25] },
+    quiz: { question: "Refactoring aims to improve code's...", options: ["Internal structure", "External functionality", "Number of features", "Complexity"], answer: "Internal structure", explanation: "Refactoring is like cleaning up. It improves readability and reduces complexity, making the code easier to maintain and extend without changing what it actually does." }
+  },
+  {
+    practice: "Single Responsibility Principle",
+    emoji: "🎯",
+    why: "A function or class should have only one reason to change. It should do one thing well.",
+    feelsLike: "A Swiss Army knife where each tool does one specific job perfectly.",
+    examples: ["❌ func getUserAndCalcStats()", "✅ func getUser() & func calcStats()"],
+    chart: { type: "doughnut", labels: ["Hard to Test", "Easy to Test"], values: [65, 35] },
+    quiz: { question: "A function that fetches user data AND formats it violates which principle?", options: ["SRP", "DRY", "KISS", "YAGNI"], answer: "SRP", explanation: "The Single Responsibility Principle (SRP) states that a module should have one, and only one, reason to change. Combining data fetching and formatting in one function violates this." }
+  },
+  {
+    practice: "Avoid Magic Numbers",
+    emoji: "🧙‍♂️",
+    why: "Use named constants instead of unexplained numbers to improve readability and maintainability.",
+    feelsLike: "Writing 'MAX_LOGIN_ATTEMPTS' instead of the number '3'.",
+    examples: ["❌ if (attempts > 3)", "✅ const MAX_ATTEMPTS = 3;"],
+    chart: { type: "bar", labels: ["Confusion", "Clarity"], values: [80, 10] },
+    quiz: { question: "What is a 'magic number' in code?", options: ["An unexplained number", "A prime number", "A special constant", "A number from a fantasy book"], answer: "An unexplained number", explanation: "A 'magic number' is a hardcoded value that appears without explanation. Replacing it with a named constant, like `MAX_ATTEMPTS = 3`, makes the code's intent much clearer." }
+  },
+  {
+    practice: "Use a Linter and Formatter",
+    emoji: "🧹",
+    why: "Automatically check for style errors and format your code for consistency across the project.",
+    feelsLike: "Having a grammar and style checker for your code.",
+    examples: ["❌ Manual formatting debates", "✅ `npx prettier --write .`"],
+    chart: { type: "bar", labels: ["Inconsistencies", "Consistent Style"], values: [70, 10] },
+    quiz: { question: "What does a code formatter like Prettier do?", options: ["Enforces consistent style", "Finds logical bugs", "Compiles your code", "Runs your tests"], answer: "Enforces consistent style", explanation: "Linters and formatters automate code styling. This eliminates debates about style and ensures all code in a project is clean and consistent, improving readability." }
+  },
+  {
+    practice: "Readable Code > Clever Code",
+    emoji: "🤓",
+    why: "Prioritize clarity. Code is read far more often than it is written. Don't be overly cryptic.",
+    feelsLike: "Writing a clear sentence instead of a cryptic riddle.",
+    examples: ["❌ return a ? b : c ? d : e;", "✅ if (a) { return b; } else ..."],
+    chart: { type: "line", labels: ["Clever", "Readable"], values: [85, 15] },
+    quiz: { question: "What should be prioritized over 'clever' one-liners?", options: ["Readability", "Conciseness", "Obscurity", "Speed"], answer: "Readability", explanation: "While a clever one-liner might seem impressive, it's often difficult to read. Code is read many more times than it's written, so prioritizing clarity benefits everyone." }
+  },
+  {
+    practice: "Don't Optimize Prematurely",
+    emoji: "⏳",
+    why: "Make it work, make it right, then make it fast. Only optimize proven bottlenecks.",
+    feelsLike: "Tuning a car engine before you've even built the car.",
+    examples: ["❌ Optimizing a loop that runs once.", "✅ Profiling code to find slow parts."],
+    chart: { type: "bar", labels: ["Wasted Effort", "Targeted Effort"], values: [90, 10] },
+    quiz: { question: "When is the best time to optimize code?", options: ["After profiling finds a bottleneck", "As soon as you start", "Never", "Always"], answer: "After profiling finds a bottleneck", explanation: "Premature optimization is the root of much evil. Write clean, working code first. Then, use profiling tools to identify actual performance bottlenecks before you optimize." }
+  },
+  {
+    practice: "Know Your Data Structures",
+    emoji: "📚",
+    why: "Choosing the right data structure (Array, Map, Set) can drastically affect performance.",
+    feelsLike: "Using a filing cabinet instead of one giant pile of papers.",
+    examples: ["❌ Using Array for unique items.", "✅ Using a Set for fast uniqueness checks."],
+    chart: { type: "bar", labels: ["Slow Perf.", "Fast Perf."], values: [95, 5] },
+    quiz: { question: "For quick key-based lookups, what is often better than an array?", options: ["Map/Dictionary", "A bigger array", "A linked list", "A stack"], answer: "Map/Dictionary", explanation: "A Map (or Dictionary/Hash Map) provides near-instantaneous lookups by key, whereas searching an array requires iterating through its elements, which is much slower for large datasets." }
+  },
+  {
+    practice: "YAGNI (You Ain't Gonna Need It)",
+    emoji: "🤷‍♀️",
+    why: "Don't implement features until they are actually necessary to avoid over-engineering.",
+    feelsLike: "Packing only what you need for a trip, not your entire house.",
+    examples: ["❌ Building features 'just in case'.", "✅ Adding features as required."],
+    chart: { type: "line", labels: ["Unused Code", "Needed Code"], values: [80, 20] },
+    quiz: { question: "The YAGNI principle helps prevent...", options: ["Over-engineering", "Under-engineering", "Testing", "Commenting"], answer: "Over-engineering", explanation: "YAGNI is a reminder to not add functionality until it's deemed necessary. This prevents wasting time on code that might never be used and keeps the codebase simpler." }
+  },
+  {
+    practice: "Manage Dependencies",
+    emoji: "📦",
+    why: "Use a package manager (npm, pip, Maven) to handle external libraries consistently.",
+    feelsLike: "Having a precise shopping list for your project's ingredients.",
+    examples: ["❌ Downloading .zip files manually.", "✅ `npm install express`"],
+    chart: { type: "doughnut", labels: ["Version Conflicts", "Stable Builds"], values: [85, 15] },
+    quiz: { question: "What is `npm` or `pip` used for?", options: ["Dependency management", "Writing code", "Running the OS", "Designing UI"], answer: "Dependency management", explanation: "Package managers like npm and pip automate the process of installing, updating, and managing the external libraries (dependencies) your project relies on." }
+  },
+  {
+    practice: "Engage in Code Reviews",
+    emoji: "🧐",
+    why: "Have a peer review your code to catch bugs, share knowledge, and improve overall quality.",
+    feelsLike: "Having a skilled editor proofread your essay before publishing.",
+    examples: ["❌ `git push --force origin main`", "✅ Open a Pull Request for review."],
+    chart: { type: "bar", labels: ["Bugs in Prod", "Bugs Caught"], values: [60, 15] },
+    quiz: { question: "A primary goal of code review is to...", options: ["Improve code quality", "Criticize teammates", "Slow down development", "Assign blame"], answer: "Improve code quality", explanation: "Code reviews are a collaborative process to improve the final product. A second pair of eyes can spot bugs, suggest improvements, and ensure consistency." }
+  },
+  {
+    practice: "Security is Not an Afterthought",
+    emoji: "🔒",
+    why: "Think about security from the start. Sanitize inputs and handle secrets properly.",
+    feelsLike: "Building a house with locks on the doors, not adding them later.",
+    examples: ["❌ `query('...WHERE id=' + userId)`", "✅ Using parameterized queries."],
+    chart: { type: "line", labels: ["Vulnerabilities Found", "Secure Code"], values: [95, 10] },
+    quiz: { question: "Concatenating user input into a database query can cause...", options: ["SQL Injection", "Cross-Site Scripting", "A memory leak", "Faster queries"], answer: "SQL Injection", explanation: "Directly adding user input to a database query opens the door to SQL Injection attacks. Use parameterized queries or prepared statements to safely handle user data." }
+  },
+  {
+    practice: "Document Your Code",
+    emoji: "📖",
+    why: "Document how to use your code, especially for public-facing functions or APIs.",
+    feelsLike: "Providing a clear instruction manual with a new gadget.",
+    examples: ["❌ Guessing API endpoints.", "✅ Reading well-defined API docs."],
+    chart: { type: "doughnut", labels: ["Onboarding Time", "Productivity Time"], values: [90, 30] },
+    quiz: { question: "Good documentation primarily helps...", options: ["Others use your code", "Your code run faster", "Reduce file size", "The compiler"], answer: "Others use your code", explanation: "While code explains how, documentation explains why and how to use it. Good docs are crucial for making your code usable by your future self and other developers." }
+  },
+  {
+    practice: "Favor Immutability",
+    emoji: "🧊",
+    why: "Prefer creating new data structures instead of modifying existing ones. Reduces side effects.",
+    feelsLike: "Making a photocopy to write on, instead of writing on the original.",
+    examples: ["❌ `user.age = 26;`", "✅ `const updated = { ...user, age: 26 };`"],
+    chart: { type: "bar", labels: ["Mutable Bugs", "Immutable Bugs"], values: [80, 20] },
+    quiz: { question: "Why is immutability often preferred?", options: ["It reduces side effects", "It's always faster", "It uses less memory", "It's required by law"], answer: "It reduces side effects", explanation: "When you modify data in place (mutation), it can cause unexpected bugs in other parts of the app that rely on that data. Immutability creates predictable state changes." }
+  },
+  {
+    practice: "Consistent Naming Convention",
+    emoji: "🏷️",
+    why: "Use a consistent style (e.g., camelCase) to make code predictable and easier to read.",
+    feelsLike: "Organizing books in a library by a single, clear system.",
+    examples: ["❌ let UserName, user_age;", "✅ let userName, userAge;"],
+    chart: { type: "line", labels: ["Readability Score", "Consistency"], values: [20, 80] },
+    quiz: { question: "What is `userFirstName` an example of?", options: ["camelCase", "snake_case", "PascalCase", "kebab-case"], answer: "camelCase", explanation: "Picking one naming convention (like camelCase for variables) and sticking to it makes code predictable. It reduces mental overhead for anyone reading the code." }
+  },
+  {
+    practice: "Break Down Problems",
+    emoji: "🧩",
+    why: "Decompose large, complex problems into smaller, manageable and testable parts.",
+    feelsLike: "Solving a jigsaw puzzle by finding the corner pieces first.",
+    examples: ["❌ monolithFunction() { /* 1000 lines */ }", "✅ smallFunc1(); smallFunc2();"],
+    chart: { type: "doughnut", labels: ["Overwhelmed", "In Control"], values: [75, 25] },
+    quiz: { question: "Decomposing problems helps in...", options: ["Reducing complexity", "Increasing code size", "Hiding bugs", "Making it harder to test"], answer: "Reducing complexity", explanation: "A large problem can be overwhelming. Breaking it down into smaller, self-contained pieces allows you to solve each part individually, making the overall problem much easier to tackle." }
+  },
+  {
+    practice: "Use a Proper IDE",
+    emoji: "💻",
+    why: "Leverage features like code completion, debugging, and refactoring tools to boost productivity.",
+    feelsLike: "A chef using a full kitchen instead of just a campfire and a stick.",
+    examples: ["❌ Coding in Notepad.", "✅ Using VS Code's debugger."],
+    chart: { type: "bar", labels: ["Productivity (Text Editor)", "Productivity (IDE)"], values: [40, 90] },
+    quiz: { question: "What is a key advantage of an IDE over a simple text editor?", options: ["Integrated debugger", "Syntax highlighting only", "File explorer", "It costs more money"], answer: "Integrated debugger", explanation: "An Integrated Development Environment (IDE) provides powerful tools like debuggers, code completion, and refactoring which significantly speed up development and bug-fixing." }
+  },
+  {
+    practice: "Consistent Project Structure",
+    emoji: "🏗️",
+    why: "A logical folder and file structure makes projects easier to navigate for you and others.",
+    feelsLike: "Having a well-organized closet where you can find anything instantly.",
+    examples: ["❌ all_files_in_root/", "✅ /src, /tests, /assets"],
+    chart: { type: "doughnut", labels: ["Time Wasted", "Time Coding"], values: [80, 20] },
+    quiz: { question: "A good project structure improves...", options: ["Navigability", "Code execution speed", "Final file size", "Compiler errors"], answer: "Navigability", explanation: "When files are organized logically (e.g., separating source code from tests), anyone can find what they're looking for quickly, making the project easier to understand and contribute to." }
+  },
+  {
+    practice: "Write Pure Functions",
+    emoji: "💧",
+    why: "A function that returns the same output for the same input and has no side effects is predictable.",
+    feelsLike: "A vending machine: you put in a code, you get a specific snack. Every time.",
+    examples: ["❌ let t = 0; func add(v) { t += v; }", "✅ func add(a, b) { return a + b; }"],
+    chart: { type: "line", labels: ["Bugs (Impure)", "Bugs (Pure)"], values: [90, 5] },
+    quiz: { question: "A pure function should not have...", options: ["Side effects", "Parameters", "A return value", "Logic"], answer: "Side effects", explanation: "Pure functions are predictable and easy to test because they don't modify external state or have hidden dependencies. Their output depends solely on their input." }
+  }
+];
+
+
+let currentIndex = 0;
+let chartInstance = null;
+
+const frontDiv = document.getElementById("frontContent");
+const backDiv = document.getElementById("backContent");
+const card = document.getElementById("card");
+
+// Function to shuffle an array (Fisher-Yates shuffle)
+function shuffleArray(array) {
+    let shuffled = array.slice(); // Create a copy to avoid modifying the original
+    for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+}
+
+function renderCard(index) {
+  const p = practices[index];
+
+  // Clear previous content to prevent issues
+  frontDiv.innerHTML = '';
+  backDiv.innerHTML = '';
+
+  // Front with example included
+  frontDiv.innerHTML = `
+    <div class='flex-grow overflow-y-auto'>
+      <div class='flex justify-between items-center'>
+        <span class='header-ribbon'>⚡ Best Practice ${index + 1}/${practices.length}</span>
+      </div>
+      <h3 class='text-center text-xl font-bold mt-3'>${p.emoji} ${p.practice}</h3>
+      <p class='mt-4 text-gray-700 text-sm'><span class='font-semibold'>💡 Why:</span> ${p.why}</p>
+      <p class='mt-2 italic text-gray-600 text-sm'><span class='font-semibold'>🌙 Feels like:</span> ${p.feelsLike}</p>
+
+      <div class='label'>🖥️ Example Code</div>
+      <pre>${p.examples.join("\n")}</pre>
+    </div>
+    <div class='flex justify-between items-center mt-4 flex-shrink-0'>
+      <button onclick="prev()" class='pill-btn'>⏮ Prev</button>
+      <button onclick="flipCard()" class='pill-btn'>🔄 Flip</button>
+      <button onclick="next()" class='pill-btn'>Next ⏭</button>
+    </div>
+  `;
+
+  const shuffledOptions = shuffleArray(p.quiz.options);
+
+  // Back with chart + quiz only
+  backDiv.innerHTML = `
+    <div class='flex-grow overflow-y-auto'>
+      <div class='flex justify-between items-center'>
+        <span class='header-ribbon'>⚡ Best Practice ${index + 1}/${practices.length}</span>
+      </div>
+      <h3 class='text-center text-xl font-bold mt-3'>${p.emoji} ${p.practice}</h3>
+
+      <div class='label'>📊 Impact</div>
+      <div class='h-32'><canvas id='chartCanvas'></canvas></div>
+
+      <div class='label'>🎯 Quick Check</div>
+      <p class='mt-1 text-gray-700 text-sm'>${p.quiz.question}</p>
+      <div class='space-y-2 mt-2'>
+        ${shuffledOptions.map(opt => `<button onclick="checkAnswer(this, '${opt.replace(/'/g, "\\'")}')" class='option pill-btn w-full text-left text-sm bg-gray-100 text-gray-700 hover:bg-gray-200'>${opt}</button>`).join("")}
+      </div>
+      <div id="explanation" class="hidden mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-800"></div>
+    </div>
+    <div class='flex justify-between items-center mt-4 flex-shrink-0'>
+        <button onclick="prev()" class='pill-btn'>⏮ Prev</button>
+        <button onclick="flipCard()" class='pill-btn'>🔄 Flip</button>
+        <button onclick="next()" class='pill-btn'>Next ⏭</button>
+    </div>
+  `;
+    // Timeout to allow the DOM to update before rendering the chart
+    setTimeout(() => renderChart(p.chart), 0);
+}
+
+function renderChart(chartData) {
+  const ctx = document.getElementById("chartCanvas");
+    if (!ctx) return;
+  if (chartInstance) chartInstance.destroy();
+  chartInstance = new Chart(ctx, {
+    type: chartData.type,
+    data: { 
+        labels: chartData.labels, 
+        datasets: [{ 
+            label: "Impact", 
+            data: chartData.values, 
+            backgroundColor: ["#f87171", "#4ade80", "#60a5fa", "#facc15", "#a78bfa"],
+            borderColor: '#fff',
+            borderWidth: chartData.type === 'doughnut' ? 2 : 0,
+        }] 
+    },
+    options: { 
+        responsive: true, 
+        maintainAspectRatio: false, 
+        plugins: { 
+            legend: { display: false } 
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                display: chartData.type !== 'doughnut'
+            },
+            x: {
+                display: chartData.type !== 'doughnut'
+            }
+        }
+    }
+  });
+}
+
+function flipCard() { card.classList.toggle("flipped"); }
+
+function checkAnswer(button, selected) {
+  const p = practices[currentIndex];
+  document.querySelectorAll(".option").forEach(btn => {
+    // Reveal correct answer in green
+    if (btn.textContent === p.quiz.answer) {
+      btn.classList.remove("bg-gray-100", "hover:bg-gray-200");
+      btn.classList.add("bg-green-400", "text-white");
+    } 
+    // If wrong answer was selected, show it in red
+    else if (btn.textContent === selected) {
+      btn.classList.remove("bg-gray-100", "hover:bg-gray-200");
+      btn.classList.add("bg-red-400", "text-white");
+    }
+    btn.disabled = true;
+  });
+
+  // Show the explanation
+  const explanationDiv = document.getElementById('explanation');
+  if(explanationDiv) {
+      explanationDiv.innerHTML = p.quiz.explanation;
+      explanationDiv.classList.remove('hidden');
+  }
+}
+
+function prev() { 
+    currentIndex = (currentIndex - 1 + practices.length) % practices.length; 
+    renderCard(currentIndex); 
+    if (card.classList.contains('flipped')) {
+        flipCard();
+    }
+}
+function next() { 
+    currentIndex = (currentIndex + 1) % practices.length; 
+    renderCard(currentIndex); 
+    if (card.classList.contains('flipped')) {
+        flipCard();
+    }
+}
+
+// Initial render
+renderCard(currentIndex);
+</script>
+
+</body>
+</html>
+

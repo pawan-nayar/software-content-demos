@@ -1,0 +1,1251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub for Beginners – Part 4: Git Mastery & Leadership</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* --- Base Theme --- */
+        :root {
+            --text: #212529; --bg: #fff; --muted: #f8f9fa; --border: #e9ecef;
+            --accent: #fd7e14; --accent-2: #e87312; --header-bg: #2c3e50; --header-fg: #f8f9fa;
+            --ok: #16a34a; --ok-soft: #dcfce7; --bad: #dc2626; --bad-soft: #fee2e2;
+            --code-bg: #2d3748; --code-fg: #e2e8f0;
+            --danger: #f59e0b; --danger-soft: #fffbeb;
+            --font-main: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            --font-code: 'Courier New', Courier, monospace;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body { 
+            font-family: var(--font-main); 
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--text); 
+            line-height: 1.7; 
+            font-size: 16px; 
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- Header / Footer --- */
+        .site-header, .site-footer { background: var(--header-bg); color: var(--header-fg); padding: 14px 24px; flex-shrink: 0; }
+        .site-header { display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .logo { font-weight: 700; font-size: 1.15rem; color: #fff; text-decoration: none; cursor: pointer;}
+        .site-footer { text-align: center; padding: 30px; }
+
+        /* --- Main Wizard Container --- */
+        .wizard-container {
+            padding: 1rem;
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .wizard-panel {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+        }
+        .wizard-panel h1 { font-size: 1.8rem; color: var(--accent-2); margin-bottom: 0.5rem; }
+        .wizard-panel p { font-size: 1.05rem; margin-bottom: 1rem; }
+        .wizard-panel h2 { font-size: 1.3rem; margin-top: 1.5rem; margin-bottom: 0.5rem; }
+        .start-btn { 
+            display: block; 
+            width: 100%; 
+            background: var(--accent); 
+            color: white; 
+            border: none; 
+            padding: 1rem; 
+            font-size: 1.2rem; 
+            font-weight: 700; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            margin-top: 1.5rem; 
+            transition: background-color 0.2s; 
+        }
+        .start-btn:hover { background: var(--accent-2); }
+        .start-btn:disabled { 
+            background-color: #ccc;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        /* --- Select Screen --- */
+        .select-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        .select-card {
+            background: var(--muted);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            border-top: 4px solid var(--accent);
+        }
+        .select-card:hover { transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
+        .select-card h3 { color: var(--accent-2); margin-bottom: 0.5rem; }
+        .select-card p { font-size: 0.9rem; margin-bottom: 0; }
+        .select-card.completed {
+            background: #dcfce7;
+            border-color: #16a34a;
+            border-top-color: #16a34a;
+        }
+        
+        /* --- Tutorial Screen --- */
+        .tutorial-container {
+            display: none; /* Initially hidden */
+            grid-template-columns: 45% 1fr;
+            gap: 24px;
+            padding: 24px;
+            flex-grow: 1;
+        }
+        .left-column, .right-column { display: flex; flex-direction: column; gap: 24px; min-height: calc(100vh - 150px); }
+        
+        .panel { background: var(--bg); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .panel-header { padding: 12px 16px; border-bottom: 1px solid var(--border); background: var(--muted); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+        .panel-title { font-weight: 600; font-size: 1.1rem; }
+        .panel-body { padding: 16px; flex-grow: 1; overflow-y: auto; }
+        .back-btn { background: #6c757d; color: white; border: none; padding: 5px 12px; font-size: 0.9rem; border-radius: 6px; cursor: pointer; transition: background-color 0.2s; }
+        .back-btn:hover { background: #5a6268; }
+
+        /* --- Playground Tab Bar --- */
+        .playground-tabs { display: flex; border-bottom: 1px solid var(--border); flex-shrink: 0; flex-wrap: wrap; }
+        .crud-tab { flex-grow: 1; background: none; border: none; padding: 14px 10px; font-size: 1rem; font-weight: 600; cursor: pointer; border-bottom: 3px solid transparent; transition: background-color 0.2s, color 0.2s; }
+        .crud-tab.active { 
+            color: var(--accent); 
+            border-bottom-color: var(--accent); 
+            background-color: white; 
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .code-viewer { font-family: var(--font-code); font-size: 0.95rem; line-height: 1.6; background-color: var(--code-bg); color: var(--code-fg); padding: 16px; white-space: pre-wrap; margin: 0; flex-grow: 1;}
+        .output-viewer h1, .output-viewer h2 { margin-top: 1rem; margin-bottom: 0.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+        .output-viewer ul { margin-left: 20px; }
+        .output-viewer p { margin-bottom: 1rem; }
+        .commit-section { background: var(--muted); padding: 12px 16px; border-top: 1px solid var(--border); font-family: var(--font-code); font-size: 0.9rem; flex-shrink: 0;}
+        .commit-section strong { color: var(--accent-2); }
+        
+        /* --- Right Pane: Explanations --- */
+        #explanation-panel-body { padding: 0; min-height: 500px; }
+        .explanation-tabs { display: flex; border-bottom: 1px solid var(--border); padding: 0 16px; flex-shrink: 0; flex-wrap: wrap; }
+        .explanation-tab { background: none; border: none; padding: 12px 16px; font-size: 0.95rem; font-weight: 600; cursor: pointer; border-bottom: 3px solid transparent; }
+        .explanation-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+        .explanation-content { display: none; padding: 16px; }
+        .explanation-content.active { display: block; animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .explanation-content h3 { font-size: 1.2rem; color: var(--accent-2); margin-top: 0; margin-bottom: 12px; }
+        .explanation-content p { margin-bottom: 1rem; }
+        .explanation-content .analogy { background: var(--muted); border-left: 4px solid var(--accent); padding: 12px; border-radius: 4px; font-style: italic; }
+        .danger-zone { background: var(--danger-soft); border-left: 4px solid var(--danger); padding: 12px; border-radius: 4px; margin: 1rem 0; }
+        .danger-zone strong { color: var(--danger); }
+        .step-list { list-style-type: none; padding-left: 0; counter-reset: step-counter; }
+        .step-list li { counter-increment: step-counter; margin-bottom: 12px; display: flex; align-items: flex-start; text-align: left; }
+        .step-list li::before { content: counter(step-counter); background: var(--accent-2); color: white; font-weight: 700; border-radius: 50%; width: 24px; height: 24px; display: inline-flex; justify-content: center; align-items: center; margin-right: 12px; flex-shrink: 0; }
+        .quiz-question { margin-bottom: 24px; }
+        .quiz-question p { font-weight: 600; }
+        .quiz-option { display: block; margin: 8px 0; padding: 10px; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; transition: background-color 0.2s, border-color 0.2s; }
+        .quiz-option:hover { background: var(--muted); }
+        .quiz-option input { margin-right: 8px; }
+        .quiz-option.correct { background-color: var(--ok-soft); border-color: var(--ok); }
+        .quiz-option.incorrect { background-color: var(--bad-soft); border-color: var(--bad); }
+        .quiz-option.disabled { opacity: 0.6; pointer-events: none; }
+        
+        /* New Styles for Best Practices & Glossary */
+        .best-practices-section ul, .glossary-list ul { margin: 0; list-style-type: none; padding-left: 0; }
+        .best-practices-section li { margin-bottom: 8px; display: flex; align-items: flex-start; }
+        .best-practices-section .do-item::before { content: '✅'; margin-right: 10px; font-size: 1.2rem; flex-shrink: 0; margin-top: 2px; }
+        .best-practices-section .dont-item::before { content: '❌'; margin-right: 10px; font-size: 1.2rem; flex-shrink: 0; margin-top: 2px;}
+        .glossary-list li { margin-bottom: 10px; }
+        .glossary-list strong { color: var(--accent-2); }
+        .faq-list { margin-top: 1rem; }
+        .faq-list h4 { font-weight: 600; margin-bottom: 0.5rem; }
+        .faq-list p { margin-bottom: 1.2rem; }
+
+        /* General Quiz Styles */
+        .quiz-container { display: none; flex-direction: column; justify-content: center; align-items: center; flex-grow: 1; }
+        .quiz-container .quiz-panel { background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem 2rem; box-shadow: 0 5px 15px rgba(0,0,0,0.05); max-width: 800px; width: 100%; display: flex; flex-direction: column; text-align: left; }
+        .quiz-container .quiz-panel .q-card { min-height: 400px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .quiz-container .quiz-panel .q-card .q-content { flex-grow: 1; padding-bottom: 1rem; }
+        .quiz-container .quiz-panel .q-card h2 { font-size: 1.5rem; font-weight: 600; margin-bottom: 1rem; color: var(--accent-2); }
+        .quiz-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; }
+        .quiz-nav button { padding: 0.75rem 1.5rem; font-weight: bold; border-radius: 8px; transition: all 0.2s; background-color: var(--accent); color: white; border: none; }
+        .quiz-nav button:disabled { background-color: #ccc; cursor: not-allowed; opacity: 0.6; }
+        .quiz-nav button:hover:not(:disabled) { background-color: var(--accent-2); }
+        .progress-bar { width: 100%; height: 10px; background-color: #e9ecef; border-radius: 9999px; overflow: hidden; margin-bottom: 1.5rem; }
+        .progress-bar-fill { height: 100%; background-color: var(--accent); transition: width 0.3s ease-in-out; }
+        /* Quiz Question Types */
+        .question-body { margin-bottom: 1.5rem; }
+        .question-options label { display: block; background: var(--muted); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem 1rem; cursor: pointer; transition: all 0.2s; margin-bottom: 0.5rem; }
+        .question-options label:hover { background: #e9ecef; }
+        .question-options input[type="radio"], .question-options input[type="checkbox"] { margin-right: 0.75rem; }
+        .question-options label.correct { background-color: var(--ok-soft); border-color: var(--ok); }
+        .question-options label.incorrect { background-color: var(--bad-soft); border-color: var(--bad); }
+        .feedback { margin-top: 1rem; padding: 1rem; border-left: 4px solid; border-radius: 8px; }
+        .feedback.correct { border-color: var(--ok); background-color: var(--ok-soft); }
+        .feedback.incorrect { border-color: var(--bad); background-color: var(--bad-soft); }
+        
+        /* Sequence and Match Styles */
+        .seq-list { list-style: none; margin: 0; padding: 0; }
+        .seq-item { background: #fff; border: 1px solid var(--border); border-radius: 10px; padding: 0.6rem 0.8rem; display: flex; gap: 0.6rem; align-items: center; cursor: grab; user-select: none; margin-bottom: 0.4rem; transition: all 0.2s ease; }
+        .seq-item:hover { border-color: var(--accent); background: #f8f9fa; }
+        .seq-item .handle { opacity: 0.55; font-size: 1.2rem; }
+        .seq-item.dragging { opacity: 0.6; background: #fef3e7; border-color: var(--accent); transform: rotate(2deg); }
+        .match-grid { display: grid; gap: 1rem; }
+        @media(min-width: 760px) { .match-grid { grid-template-columns: 1fr 1fr; } }
+        .match-item { background: #fff; border: 1px solid var(--border); border-radius: 10px; padding: 0.55rem 0.7rem; cursor: pointer; transition: 0.2s; margin-bottom: 0.4rem; }
+        .match-item.is-picked { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(239, 125, 85, 0.18); }
+        
+    </style>
+</head>
+<body>
+
+    <header class="site-header">
+        <a class="logo" onclick="showScreen(introScreen)">GitHub Mastery Series</a>
+    </header>
+
+    <!-- Screen 1: Intro -->
+    <div id="intro-screen" class="wizard-container">
+        <div class="wizard-panel">
+            <h1>Part 4: Git Mastery & Open Source Leadership 🎓</h1>
+            <p id="intro-text">
+                <strong>Your Learning Journey So Far:</strong><br>
+                You've progressed from individual basics (Part 1), to team collaboration (Part 2), and on to professional automation (Part 3). You've learned the *how*. Now it's time to learn the *why* and the *when*.
+            </p>
+            <p>
+                This capstone module is about moving beyond commands to strategy. You will learn to think like a repository maintainer and a technical lead, focusing on the architectural and leadership decisions that enable projects to scale successfully.
+            </p>
+            <button id="start-tutorial-btn" class="start-btn">Begin the Capstone 🚀</button>
+        </div>
+    </div>
+    
+    <!-- Screen 2: Select Tutorial -->
+    <div id="select-screen" class="wizard-container" style="display: none;">
+        <div class="wizard-panel">
+            <h1>Expert Topics & Leadership Skills ✨</h1>
+            <p>Go beyond the commands. Learn the strategies for managing complex, large-scale projects and technical teams.</p>
+            <div id="select-grid" class="select-grid">
+                <div class="select-card" data-crud="internals">
+                    <h3>🔬 Git Internals</h3>
+                    <p>Diagnose issues by understanding blobs, trees, and commits.</p>
+                </div>
+                 <div class="select-card" data-crud="history">
+                    <h3>✍️ History Strategy</h3>
+                    <p>Decide when to merge vs. rebase for team clarity.</p>
+                </div>
+                <div class="select-card" data-crud="automation">
+                    <h3>🤖 Automated Governance</h3>
+                    <p>Design enforceable quality gates with hooks.</p>
+                </div>
+                <div class="select-card" data-crud="scale">
+                    <h3>🏗️ Scaling Repos</h3>
+                    <p>Architect monorepos with LFS and sparse-checkout.</p>
+                </div>
+                <div class="select-card" data-crud="maintainer">
+                    <h3>🌍 Maintainer Playbook</h3>
+                    <p>Manage releases, security, and contributions.</p>
+                </div>
+                <div class="select-card" data-crud="recovery">
+                    <h3>⛑️ Disaster Recovery</h3>
+                    <p>Lead your team through a recovery scenario.</p>
+                </div>
+            </div>
+            
+            <hr class="my-6 border-gray-300">
+
+            <h2>Capstone Drill! 🧠</h2>
+            <p id="quiz-status-text">Complete at least 3 topics above to unlock the final capstone quiz!</p>
+            <button id="start-quiz-btn" class="start-btn" disabled>Start Final Capstone Quiz</button>
+        </div>
+    </div>
+    
+    <!-- Screen 3: Tutorial -->
+    <main id="tutorial-screen" class="tutorial-container">
+        <!-- Left Column: Code and Output -->
+        <div class="left-column">
+             <div class="panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">Playground</h2>
+                    <button id="back-btn" class="back-btn">← Back to Topics</button>
+                </div>
+                <div class="panel-body" style="padding:0; display:flex; flex-direction:column; flex-grow:1;">
+                    <div class="playground-tabs">
+                        <button class="crud-tab" data-crud="internals">🔬 Internals</button>
+                        <button class="crud-tab" data-crud="history">✍️ History</button>
+                        <button class="crud-tab" data-crud="automation">🤖 Automation</button>
+                        <button class="crud-tab" data-crud="scale">🏗️ Scale</button>
+                        <button class="crud-tab" data-crud="maintainer">🌍 Maintainer</button>
+                        <button class="crud-tab" data-crud="recovery">⛑️ Recovery</button>
+                    </div>
+                    <pre id="code-viewer" class="code-viewer"></pre>
+                    <div id="commit-section" class="commit-section"></div>
+                </div>
+            </div>
+            <div class="panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">👀 What It Looks Like</h2>
+                </div>
+                <div id="output-viewer" class="panel-body output-viewer"></div>
+            </div>
+        </div>
+
+        <!-- Right Column: Learning Module -->
+        <div class="right-column">
+            <div class="panel" style="flex-grow: 1;">
+                <div id="explanation-panel-body" class="panel-body">
+                    <!-- Explanation content will be injected here -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Screen 4: Final Quiz -->
+    <div id="final-quiz-screen" class="wizard-container light-quiz-style hidden">
+        <div class="quiz-panel w-full max-w-2xl bg-white rounded-xl shadow-md p-6 sm:p-8">
+            <div class="flex justify-between items-center mb-4">
+                <div class="progress-bar-container w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+                    <div id="quiz-progress" class="progress-bar-fill h-full bg-orange-500 transition-all duration-300 ease-in-out" style="width: 0%;"></div>
+                </div>
+                <span id="quiz-counter" class="text-sm font-semibold text-orange-500 ml-4 whitespace-nowrap">Q 1 / 20</span>
+            </div>
+            <div class="q-card" id="quiz-card">
+                <!-- Quiz question will be rendered here -->
+            </div>
+            <div class="quiz-nav flex justify-between items-center mt-6">
+                <button id="quiz-prev-btn" class="px-4 py-2 bg-gray-300 text-gray-700 font-semibold rounded-lg shadow-sm hover:bg-gray-400 transition-colors duration-200" disabled>← Previous</button>
+                <button id="quiz-skip-btn" class="px-3 py-1 bg-yellow-500 text-white text-sm font-semibold rounded-lg shadow-sm hover:bg-yellow-600 transition-colors duration-200">Skip Question</button>
+                <button id="quiz-next-btn" class="px-4 py-2 bg-orange-500 text-white font-semibold rounded-lg shadow-sm hover:bg-orange-600 transition-colors duration-200">Submit Answer</button>
+            </div>
+        </div>
+    </div>
+
+
+    <footer class="site-footer">
+        <p>© 2025 A fun learning project. Let's make coding simple for everyone!</p>
+    </footer>
+
+    <script>
+    const playgroundData = {
+        internals: {
+            code: `> git cat-file -p 2e52d62
+tree 1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p7q8r9s0t
+parent a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0
+author Jane Doe <jane@example.com> 1672531200 -0500
+committer Jane Doe <jane@example.com> 1672531200 -0500
+
+feat: Add user authentication module`,
+            commit: "Using a 'plumbing' command to inspect a commit object.",
+            output: "<h1>🔬 Peeking Under the Hood</h1><p>A commit is just a simple text object! It contains a pointer to a 'tree' (the project snapshot), a 'parent' (the previous commit), author info, and a message.</p>",
+            explanation: {
+                concepts: {
+                    title: "Concept: The Git Object Model",
+                    analogy: "Think of your `.git` directory as a magical library where nothing is ever thrown away. Every piece of content is a **blob**. A directory listing is a **tree**. A snapshot in time is a **commit**, which points to a tree and its parent commit. A **tag** or **branch** is just a sticky note pointing to a specific commit. Git is essentially a giant, efficient key-value database mapping unique IDs (SHAs) to these objects.",
+                    text: "Understanding that Git is fundamentally a content-addressable filesystem is the key to mastery. Everything—file content, directory structures, commits—is stored as an 'object' with a unique SHA-1 hash. Commands like `git add` and `git commit` are 'porcelain' commands that create these underlying 'plumbing' objects for you.",
+                    dangerZone: "<strong>Danger Zone:</strong> Never manually edit files inside the `.git/objects` directory! You can easily corrupt your entire repository. Use plumbing commands like `git cat-file` for safe, read-only inspection."
+                },
+                steps: {
+                    title: "Lab: Walking the Object Graph",
+                    list: [
+                        "Find a commit hash using `git log --oneline`.",
+                        "Inspect the commit object: `git cat-file -p <commit-hash>`.",
+                        "Note the 'tree' hash from the output.",
+                        "Inspect the tree object: `git cat-file -p <tree-hash>`. You'll see a list of blobs (files) and other trees (subdirectories).",
+                        "Pick a 'blob' hash from the tree and inspect its content: `git cat-file -p <blob-hash>`. You've just reconstructed a file from its raw object!"
+                    ]
+                },
+                quiz: [
+                    { q: "A branch name like 'main' is fundamentally just a...", options: ["Special type of commit", "Folder on your disk", "Pointer to a specific commit hash", "Copy of the repository"], correct: 2, explain: "Branch and tag names are just human-readable references ('refs') pointing to a commit's SHA-1 hash." },
+                    { q: "What is the difference between 'plumbing' and 'porcelain' commands?", options: ["Plumbing is for fixing pipes", "Plumbing commands are low-level; porcelain commands are user-friendly", "Porcelain is fragile, plumbing is stable", "They are the same"], correct: 1, explain: "Porcelain (`git commit`) is for daily use. Plumbing (`git cat-file`) is for scripting and inspection." }
+                ],
+                bestPractices: {
+                    dos: ["Use plumbing commands for scripting and deep investigation.", "Draw the commit graph (DAG) on paper to understand complex histories.", "Use `git show-ref` to see where all your branches and tags are pointing."],
+                    donts: ["Don't manually edit anything in the `.git` directory unless you are an expert and have backups.", "Don't confuse a lightweight tag (just a pointer) with an annotated tag (a full Git object)."],
+                    glossary: [
+                        { term: "Object Database", def: "The collection of blobs, trees, and commits in the `.git/objects` directory." },
+                        { term: "SHA (or SHA-1)", def: "The unique 40-character hash ID for every object in Git." },
+                        { term: "Ref", def: "A pointer to a commit hash, like a branch or a tag name." },
+                        { term: "Plumbing", def: "Low-level Git commands used for scripting and direct repository manipulation." }
+                    ]
+                },
+                faq: [
+                    { q: "What does it mean for HEAD to be 'detached'?", a: "Normally, `HEAD` points to a branch name, which in turn points to a commit. A detached `HEAD` means `HEAD` is pointing *directly* to a commit hash instead of a branch. This happens if you `git checkout <commit-hash>`. It's fine for inspection, but if you make new commits, they won't belong to any branch and can be lost." }
+                ]
+            }
+        },
+        history: {
+            code: `pick 1a2b3c4 Oldest commit
+squash 5d6e7f8 WIP commit
+fixup 9g8h7i6 Fix typo
+reword 3j4k5l6 Vague message -> feat: Implement user login
+
+# Rebase 1a2b3c4..3j4k5l6 onto main (4 commands)`,
+            commit: "Using 'interactive rebase' to curate a clean, narrative history.",
+            output: "<h1>✍️ History Curation as Leadership</h1><p>A maintainer uses tools like interactive rebase not just to be tidy, but to craft a project history that is a clear, logical, and valuable piece of documentation for the team.</p>",
+            explanation: {
+                concepts: {
+                    title: "Strategy: Deciding When to Merge vs. Rebase",
+                    analogy: "Think of your project history as its official biography. A **merge commit** strategy is a completely honest biography, recording every single detour and side-conversation. A **rebase** strategy is a curated biography, edited for clarity and flow, presenting a clean, linear story of progress. A leader must decide which style of biography best serves their team and project.",
+                    text: "This is one of the most debated topics in Git. There is no single 'right' answer, only trade-offs. **Merging** (`git merge`) preserves the exact, messy history and is safer for beginners. **Rebasing** (`git rebase`) creates a cleaner, linear history that's easier to read, but it rewrites commit hashes and is dangerous on shared branches. As a leader, you establish the project's policy based on your team's skill level and need for historical precision.",
+                    dangerZone: "<strong>Danger Zone:</strong> **NEVER** use rebase or other history-rewriting commands on a branch that other people are using (like `main` or a shared feature branch). It changes the commit hashes, creating a divergent history that is very difficult for your team to resolve. This is the cardinal rule of rebasing."
+                },
+                steps: {
+                    title: "Checklist: A Safe History Rewrite",
+                    list: [
+                        "<strong>Backup:</strong> Before you start, create a backup branch: `git branch backup-branch-name`.",
+                        "<strong>Isolate:</strong> Ensure you are the only person working on this branch.",
+                        "<strong>Rebase:</strong> Run `git rebase -i <base-commit>` and edit your commits.",
+                        "<strong>Verify:</strong> Test your code thoroughly after the rebase to ensure you didn't break anything.",
+                        "<strong>Push Carefully:</strong> You will need to force-push. Use `git push --force-with-lease` instead of `--force`. It's a safer version that won't overwrite remote work if someone else *did* push to the branch."
+                    ]
+                },
+                quiz: [
+                    { q: "Your team values a clean, linear commit history on the main branch above all else. Which merge strategy for pull requests should you enforce?", options: ["Merge Commit", "Rebase and Merge", "They are the same"], correct: 1, explain: "A rebase workflow creates a linear history by replaying commits on top of the target branch." },
+                    { q: "A junior developer is struggling to resolve a complex conflict after rebasing. As a team lead, what is the safest advice?", options: ["Tell them to use `git push --force`", "Suggest they abort the rebase (`git rebase --abort`) and attempt a standard merge instead.", "Tell them to delete their branch and start over."], correct: 1, explain: "Aborting the rebase is a safe way out that returns them to their pre-rebase state, after which a standard merge is a less complex alternative." }
+                ],
+                bestPractices: {
+                    dos: ["Establish a clear, documented policy for your team on whether to use merge or rebase.", "Clean up your *local* feature branch history with interactive rebase *before* sharing it.", "Use `git reflog` as your safety net to recover from rebase mistakes."],
+                    donts: ["Don't rewrite history that has been shared with others.", "Don't force your team to use a rebase workflow if they aren't comfortable with it; the risk of mistakes is high."],
+                    glossary: [
+                        { term: "Interactive Rebase", def: "A powerful tool (`git rebase -i`) that allows you to edit, reword, reorder, or squash your commits." },
+                        { term: "Reflog", def: "A log of all recent actions in your local repository, used for recovery." },
+                        { term: "Bisect", def: "A Git command that uses binary search to find the commit that introduced a bug." },
+                        { term: "force-with-lease", def: "A safer way to force-push. It will fail if the remote branch has new commits you haven't seen." }
+                    ]
+                },
+                faq: [
+                    { q: "A bug was introduced sometime in the last 100 commits. What is the most efficient tool to find the exact 'bad' commit?", a: "`git bisect` is the best tool. It performs an automated binary search on your commit history. You tell it one 'good' commit and one 'bad' commit, and it will automatically help you pinpoint the exact commit that caused the problem." }
+                ]
+            }
+        },
+        automation: {
+            code: `#!/bin/sh
+# .git/hooks/pre-receive
+
+# Policy: Reject any push to 'main' that isn't a merge commit from a PR.
+# This prevents direct pushes and forces the PR workflow.
+
+read oldrev newrev refname
+if [ "$refname" = "refs/heads/main" ]; then
+    is_merge=$(git cat-file -p $newrev | grep -c "^parent .\\{40\\} .\\{40\\}$")
+    if [ "$is_merge" -ne 1 ]; then
+        echo "Policy violation: Direct pushes to main are not allowed."
+        exit 1
+    fi
+fi`,
+            commit: "A server-side pre-receive hook that enforces a team-wide workflow.",
+            output: "<h1>🤖 Automated Governance</h1><p>This `pre-receive` hook, installed on the server, acts as an un-bypassable gatekeeper. It rejects any direct push to `main`, ensuring every change must go through the formal PR and merge process.</p>",
+            explanation: {
+                concepts: {
+                    title: "Concept: Automated Governance with Hooks",
+                    analogy: "If client-side hooks are personal alarms, then **server-side hooks** are the factory's automated quality control assembly line. They are non-negotiable. You can install a 'pre-receive' system that X-rays every incoming part, rejecting any that don't meet the central blueprint's specifications (e.g., contains secrets, doesn't pass tests, isn't signed by an authorized engineer).",
+                    text: "For a team lead or maintainer, the most important hooks are **server-side** (like `pre-receive` or `update`) because they cannot be bypassed. They run on the hosting server (e.g., GitHub Enterprise) and are used to enforce critical, project-wide policies for everyone. This is how you build an automated governance system that ensures compliance, security, and workflow adherence.",
+                    dangerZone: "<strong>Danger Zone:</strong> A poorly written server-side hook can block your entire team from pushing code. They must be fast, reliable, and well-tested in a staging environment before being deployed to your production repository."
+                },
+                steps: {
+                    title: "Lab: Designing a Quality Gate Policy",
+                    list: [
+                        "<strong>Goal:</strong> Define what your policy must enforce. Example: 'No secrets should ever be committed.'",
+                        "<strong>Tool:</strong> Choose the right hook. A `pre-receive` hook is perfect for this, as it can inspect the pushed commits before they are accepted.",
+                        "<strong>Logic:</strong> Write a script that checks the content of every pushed commit against a list of secret patterns (regex).",
+                        "<strong>Feedback:</strong> If the script finds a secret, it should print a helpful error message to the user explaining why their push was rejected and how to fix it.",
+                        "<strong>Implementation:</strong> Install the executable script on your Git server."
+                    ]
+                },
+                quiz: [
+                    { q: "Your team wants to block any push that contains an AWS secret key. To make this policy impossible to bypass, what type of hook is required?", options: ["A client-side pre-push hook", "A server-side pre-receive hook", "A client-side post-commit hook", "It's not possible"], correct: 1, explain: "Policy enforcement for all users must happen on the server via a `pre-receive` hook, as client-side hooks can be bypassed." },
+                    { q: "How can a team share and manage client-side Git hooks consistently?", options: ["They are shared automatically with git push", "You have to email them to each other", "Using a tool like Husky or by storing them in the repo and having a script to link them into .git/hooks", "You can't"], correct: 2, explain: "The `.git` directory isn't versioned, so you need a strategy to manage and distribute hooks, often with a helper tool." }
+                ],
+                bestPractices: {
+                    dos: ["Use server-side hooks to enforce critical policies like blocking secrets or unsigned commits.", "Provide clear, actionable error messages to the user when a hook rejects their push.", "Keep hooks fast. Slow hooks can frustrate developers and slow down workflows."],
+                    donts: ["Don't rely on client-side hooks for security or policy enforcement, as they can be bypassed (`git commit --no-verify`).", "Don't store sensitive information or secrets directly in your hook scripts."],
+                    glossary: [
+                        { term: "Git Hook", def: "A script that Git executes before or after a specific event." },
+                        { term: "Client-Side Hook", def: "A hook that runs on a developer's local machine (e.g., `pre-commit`)." },
+                        { term: "Server-Side Hook", def: "A hook that runs on the hosting server to enforce policy (e.g., `pre-receive`)." }
+                    ]
+                },
+                faq: [
+                    { q: "How are server-side hooks different from GitHub Actions?", a: "Hooks are a core Git feature and run locally or on your own server. GitHub Actions is a specific CI/CD platform provided by GitHub. A `pre-receive` hook could trigger a GitHub Actions workflow, but they are separate technologies. Actions are generally easier to manage for complex CI/CD pipelines, while server-hooks offer direct, powerful control over Git itself." }
+                ]
+            }
+        },
+        scale: {
+            code: `> git clone --filter=blob:none --no-checkout <repo_url>
+> cd <repo>
+> git sparse-checkout init --cone
+> git sparse-checkout set docs/
+> git checkout main`,
+            commit: "Using partial clone and sparse checkout for a large monorepo.",
+            output: "<h1>🏗️ Taming the Monolith</h1><p>For a massive repository, you don't need all 2GB on your machine. With partial clone and sparse checkout, you've only downloaded the metadata and the specific `docs/` folder you need to work on.</p>",
+            explanation: {
+                concepts: {
+                    title: "Concept: Large-Scale Repository Management",
+                    analogy: "Managing a huge repository is like managing a city's archives. You can't just check out the entire building. **Git LFS** is a system to store giant blueprints (large binary files) in a separate warehouse and just keep a library card in the main archive. **Sparse checkout** is like requesting just one specific filing cabinet ('/docs') instead of the whole floor. **Submodules** are like referencing a book from another library entirely.",
+                    text: "As repositories grow, they become slow to clone and work with. Git provides several strategies to manage this. **Git LFS (Large File Storage)** replaces large binary files in your repo with tiny text pointers. **Submodules** and **Subtrees** allow you to embed one repository inside another. For giant monorepos, **partial clone** and **sparse checkout** let you fetch only the parts of the repository you actually need.",
+                    dangerZone: "<strong>Danger Zone:</strong> Rewriting history to migrate existing files to LFS (e.g., using `git filter-repo`) is a powerful but destructive operation. It will change every commit hash in your history. It must be carefully coordinated with the entire team and requires everyone to re-clone the repository."
+                },
+                steps: {
+                    title: "Checklist: LFS Rollout Plan",
+                    list: [
+                        "<strong>Audit:</strong> Identify which large file types are causing bloat (e.g., `.psd`, `.mp4`, `.zip`).",
+                        "<strong>Install:</strong> Ensure every team member has the Git LFS client installed (`git lfs install`).",
+                        "<strong>Track:</strong> Use `git lfs track '*.psd'` to specify which files LFS should handle. Commit the `.gitattributes` file.",
+                        "<strong>Enforce:</strong> Set up a server-side `pre-receive` hook to block any large files that aren't tracked by LFS.",
+                        "<strong>Migrate (Optional & Dangerous):</strong> For existing large files, plan a maintenance window to rewrite history and migrate them to LFS."
+                    ]
+                },
+                quiz: [
+                    { q: "You work on a huge monorepo, but your team only needs the `/mobile-app` directory. What feature should you use?", options: ["Git LFS", "Subtree", "Partial Clone + Sparse Checkout", "git gc"], correct: 2, explain: "This combination allows you to clone without blobs and then check out only the specific directories you need." },
+                    { q: "What is a major trade-off of using Submodules?", options: ["They are too simple", "They make the repository bigger", "They require manual steps to update and can drift from the main project", "They only work for text files"], correct: 2, explain: "Submodules pin a specific commit of another repo, and keeping them updated requires explicit commands, making them more complex to manage than subtrees." }
+                ],
+                bestPractices: {
+                    dos: ["Establish a clear policy on what constitutes a 'large file' and how it should be handled.", "Use partial clone and sparse checkout for very large monorepos.", "Run `git maintenance start` to enable background tasks like `gc` and `repack` to keep your repo performant."],
+                    donts: ["Don't commit large binary files directly to Git history if you can avoid it.", "Don't introduce a submodule without understanding the workflow required to keep it updated.", "Don't rewrite the entire history of a large repo without a very good reason and a solid plan."],
+                    glossary: [
+                        { term: "Monorepo", def: "A single repository containing multiple distinct projects, often with well-defined relationships." },
+                        { term: "Git LFS", def: "Git Large File Storage; an extension for versioning large files with pointers." },
+                        { term: "Submodule", def: "A way to embed one repository inside another as a specific commit reference." },
+                        { term: "Sparse Checkout", def: "A feature that lets you check out only a subset of the files in your repository." }
+                    ]
+                },
+                faq: [
+                    { q: "Submodule vs. Subtree: which should I use?", a: "Use a **submodule** when you want to keep the projects completely separate and just reference a dependency at a specific version. Use a **subtree** when you want to absorb an external project's code and history directly into your own, making it a permanent part of your repo." }
+                ]
+            }
+        },
+        maintainer: {
+            code: `<!-- .github/PULL_REQUEST_TEMPLATE.md -->
+## Description
+_Please include a summary of the change._
+
+## Related Issue
+_Fixes # (issue)_
+
+## Checklist
+- [ ] My code follows the style guidelines
+- [ ] I have added tests that prove my fix is effective
+- [ ] I have updated the documentation`,
+            commit: "Using issue and PR templates to guide contributors.",
+            output: "<h1>🌍 Open Source Leadership</h1><p>As a maintainer, your job is to create a welcoming and efficient environment. Tools like contribution guidelines, issue templates, and `CODEOWNERS` help automate triage and set clear expectations for everyone.</p>",
+            explanation: {
+                concepts: {
+                    title: "Concept: Open Source Maintainer Workflows",
+                    analogy: "Being a maintainer is like being a community garden manager. Your job isn't just to plant things yourself. It's to provide good tools, clear signage (**CONTRIBUTING.md**), pre-printed labels for new plant ideas (**Issue Templates**), and a system for routing questions to the right expert (**CODEOWNERS**). Your goal is to make it easy for others to contribute successfully.",
+                    text: "Effective open source maintenance is less about writing code and more about managing a community. This involves setting clear expectations with `CONTRIBUTING.md` and `CODE_OF_CONDUCT.md` files. You can streamline contributions using issue and PR templates. Branch protection rules combined with a `CODEOWNERS` file can automatically request reviews from the right team. For releases, you need a disciplined process involving semantic versioning, changelog generation, and signed tags.",
+                    dangerZone: "<strong>Danger Zone:</strong> Maintainer burnout is real. It stems from ambiguous contribution rules, a high volume of low-quality PRs, and a lack of automation. Set up clear guidelines and automate as much as possible (triage, labeling, closing stale issues) to protect your time and energy."
+                },
+                steps: {
+                    title: "Checklist: A New Release",
+                    list: [
+                        "Ensure all tests are passing on the release branch.",
+                        "Generate a changelog summarizing all new features and fixes.",
+                        "Bump the version number according to Semantic Versioning (e.g., v1.2.0).",
+                        "Create an annotated, signed Git tag for the release commit: `git tag -s v1.2.0`.",
+                        "Push the commit and the tag to GitHub.",
+                        "Draft and publish the release on GitHub, attaching any build artifacts (like binaries or installers)."
+                    ]
+                },
+                quiz: [
+                    { q: "A new contributor wants to help with your project. What file should they look for first?", options: ["LICENSE", "CODEOWNERS", "CONTRIBUTING.md", "SECURITY.md"], correct: 2, explain: "The CONTRIBUTING.md file is the primary document that explains how to set up the project and contribute effectively." },
+                    { q: "You want to ensure any changes to the `/api/auth/` directory are always reviewed by the security team. What's the best tool?", options: ["An issue template", "A CODEOWNERS file", "A git hook", "A pull request template"], correct: 1, explain: "A CODEOWNERS file allows you to define ownership for paths in the repo, automatically requesting reviews from the specified teams." }
+                ],
+                bestPractices: {
+                    dos: ["Create comprehensive `CONTRIBUTING.md` and `CODE_OF_CONDUCT.md` files.", "Use issue and PR templates to guide contributors.", "Use labels and project boards to triage and prioritize work.", "Practice semantic versioning and create signed, annotated tags for releases."],
+                    donts: ["Don't merge PRs that don't meet the standards outlined in your contribution guide.", "Don't ignore the community; be responsive and humane, even when closing an issue.", "Don't grant admin or write permissions to contributors without a proven track record."],
+                    glossary: [
+                        { term: "CONTRIBUTING.md", def: "A file explaining how to contribute to your project." },
+                        { term: "CODEOWNERS", def: "A file that defines which teams or individuals are responsible for parts of the codebase." },
+                        { term: "Semantic Versioning", def: "A versioning scheme (MAJOR.MINOR.PATCH) that conveys the nature of changes." },
+                        { term: "Changelog", def: "A file that lists the notable changes in each version of a project." }
+                    ]
+                },
+                faq: [
+                    { q: "How do I automate the generation of a changelog?", a: "There are many tools that can do this for you. They typically work by parsing your commit messages. This is why following a standardized commit message format (like Conventional Commits) is so valuable for maintainers." },
+                    { q: "Why did the industry shift from `master` to `main`?", a: "The shift from `master` to the more inclusive term `main` was part of a wider industry effort to remove language with potentially negative connotations. Git and GitHub now use `main` as the default for new repositories, but you'll often encounter `master` in older projects. It's a good practice to rename the default branch to `main` in legacy projects when possible."}
+                ]
+            }
+        },
+        recovery: {
+            code: `> git reflog
+a1b2c3d HEAD@{0}: reset: moving to a1b2c3d
+e5f6g7h HEAD@{1}: commit: This is the good commit I lost!
+...
+> git reset --hard e5f6g7h`,
+            commit: "Using 'reflog' to find a lost commit after a bad reset.",
+            output: "<h1>⛑️ Disaster Recovery</h1><p>You accidentally ran `git reset --hard` and thought you lost your work. But `git reflog`—your local safety net—showed you the 'lost' commit's hash, and you restored it instantly.</p>",
+            explanation: {
+                concepts: {
+                    title: "Concept: Advanced Troubleshooting & Recovery",
+                    analogy: "Your Git repository is like an airplane's black box. Even if something goes horribly wrong, the data is still there. The **reflog** is your personal recording of every move you've made. `git fsck` is the diagnostic tool the ground crew uses to check the integrity of the box itself. Knowing how to use these tools means you can recover from almost any situation.",
+                    text: "Mistakes happen. A branch gets deleted, a rebase goes wrong, or someone force-pushes over shared history. Git's toolkit is designed for recovery. The `reflog` tracks the history of your `HEAD`, allowing you to find commits that are no longer referenced by any branch. `git fsck` (file system check) can be used to find dangling objects and detect repository corruption.",
+                    dangerZone: "<strong>Danger Zone:</strong> The `reflog` is your *local* safety net and it is not permanent. Entries expire after a configured time (typically 90 days). It is not shared when you push, and it doesn't exist on a fresh clone. It can save you from local mistakes, but it can't save you from a corrupted remote repository without a proper backup."
+                },
+                steps: {
+                    title: "Runbook: Recovering from a Force-Push on Main",
+                    list: [
+                        "<strong>Freeze:</strong> Immediately tell the team to stop pushing to `main`.",
+                        "<strong>Identify:</strong> The person who has the 'correct' history (before the force-push) on their local machine should run `git reflog` to find the last good commit hash.",
+                        "<strong>Restore:</strong> That person should run `git push --force-with-lease origin <good-commit-hash>:main`. The `--force-with-lease` is critical to ensure no one else pushed in the meantime.",
+                        "<strong>Communicate:</strong> Announce that `main` has been restored.",
+                        "<strong>Re-sync:</strong> Everyone else on the team must now run `git checkout main` and `git reset --hard origin/main` to get their local copies back in sync."
+                    ]
+                },
+                quiz: [
+                    { q: "Why is `git push --force-with-lease` safer than `git push --force`?", options: ["It's faster", "It requires a password", "It will fail if the remote branch has new commits that you don't have locally", "It automatically creates a backup"], correct: 2, explain: "It protects you from overwriting work that another team member might have pushed since you last fetched." },
+                    { q: "How do you undo a merge commit that you've already pushed to `main`?", options: ["Use `git reset --hard` on main", "Run `git rebase -i` and delete the merge commit", "Create a new commit that reverts the merge: `git revert -m 1 <merge-commit-hash>`", "Delete the repository"], correct: 2, explain: "`git revert` is the safe, non-destructive way to undo changes on a public, shared branch as it creates a *new* commit." }
+                ],
+                bestPractices: {
+                    dos: ["Regularly back up your important remote repositories.", "When in doubt, create a new branch before attempting a complex or destructive operation.", "Use `git revert` to undo changes on a public branch; use `git reset` to fix mistakes on a private branch."],
+                    donts: ["Don't use `git push --force` on a shared branch. Use `--force-with-lease` instead.", "Don't assume the reflog will save you forever; it expires.", "Don't panic. With a good backup and Git's tools, almost nothing is truly unrecoverable."],
+                    glossary: [
+                        { term: "Reflog", def: "A log of where HEAD and branch references have been for the last 90 days." },
+                        { term: "fsck", def: "File System Check. A command to verify the integrity of the Git object database." },
+                        { term: "Revert", def: "To create a new commit that is the inverse of a previous commit, safely undoing it on a public branch." },
+                        { term: "Reset", def: "To move the current branch tip back to a previous commit, potentially discarding history. Safe for local cleanup." }
+                    ]
+                },
+                faq: [
+                    { q: "I deleted a branch with `git branch -D` but I need it back! How can I recover it?", a: "Run `git reflog`. You will see an entry like `commit (branch-name): ...`. Find the hash of the last commit that was on that branch. Then, simply run `git checkout -b <branch-name> <commit-hash>` to recreate the branch right where it was." }
+                ]
+            }
+        },
+    };
+
+    const finalQuizQuestions = [
+        { type: "MCQ", text: "Your team values a clean, linear commit history above all else. Which merge strategy should your `main` branch protection rules enforce for pull requests?", options: ["Standard Merge Commit", "Rebase and Merge", "Squash and Merge", "All are acceptable"], correct: 1, explain: "A 'Rebase and Merge' strategy rewrites a feature branch's history on top of the target branch, creating a perfectly linear, easy-to-read history without merge commits." },
+        { type: "MCQ", text: "A junior developer accidentally committed a 500MB video file to the repository and pushed it. What is the most appropriate strategy to fix this long-term?", options: ["Tell them to delete the file and commit again", "Implement Git LFS, rewrite history to remove the file, and have the team re-clone", "Do nothing, the repository will handle it", "Use a `pre-receive` hook to block large files in the future"], correct: 1, explain: "Git LFS is the correct tool. Because the file is already in the history, that history must be rewritten (a destructive but necessary action), and the team must coordinate by re-cloning to get the clean history." },
+        { type: "TF", text: "A client-side `pre-commit` hook is sufficient to enforce a company-wide policy of blocking sensitive API keys from being committed.", correct: false, explain: "Client-side hooks can be bypassed with `--no-verify`. Security and policy enforcement must be handled by non-bypassable server-side hooks like `pre-receive`." },
+        { type: "MCQ", text: "Two teams are arguing over who is responsible for reviewing changes to a critical configuration file, `prod.config`. As the repository maintainer, what is the best mechanism to resolve this ambiguity and automate review requests?", options: ["Send an email clarifying the policy", "Set up a server-side hook", "Implement a `CODEOWNERS` file defining the teams responsible for `prod.config`", "Use a Pull Request template"], correct: 2, explain: "A `CODEOWNERS` file is the official GitHub mechanism for defining ownership and automatically routing review requests to the correct teams for specific files or directories." },
+        { type: "MCQ", text: "You need to apply a critical security patch (commit `a1b2c3d`) from the `main` branch to your older `v2.1-release` branch. What is the most precise command to do this?", options: ["`git merge main`", "`git rebase main`", "`git cherry-pick a1b2c3d`", "`git revert a1b2c3d`"], correct: 2, explain: "`cherry-pick` is designed to grab a specific commit from one branch and apply it onto another, which is perfect for backporting fixes." },
+        { type: "MCQ", text: "A team lead decides to rebase and force-push the `develop` branch to clean it up, but this causes chaos for the rest of the team. What is the primary reason this action was a mistake?", options: ["Rebasing is always a bad idea", "The `develop` branch is a shared, public branch, and its history should not be rewritten", "Force-pushing is less secure than a regular push", "The team lead should have used `squash` instead"], correct: 1, explain: "The cardinal rule of rebasing is to never rewrite the history of a branch that other developers are using and pulling from. It creates divergent histories and complex recovery situations." },
+        { type: "MCQ", text: "Your company's new policy requires all commits to the main branch to be cryptographically signed with a GPG key. How can you enforce this?", options: ["A `CONTRIBUTING.md` file", "A client-side `commit-msg` hook", "Branch protection rules on GitHub requiring signed commits", "Trusting your developers to remember"], correct: 2, explain: "GitHub's branch protection settings provide a direct, enforceable way to mandate signed commits, blocking any that are not properly signed." },
+        { type: "MCQ", text: "A developer on your team just ran `git reset --hard` and believes they've lost a commit. The commit was never pushed. What Git feature would you tell them to use to find the 'lost' commit's hash?", options: ["The GitHub UI", "`git log`", "`git reflog`", "Their IDE's local history"], correct: 2, explain: "The `reflog` is a local, private log of all movements of HEAD and is the primary tool for recovering from local mistakes like a bad reset." },
+        { type: "MCQ", "text": "What is the primary trade-off when choosing a Submodule strategy for dependency management?", "options": ["It makes the repository much larger.", "It's complex for contributors, who must run extra commands to initialize and update the dependency.", "It is less secure than copying code directly.", "It can only be used for text-based files."], "correct": 1, "explain": "Submodules add complexity to the user workflow (`git clone --recurse-submodules`, `git submodule update`), which can be a hurdle for new contributors compared to a simpler, albeit larger, subtree or direct vendoring approach." },
+        { type: "MMCQ", text: "As a maintainer of a large open-source project, which of these files are most critical for setting expectations and guiding new contributors? (Choose 2)", options: [".gitignore", "CONTRIBUTING.md", "LICENSE", "CODE_OF_CONDUCT.md"], correct: [1, 3], explain: "`CONTRIBUTING.md` sets the technical guidelines for how to contribute, while `CODE_OF_CONDUCT.md` sets the social and community expectations for behavior." },
+        { type: "MCQ", "text": "Your repository has grown to 5GB due to large design assets. Cloning is now extremely slow. Which combination of tools offers the best solution for improving clone times for developers who only need to work on the code?", "options": ["`git gc` and `git repack`", "Submodules and Subtrees", "Git LFS and Partial Clone/Sparse Checkout", "Interactive Rebase and `git filter-repo`"], "correct": 2, "explain": "LFS moves the large assets out of the main repo, while Partial Clone and Sparse Checkout allow developers to download only the repository history and the specific source code files they need, providing the most significant performance boost." },
+        { type: "TF", text: "In a monorepo, all projects must share the same release cycle.", correct: false, explain: "A key challenge and feature of mature monorepos is tooling that allows independent versioning and release cycles for the different projects contained within it." },
+        { type: "MATCH", text: "Match the leadership action to the Git/GitHub feature that enables it.", stems: ["Enforce code style before commit", "Ensure the right team reviews API changes", "Prevent accidental deletion of a release branch", "Prove a release tag is authentic and untampered"], responses: ["Client-side `pre-commit` hook", "`CODEOWNERS` file", "Branch Protection Rules", "Signed Git Tags"], correct: [{ s: 0, r: 0 }, { s: 1, r: 1 }, { s: 2, r: 2 }, { s: 3, r: 3 }], explain: "Each of these leadership goals maps directly to a specific feature designed to automate and enforce that policy." },
+        { type: "MCQ", "text": "What is the key purpose of Semantic Versioning (SemVer)?", "options": ["To make version numbers look random and interesting", "To communicate the nature of changes (breaking, feature, or patch) through the version number", "To automatically generate changelogs", "A legal requirement for open source projects"], "correct": 1, "explain": "SemVer (MAJOR.MINOR.PATCH) provides a universal standard for communicating whether a new version contains breaking changes, new features, or just bug fixes, which is critical for dependency management." },
+        { q: "A teammate force-pushed to a shared feature branch, and now you can't push your own commits. What is the safest command to start with to fix your local branch?", options: ["`git reset --hard origin/feature-branch`", "`git pull`", "`git fetch origin` followed by `git rebase origin/feature-branch`", "`git push --force`"], correct: 2, type: "MCQ", explain: "`fetch` safely downloads the new history without touching your local work. You can then inspect the changes and decide how to integrate your work, usually by rebasing your commits on top of the new history." },
+        { type: "MCQ", "text": "You're reviewing a PR and notice a small typo. What is the most efficient and collaborative way to fix it using the GitHub UI?", "options": ["Leave a comment asking the author to fix it", "Reject the PR", "Use the 'Suggest a change' feature to propose the fix directly in the review", "Clone the branch, fix it locally, and push to their PR"], "correct": 2, "explain": "The 'Suggest a change' feature is designed for exactly this. It's low-friction, and the author can accept it with a single click, keeping the process moving quickly." },
+        { type: "MCQ", "text": "Why is it important to have a `SECURITY.md` file in a public repository?", "options": ["It lists the project's security features", "It provides a clear, private channel for researchers to report vulnerabilities", "It automatically protects the repository from hackers", "It's where you store your API keys"], "correct": 1, "explain": "A `SECURITY.md` file directs security researchers on how to disclose vulnerabilities responsibly and privately, preventing them from being posted in public issues." },
+        { type: "MMCQ", "text": "Which of the following are strong reasons to adopt a monorepo? (Choose 2)", "options": ["To make the repository smaller", "To simplify dependency management between tightly coupled projects", "To make it easier for new developers to clone", "To enable large-scale atomic refactors across the entire codebase"], "correct": [1, 3], "explain": "Monorepos excel at managing shared dependencies and allowing for atomic commits that span multiple projects, which is very difficult in a multi-repo setup." },
+        { q: "You need to undo a commit that has already been pushed to `main`. To avoid rewriting public history, what command should you use?", type: "MCQ", options: ["`git reset`", "`git revert`", "`git rebase`", "`git filter-repo`"], correct: 1, explain: "`git revert` is the only safe option here. It creates a *new* commit that is the inverse of the bad commit, preserving the project history while still undoing the change." },
+        { type: "SEQ", "text": "Put these steps for creating a secure, official release in the correct order.", "items": ["Generate a changelog", "Push the new commit and the tag to the remote", "Create a signed, annotated tag for the new version commit", "Bump the version number in the code"], "correct": ["Bump the version number in the code", "Generate a changelog", "Create a signed, annotated tag for the new version commit", "Push the new commit and the tag to the remote"], "explain": "The process is to update the version, document the changes, officially mark the release with a signed tag, and then publish everything." }
+    ];
+
+    // Global state
+    let completedTutorials = [];
+    const minTutorialsForQuiz = 3;
+    let quizState = {
+        currentQ: 0,
+        score: 0,
+        answers: new Array(finalQuizQuestions.length).fill(null)
+    };
+
+    function renderMarkdown(text) {
+        if (!text) return '';
+        return text
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/g, '<em>$1</em>')
+            .replace(/`(.*?)`/g, '<code>$1</code>');
+    }
+    
+    // UI elements
+    const introScreen = document.getElementById('intro-screen');
+    const selectScreen = document.getElementById('select-screen');
+    const tutorialScreen = document.getElementById('tutorial-screen');
+    const finalQuizScreen = document.getElementById('final-quiz-screen');
+    const quizStatusText = document.getElementById('quiz-status-text');
+    const startQuizBtn = document.getElementById('start-quiz-btn');
+    const quizProgress = document.getElementById('quiz-progress');
+    const quizCard = document.getElementById('quiz-card');
+    const quizPrevBtn = document.getElementById('quiz-prev-btn');
+    const quizNextBtn = document.getElementById('quiz-next-btn');
+    const quizCounter = document.getElementById('quiz-counter');
+    const quizSkipBtn = document.getElementById('quiz-skip-btn');
+    
+    function showScreen(screen) {
+        introScreen.style.display = 'none';
+        selectScreen.style.display = 'none';
+        tutorialScreen.style.display = 'none';
+        finalQuizScreen.style.display = 'none';
+        screen.style.display = 'flex';
+        if (screen.id === 'tutorial-screen') {
+            screen.style.display = 'grid';
+        }
+        if (screen.id === 'final-quiz-screen') {
+            document.body.style.display = 'flex';
+            document.body.style.flexDirection = 'column';
+        } else {
+            document.body.style.display = 'flex';
+            document.body.style.flexDirection = 'column';
+        }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    
+    function updateQuizButton() {
+        if (completedTutorials.length >= minTutorialsForQuiz) {
+            startQuizBtn.disabled = false;
+            quizStatusText.textContent = `You've completed ${completedTutorials.length} topics! The quiz is now ready.`;
+        } else {
+            startQuizBtn.disabled = true;
+            quizStatusText.textContent = `Complete at least ${minTutorialsForQuiz} topics to unlock the final capstone quiz! (${completedTutorials.length} / ${minTutorialsForQuiz})`;
+        }
+    }
+
+    function markTutorialCompleted(crudAction) {
+        if (!completedTutorials.includes(crudAction)) {
+            completedTutorials.push(crudAction);
+            document.querySelector(`.select-card[data-crud="${crudAction}"]`).classList.add('completed');
+            updateQuizButton();
+        }
+    }
+
+    function switchCrudTab(crudAction) {
+        const data = playgroundData[crudAction];
+        document.getElementById('code-viewer').textContent = data.code;
+        document.getElementById('commit-section').innerHTML = renderMarkdown(data.commit);
+        document.getElementById('output-viewer').innerHTML = renderMarkdown(data.output);
+        
+        document.querySelectorAll('.crud-tab').forEach(t => t.classList.toggle('active', t.dataset.crud === crudAction));
+        renderExplanation(crudAction);
+        markTutorialCompleted(crudAction);
+    }
+    
+    function renderExplanation(crudAction) {
+        const explanationPanel = document.getElementById('explanation-panel-body');
+        const data = playgroundData[crudAction].explanation;
+        
+        explanationPanel.innerHTML = `
+            <div class="explanation-tabs">
+                <button class="explanation-tab active" data-tab="concepts">Concepts</button>
+                <button class="explanation-tab" data-tab="steps">Labs & Checklists</button>
+                <button class="explanation-tab" data-tab="quiz">Quiz</button>
+                <button class="explanation-tab" data-tab="bestPractices">Best Practices & Glossary</button>
+                <button class="explanation-tab" data-tab="faq">FAQs</button>
+            </div>
+            <div id="concepts-content" class="explanation-content active">
+                <h3>${data.concepts.title}</h3>
+                <p class="analogy">${renderMarkdown(data.concepts.analogy)}</p>
+                <p>${renderMarkdown(data.concepts.text)}</p>
+                ${data.concepts.dangerZone ? `<div class="danger-zone">${renderMarkdown(data.concepts.dangerZone)}</div>` : ''}
+            </div>
+            <div id="steps-content" class="explanation-content">
+                <h3>${data.steps.title}</h3>
+                <ol class="step-list">
+                    ${data.steps.list.map((step) => `<li><span>${renderMarkdown(step)}</span></li>`).join('')}
+                </ol>
+            </div>
+            <div id="quiz-content" class="explanation-content">
+                <h3>Knowledge Check</h3>
+                ${data.quiz.map((quizItem, index) => `
+                    <div class="quiz-question" data-correct="${quizItem.correct}">
+                        <p><strong>Question ${index + 1}:</strong> ${renderMarkdown(quizItem.q)}</p>
+                        <div class="quiz-options">
+                        ${quizItem.options.map((opt, optIndex) => `
+                            <label class="quiz-option" for="q-${crudAction}-${index}-${optIndex}">
+                                <input type="radio" id="q-${crudAction}-${index}-${optIndex}" name="q-${crudAction}-${index}" value="${optIndex}"> <span>${renderMarkdown(opt)}</span>
+                            </label>
+                        `).join('')}
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+            <div id="bestPractices-content" class="explanation-content">
+                <h3>Best Practices & Glossary</h3>
+                <div class="best-practices-section">
+                    <h4>Do's and Don'ts</h4>
+                    <ul>
+                        ${data.bestPractices.dos.map((item) => `<li class="do-item"><span>${renderMarkdown(item)}</span></li>`).join('')}
+                    </ul>
+                    <ul class="mt-4">
+                        ${data.bestPractices.donts.map((item) => `<li class="dont-item"><span>${renderMarkdown(item)}</span></li>`).join('')}
+                    </ul>
+                </div>
+                <div class="glossary-section mt-6">
+                    <h4>Glossary</h4>
+                    <ul class="glossary-list">
+                        ${data.bestPractices.glossary.map((item) => `<li><strong>${item.term}</strong>: ${renderMarkdown(item.def)}</li>`).join('')}
+                    </ul>
+                </div>
+            </div>
+            <div id="faq-content" class="explanation-content">
+                <h3>Frequently Asked Questions</h3>
+                <div class="faq-list">
+                    ${data.faq.map((item) => `
+                        <div>
+                            <h4>${renderMarkdown(item.q)}</h4>
+                            <p>${renderMarkdown(item.a)}</p>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+        
+        setupExplanationTabsAndQuiz();
+    }
+    
+    function setupExplanationTabsAndQuiz() {
+        const expTabs = document.querySelectorAll('.explanation-tab');
+        const expContents = document.querySelectorAll('.explanation-content');
+        expTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabName = tab.dataset.tab;
+                expTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                expContents.forEach(content => {
+                    content.classList.toggle('active', content.id === `${tabName}-content`);
+                });
+            });
+        });
+
+        const quizQuestions = document.querySelectorAll('.quiz-question');
+        quizQuestions.forEach(quizQuestion => {
+            const optionsContainer = quizQuestion.querySelector('.quiz-options');
+            const correctAnswerIndex = parseInt(quizQuestion.dataset.correct);
+
+            optionsContainer.addEventListener('click', (e) => {
+                const selectedLabel = e.target.closest('label');
+                if (!selectedLabel || selectedLabel.classList.contains('disabled')) return;
+
+                const selectedIndex = parseInt(selectedLabel.querySelector('input').value);
+                const labels = optionsContainer.querySelectorAll('.quiz-option');
+
+                labels.forEach(label => label.classList.add('disabled'));
+
+                if (selectedIndex === correctAnswerIndex) {
+                    selectedLabel.classList.add('correct');
+                } else {
+                    selectedLabel.classList.add('incorrect');
+                    labels[correctAnswerIndex].classList.add('correct');
+                }
+            });
+        });
+    }
+
+    // --- Final Quiz Logic ---
+    function renderFinalQuizQuestion() {
+        const q = finalQuizQuestions[quizState.currentQ];
+        if (!q) {
+            showQuizResults();
+            return;
+        }
+        
+        if (!quizState.answers[quizState.currentQ]) {
+            quizState.answers[quizState.currentQ] = { answer: null, graded: false };
+        }
+
+        const progress = ((quizState.currentQ) / finalQuizQuestions.length) * 100;
+        quizProgress.style.width = `${progress}%`;
+        quizCounter.textContent = `Q ${quizState.currentQ + 1} / ${finalQuizQuestions.length}`;
+        quizPrevBtn.disabled = quizState.currentQ === 0;
+        
+        const isGraded = quizState.answers[quizState.currentQ] && quizState.answers[quizState.currentQ].graded;
+        quizNextBtn.textContent = isGraded ? (quizState.currentQ === finalQuizQuestions.length - 1 ? 'Finish Quiz' : 'Next Question →') : 'Submit Answer';
+        quizSkipBtn.style.display = isGraded ? 'none' : 'inline-block';
+
+        let questionContent = '';
+        const inputType = q.type === 'MMCQ' ? 'checkbox' : 'radio';
+
+        if (q.type === 'MCQ' || q.type === 'MMCQ' || q.type === 'TF') {
+            const options = q.type === 'TF' ? ['True', 'False'] : (q.options || []);
+            questionContent = `
+                <div class="question-body">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-800">${renderMarkdown(q.text)}</h2>
+                    <div class="question-options">
+                        ${options.map((option, index) => {
+                            const value = q.type === 'TF' ? (index === 0) : index;
+                            return `
+                            <label class="block bg-gray-100 border border-gray-300 rounded-lg p-4 shadow-sm hover:bg-orange-50 hover:border-orange-500 cursor-pointer transition-all duration-200 mb-2">
+                                <input type="${inputType}" name="q-${quizState.currentQ}" value="${value}" class="mr-3">
+                                <span class="text-lg text-gray-700">${renderMarkdown(option)}</span>
+                            </label>
+                        `}).join('')}
+                    </div>
+                </div>
+            `;
+        } else if (q.type === 'SEQ') {
+            const items = q.items || [];
+            questionContent = `
+                <div class="question-body">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-800">${renderMarkdown(q.text)}</h2>
+                    <ul id="sequence-list" class="space-y-2">
+                        ${shuffleArray([...items]).map(item => `
+                            <li draggable="true" class="seq-item">
+                                <span class="handle mr-3 text-gray-500">☰</span>
+                                <span class="text-lg text-gray-700">${renderMarkdown(item)}</span>
+                            </li>
+                        `).join('')}
+                    </ul>
+                </div>
+            `;
+        } else if (q.type === 'MATCH') {
+            const responses = q.responses || [];
+            const shuffledResponses = shuffleArray([...responses]);
+            const responseMap = {};
+            responses.forEach((resp, idx) => { responseMap[resp] = idx; });
+            const stems = q.stems || [];
+            questionContent = `
+                <div class="match-grid grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                    <div>
+                        <h3 class="text-lg font-semibold mb-2 text-gray-800">Stems</h3>
+                        ${stems.map((stem, index) => `
+                            <div class="match-item bg-gray-100 border border-gray-300 rounded-lg p-4 shadow-sm cursor-pointer transition-colors duration-200 mb-2" data-side="stem" data-index="${index}">
+                                <span class="text-lg text-gray-700">${renderMarkdown(stem)}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold mb-2 text-gray-800">Responses</h3>
+                        ${shuffledResponses.map((resp, index) => `
+                            <div class="match-item bg-gray-100 border border-gray-300 rounded-lg p-4 shadow-sm cursor-pointer transition-colors duration-200 mb-2" data-side="response" data-index="${responseMap[resp]}">
+                                <span class="text-lg text-gray-700">${renderMarkdown(resp)}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        quizCard.innerHTML = `
+            <div class="q-content flex-grow flex flex-col justify-center">
+                ${questionContent}
+            </div>
+            <div id="quiz-feedback" class="mt-4"></div>
+        `;
+        
+        if (q.type === 'SEQ') addDragAndDropListeners();
+        else if (q.type === 'MATCH') addMatchListeners();
+        else addOptionListeners();
+        
+        restoreQuizAnswers();
+        if (quizState.answers[quizState.currentQ] && quizState.answers[quizState.currentQ].graded) {
+            gradeFinalQuiz(true);
+        }
+    }
+    
+    function addOptionListeners() {
+        const inputs = quizCard.querySelectorAll('input');
+        inputs.forEach(input => {
+            input.addEventListener('change', () => {
+                const q = finalQuizQuestions[quizState.currentQ];
+                if (q.type === 'MMCQ') {
+                    const selected = [...quizCard.querySelectorAll('input:checked')].map(el => parseInt(el.value));
+                    quizState.answers[quizState.currentQ] = { answer: selected, graded: false };
+                } else if (q.type === 'TF') {
+                    quizState.answers[quizState.currentQ] = { answer: (input.value === 'true'), graded: false };
+                } else {
+                    quizState.answers[quizState.currentQ] = { answer: parseInt(input.value), graded: false };
+                }
+            });
+        });
+    }
+
+    function addDragAndDropListeners() {
+        let dragSrcEl = null;
+        document.querySelectorAll('#sequence-list li').forEach(item => {
+            item.addEventListener('dragstart', (e) => {
+                e.dataTransfer.effectAllowed = 'move'; dragSrcEl = item;
+                setTimeout(() => item.classList.add('dragging'), 0);
+            });
+            item.addEventListener('dragend', () => {
+                dragSrcEl.classList.remove('dragging'); saveSequenceOrder();
+            });
+            item.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                const after = getDragAfterElement(item.parentNode, e.clientY);
+                if (dragSrcEl && after !== dragSrcEl) { item.parentNode.insertBefore(dragSrcEl, after); }
+            });
+            item.addEventListener('drop', (e) => { e.preventDefault(); e.stopPropagation(); });
+        });
+        
+        function getDragAfterElement(container, y) {
+            const draggableElements = [...container.querySelectorAll('.seq-item:not(.dragging)')];
+            return draggableElements.reduce((closest, child) => {
+                const box = child.getBoundingClientRect();
+                const offset = y - box.top - box.height / 2;
+                if (offset < 0 && offset > closest.offset) { return { offset: offset, element: child }; } 
+                else { return closest; }
+            }, { offset: Number.NEGATIVE_INFINITY }).element;
+        }
+
+        function saveSequenceOrder() {
+            const currentOrder = Array.from(document.querySelectorAll('#sequence-list li')).map(el => el.querySelector('span:last-child').textContent);
+            quizState.answers[quizState.currentQ] = { answer: currentOrder, graded: false };
+        }
+    }
+
+    function addMatchListeners() {
+        let pickedA = null, pickedB = null;
+        const colorClasses = ['bg-yellow-100', 'bg-green-100', 'bg-blue-100', 'bg-pink-100'];
+        let pairIndex = 0;
+        
+        document.querySelectorAll('.match-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const side = item.dataset.side;
+                if (side === 'stem') {
+                    if (pickedA) pickedA.classList.remove('is-picked');
+                    pickedA = item; item.classList.add('is-picked');
+                } else {
+                    if (pickedB) pickedB.classList.remove('is-picked');
+                    pickedB = item; item.classList.add('is-picked');
+                }
+
+                if (pickedA && pickedB) {
+                    const pair = { s: parseInt(pickedA.dataset.index), r: parseInt(pickedB.dataset.index) };
+                    const currentAnswer = (quizState.answers[quizState.currentQ] && quizState.answers[quizState.currentQ].answer) || [];
+                    
+                    if (!currentAnswer.some(p => p.s === pair.s && p.r === pair.r)) {
+                         currentAnswer.push(pair);
+                         quizState.answers[quizState.currentQ] = { answer: currentAnswer, graded: false };
+
+                         const colorClass = colorClasses[pairIndex % colorClasses.length];
+                         pickedA.classList.remove('is-picked');
+                         pickedA.classList.add(colorClass, 'pointer-events-none');
+                         pickedB.classList.remove('is-picked');
+                         pickedB.classList.add(colorClass, 'pointer-events-none');
+                         
+                         pairIndex++; pickedA = null; pickedB = null;
+                    }
+                }
+            });
+        });
+    }
+
+    function restoreQuizAnswers() {
+        const q = finalQuizQuestions[quizState.currentQ];
+        const savedState = quizState.answers[quizState.currentQ];
+        if (!savedState || !savedState.answer) return;
+        const savedAnswer = savedState.answer;
+
+        if (q.type === 'MCQ' || q.type === 'TF') {
+            const valueToFind = q.type === 'TF' ? String(savedAnswer) : savedAnswer;
+            const input = quizCard.querySelector(`input[value="${valueToFind}"]`);
+            if (input) input.checked = true;
+        } else if (q.type === 'MMCQ') {
+            savedAnswer.forEach(val => {
+                const input = quizCard.querySelector(`input[value="${val}"]`);
+                if (input) input.checked = true;
+            });
+        } else if (q.type === 'SEQ') {
+            const list = document.getElementById('sequence-list');
+            if (list) {
+                list.innerHTML = savedAnswer.map(item => `
+                    <li draggable="true" class="seq-item">
+                        <span class="handle mr-3 text-gray-500">☰</span>
+                        <span class="text-lg text-gray-700">${renderMarkdown(item)}</span>
+                    </li>`).join('');
+                addDragAndDropListeners();
+            }
+        } else if (q.type === 'MATCH') {
+            const pairs = savedAnswer;
+            const colorClasses = ['bg-yellow-100', 'bg-green-100', 'bg-blue-100', 'bg-pink-100'];
+            pairs.forEach((pair, index) => {
+                const colorClass = colorClasses[index % colorClasses.length];
+                const stemEl = quizCard.querySelector(`.match-item[data-side="stem"][data-index="${pair.s}"]`);
+                const responseEl = quizCard.querySelector(`.match-item[data-side="response"][data-index="${pair.r}"]`);
+                if (stemEl) stemEl.classList.add(colorClass, 'pointer-events-none');
+                if (responseEl) responseEl.classList.add(colorClass, 'pointer-events-none');
+            });
+        }
+    }
+    
+    function gradeFinalQuiz(isRestoring = false) {
+        const q = finalQuizQuestions[quizState.currentQ];
+        const userAnswer = quizState.answers[quizState.currentQ] ? quizState.answers[quizState.currentQ].answer : null;
+        let isCorrect = false;
+
+        const feedbackDiv = document.getElementById('quiz-feedback');
+        if (!feedbackDiv) return;
+
+        if (q.type === 'MCQ' || q.type === 'TF') {
+            isCorrect = userAnswer === q.correct;
+            const allOptions = quizCard.querySelectorAll('label');
+            allOptions.forEach(label => label.classList.add('pointer-events-none'));
+            
+            const correctValue = q.type === 'TF' ? String(q.correct) : q.correct;
+            const correctOptionLabel = quizCard.querySelector(`input[value="${correctValue}"]`).closest('label');
+            if (correctOptionLabel) correctOptionLabel.classList.add('correct');
+            
+            if (!isCorrect && userAnswer !== null) {
+                const userValue = q.type === 'TF' ? String(userAnswer) : userAnswer;
+                const userOptionLabel = quizCard.querySelector(`input[value="${userValue}"]`).closest('label');
+                if (userOptionLabel) userOptionLabel.classList.add('incorrect');
+            }
+        } else if (q.type === 'MMCQ') {
+            const userAnswers = new Set(userAnswer || []);
+            const correctAnswers = new Set(q.correct || []);
+            isCorrect = userAnswers.size === correctAnswers.size && [...userAnswers].every(val => correctAnswers.has(val));
+            
+            const allOptions = quizCard.querySelectorAll('label');
+            allOptions.forEach(label => label.classList.add('pointer-events-none'));
+            
+            (q.options || []).forEach((opt, index) => {
+                const label = quizCard.querySelector(`input[value="${index}"]`).closest('label');
+                if (correctAnswers.has(index)) {
+                    label.classList.add('correct');
+                } else if (userAnswers.has(index)) {
+                    label.classList.add('incorrect');
+                }
+            });
+        } else if (q.type === 'SEQ') {
+            isCorrect = JSON.stringify(userAnswer) === JSON.stringify(q.correct);
+            const list = document.getElementById('sequence-list');
+            if (list) {
+                list.classList.add(isCorrect ? 'bg-green-100' : 'bg-red-100');
+                list.querySelectorAll('li').forEach(li => li.classList.add('cursor-not-allowed'));
+            }
+        } else if (q.type === 'MATCH') {
+            const pairs = userAnswer || [];
+            const correctPairs = new Set((q.correct || []).map(p => `${p.s}-${p.r}`));
+            let correctCount = pairs.filter(p => correctPairs.has(`${p.s}-${p.r}`)).length;
+            isCorrect = correctCount === (q.stems || []).length && pairs.length === (q.stems || []).length;
+            
+            const allItems = quizCard.querySelectorAll('.match-item');
+            allItems.forEach(item => item.classList.add('pointer-events-none'));
+        }
+
+        if (userAnswer !== null && !isRestoring) {
+            if (isCorrect && (!quizState.answers[quizState.currentQ] || !quizState.answers[quizState.currentQ].graded)) {
+                quizState.score++;
+            }
+            quizState.answers[quizState.currentQ] = { ...quizState.answers[quizState.currentQ], graded: true };
+        }
+        
+        quizNextBtn.textContent = (quizState.currentQ === finalQuizQuestions.length - 1) ? 'Finish Quiz' : 'Next Question →';
+        quizSkipBtn.style.display = 'none';
+
+        feedbackDiv.innerHTML = `
+            <div class="feedback ${isCorrect ? 'correct' : 'incorrect'}">
+                <p class="font-bold text-lg mb-1">${isCorrect ? 'Correct! 🎉' : 'Not quite.'}</p>
+                <p>${renderMarkdown(q.explain)}</p>
+            </div>
+        `;
+    }
+
+    function shuffleArray(array) {
+        if (!array) return [];
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    // --- Event Listeners ---
+    document.addEventListener('DOMContentLoaded', () => {
+        const startBtn = document.getElementById('start-tutorial-btn');
+        const backBtn = document.getElementById('back-btn');
+        const selectCards = document.querySelectorAll('.select-card');
+        const tutorialTabs = document.querySelectorAll('.crud-tab');
+        
+        showScreen(introScreen);
+        
+        startBtn.addEventListener('click', () => {
+            showScreen(selectScreen);
+            updateQuizButton();
+        });
+        
+        backBtn.addEventListener('click', () => {
+            showScreen(selectScreen);
+        });
+        
+        selectCards.forEach(card => {
+            card.addEventListener('click', () => {
+                const crudAction = card.dataset.crud;
+                showScreen(tutorialScreen);
+                switchCrudTab(crudAction);
+            });
+        });
+
+        tutorialTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                switchCrudTab(tab.dataset.crud);
+            });
+        });
+
+        startQuizBtn.addEventListener('click', () => {
+            showScreen(finalQuizScreen);
+            quizState.currentQ = 0;
+            quizState.score = 0;
+            quizState.answers.fill(null);
+            renderFinalQuizQuestion();
+        });
+
+        quizPrevBtn.addEventListener('click', () => {
+            if (quizState.currentQ > 0) {
+                quizState.currentQ--;
+                renderFinalQuizQuestion();
+            }
+        });
+
+        quizSkipBtn.addEventListener('click', () => {
+            quizState.answers[quizState.currentQ] = { answer: null, graded: true, skipped: true };
+            if (quizState.currentQ < finalQuizQuestions.length - 1) {
+                quizState.currentQ++;
+                renderFinalQuizQuestion();
+            } else {
+                showQuizResults();
+            }
+        });
+
+        quizNextBtn.addEventListener('click', () => {
+            const currentAnswerState = quizState.answers[quizState.currentQ];
+            const hasAnswer = currentAnswerState && currentAnswerState.answer !== null && (Array.isArray(currentAnswerState.answer) ? currentAnswerState.answer.length > 0 : true);
+
+            if (!hasAnswer) {
+                const feedbackDiv = document.getElementById('quiz-feedback');
+                if(feedbackDiv) feedbackDiv.innerHTML = `<div class="feedback incorrect"><p class="font-bold">Please select an answer.</p></div>`;
+                return;
+            }
+
+            if (currentAnswerState && !currentAnswerState.graded) {
+                gradeFinalQuiz();
+            } else {
+                if (quizState.currentQ < finalQuizQuestions.length - 1) {
+                    quizState.currentQ++;
+                    renderFinalQuizQuestion();
+                } else {
+                    showQuizResults();
+                }
+            }
+        });
+    });
+
+    function showQuizResults() {
+        const totalMarks = finalQuizQuestions.length;
+        const skippedCount = quizState.answers.filter(a => a && a.skipped).length;
+        const answeredCount = totalMarks - skippedCount;
+        quizCard.innerHTML = `<div class="q-content text-center">
+                <h2 class="text-2xl font-bold">Capstone Complete! 🎉</h2>
+                <p class="mt-4">${renderMarkdown(`You scored **${quizState.score}** out of **${answeredCount}** answered questions.`)}</p>
+                ${skippedCount > 0 ? `<p class="text-sm text-gray-600 mt-2">You skipped ${skippedCount} question${skippedCount > 1 ? 's' : ''}.</p>` : ''}
+                <p class="mt-2">You've reached the end of the Mastery Series. Congratulations on becoming a Git expert!</p>
+                <div class="mt-8">
+                    <button onclick="window.location.reload()" class="start-btn">Practice Again</button>
+                    <button onclick="showScreen(selectScreen);" class="back-btn mt-4">Back to Topics</button>
+                </div>
+            </div>`;
+        quizProgress.style.width = '100%';
+        document.querySelector('.quiz-nav').style.display = 'none';
+    }
+    
+    </script>
+</body>
+</html>
+

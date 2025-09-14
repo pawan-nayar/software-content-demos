@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Guide to Folder Navigation</title>
+    <!-- Use the official Tailwind Play CDN for better reliability -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        /* --- General Styles --- */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+            color: #374151; /* slate-700 */
+        }
+        /* Custom prose styles for consistent typography */
+        .prose-custom h1, .prose-custom h2, .prose-custom h3 { color: #111827; } /* slate-900 */
+        .prose-custom p, .prose-custom li { line-height: 1.75; }
+
+        /* --- Mock Terminal --- */
+        .mock-terminal {
+            background-color: #1e293b; /* slate-800 */
+            font-family: 'Roboto Mono', monospace;
+            min-height: 120px;
+        }
+        .prompt-char { color: #60a5fa; } /* blue-400 */
+
+        /* --- Interactive Command List --- */
+        .command-item {
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            border: 1px solid #e5e7eb; /* slate-200 */
+        }
+        /* Enhanced hover and active states for better feedback */
+        .command-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            border-color: #93c5fd; /* blue-300 */
+        }
+        .command-item.active {
+            background-color: #eff6ff; /* blue-50 */
+            border-color: #3b82f6; /* blue-600 */
+            transform: translateY(-1px);
+            box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.05);
+        }
+        .command-item code {
+            font-family: 'Roboto Mono', monospace;
+            background-color: #e5e7eb; /* slate-200 */
+            color: #1e40af; /* blue-800 */
+        }
+
+        /* --- Interactive SVG Styles --- */
+        .file-explorer-svg {
+            background-color: #1e293b; /* slate-800 */
+            border-radius: 12px;
+            padding: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,.1), 0 4px 6px -4px rgba(0,0,0,.1);
+            user-select: none;
+        }
+        .file-explorer-svg .node text {
+            fill: #d1d5db; /* slate-300 */
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            pointer-events: none;
+        }
+        .file-explorer-svg .folder-icon { fill: #9ca3af; } /* slate-400 */
+        .file-explorer-svg .file-icon { fill: #6b7280; } /* slate-500 */
+        
+        /* SVG Element States */
+        .file-explorer-svg .node { transition: all 0.2s ease-in-out; }
+        .file-explorer-svg .hidden-file { opacity: 0.4; }
+        .file-explorer-svg .current-location > rect {
+            stroke: #60a5fa; /* blue-400 */
+            stroke-width: 2px;
+            fill: #334155; /* slate-700 */
+        }
+        .file-explorer-svg .highlight > rect {
+            stroke: #34d399; /* emerald-400 */
+            stroke-width: 2px;
+        }
+        .file-explorer-svg .find-highlight > rect {
+            stroke: #f59e0b; /* amber-500 */
+            stroke-width: 2.5px;
+            fill: #475569; /* slate-600 */
+        }
+        
+        /* Smoother animations for creating and removing folders */
+        .file-explorer-svg .new-folder { animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
+        .file-explorer-svg .removed-folder { animation: fadeOut 0.5s ease-out forwards; }
+        @keyframes fadeOut { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(0.8); } }
+
+        /* --- Tooltip Style --- */
+        .tooltip {
+            position: fixed;
+            display: none;
+            padding: 12px 16px;
+            background-color: #111827; /* slate-900 */
+            color: white;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.5;
+            pointer-events: none;
+            max-width: 320px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            z-index: 100;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .tooltip.visible { display: block; opacity: 1; }
+        .tooltip-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #60a5fa; /* blue-400 */
+            font-family: 'Roboto Mono', monospace;
+            /* FIX: Prevents long text from overflowing the tooltip box */
+            overflow-wrap: break-word;
+        }
+        .tooltip-details { font-family: 'Roboto Mono', monospace; font-size: 12px; color: #9ca3af; } /* slate-400 */
+    </style>
+</head>
+<body class="text-gray-700">
+    <div id="tooltip" class="tooltip"></div>
+
+    <div class="container mx-auto px-4 py-8 md:py-12">
+        <!-- FIX: Changed max-w-7xl to max-w-6xl for a more constrained and elegant desktop layout -->
+        <main class="max-w-6xl mx-auto">
+            
+            <header class="text-center mb-12 prose-custom max-w-4xl mx-auto">
+                <h1 class="text-4xl md:text-5xl font-bold text-gray-900 leading-tight">An Interactive Guide to Folder Navigation</h1>
+                <p class="mt-4 text-lg text-gray-600">Visually learn how to move, look, and organize files with this command-line playground.</p>
+            </header>
+
+            <section class="mb-12 prose-custom max-w-4xl mx-auto">
+                <h2 class="text-3xl font-bold mb-4 border-b pb-2">Welcome to the Command Line</h2>
+                <p>Instead of clicking on folders, a Command-Line Interface (CLI) lets you give your computer precise, written instructions. It's a powerful and fast way to manage files. To help you learn, we've created a safe playground: a "Digital Hospital Records" system. The commands you select below will directly manipulate the file explorer you see here.</p>
+            </section>
+
+            <section class="mb-12 grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+                <div class="file-explorer-svg">
+                    <svg id="file-explorer" width="100%" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- SVG content is generated by JavaScript -->
+                    </svg>
+                </div>
+                <div class="sticky top-8">
+                    <div id="explanation-box" class="bg-white p-6 rounded-lg shadow-md border border-gray-200 mb-4 min-h-[100px] transition-all duration-300">
+                        <p id="explanation-text" class="text-lg text-gray-700 transition-opacity duration-300">Select a command below to begin.</p>
+                    </div>
+                    <div class="mock-terminal rounded-lg shadow-lg p-4 text-sm text-gray-300 overflow-hidden">
+                        <div class="flex items-center">
+                            <span class="prompt-char mr-2 font-bold">&gt;</span>
+                            <span id="command-input" class="flex-1"></span>
+                        </div>
+                        <div id="command-output" class="mt-2 whitespace-pre-wrap"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="mb-12 prose-custom max-w-4xl mx-auto">
+                 <div class="flex justify-between items-center mb-6 border-b pb-2">
+                    <h2 class="text-3xl font-bold">Your Command Toolkit</h2>
+                    <!-- Added a reset button for better UX -->
+                    <button id="reset-button" class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors">Reset System</button>
+                </div>
+                <p class="mb-8">Click on any command to see it run in the interactive explorer above. The file system will update visually, and the terminal will show the output. Scroll up and down as needed to experience the full effect.</p>
+                <div id="command-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Command items are generated by JavaScript -->
+                </div>
+            </section>
+
+            <section class="max-w-4xl mx-auto prose-custom">
+                <h2 class="text-3xl font-bold mb-6 border-b pb-2">Key Concepts Cheat Sheet</h2>
+                <ul class="space-y-4 list-disc pl-5">
+                    <li><strong><code>ls</code> (list):</strong> See what's inside a folder.</li>
+                    <li><strong><code>cd</code> (change directory):</strong> Move between folders.</li>
+                    <li><strong><code>pwd</code> (print working directory):</strong> Ask, "Where am I?"</li>
+                    <li><strong>Paths are Addresses:</strong> A <strong>Relative Path</strong> (<code>./</code>, <code>../</code>) gives directions from where you are now. An <strong>Absolute Path</strong> (<code>/</code>) gives the full address from the very beginning.</li>
+                    <li><strong>Wildcards (<code>*</code>):</strong> A placeholder. <code>*.txt</code> means "any file that ends with .txt".</li>
+                    <li><strong>Flags (<code>-l</code>, <code>-a</code>):</strong> Options that change how a command works, like showing more details or revealing hidden items.</li>
+                </ul>
+            </section>
+
+        </main>
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // --- 1. DATA AND STATE MANAGEMENT ---
+    const originalFileSystemData = {
+        '/': { type: 'folder', children: ['hospital_records'] },
+        '/hospital_records': { type: 'folder', children: ['.config', 'admin', 'labs', 'patients', 'scans'], parent: '/' },
+        '/.config': { type: 'file', parent: '/hospital_records', details: { size: '1KB', modified: '2025-08-30', owner: 'system' }, isHidden: true },
+        '/hospital_records/admin': { type: 'folder', children: ['staff_roster.csv', 'weekly_report_2025_09_01.pdf'], parent: '/hospital_records' },
+        '/hospital_records/admin/staff_roster.csv': { type: 'file', parent: '/hospital_records/admin', details: { size: '18KB', modified: '2025-08-28', owner: 'admin' } },
+        '/hospital_records/admin/weekly_report_2025_09_01.pdf': { type: 'file', parent: '/hospital_records/admin', details: { size: '152KB', modified: '2025-09-01', owner: 'admin' } },
+        '/hospital_records/labs': { type: 'folder', children: ['blood_tests', 'pathology'], parent: '/hospital_records' },
+        '/hospital_records/labs/blood_tests': { type: 'folder', children: ['case_123_blood_panel.json', 'case_456_blood_panel.json'], parent: '/hospital_records/labs' },
+        '/hospital_records/labs/blood_tests/case_123_blood_panel.json': { type: 'file', parent: '/hospital_records/labs/blood_tests', details: { size: '5KB', modified: '2025-08-16', owner: 'labtech' } },
+        '/hospital_records/labs/blood_tests/case_456_blood_panel.json': { type: 'file', parent: '/hospital_records/labs/blood_tests', details: { size: '6KB', modified: '2025-08-17', owner: 'labtech' } },
+        '/hospital_records/labs/pathology': { type: 'folder', children: ['case_789_biopsy.txt'], parent: '/hospital_records/labs' },
+        '/hospital_records/labs/pathology/case_789_biopsy.txt': { type: 'file', parent: '/hospital_records/labs/pathology', details: { size: '2KB', modified: '2025-08-19', owner: 'pathology' } },
+        '/hospital_records/patients': { type: 'folder', children: ['jane_smith_456', 'john_doe_123', 'temp'], parent: '/hospital_records' },
+        '/hospital_records/patients/jane_smith_456': { type: 'folder', children: ['chart.txt', 'echo_reports', 'prescriptions.pdf'], parent: '/hospital_records/patients' },
+        '/hospital_records/patients/jane_smith_456/chart.txt': { type: 'file', parent: '/hospital_records/patients/jane_smith_456', details: { size: '4KB', modified: '2025-09-01', owner: 'dr_aoki' } },
+        '/hospital_records/patients/jane_smith_456/echo_reports': { type: 'folder', children: ['report_2025_08_15.txt'], parent: '/hospital_records/patients/jane_smith_456' },
+        '/hospital_records/patients/jane_smith_456/echo_reports/report_2025_08_15.txt': { type: 'file', parent: '/hospital_records/patients/jane_smith_456/echo_reports', details: { size: '3KB', modified: '2025-08-15', owner: 'dr_aoki' } },
+        '/hospital_records/patients/jane_smith_456/prescriptions.pdf': { type: 'file', parent: '/hospital_records/patients/jane_smith_456', details: { size: '88KB', modified: '2025-09-01', owner: 'dr_aoki' } },
+        '/hospital_records/patients/john_doe_123': { type: 'folder', children: ['chart.txt', 'discharge_summary.txt', 'mri_scan_brain.jpg'], parent: '/hospital_records/patients' },
+        '/hospital_records/patients/john_doe_123/chart.txt': { type: 'file', parent: '/hospital_records/patients/john_doe_123', details: { size: '5KB', modified: '2025-08-31', owner: 'dr_chen' } },
+        '/hospital_records/patients/john_doe_123/discharge_summary.txt': { type: 'file', parent: '/hospital_records/patients/john_doe_123', details: { size: '12KB', modified: '2025-08-31', owner: 'dr_chen' } },
+        '/hospital_records/patients/john_doe_123/mri_scan_brain.jpg': { type: 'file', parent: '/hospital_records/patients/john_doe_123', details: { size: '1.2MB', modified: '2025-08-25', owner: 'radiology' } },
+        '/hospital_records/patients/temp': { type: 'folder', children: ['draft_note.txt'], parent: '/hospital_records/patients' },
+        '/hospital_records/patients/temp/draft_note.txt': { type: 'file', parent: '/hospital_records/patients/temp', details: { size: '1KB', modified: '2025-09-01', owner: 'dr_chen' } },
+        '/hospital_records/scans': { type: 'folder', children: ['ct_scans', 'mri_scans'], parent: '/hospital_records' },
+        '/hospital_records/scans/ct_scans': { type: 'folder', children: ['case_123_abdomen.jpg'], parent: '/hospital_records/scans' },
+        '/hospital_records/scans/ct_scans/case_123_abdomen.jpg': { type: 'file', parent: '/hospital_records/scans/ct_scans', details: { size: '2.4MB', modified: '2025-08-16', owner: 'radiology' } },
+        '/hospital_records/scans/mri_scans': { type: 'folder', children: ['case_456_knee.jpg'], parent: '/hospital_records/scans' },
+        '/hospital_records/scans/mri_scans/case_456_knee.jpg': { type: 'file', parent: '/hospital_records/scans/mri_scans', details: { size: '1.8MB', modified: '2025-08-17', owner: 'radiology' } }
+    };
+
+    let fileSystemData = JSON.parse(JSON.stringify(originalFileSystemData));
+
+    const commands = [
+        { cmd: 'ls', desc: 'List Current Folder', analogy: '➡️ Shows all files in the “room” you’re standing in.' },
+        { cmd: 'ls ./patients', desc: 'List Specific Folder', analogy: '➡️ Peek inside the patients drawer.' },
+        { cmd: 'ls -l ./patients', desc: 'List With Details', analogy: '➡️ Like checking a records logbook: file size, date, owner.' },
+        { cmd: 'ls -a', desc: 'List Hidden Files', analogy: '➡️ Reveal “back-office” files (like .config files) usually hidden.' },
+        { cmd: 'ls ./patients/*.txt', desc: 'List Only Text Files', analogy: '➡️ Pull out only text-based patient reports, ignore scans/images.' },
+        { cmd: 'ls -S ./scans', desc: 'List Files by Size', analogy: '➡️ Sort by largest scan files (like thickest case files).' },
+        { cmd: 'ls -t ./patients', desc: 'List Files by Date', analogy: '➡️ Show newest patient notes first, older ones last.' },
+        { cmd: 'ls ./patients ./labs', desc: 'List Multiple Folders', analogy: '➡️ Open both the patients drawer and labs drawer at the same time.' },
+        { cmd: 'cd ./patients', desc: 'Change Folder', analogy: '➡️ Walk into the patients room so all work happens there.' },
+        { cmd: 'cd ..', desc: 'Go Back One Step', analogy: '➡️ Step out one level (like leaving cardiology to go back to the hospital lobby).' },
+        { cmd: 'cd /', desc: 'Go to Root', analogy: '➡️ Jump to the very entrance of the hospital (system root).' },
+        { cmd: 'cd ~', desc: 'Go to Home Folder', analogy: '➡️ Back to your office (personal workspace).' },
+        { cmd: 'cd -', desc: 'Go to Previous Folder', analogy: '➡️ Like returning to the ward you just left.' },
+        { cmd: 'pwd', desc: 'See Current Location', analogy: '➡️ Ask: “Which room am I in right now?”' },
+        { cmd: 'find "discharge"', desc: 'Find by Keyword', analogy: '➡️ Ask: “Show me all charts mentioning discharge summary.”' },
+        { cmd: 'mkdir ./patients/new_cases', desc: 'Create a New Folder', analogy: '➡️ Add a brand-new cabinet for “new cases.”' },
+        { cmd: 'rm -r ./patients/temp', desc: 'Delete a Folder', analogy: '➡️ Throw away the temporary drawer (⚠️ irreversible).' }
+    ];
+
+    let state = {
+        currentPath: '/hospital_records',
+        previousPath: null,
+        homePath: '/hospital_records/admin',
+    };
+    
+    // --- 2. DOM ELEMENT REFERENCES ---
+    const svgContainer = document.getElementById('file-explorer');
+    const commandInputEl = document.getElementById('command-input');
+    const commandOutputEl = document.getElementById('command-output');
+    const explanationTextEl = document.getElementById('explanation-text');
+    const commandListEl = document.getElementById('command-list');
+    const tooltipEl = document.getElementById('tooltip');
+    const resetButton = document.getElementById('reset-button');
+
+    // --- 3. HELPER FUNCTIONS ---
+    const pathToId = (path) => `node-${path.replace(/[\/.\s]/g, '-')}`;
+
+    const resolvePath = (targetPath) => {
+        if (!targetPath || targetPath === '.') return state.currentPath;
+        if (targetPath.startsWith('/')) return targetPath.replace(/\/+/g, '/') || '/'; // Normalize slashes
+        if (targetPath === '~') return state.homePath;
+
+        let parts = state.currentPath.split('/').filter(p => p);
+        const targetParts = targetPath.split('/');
+
+        targetParts.forEach(part => {
+            if (part === '..') {
+                parts.pop();
+            } else if (part && part !== '.') {
+                parts.push(part);
+            }
+        });
+        return '/' + parts.join('/');
+    };
+
+    // --- 4. SVG GENERATION AND MANIPULATION ---
+    const X_INDENT = 40;
+    const Y_SPACING = 50;
+    const ICON_SIZE = 20;
+
+    function drawTree(parentEl, path, x, y) {
+        const nodeData = fileSystemData[path];
+        if (!nodeData) return 0;
+
+        const name = path.split('/').pop() || '/';
+        const id = pathToId(path);
+        
+        const folderIcon = `<path d="M10 4H4c-1.11 0-2 .9-2 2v12c0 1.1.89 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z" class="folder-icon"></path>`;
+        const fileIcon = `<path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6z" class="file-icon"></path>`;
+        const iconHTML = nodeData.type === 'folder' ? folderIcon : fileIcon;
+
+        const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        g.setAttribute("id", id);
+        g.setAttribute("class", `node ${nodeData.isHidden ? 'hidden-file' : ''}`);
+        g.setAttribute("data-path", path);
+        g.setAttribute("transform", `translate(${x}, ${y})`);
+
+        const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        rect.setAttribute('x', '-5');
+        rect.setAttribute('y', '-10');
+        rect.setAttribute('height', '35');
+        rect.setAttribute('rx', '5');
+        rect.setAttribute('fill', '#4b5563');
+        rect.setAttribute('fill-opacity', '0.2');
+
+        const icon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        icon.setAttribute('x', '0');
+        icon.setAttribute('y', '0');
+        icon.setAttribute('width', String(ICON_SIZE));
+        icon.setAttribute('height', String(ICON_SIZE));
+        icon.setAttribute('viewBox', '0 0 24 24');
+        icon.innerHTML = iconHTML;
+
+        const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        text.setAttribute('x', String(ICON_SIZE + 5));
+        text.setAttribute('y', '15');
+        text.textContent = name;
+        
+        g.appendChild(rect);
+        g.appendChild(icon);
+        g.appendChild(text);
+        
+        parentEl.appendChild(g);
+
+        const textWidth = text.getBBox().width;
+        const totalContentWidth = ICON_SIZE + 5 + textWidth + 15;
+        rect.setAttribute('width', String(totalContentWidth));
+
+        let totalHeight = Y_SPACING;
+        if (nodeData.type === 'folder' && nodeData.children?.length > 0) {
+            let childY = y + Y_SPACING;
+            nodeData.children.forEach(childName => {
+                const childPath = `${path === '/' ? '' : path}/${childName}`;
+                const childHeight = drawTree(parentEl, childPath, x + X_INDENT, childY);
+                childY += childHeight;
+                totalHeight += childHeight;
+            });
+        }
+        return totalHeight;
+    }
+    
+    function generateSVG() {
+        svgContainer.innerHTML = '';
+        const totalHeight = drawTree(svgContainer, '/', 10, 30);
+        svgContainer.setAttribute('viewBox', `0 0 600 ${totalHeight + 20}`);
+        addSVGListeners();
+        updateCurrentLocationVisual();
+    }
+
+    function resetAllHighlights() {
+        document.querySelectorAll('.file-explorer-svg .node.highlight, .file-explorer-svg .node.find-highlight').forEach(el => {
+            el.classList.remove('highlight', 'find-highlight');
+        });
+    }
+
+    function updateCurrentLocationVisual() {
+        document.querySelectorAll('.file-explorer-svg .current-location').forEach(el => el.classList.remove('current-location'));
+        const currentLocationEl = document.getElementById(pathToId(state.currentPath));
+        if (currentLocationEl) {
+            currentLocationEl.classList.add('current-location');
+        }
+    }
+
+    // --- 5. COMMAND LOGIC AND HANDLERS ---
+    const commandHandlers = {
+        ls: (args) => {
+            let output = '';
+            const showHidden = args.includes('-a');
+            const showDetails = args.includes('-l');
+            const sortBy_Size = args.includes('-S');
+            const sortBy_Date = args.includes('-t');
+            let targets = args.filter(a => !a.startsWith('-') && !a.includes('*'));
+            if (targets.length === 0) targets.push('.');
+            targets.map(resolvePath).forEach((path, index) => {
+                const nodeData = fileSystemData[path];
+                if (!nodeData || nodeData.type !== 'folder') {
+                    output += `ls: cannot access '${path}': No such file or directory\n`;
+                    return;
+                }
+                if (targets.length > 1) output += `${path}:\n`;
+                let children = [...(nodeData.children || [])];
+                if (!showHidden) children = children.filter(c => !fileSystemData[`${path === '/' ? '' : path}/${c}`]?.isHidden);
+                const wildcard = args.find(a => a.includes('*'));
+                if (wildcard) {
+                    const pattern = wildcard.split('/').pop().replace('.', '\\.').replace('*', '.*');
+                    const regex = new RegExp(`^${pattern}$`);
+                    children = children.filter(c => regex.test(c));
+                }
+                const getChildData = (c) => fileSystemData[`${path === '/' ? '' : path}/${c}`];
+                if (sortBy_Size) {
+                    children.sort((a, b) => {
+                        const sizeA = getChildData(a)?.details?.size || '0';
+                        const sizeB = getChildData(b)?.details?.size || '0';
+                        const parse = s => parseFloat(s) * (s.toLowerCase().includes('mb') ? 1024 : 1);
+                        return parse(sizeB) - parse(sizeA);
+                    });
+                }
+                if (sortBy_Date) {
+                    children.sort((a,b) => new Date(getChildData(b)?.details?.modified) - new Date(getChildData(a)?.details?.modified));
+                }
+                children.forEach(childName => {
+                    const childPath = `${path === '/' ? '' : path}/${childName}`;
+                    document.getElementById(pathToId(childPath))?.classList.add('highlight');
+                    if (showDetails) {
+                        const details = getChildData(childName).details || { size: '-', modified: '-', owner: '-' };
+                        output += `${details.owner.padEnd(10)} ${details.size.padStart(7)} ${details.modified.padEnd(12)} ${childName}\n`;
+                    } else {
+                        output += `${childName}\n`;
+                    }
+                });
+                if (index < targets.length - 1) output += '\n';
+            });
+            commandOutputEl.textContent = output.trim();
+        },
+        cd: (args) => {
+            const target = args[0];
+            if (!target) return;
+            if (target === '-') {
+                if (state.previousPath) [state.currentPath, state.previousPath] = [state.previousPath, state.currentPath];
+            } else {
+                const newPath = resolvePath(target);
+                if (fileSystemData[newPath]?.type === 'folder') {
+                    state.previousPath = state.currentPath;
+                    state.currentPath = newPath;
+                } else {
+                    commandOutputEl.textContent = `cd: no such file or directory: ${target}`;
+                    return;
+                }
+            }
+            updateCurrentLocationVisual();
+        },
+        pwd: () => { commandOutputEl.textContent = state.currentPath; },
+        find: (args) => {
+            const keyword = args[0]?.replace(/"/g, '') || '';
+            let foundCount = 0;
+            Object.keys(fileSystemData).forEach(path => {
+                if (path.includes(keyword)) {
+                    document.getElementById(pathToId(path))?.classList.add('find-highlight');
+                    commandOutputEl.textContent += `${path}\n`;
+                    foundCount++;
+                }
+            });
+            if (foundCount === 0) commandOutputEl.textContent = `No results found for "${keyword}"`;
+        },
+        mkdir: (args) => {
+            const newPath = resolvePath(args[0]);
+            const parentPath = newPath.substring(0, newPath.lastIndexOf('/')) || '/';
+            if (fileSystemData[newPath]) {
+                commandOutputEl.textContent = `mkdir: file exists: ${newPath}`;
+            } else if (!fileSystemData[parentPath] || fileSystemData[parentPath].type !== 'folder') {
+                commandOutputEl.textContent = `mkdir: cannot create directory: No such file or directory`;
+            } else {
+                fileSystemData[newPath] = { type: 'folder', children: [], parent: parentPath };
+                fileSystemData[parentPath].children.push(newPath.split('/').pop());
+                generateSVG();
+                document.getElementById(pathToId(newPath))?.classList.add('new-folder');
+            }
+        },
+        rm: (args) => {
+             const pathToRemove = resolvePath(args.find(a => !a.startsWith('-')));
+             if (!fileSystemData[pathToRemove] || pathToRemove === '/') {
+                 commandOutputEl.textContent = `rm: cannot remove: No such file or directory`;
+                 return;
+             }
+             const el = document.getElementById(pathToId(pathToRemove));
+             if (el) {
+                 el.classList.add('removed-folder');
+                 el.addEventListener('animationend', generateSVG, { once: true });
+             }
+             const parentPath = fileSystemData[pathToRemove].parent;
+             if (parentPath && fileSystemData[parentPath]) {
+                 const children = fileSystemData[parentPath].children;
+                 children.splice(children.indexOf(pathToRemove.split('/').pop()), 1);
+             }
+             Object.keys(fileSystemData).filter(p => p.startsWith(pathToRemove)).forEach(p => delete fileSystemData[p]);
+        },
+        reset: () => {
+            fileSystemData = JSON.parse(JSON.stringify(originalFileSystemData));
+            state.currentPath = '/hospital_records';
+            generateSVG();
+            commandOutputEl.textContent = 'File system has been reset to its original state.';
+        }
+    };
+
+    function runCommand(commandStr) {
+        commandInputEl.textContent = `claude ${commandStr}`;
+        commandOutputEl.textContent = '';
+        resetAllHighlights();
+        const [baseCommand, ...args] = commandStr.split(' ').filter(Boolean);
+        if (commandHandlers[baseCommand]) {
+            commandHandlers[baseCommand](args);
+        } else {
+            commandOutputEl.textContent = `command not found: ${baseCommand}`;
+        }
+    }
+
+    // --- 6. INITIALIZATION AND EVENT LISTENERS ---
+    function initialize() {
+        commandListEl.innerHTML = commands.map((c, i) => `
+            <div id="cmd-item-${i}" class="command-item p-4 rounded-lg bg-white" data-command="${c.cmd}" data-analogy="${c.analogy}">
+                <p class="font-semibold text-gray-800">${c.desc}</p>
+                <code class="text-sm p-1 rounded">claude ${c.cmd}</code>
+            </div>`).join('');
+        
+        commandListEl.addEventListener('click', (e) => {
+            const item = e.target.closest('.command-item');
+            if (!item) return;
+            document.querySelector('.command-item.active')?.classList.remove('active');
+            item.classList.add('active');
+            explanationTextEl.style.opacity = 0;
+            setTimeout(() => {
+                explanationTextEl.textContent = item.dataset.analogy;
+                explanationTextEl.style.opacity = 1;
+            }, 200);
+            runCommand(item.dataset.command);
+        });
+
+        resetButton.addEventListener('click', () => runCommand('reset'));
+        generateSVG();
+        document.getElementById('cmd-item-0')?.click();
+    }
+    
+    function addSVGListeners() {
+        svgContainer.addEventListener('mouseover', e => {
+            const node = e.target.closest('.node');
+            if (node) tooltipEl.classList.add('visible');
+        });
+        svgContainer.addEventListener('mouseleave', () => tooltipEl.classList.remove('visible'));
+        svgContainer.addEventListener('mousemove', e => {
+            const node = e.target.closest('.node');
+            if (!node || !tooltipEl.classList.contains('visible')) {
+                tooltipEl.classList.remove('visible');
+                return;
+            }
+            const path = node.dataset.path;
+            const data = fileSystemData[path];
+            if (!data) return;
+            let detailsHTML = data.details ? `<div class="tooltip-details">${data.details.size} | ${data.details.modified} | ${data.details.owner}</div>` : '';
+            tooltipEl.innerHTML = `<div class="tooltip-title">${path}</div>${detailsHTML}`;
+            const { clientX: x, clientY: y } = e;
+            tooltipEl.style.left = `${x + 15}px`;
+            tooltipEl.style.top = `${y + 15}px`;
+        });
+    }
+
+    initialize();
+});
+</script>
+
+</body>
+</html>
+

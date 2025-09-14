@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Claude Code Mnemonic Builder</title>
+  <style>
+    :root {
+      --text: #212529;
+      --bg: #fff;
+      --muted: #f8f9fa;
+      --border: #e9ecef;
+      --accent: #fd7e14;
+      --accent-2: #e87312;
+      --font-main: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    }
+    body { margin: 0; height: 100vh; background: linear-gradient(135deg,#f5f7fa 0%,#c3cfe2 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: var(--font-main); color: var(--text); }
+    h1 { margin-bottom: 2rem; font-size: 1.8rem; font-weight: 700; color: var(--accent-2); }
+    .container { display: flex; gap: 3rem; align-items: center; }
+    .circle-container { position: relative; width: 300px; height: 300px; border-radius: 50%; border: 2px dotted var(--border); display: flex; align-items: center; justify-content: center; background: var(--muted); font-size: 48px; }
+    .circle-letter { position: absolute; font-size: 28px; font-weight: bold; color: #adb5bd; transition: color 0.4s, text-shadow 0.4s; transform: translate(-50%,-50%); }
+    .circle-letter.active { color: var(--accent); text-shadow: 0 0 15px rgba(253,126,20,0.6); }
+    .meaning-card { background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; width: 350px; height: 280px; box-shadow: 0 6px 20px rgba(0,0,0,0.08); overflow-y: auto; }
+    .meaning-card h2 { font-size: 1.5rem; font-weight: 700; color: var(--accent-2); margin-bottom: 1rem; }
+    .meaning-card p { font-size: 1rem; margin: 0.5rem 0; color: #495057; }
+    .nav-buttons { margin-top: 1.2rem; display: flex; gap: 2rem; justify-content: center; }
+    .nav-buttons button { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #495057; transition: color 0.3s; }
+    .nav-buttons button:disabled { opacity: 0.3; cursor: not-allowed; }
+    .nav-buttons button:hover:not(:disabled) { color: var(--accent-2); }
+  </style>
+</head>
+<body>
+  <h1>Claude Code Mnemonic Builder</h1>
+  <div class="container">
+    <div class="circle-container" id="circle">💡</div>
+    <div class="meaning-card" id="meaning">
+      <h2>PROMPT</h2>
+      <p><b>P</b> Provide clear context always</p>
+    </div>
+  </div>
+  <div class="nav-buttons">
+    <button id="prev">←</button>
+    <button id="next">→</button>
+  </div>
+  <script>
+    const data=[
+      {word:"PROMPT",emoji:"💡",meanings:[
+        "<b>P</b> Provide clear context always",
+        "<b>R</b> Reason through steps simply",
+        "<b>O</b> Organize work with focus",
+        "<b>M</b> Make tasks sharp and neat",
+        "<b>P</b> Plan ahead and early",
+        "<b>T</b> Test code often and fast"
+      ]},
+      {word:"DEBUG",emoji:"🔍",meanings:[
+        "<b>D</b> Detect bugs very quickly",
+        "<b>E</b> Examine code in depth",
+        "<b>B</b> Break into small parts",
+        "<b>U</b> Understand program flow",
+        "<b>G</b> Guide fix with care"
+      ]}
+    ];
+
+    const container=document.getElementById('circle');
+    const meaningEl=document.getElementById('meaning');
+    const prevBtn=document.getElementById('prev');
+    const nextBtn=document.getElementById('next');
+    let index=0;
+    let animInterval=null;
+
+    function renderWord(){
+      const {word,meanings,emoji}=data[index];
+      container.querySelectorAll('.circle-letter').forEach(el=>el.remove());
+      container.innerText=emoji;
+      const len=word.length;const angleStep=360/len;const radius=120;
+      const letters=[];
+      for(let i=0;i<len;i++){
+        const letter=document.createElement('div');
+        letter.classList.add('circle-letter');
+        letter.innerText=word[i];
+        const angle=angleStep*i-90;const rad=angle*(Math.PI/180);
+        const x=150+radius*Math.cos(rad);const y=150+radius*Math.sin(rad);
+        letter.style.left=`${x}px`;letter.style.top=`${y}px`;
+        container.appendChild(letter);letters.push(letter);
+      }
+
+      let highlightIndex=0;
+      const intervalTime=Math.ceil(1000/1.5)+5000/len;
+
+      nextBtn.disabled=true; // disable until animation finishes
+      if(animInterval) clearInterval(animInterval);
+
+      function animateLetters(){
+        letters.forEach((l,idx)=>l.classList.remove('active'));
+        if(highlightIndex<len){
+          letters[highlightIndex].classList.add('active');
+          meaningEl.innerHTML=`<h2>${word}</h2>${meanings.slice(0,highlightIndex+1).map(m=>`<p>${m}</p>`).join('')}`;
+        } else {
+          meaningEl.innerHTML=`<h2>${word}</h2>${meanings.map(m=>`<p>${m}</p>`).join('')}`;
+          clearInterval(animInterval);
+          nextBtn.disabled=false; // enable once done
+        }
+        highlightIndex++;
+      }
+
+      animateLetters();
+      animInterval=setInterval(animateLetters,intervalTime);
+    }
+
+    prevBtn.addEventListener('click',()=>{
+      if(animInterval) clearInterval(animInterval);
+      index=(index-1+data.length)%data.length;renderWord();
+    });
+
+    nextBtn.addEventListener('click',()=>{
+      if(animInterval) clearInterval(animInterval);
+      index=(index+1)%data.length;renderWord();
+    });
+
+    renderWord();
+  </script>
+</body>
+</html>

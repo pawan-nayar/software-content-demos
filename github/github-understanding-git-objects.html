@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Git Objects - Step by Step</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- Compact Styles --- */
+        :root {
+            --bg-page: #f8f9fa;
+            --bg-surface: #ffffff;
+            --bg-muted: #f1f3f5;
+            --text-primary: #2c3e50;
+            --text-secondary: #6c757d;
+            --border-color: #dee2e6;
+            --accent: #dd6b20; /* Orange from your original reference file */
+            --font-main: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            --font-code: 'Courier New', Courier, monospace;
+        }
+
+        /* --- Base --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background: var(--bg-page);
+            color: var(--text-primary);
+            line-height: 1.5; /* Reduced line-height */
+        }
+        
+        /* --- Layout --- */
+        .container {
+            max-width: 800px; /* Reduced max-width */
+            margin: 0 auto;
+            padding: 1.5rem 1rem; /* Reduced padding */
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 1.5rem; /* Reduced margin */
+            font-size: 1.5rem; /* Reduced font size */
+        }
+
+        .panel {
+            background: var(--bg-surface);
+            border-radius: 8px; /* Slightly smaller radius */
+            padding: 1.25rem; /* Reduced padding */
+            margin-bottom: 1.25rem; /* Reduced margin */
+            box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem; /* Reduced margin */
+        }
+
+        .step-number {
+            background: var(--accent);
+            color: white;
+            width: 32px; /* Smaller */
+            height: 32px; /* Smaller */
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 0.75rem; /* Reduced margin */
+            flex-shrink: 0;
+            font-size: 1rem;
+        }
+
+        .step-title {
+            font-size: 1.25rem; /* Reduced font size */
+            font-weight: 600;
+        }
+        
+        p {
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+        }
+        
+        /* --- Visual Demo --- */
+        .visual-demo {
+            background: var(--bg-muted);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 1rem; /* Reduced padding */
+            margin: 1rem 0; /* Reduced margin */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 1rem; /* Reduced gap */
+        }
+
+        .git-object {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 0.75rem; /* Reduced padding */
+            min-width: 200px;
+            text-align: left;
+        }
+        
+        .git-object-header {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            font-size: 0.8rem; /* Reduced font size */
+            color: var(--accent);
+        }
+
+        .git-object-content {
+            font-family: var(--font-code);
+            background: var(--bg-muted);
+            padding: 0.5rem;
+            border-radius: 4px;
+            font-size: 0.85rem; /* Reduced font size */
+            border: 1px solid var(--border-color);
+        }
+        
+        .sha-hash {
+            font-family: var(--font-code);
+            background: var(--text-primary);
+            color: white;
+            padding: 0.2rem 0.5rem; /* Reduced padding */
+            border-radius: 4px;
+            font-size: 0.75rem; /* Reduced font size */
+            margin-top: 0.5rem; /* Reduced margin */
+            display: inline-block;
+        }
+
+        .arrow {
+            font-size: 1.5rem; /* Reduced size */
+            color: var(--text-secondary);
+        }
+
+        .explanation {
+            background: var(--bg-muted);
+            border-left: 3px solid var(--accent);
+            border-radius: 4px;
+            padding: 0.75rem 1rem; /* Reduced padding */
+            margin: 1rem 0; /* Reduced margin */
+            font-size: 0.9rem;
+        }
+        .explanation ul { margin: 0.5rem 0 0 1rem; }
+        .explanation strong { font-weight: 600; }
+
+        .next-button {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem; /* Reduced padding */
+            border-radius: 5px;
+            font-size: 0.9rem; /* Reduced font size */
+            font-weight: 600;
+            cursor: pointer;
+            display: block;
+            margin: 1rem auto 0;
+            transition: opacity 0.2s;
+        }
+        .next-button:hover {
+            opacity: 0.85;
+        }
+
+        .hidden {
+            display: none;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Understanding Git Objects</h1>
+
+        <!-- Step 1: What is a blob? -->
+        <div class="panel" id="step1">
+            <div class="step-header">
+                <div class="step-number">1</div>
+                <div class="step-title">What is a Blob?</div>
+            </div>
+            <p>In Git, a file's content is stored as a "blob"—just the raw data, without the filename or any other info.</p>
+            <div class="visual-demo">
+                <div class="git-object">
+                    <div class="git-object-header">File Content (hello.txt)</div>
+                    <div class="git-object-content">Hello World!</div>
+                </div>
+                <div class="arrow">→</div>
+                <div class="git-object">
+                    <div class="git-object-header">BLOB</div>
+                    <div class="git-object-content">Hello World!</div>
+                    <div class="sha-hash">a1b2c3d4...</div>
+                </div>
+            </div>
+            <div class="explanation">
+                <strong>Key Point:</strong> The blob gets a unique SHA hash based on its content. Identical content always produces the same hash.
+            </div>
+            <button class="next-button" onclick="showStep(2)">Next: Trees →</button>
+        </div>
+
+        <!-- Step 2: What is a tree? -->
+        <div class="panel hidden" id="step2">
+            <div class="step-header">
+                <div class="step-number">2</div>
+                <div class="step-title">What is a Tree?</div>
+            </div>
+            <p>A "tree" is like a folder. It lists filenames and points to the SHA hash of their corresponding blobs or other trees.</p>
+            <div class="visual-demo">
+                <div class="git-object">
+                     <div class="git-object-header">Your Folder: my-project/</div>
+                     <div class="git-object-content" style="text-align: left;">
+                        📄 hello.txt<br>
+                        📄 readme.md
+                     </div>
+                </div>
+                <div class="arrow">→</div>
+                <div class="git-object">
+                    <div class="git-object-header">TREE</div>
+                    <div class="git-object-content">
+                        <div class="tree-item">blob a1b2c3d4 hello.txt</div>
+                        <div class="tree-item">blob e5f6g7h8 readme.md</div>
+                    </div>
+                    <div class="sha-hash">tree123abc...</div>
+                </div>
+            </div>
+            <div class="explanation">
+                <strong>Key Point:</strong> The tree stores the mapping: "hello.txt points to blob a1b2c3d4...". The tree gets its own hash from this list.
+            </div>
+            <button class="next-button" onclick="showStep(3)">Next: Commits →</button>
+        </div>
+
+        <!-- Step 3: What is a commit? -->
+        <div class="panel hidden" id="step3">
+            <div class="step-header">
+                <div class="step-number">3</div>
+                <div class="step-title">What is a Commit?</div>
+            </div>
+            <p>A "commit" is a snapshot. It points to a tree and adds metadata like the author, date, and a message explaining the change.</p>
+            <div class="visual-demo" style="flex-direction: column;">
+                <div class="git-object">
+                    <div class="git-object-header">COMMIT</div>
+                    <div class="git-object-content">
+                        <div class="commit-field"><strong>tree:</strong> tree123abc...</div>
+                        <div class="commit-field"><strong>parent:</strong> (none)</div>
+                        <div class="commit-field"><strong>author:</strong> You</div>
+                        <div class="commit-field"><strong>message:</strong> "Initial commit"</div>
+                    </div>
+                    <div class="sha-hash">commit456def...</div>
+                </div>
+                <div class="arrow">↓</div>
+                <div class="git-object">
+                    <div class="git-object-header">TREE</div>
+                    <div class="git-object-content">
+                        <div class="tree-item">blob a1b2c3d4 hello.txt</div>
+                        <div class="tree-item">blob e5f6g7h8 readme.md</div>
+                    </div>
+                </div>
+            </div>
+            <div class="explanation">
+                <strong>Key Point:</strong> The commit is the anchor, saying "at this moment, the project looked like tree123abc...". It's a complete, timestamped record.
+            </div>
+            <button class="next-button" onclick="showStep(4)">Next: The Full Picture →</button>
+        </div>
+
+        <!-- Step 4: The full picture -->
+        <div class="panel hidden" id="step4">
+            <div class="step-header">
+                <div class="step-number">4</div>
+                <div class="step-title">The Complete Picture</div>
+            </div>
+            <p>This is how all Git objects connect. The commit points to the tree, and the tree points to the blobs, all linked by SHA hashes.</p>
+            <div class="visual-demo" style="flex-direction: column; gap: 0.75rem;">
+                <!-- Commit -->
+                <div class="git-object">
+                    <div class="git-object-header">COMMIT (commit456def...)</div>
+                    <div class="git-object-content">
+                        <div class="commit-field"><strong>tree:</strong> tree123abc...</div>
+                    </div>
+                </div>
+                <div class="arrow">↓</div>
+                <!-- Tree -->
+                <div class="git-object">
+                    <div class="git-object-header">TREE (tree123abc...)</div>
+                    <div class="git-object-content">
+                        <div>blob a1b2c3d4 hello.txt</div>
+                        <div>blob e5f6g7h8 readme.md</div>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 1rem;">
+                    <div class="arrow">↙</div><div class="arrow">↘</div>
+                </div>
+                 <!-- Blobs -->
+                <div style="display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center;">
+                    <div class="git-object">
+                        <div class="git-object-header">BLOB (a1b2c3d4...)</div>
+                        <div class="git-object-content">Hello World!</div>
+                    </div>
+                    <div class="git-object">
+                        <div class="git-object-header">BLOB (e5f6g7h8...)</div>
+                        <div class="git-object-content"># My Project...</div>
+                    </div>
+                </div>
+            </div>
+            <div class="explanation">
+                <strong>The Big Picture:</strong>
+                <ul>
+                    <li>A <strong>commit</strong> is a historical record.</li>
+                    <li>It points to a <strong>tree</strong> (folder structure).</li>
+                    <li>The tree points to <strong>blobs</strong> (file content).</li>
+                </ul>
+            </div>
+             <button class="next-button" onclick="showStep(1)">Start Over</button>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2025 Beyond Dictionary</p>
+    </footer>
+
+    <script>
+        function showStep(stepNumber) {
+            document.querySelectorAll('.panel').forEach(panel => {
+                panel.classList.add('hidden');
+            });
+            
+            const stepToShow = document.getElementById('step' + stepNumber);
+            if (stepToShow) {
+                stepToShow.classList.remove('hidden');
+                stepToShow.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'start' 
+                });
+            }
+        }
+    </script>
+</body>
+</html>
+

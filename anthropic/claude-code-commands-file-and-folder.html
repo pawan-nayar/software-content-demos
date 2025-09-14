@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Commands for Medical Professionals</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        /* ================= Base / Theme / Responsive Typography ================= */
+        :root {
+            --text: #374151; --bg: #f9fafb; --muted: #f3f4f6; --border: #e5e7eb;
+            --accent: #fd7e14; --accent-2: #e87312; --header-bg: #1f2937; --header-fg: #f9fafb;
+            --ok: #16a34a; --ok-soft: #dcfce7; --bad: #dc2626; --bad-soft: #fee2e2;
+            --terminal-bg: #111827; --terminal-fg: #d1d5db; --terminal-prompt: #4ade80;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; -webkit-font-smoothing: antialiased; }
+        .container { max-width: 900px; margin: auto; padding: 16px; }
+        @media (min-width: 768px) { .container { padding: 24px; } }
+
+        h1, h2, h3 { color: #111827; font-weight: 700; }
+        h1 { font-size: clamp(1.8rem, 5vw, 2.8rem); line-height: 1.2; }
+        h2 { font-size: clamp(1.5rem, 4vw, 2rem); margin: 48px 0 16px; border-bottom: 2px solid var(--border); padding-bottom: 8px; }
+        h3 { font-size: clamp(1.1rem, 3vw, 1.25rem); margin-top: 24px; margin-bottom: 8px; }
+        p { margin-bottom: 1rem; }
+
+        /* ================= Section 1: Header & Value Prop ================= */
+        .site-header { background: var(--header-bg); color: var(--header-fg); padding: 14px 16px; position: sticky; top: 0; z-index: 100; }
+        .site-header-content { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: auto; }
+        .logo { font-weight: 700; font-size: 1.15rem; color: #fff; text-decoration: none; }
+        .site-header nav { display: none; }
+        @media (min-width: 640px) { .site-header nav { display: flex; gap: 14px; } .site-header nav a { color: #d1d5db; text-decoration: none; font-size: 0.9rem; } .site-header nav a:hover { color: #fff; } }
+        .breadcrumbs { margin: 16px 0; font-size: 0.9rem; color: #6b7280; }
+        .breadcrumbs a { color: var(--accent); text-decoration: none; }
+        .subtitle { font-size: clamp(1rem, 3vw, 1.25rem); color: #4b5563; margin-top: 4px; margin-bottom: 24px; }
+        .meta-info { display: flex; align-items: center; gap: 12px; color: #6b7280; margin-bottom: 32px; font-size: 0.9rem; }
+        .meta-icon { font-size: 2rem; line-height: 1; }
+        .value-prop { font-size: 1.05rem; line-height: 1.8; background: #fff; padding: 20px; border-radius: 12px; border-left: 4px solid var(--accent); margin: 24px 0; box-shadow: 0 4px 6px -1px rgba(0,0,0,.05); }
+
+        /* ================= Section 2: Pain Points Accordion ================= */
+        .accordion { display: grid; gap: 8px; }
+        .accordion-item { border: 1px solid var(--border); border-radius: 12px; background: #fff; overflow: hidden; transition: background-color 0.2s; }
+        .accordion-header { width: 100%; text-align: left; background: transparent; border: none; padding: 16px; cursor: pointer; font-size: 1.1rem; font-weight: 600; display: flex; align-items: center; gap: 12px; }
+        .accordion-header .icon { font-size: 1.5rem; color: var(--accent); }
+        .accordion-header .title { margin-right: auto; }
+        .accordion-header .indicator { transition: transform 0.3s ease; font-size: 1.5rem; color: #9ca3af; }
+        .accordion-header[aria-expanded="true"] .indicator { transform: rotate(45deg); }
+        .accordion-content { padding: 0 16px 16px; display: none; }
+        .accordion-content p { margin: 8px 0; font-size: 0.95rem; }
+        .accordion-content strong { color: #1f2937; }
+        .cli-solution { background: var(--muted); padding: 10px; border-radius: 8px; margin-top: 10px; font-family: 'Fira Code', monospace; font-size: 0.9rem; color: var(--ok); }
+        .cli-solution::before { content: 'Solution: '; font-weight: bold; color: #111827; }
+
+        /* ================= Section 3: Interactive File Tree (Responsive) ================= */
+        .file-tree-container { display: flex; flex-direction: column; gap: 24px; margin-top: 24px; }
+        @media (min-width: 768px) { .file-tree-container { flex-direction: row; } }
+        .svg-panel { background: var(--terminal-bg); border: 1px solid #374151; border-radius: 12px; padding: 16px; flex: 1; min-height: 400px; overflow: auto; }
+        .file-tree-svg .node text { font-family: 'Fira Code', monospace; font-size: 14px; fill: var(--terminal-fg); }
+        .file-tree-svg .node--internal text { font-weight: bold; }
+        .file-tree-svg .node--leaf text { fill: #9ca3af; }
+        .file-tree-svg .node circle { stroke: #4b5563; stroke-width: 1.5px; }
+        .file-tree-svg .node--internal circle { fill: #374151; }
+        .file-tree-svg .node--leaf circle { fill: var(--terminal-bg); }
+        .file-tree-svg .node.highlight > circle { fill: var(--accent); stroke: var(--accent-2); }
+        .file-tree-svg .link { fill: none; stroke: #4b5563; stroke-width: 1.5px; }
+        .path-display-wrapper { flex-basis: 300px; flex-shrink: 0; }
+        .path-display { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 16px; position: sticky; top: 80px; }
+        .terminal-output { background: var(--terminal-bg); color: var(--terminal-fg); font-family: 'Fira Code', monospace; padding: 12px; border-radius: 8px; margin-top: 12px; white-space: pre-wrap; word-break: break-all; font-size: 0.9rem; }
+        .terminal-output .prompt { color: var(--terminal-prompt); }
+        .tooltip { position: fixed; z-index: 101; background: #374151; color: white; padding: 8px 12px; border-radius: 6px; font-size: 0.9rem; pointer-events: none; opacity: 0; transition: opacity 0.2s; max-width: 250px; }
+        .tooltip.visible { opacity: 1; }
+
+        /* ================= Section 4: Flipcard Carousel (Responsive) ================= */
+        .carousel-container { perspective: 1500px; position: relative; padding: 0 44px; margin: 24px 0; }
+        @media (min-width: 768px) { .carousel-container { padding: 0 50px; } }
+        .flip-card { width: 100%; min-height: 380px; aspect-ratio: 4 / 5; max-height: 420px; display: none; }
+        .flip-card.active { display: block; }
+        .flip-card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; cursor: pointer; }
+        .flip-card.flipped .flip-card-inner { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; flex-direction: column; justify-content: center; padding: 16px; border-radius: 12px; border: 1px solid var(--border); }
+        @media (min-width: 768px) { .flip-card-front, .flip-card-back { padding: 24px; } }
+        .flip-card-front { background-color: #fff; text-align: center; }
+        .flip-card-back { background-color: var(--terminal-bg); color: #e5e7eb; transform: rotateY(180deg); text-align: left; }
+        .fc-command { font-family: 'Fira Code', monospace; font-size: clamp(1rem, 4vw, 1.25rem); color: var(--accent); margin-bottom: 12px; }
+        .fc-use-case { font-size: clamp(1rem, 3vw, 1.1rem); font-weight: 500; margin-bottom: 12px; flex-grow: 1; }
+        .fc-icon { font-size: 2.5rem; margin-bottom: 12px; }
+        .fc-cue { color: #6b7280; font-style: italic; font-size: 0.9rem; }
+        .fc-back-title { color: #9ca3af; font-weight: bold; margin-top: 12px; margin-bottom: 4px; font-size: 0.8rem; text-transform: uppercase; }
+        .fc-back-code { background: #000; padding: 10px; border-radius: 6px; font-family: 'Fira Code', monospace; white-space: pre-wrap; font-size: 0.85rem; }
+        .carousel-nav { position: absolute; top: 50%; transform: translateY(-50%); background-color: var(--accent); color: white; border: none; border-radius: 50%; width: 44px; height: 44px; font-size: 24px; cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center; }
+        #carousel-prev { left: -10px; }
+        #carousel-next { right: -10px; }
+        @media (min-width: 768px) { #carousel-prev { left: 0; } #carousel-next { right: 0; } }
+        .carousel-footer { text-align: center; margin-top: 15px; }
+        #carousel-counter { font-weight: 600; color: #6b7280; margin-bottom: 10px; }
+        .copy-btn { background: #4b5563; color: white; border: none; border-radius: 8px; padding: 10px 16px; cursor: pointer; font-size: 0.9rem; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; margin-top: 16px; }
+
+        /* ================= General Button & Terminal Styles ================= */
+        .btn { background: var(--accent); color: #fff; border: none; padding: 12px 18px; border-radius: 10px; font-weight: 700; cursor: pointer; transition: background-color 0.2s ease; display: inline-flex; align-items: center; gap: 6px; text-decoration: none; }
+        .btn:hover:not(:disabled) { background-color: var(--accent-2); }
+        .btn:disabled { background-color: #9ca3af; cursor: not-allowed; }
+        .workflow-terminal { background: var(--terminal-bg); color: var(--terminal-fg); font-family: 'Fira Code', monospace; padding: 16px; border-radius: 8px; min-height: 250px; overflow-y: auto; white-space: pre-wrap; }
+        .cursor { display: inline-block; background-color: var(--terminal-prompt); width: 10px; height: 1.2em; animation: blink 1s step-end infinite; vertical-align: bottom; }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        /* ================= Section 5: Workflow Simulation (Responsive) ================= */
+        .simulation-container { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+        @media (min-width: 768px) { .simulation-container { padding: 24px; } }
+        .workflow-steps { display: grid; grid-template-columns: 1fr; gap: 16px; margin-top: 24px; }
+        @media (min-width: 640px) { .workflow-steps { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); } }
+        .step-card { background: var(--muted); padding: 16px; border-radius: 10px; }
+        .step-card h4 { margin-top: 0; }
+        .step-card .explanation { font-size: 0.9rem; color: #4b5563; min-height: 40px; margin: 8px 0; }
+
+        /* ================= Section 6: Quiz (Responsive) ================= */
+        .quiz-container { padding: 16px; border: 2px solid var(--border); border-radius: 12px; background: #fff; position: relative; }
+        @media (min-width: 768px) { .quiz-container { padding: 24px; } }
+        .quiz-navigation { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+        .quiz-body.active { display: block; }
+        .quiz-scenario { background: var(--muted); padding: 12px; border-radius: 8px; margin-bottom: 16px; font-weight: 500; }
+        .quiz-options { display: grid; gap: 12px; }
+        .quiz-option label { display: block; padding: 14px; border: 2px solid var(--border); border-radius: 8px; cursor: pointer; background: #fff; font-family: 'Fira Code', monospace; transition: all 0.2s; }
+        .quiz-option input[type="radio"] { display: none; }
+        .quiz-option input:checked + label, .quiz-option label:hover { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(253,126,20,.3); }
+        .quiz-option.correct label { background: var(--ok-soft); border-color: var(--ok); }
+        .quiz-option.wrong label { background: var(--bad-soft); border-color: var(--bad); }
+        .quiz-explanation { display: none; margin-top: 16px; padding: 15px; border-radius: 6px; border-left: 4px solid; }
+        .quiz-explanation.correct { border-left-color: var(--ok); background: #f0fff4; }
+        .quiz-explanation.wrong { border-left-color: var(--bad); background: #fff5f5; }
+
+        /* ================= Section 7: Glossary Grid (Responsive) ================= */
+        .glossary-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+        @media (min-width: 640px) { .glossary-grid { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); } }
+        .glossary-card { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+        .glossary-card h4 { margin-top: 0; font-family: 'Fira Code', monospace; color: var(--accent); }
+        .glossary-card .analogy { font-style: italic; color: #4b5563; border-left: 3px solid var(--border); padding-left: 10px; margin: 8px 0; }
+
+        /* ================= Section 8: Next Steps Carousel (Responsive) ================= */
+        .next-steps-slider { position: relative; background: #fff; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+        .ns-track { display: flex; transition: transform 0.5s ease; }
+        .ns-slide { min-width: 100%; padding: 24px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+        .ns-icon { font-size: 3rem; margin-bottom: 12px; color: var(--accent); }
+        .ns-slide h4 { margin-bottom: 8px; }
+        .ns-nav { display: flex; justify-content: center; gap: 16px; padding: 16px; border-top: 1px solid var(--border); }
+        .ns-dots { display: flex; align-items: center; gap: 8px; }
+        .ns-dot { width: 10px; height: 10px; border-radius: 50%; background: #d1d5db; cursor: pointer; }
+        .ns-dot.active { background: var(--accent); }
+
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <div class="site-header-content">
+            <a href="#" class="logo">Clinic Informatics</a>
+            <nav><a href="#">Training</a><a href="#">Tools</a><a href="#">Support</a></nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- SECTIONS 1-8 will be populated by JS -->
+        <section id="header"></section>
+        <section id="pain-points"></section>
+        <section id="file-tree"></section>
+        <section id="commands-carousel"></section>
+        <section id="simulation"></section>
+        <section id="quiz"></section>
+        <section id="glossary"></section>
+        <section id="next-steps"></section>
+    </main>
+    
+    <div id="tooltip" class="tooltip"></div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+        // --- DATA (Single Source of Truth) ---
+        const painPointsData = [
+            { icon: '⚕️', title: 'Clinical Decision Bottlenecks', scenario: "3AM chest pain case - need patient's prior cardiac workup + current protocols.", problem: 'Files scattered across departments, manual navigation wastes critical time.', solution: 'Navigate patient records → protocols → documentation in seconds.' },
+            { icon: '🔬', title: 'Research Data Inefficiency', scenario: 'Analyzing 50 patient outcomes across multiple data sources.', problem: 'Hours spent clicking through folder structures, high error rate.', solution: 'Bulk operations, systematic navigation, automated file access.' },
+            { icon: '📋', title: 'Compliance Documentation', scenario: 'New treatment protocol requires updating existing patient cases.', problem: 'Manual cross-referencing between protocols and active cases.', solution: 'Efficient navigation between protocol directories and patient files.' }
+        ];
+
+        const fileTreeData = {
+            name: '/medical_center', path: '/medical_center', description: 'The root directory for all hospital data.', children: [
+                { name: 'departments', path: '/medical_center/departments', description: 'Contains folders for each clinical department.', children: [
+                    { name: 'cardiology', path: '/medical_center/departments/cardiology', description: 'Cardiac patient data and protocols.', children: [{ name: 'protocols.pdf', type: 'file', path: '#', description: 'Official STEMI and NSTEMI protocols.' }] },
+                    { name: 'radiology', path: '/medical_center/departments/radiology', description: 'Imaging reports and scans.', children: [{ name: 'imaging_requests.log', type: 'file', path: '#', description: 'Log of all imaging requests.' }] }
+                ]},
+                { name: 'patients', path: '/medical_center/patients', description: 'Root folder for all patient records.', children: [
+                    { name: 'active', path: '/medical_center/patients/active', description: 'Records for currently admitted patients.', children: [
+                        { name: 'pt_12845', path: '/medical_center/patients/active/pt_12845', description: 'Folder for patient ID 12845.', children: [{name: 'notes.txt', type: 'file', path: '#', description: 'Clinical progress notes.'}] }
+                    ] },
+                    { name: 'discharged', path: '/medical_center/patients/discharged', description: 'Archived records of discharged patients.', children: [] }
+                ]},
+                { name: 'research', path: '/medical_center/research', description: 'Data for ongoing clinical trials and studies.', children: [
+                    { name: 'covid_trial_2025', path: '/medical_center/research/covid_trial_2025', description: 'COVID-19 treatment trial data.', children: [{ name: 'patient_data.json', type: 'file', path: '#', description: 'Anonymized patient outcome data.' }] }
+                ]}
+            ]
+        };
+
+        const commandsData = [
+            { cmd: 'claude pwd', use: "Confirm location before accessing patient files.", icon: '📍', back: { context: "Like asking a nurse 'Which ward am I in?'", example: 'claude@hospital:~$ claude pwd\n/medical_center/patients/active' } },
+            { cmd: 'claude ls', use: "List patient files in the current directory.", icon: '📂', back: { context: 'Like opening a filing cabinet drawer to see the folders inside.', example: 'claude@hospital:~/patients/active$ claude ls\npt_12845/\npt_24513/\npt_78901/' } },
+            { cmd: 'claude cd ./folder', use: "Navigate into a specific patient's folder.", icon: '➡️', back: { context: "Like walking into a specific patient's room.", example: 'claude@hospital:~/patients/active$ claude cd ./pt_12845' } },
+            { cmd: 'claude cd ..', use: "Go up one level (e.g., from patient to 'active' list).", icon: '⬆️', back: { context: "Like stepping out of the patient's room back into the hallway.", example: 'claude@hospital:~/patients/active/pt_12845$ claude cd ..' } },
+            { cmd: 'claude cd /', use: "Jump to the main hospital directory root.", icon: '🏥', back: { context: "Instantly return to the hospital's main entrance from anywhere.", example: 'claude@hospital:~/.../cardiology$ claude cd /' } },
+            { cmd: 'claude cd ~', use: "Return to your personal 'home' directory.", icon: '🏠', back: { context: "Like returning to your personal office or desk.", example: 'claude@hospital:~/research$ claude cd ~' } },
+            { cmd: 'claude ls *.pdf', use: "Find all PDF protocol files in a directory.", icon: '🔍', back: { context: 'Quickly find all treatment guideline documents.', example: 'claude@hospital:~/departments/cardiology$ claude ls *.pdf\nprotocols.pdf' } },
+            { cmd: 'claude ls -l', use: "Get a detailed list of files with permissions and dates.", icon: '📋', back: { context: 'Like viewing a detailed log of when each file was last updated.', example: 'claude@hospital:~/patients/active$ claude ls -l\ndrwx- 10 root 4096 Sep 1 08:30 pt_12845' } },
+            { cmd: 'claude ls -t', use: "Sort files by last modified time, newest first.", icon: '🕒', back: { context: 'Quickly find the most recently updated patient chart.', example: 'claude@hospital:~/patients/active$ claude ls -t\npt_78901/ (updated 2m ago)\npt_12845/ (updated 1h ago)' } },
+            { cmd: 'claude ls -a', use: "Show all files, including hidden configuration files.", icon: '👁️', back: { context: 'For advanced users; like looking for hidden notes or system files in a chart.', example: 'claude@hospital:~$ claude ls -a\n.\n..\n.profile\nresearch/' } },
+            { cmd: 'claude cp source dest', use: "Duplicate a patient's report for another department.", icon: '➕', back: { context: "Like photocopying test results from Radiology to send to Cardiology.", example: 'claude cp pt_12845/echo.pdf departments/cardiology/' } },
+            { cmd: 'claude mv source dest', use: "Move a patient file after discharge.", icon: '🚚', back: { context: "Transferring a record from the 'Active' cabinet to the 'Discharged' archive.", example: 'claude mv patients/active/pt_12845 discharged/' } },
+            { cmd: 'claude rm file', use: "Remove an outdated or duplicate lab report.", icon: '❌', back: { context: 'Like shredding obsolete paperwork from a patient file.', example: 'claude rm pt_12845/old_lab.csv' } },
+            { cmd: 'claude mkdir folder', use: "Create a new folder for a research cohort.", icon: '🆕', back: { context: 'Adding a new drawer for a specific study, like "COVID-19 Trial Patients".', example: 'claude mkdir research/covid_trial2025' } },
+            { cmd: 'claude rmdir folder', use: "Remove an empty folder from an old study.", icon: '🗑️', back: { context: 'Cleaning up unused folders after a research project is complete.', example: 'claude rmdir research/old_study' } },
+            { cmd: 'claude find . -name "*.csv"', use: "Find all CSV data files in the current department.", icon: '🗺️', back: { context: 'Searching all filing cabinets in your area for "lab results" forms.', example: 'claude find . -name "*.csv"' } },
+            { cmd: 'claude grep "term" file', use: 'Locate every mention of "STEMI" in patient notes.', icon: '✍️', back: { context: 'Like using a highlighter to find every instance of a keyword in a document.', example: 'claude grep "allergy" pt_12845/notes.txt' } },
+            { cmd: 'claude history', use: "Review recent commands for audit or to retrace steps.", icon: '📜', back: { context: 'Like looking at the last 10 actions taken in an electronic health record.', example: 'claude@hospital:~$ claude history' } },
+            { cmd: 'claude head file', use: "Preview the first few lines of a large data set.", icon: '🔼', back: { context: "Reading the top summary page of a patient's report for a quick snapshot.", example: 'claude head lab_results.csv' } },
+            { cmd: 'claude tail file', use: "Check the most recent updates in a progress note.", icon: '🔽', back: { context: "Jumping to today's entry in a long nursing log.", example: 'claude tail pt_12845/notes.txt' } }
+        ];
+
+        const workflowData = [
+            { step: 1, cmd: 'claude pwd', explanation: "Okay, I'm at the main hospital entrance. I need to confirm my starting point.", targetPath: '/medical_center' },
+            { step: 2, cmd: 'claude cd patients/active', explanation: "Now I'll head to the active patient ward.", targetPath: '/medical_center/patients/active' },
+            { step: 3, cmd: 'claude ls', explanation: "Let's see the list of current patients to find the right one.", targetPath: '/medical_center/patients/active' },
+            { step: 4, cmd: 'claude cd pt_12845', explanation: "Here's the patient. I'm now accessing their specific records.", targetPath: '/medical_center/patients/active/pt_12845' },
+            { step: 5, cmd: 'claude cd ../../departments/cardiology', explanation: "I need to reference the standard STEMI protocol. I'll quickly jump to the Cardiology department.", targetPath: '/medical_center/departments/cardiology' },
+            { step: 6, cmd: 'claude cd ../../patients/active/pt_12845', explanation: "Got the protocol info. Now, back to the patient's chart to document the treatment plan.", targetPath: '/medical_center/patients/active/pt_12845' }
+        ];
+
+        const quizData = [
+            { scenario: "A patient with chest pain needs their cardiac history. You are currently in `/patients/active/pt_12845`. Which command shows the files available in this patient's folder?", options: ["claude pwd", "claude ls", "claude cd ..", "claude find"], correct: 1, explanation: "`claude ls` lists the contents of the current directory, which is exactly what you need to see the patient's files." },
+            { scenario: "You are in a patient's folder at `/patients/active/pt_12845` and need to go back to the list of all active patients. Which command do you use?", options: ["claude cd /", "claude cd ~", "claude cd ..", "claude rmdir"], correct: 2, explanation: "`claude cd ..` navigates one level up in the directory structure, taking you from the patient's folder to the `active` folder." },
+            { scenario: "You need to create a new folder for a research study named `diabetes_study`. Which command accomplishes this?", options: ["claude rm diabetes_study", "claude mkdir diabetes_study", "claude cp diabetes_study", "claude create diabetes_study"], correct: 1, explanation: "`claude mkdir` (make directory) is the command used to create new folders." },
+            { scenario: "A lab report `old_results.pdf` is outdated and needs to be deleted. What is the correct command?", options: ["claude mv old_results.pdf", "claude rmdir old_results.pdf", "claude cp old_results.pdf", "claude rm old_results.pdf"], correct: 3, explanation: "`claude rm` (remove) is used to delete files. `rmdir` is for empty folders." },
+            { scenario: "You are in the `/radiology` directory and need to immediately jump back to your personal home directory. Which command is the fastest?", options: ["claude cd ~", "claude cd /", "claude cd ..", "claude pwd"], correct: 0, explanation: "`claude cd ~` is a shortcut that always takes you to your home directory, regardless of your current location." },
+            { scenario: "You want to find every mention of the drug 'Lisinopril' inside the `notes.txt` file. What command should you use?", options: ["claude find 'Lisinopril'", "claude ls Lisinopril", "claude grep 'Lisinopril' notes.txt", "claude head notes.txt"], correct: 2, explanation: "`claude grep` is a powerful tool for searching for specific text *inside* one or more files." },
+            { scenario: "A patient is being discharged. You need to move their entire folder, `pt_78901`, from the `/patients/active` directory to the `/patients/discharged` directory.", options: ["claude cp active/pt_78901 discharged/", "claude mv active/pt_78901 discharged/", "claude rm active/pt_78901", "claude cd discharged/"], correct: 1, explanation: "`claude mv` (move) is used to transfer a file or folder from a source location to a destination." },
+            { scenario: "You've just received a large dataset `outcomes.csv` and want to quickly see the first few rows to check its format. Which command is best?", options: ["claude tail outcomes.csv", "claude ls -l outcomes.csv", "claude cat outcomes.csv", "claude head outcomes.csv"], correct: 3, explanation: "`claude head` is designed to show the beginning (the 'head') of a file, which is perfect for a quick preview." },
+            { scenario: "You need to see the most recently updated files in a busy directory to find the latest patient admission record. Which command helps?", options: ["claude ls -a", "claude ls -l", "claude ls -t", "claude ls"], correct: 2, explanation: "The `-t` flag for `claude ls` sorts files by modification time, showing the newest ones first." },
+            { scenario: "To confirm you are in the `/departments/cardiology` directory before accessing sensitive protocols, which command would you use?", options: ["claude pwd", "claude history", "claude cd cardiology", "claude ls"], correct: 0, explanation: "`claude pwd` (print working directory) tells you your exact current location in the file system." }
+        ];
+
+        const glossaryData = [
+            { term: 'Path', analogy: 'Hospital Record Room Address', usage: 'A text-based address that tells the computer where to find a file or folder.' },
+            { term: 'File', analogy: 'A Patient Chart', usage: 'Any single digital document (.pdf, .txt, .json) that stores information.' },
+            { term: 'Folder / Directory', analogy: 'A Filing Cabinet Drawer', usage: 'A container that holds files and other folders, organizing the system.' },
+            { term: 'Command', analogy: 'A Verbal Order to an Intern', usage: 'A typed instruction that tells the computer to perform an action (e.g., `claude summarize`).' },
+            { term: 'Parameter / Flag', analogy: 'A Special Prescription Instruction', usage: 'An option added to a command to modify its behavior (e.g., `--detail high`).' },
+            { term: 'Root (`/`)', analogy: "The Hospital's Main Entrance", usage: 'The top-level directory of the entire file system.' }
+        ];
+
+        const nextStepsData = [
+            { icon: '🤖', title: "Automated Patient Analysis", desc: "Use commands to process multiple patient files simultaneously, reducing analysis time from hours to minutes." },
+            { icon: '🧠', title: "Clinical Decision Support", desc: "Cross-reference patient data with current protocols to ensure evidence-based treatment decisions." },
+            { icon: '⚙️', title: "Research Workflow Automation", desc: "Analyze outcomes across entire patient populations to accelerate clinical research and quality improvement." },
+            { icon: '✨', title: "Documentation Enhancement", desc: "Generate comprehensive reports from multiple data sources, improving documentation quality and completeness." }
+        ];
+        
+        // --- MASTER RENDER FUNCTION ---
+        function renderAll() {
+            // Section 1
+            document.getElementById('header').innerHTML = `
+                <nav class="breadcrumbs"><a href="#">Medical Tech</a> &gt; <a href="#">File Systems</a> &gt; <span>Claude Commands</span></nav>
+                <h1>Claude Commands for Medical Professionals</h1>
+                <p class="subtitle">Essential File Navigation Skills for Claude Code Access</p>
+                <div class="meta-info"><span class="meta-icon">⚕️</span><span>By the Medical Technology Training Group | Last Updated: Sep 2025</span></div>
+                <div class="value-prop">Claude Code transforms medical workflows, but requires basic command-line navigation. This tutorial teaches 20 essential commands through medical scenarios, unlocking powerful tools for clinical practice and research.</div>`;
+
+            // Section 2
+            const accordionContainer = document.getElementById('pain-points');
+            accordionContainer.innerHTML = `<h2>Why Learn This? Solving Daily Frustrations</h2><div class="accordion" id="pain-points-accordion"></div>`;
+            document.getElementById('pain-points-accordion').innerHTML = painPointsData.map((item, index) => `
+                <div class="accordion-item">
+                    <button class="accordion-header" aria-expanded="${index === 0}" aria-controls="acc-panel-${index}">
+                        <span class="icon">${item.icon}</span><span class="title">${item.title}</span><span class="indicator">+</span>
+                    </button>
+                    <div class="accordion-content" id="acc-panel-${index}" ${index === 0 ? 'style="display: block;"' : ''}>
+                        <p><strong>Scenario:</strong> ${item.scenario}</p><p><strong>Problem:</strong> ${item.problem}</p><p class="cli-solution">${item.solution}</p>
+                    </div>
+                </div>`).join('');
+
+            // Section 3
+            document.getElementById('file-tree').innerHTML = `
+                <h2>Visualizing the Hospital Directory</h2>
+                <div class="file-tree-container">
+                    <div class="svg-panel"><svg id="file-tree-svg" class="file-tree-svg"></svg></div>
+                    <div class="path-display-wrapper">
+                        <div class="path-display">
+                            <h3>Your Current Location</h3>
+                            <p>Click on a folder in the diagram to navigate the file system and see your current path update here.</p>
+                            <div class="terminal-output"><span class="prompt">claude@hospital:~$</span> <span id="pwd-output">/medical_center</span></div>
+                        </div>
+                    </div>
+                </div>`;
+
+            // Section 4
+            document.getElementById('commands-carousel').innerHTML = `
+                <h2>The 20 Essential Commands</h2>
+                <div class="carousel-container">
+                    <button id="carousel-prev" class="carousel-nav">‹</button>
+                    <div id="carousel-deck"></div>
+                    <button id="carousel-next" class="carousel-nav">›</button>
+                </div>
+                <div class="carousel-footer"><div id="carousel-counter">Command 1 of 20</div></div>`;
+
+            // Section 5
+            document.getElementById('simulation').innerHTML = `
+                <h2>Simulation: Acute Chest Pain Workflow</h2>
+                <div class="simulation-container">
+                    <p>Follow a realistic clinical scenario. Click the buttons in order to execute commands, see the terminal output, and watch the file tree update.</p>
+                    <div id="workflow-terminal" class="workflow-terminal"><span class="cursor"></span></div>
+                    <div class="workflow-steps" id="workflow-steps"></div>
+                </div>`;
+            
+            // Section 6
+            document.getElementById('quiz').innerHTML = `
+                <h2>Test Your Knowledge</h2>
+                <div class="quiz-container">
+                    <div class="quiz-navigation">
+                        <button class="btn" id="quiz-prev">❮ Prev</button>
+                        <span class="question-counter"><span id="quiz-current-q">1</span> of ${quizData.length}</span>
+                        <button class="btn" id="quiz-next">Next ❯</button>
+                    </div>
+                    <div id="quiz-body-container"></div>
+                </div>`;
+
+            // Section 7
+            document.getElementById('glossary').innerHTML = `
+                <h2>Key Terms & Medical Analogies</h2>
+                <div class="glossary-grid" id="glossary-grid"></div>`;
+            
+            // Section 8
+            document.getElementById('next-steps').innerHTML = `
+                <h2>Advanced Applications: What's Next?</h2>
+                <div class="next-steps-slider">
+                    <div class="ns-track" id="ns-track"></div>
+                    <div class="ns-nav">
+                        <button id="ns-prev" class="btn">◀</button>
+                        <div class="ns-dots" id="ns-dots"></div>
+                        <button id="ns-next" class="btn">▶</button>
+                    </div>
+                </div>`;
+
+            // After HTML is in the DOM, initialize all JS components
+            initAllComponents();
+        }
+
+        // --- COMPONENT INITIALIZATION ---
+        function initAllComponents() {
+            initAccordion();
+            renderFileTree();
+            initCommandsCarousel();
+            initWorkflowSimulation();
+            initQuiz();
+            initGlossary();
+            initNextStepsCarousel();
+        }
+
+        function initAccordion() {
+            const accordionContainer = document.getElementById('pain-points-accordion');
+            if (!accordionContainer) return;
+            accordionContainer.querySelectorAll('.accordion-header').forEach(header => {
+                header.addEventListener('click', () => {
+                    const content = header.nextElementSibling;
+                    const isExpanded = header.getAttribute('aria-expanded') === 'true';
+                    accordionContainer.querySelectorAll('.accordion-header').forEach(h => {
+                        if (h !== header) {
+                           h.setAttribute('aria-expanded', 'false');
+                           h.nextElementSibling.style.display = 'none';
+                           h.querySelector('.indicator').style.transform = 'rotate(0deg)';
+                        }
+                    });
+                    header.setAttribute('aria-expanded', String(!isExpanded));
+                    content.style.display = isExpanded ? 'none' : 'block';
+                    header.querySelector('.indicator').style.transform = isExpanded ? 'rotate(0deg)' : 'rotate(45deg)';
+                });
+            });
+        }
+        
+        let activeNodePath = fileTreeData.path;
+        function renderFileTree() {
+            const svgContainer = d3.select("#file-tree-svg");
+            if (svgContainer.empty()) return;
+
+            svgContainer.selectAll("*").remove(); // Clear previous render
+
+            const width = svgContainer.node().getBoundingClientRect().width;
+            const root = d3.hierarchy(fileTreeData, d => d.children);
+            const dx = 25;
+            const dy = width / (root.height + 2);
+            const tree = d3.tree().nodeSize([dx, dy]);
+            tree(root);
+
+            let x0 = Infinity;
+            let x1 = -x0;
+            root.each(d => {
+                if (d.x > x1) x1 = d.x;
+                if (d.x < x0) x0 = d.x;
+            });
+
+            const height = x1 - x0 + dx * 2;
+            
+            const g = svgContainer.attr("viewBox", [-dy / 2, x0 - dx, width, height])
+                .append("g")
+                .attr("font-size", 12)
+                .attr("transform", `translate(${dy/3},${-x0 + dx})`);
+
+            g.append("g").attr("fill", "none").selectAll("path")
+                .data(root.links()).join("path")
+                .attr("class", "link")
+                .attr("d", d3.linkHorizontal().x(d => d.y).y(d => d.x));
+
+            const node = g.append("g").selectAll("g")
+                .data(root.descendants()).join("g")
+                .attr("class", d => `node ${d.children ? "node--internal" : "node--leaf"}`)
+                .attr("transform", d => `translate(${d.y},${d.x})`);
+
+            node.append("circle").attr("r", 6);
+
+            node.append("text")
+                .attr("dy", "0.31em")
+                .attr("x", d => d.children ? -10 : 10)
+                .attr("text-anchor", d => d.children ? "end" : "start")
+                .text(d => d.data.name.split('/').pop())
+                .clone(true).lower()
+                .attr("stroke", "white");
+            
+            const tooltip = d3.select("#tooltip");
+
+            node.filter(d => d.data.type !== 'file').style('cursor', 'pointer').on('click', (event, d) => {
+                updateActiveNode(d.data.path);
+            });
+            
+            node.on('mouseover', (event, d) => {
+                tooltip.html(d.data.description).classed('visible', true);
+            }).on('mousemove', (event) => {
+                tooltip.style('left', (event.pageX + 15) + 'px').style('top', (event.pageY + 15) + 'px');
+            }).on('mouseout', () => {
+                tooltip.classed('visible', false);
+            });
+            
+            window.updateActiveNode = (path) => {
+                activeNodePath = path;
+                document.getElementById('pwd-output').textContent = path;
+                d3.selectAll('.node').classed('highlight', false);
+                d3.selectAll('.node').filter(d => d.data.path === path).classed('highlight', true);
+            };
+            
+            updateActiveNode(activeNodePath);
+        }
+
+        function initCommandsCarousel() {
+            const deck = document.getElementById('carousel-deck');
+            if(!deck) return;
+            deck.innerHTML = commandsData.map((card, index) => `
+                <div class="flip-card" data-index="${index}">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <div class="fc-icon">${card.icon}</div>
+                            <div class="fc-command">${card.cmd}</div>
+                            <p class="fc-use-case">${card.use}</p>
+                            <div class="fc-cue">Click to see example & analogy</div>
+                        </div>
+                        <div class="flip-card-back">
+                            <div class="fc-back-title">Clinical Analogy</div><p>${card.back.context}</p>
+                            <div class="fc-back-title">Example</div><pre class="fc-back-code">${card.back.example}</pre>
+                            <button class="copy-btn" data-command="${card.cmd}">📋 Copy Command</button>
+                        </div>
+                    </div>
+                </div>`).join('');
+            
+            const cards = deck.querySelectorAll('.flip-card');
+            let currentIndex = 0;
+            function showCard(index) {
+                cards.forEach((card, i) => card.classList.toggle('active', i === index));
+                document.getElementById('carousel-counter').textContent = `Command ${index + 1} of ${cards.length}`;
+            }
+
+            deck.addEventListener('click', (e) => {
+                if (e.target.matches('.copy-btn')) {
+                    navigator.clipboard.writeText(e.target.dataset.command).then(() => {
+                        e.target.textContent = '✅ Copied!';
+                        setTimeout(() => { e.target.textContent = '📋 Copy Command'; }, 2000);
+                    });
+                } else if (e.target.closest('.flip-card')) {
+                    e.target.closest('.flip-card').classList.toggle('flipped');
+                }
+            });
+            document.getElementById('carousel-prev').addEventListener('click', () => { currentIndex = (currentIndex - 1 + cards.length) % cards.length; showCard(currentIndex); });
+            document.getElementById('carousel-next').addEventListener('click', () => { currentIndex = (currentIndex + 1) % cards.length; showCard(currentIndex); });
+            showCard(0);
+        }
+        
+        function initWorkflowSimulation() {
+            const terminal = document.getElementById('workflow-terminal');
+            const stepsContainer = document.getElementById('workflow-steps');
+            if(!terminal || !stepsContainer) return;
+
+            let currentStep = 0;
+            let history = '';
+
+            stepsContainer.innerHTML = workflowData.map((step, index) => `
+                <div class="step-card">
+                    <h4>Step ${step.step}: ${step.cmd.split(' ')[1].split('/')[0]}</h4>
+                    <p class="explanation">${step.explanation}</p>
+                    <button class="btn step-btn" data-index="${index}" ${index > 0 ? 'disabled' : ''}>Run Command</button>
+                </div>`).join('');
+
+            async function runWorkflowStep(e) {
+                const index = parseInt(e.target.dataset.index);
+                if (index !== currentStep) return;
+
+                const step = workflowData[index];
+                e.target.disabled = true;
+
+                history += `<span class="prompt">claude@hospital:~$</span> ${step.cmd}\n`;
+                terminal.innerHTML = history + `<span class="cursor"></span>`;
+                updateActiveNode(step.targetPath);
+                
+                currentStep++;
+                if (currentStep < workflowData.length) {
+                    stepsContainer.querySelector(`[data-index="${currentStep}"]`).disabled = false;
+                } else {
+                    history += `\n<span class="prompt">Workflow complete! You've successfully navigated the system.</span>`;
+                    terminal.innerHTML = history;
+                }
+            }
+            stepsContainer.querySelectorAll('.step-btn').forEach(btn => btn.addEventListener('click', runWorkflowStep));
+        }
+
+        function initQuiz() {
+            const quizContainer = document.getElementById('quiz-body-container');
+            if (!quizContainer) return;
+            let currentQuestionIndex = 0;
+            
+            function renderQuestion() {
+                const q = quizData[currentQuestionIndex];
+                let optionsHTML = q.options.map((opt, index) => `
+                    <div class="quiz-option" data-index="${index}">
+                        <input type="radio" name="q${currentQuestionIndex}" id="q${currentQuestionIndex}o${index}" value="${index}">
+                        <label for="q${currentQuestionIndex}o${index}">${opt}</label>
+                    </div>`).join('');
+                quizContainer.innerHTML = `<div class="quiz-body active"><div class="quiz-scenario">${q.scenario}</div><div class="quiz-options">${optionsHTML}</div><div class="quiz-explanation"></div></div>`;
+                document.getElementById('quiz-current-q').textContent = currentQuestionIndex + 1;
+                document.getElementById('quiz-prev').disabled = currentQuestionIndex === 0;
+                document.getElementById('quiz-next').disabled = currentQuestionIndex === quizData.length - 1;
+                quizContainer.querySelectorAll('.quiz-option input').forEach(r => r.addEventListener('change', handleOptionSelect));
+            }
+
+            function handleOptionSelect(e) {
+                const selectedIndex = parseInt(e.target.value);
+                const q = quizData[currentQuestionIndex];
+                const optionsDivs = quizContainer.querySelectorAll('.quiz-option');
+                const explanationDiv = quizContainer.querySelector('.quiz-explanation');
+                optionsDivs.forEach(div => div.querySelector('input').disabled = true);
+                if (selectedIndex === q.correct) {
+                    e.target.closest('.quiz-option').classList.add('correct');
+                    explanationDiv.classList.add('correct');
+                    explanationDiv.innerHTML = `<strong>✅ Correct!</strong> ${q.explanation}`;
+                } else {
+                    e.target.closest('.quiz-option').classList.add('wrong');
+                    optionsDivs[q.correct].classList.add('correct');
+                    explanationDiv.classList.add('wrong');
+                    explanationDiv.innerHTML = `<strong>❌ Not quite.</strong> ${q.explanation}`;
+                }
+                explanationDiv.style.display = 'block';
+            }
+            document.getElementById('quiz-prev').addEventListener('click', () => { if(currentQuestionIndex > 0) { currentQuestionIndex--; renderQuestion(); } });
+            document.getElementById('quiz-next').addEventListener('click', () => { if(currentQuestionIndex < quizData.length - 1) { currentQuestionIndex++; renderQuestion(); } });
+            renderQuestion();
+        }
+
+        function initGlossary() {
+            const glossaryGrid = document.getElementById('glossary-grid');
+            if(!glossaryGrid) return;
+            glossaryGrid.innerHTML = glossaryData.map(item => `
+                <div class="glossary-card"><h4>${item.term}</h4><p class="analogy">"${item.analogy}"</p><p>${item.usage}</p></div>`).join('');
+        }
+
+        function initNextStepsCarousel() {
+            const nsTrack = document.getElementById('ns-track');
+            const nsDots = document.getElementById('ns-dots');
+            if(!nsTrack) return;
+            let nsIndex = 0;
+            nsTrack.innerHTML = nextStepsData.map(s => `<div class="ns-slide"><div class="ns-icon">${s.icon}</div><h4>${s.title}</h4><p>${s.desc}</p></div>`).join('');
+            nsDots.innerHTML = nextStepsData.map((_, i) => `<div class="ns-dot ${i === 0 ? 'active' : ''}" data-index="${i}"></div>`).join('');
+            
+            function updateNsSlider() {
+                nsTrack.style.transform = `translateX(-${nsIndex * 100}%)`;
+                nsDots.querySelectorAll('.ns-dot').forEach(d => d.classList.toggle('active', parseInt(d.dataset.index) === nsIndex));
+            }
+            document.getElementById('ns-prev').addEventListener('click', () => { nsIndex = (nsIndex - 1 + nextStepsData.length) % nextStepsData.length; updateNsSlider(); });
+            document.getElementById('ns-next').addEventListener('click', () => { nsIndex = (nsIndex + 1) % nextStepsData.length; updateNsSlider(); });
+            nsDots.addEventListener('click', (e) => { if(e.target.matches('.ns-dot')) { nsIndex = parseInt(e.target.dataset.index); updateNsSlider(); } });
+        }
+        
+        // --- INITIALIZE THE PAGE ---
+        renderAll();
+    });
+    </script>
+</body>
+</html>

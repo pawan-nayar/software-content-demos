@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI in Medicine: A Practical Guide for Clinicians</title>
+    <script src="https://cdn-tailwindcss.vercel.app/"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- General Styles --- */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        .prose-custom { color: #374151; }
+        .prose-custom h1, .prose-custom h2, .prose-custom h3 { color: #111827; }
+        .prose-custom p, .prose-custom li { line-height: 1.75; }
+        .prose-custom ul { list-style-position: outside; padding-left: 1.5rem; }
+
+        /* --- Brain SVG Hotspot Styles --- */
+        .svg-hotspot {
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+            stroke-width: 1.5;
+            stroke: #4b5563;
+            pointer-events: all;
+        }
+        .svg-hotspot:hover {
+            opacity: 0.85;
+            stroke-width: 3;
+            stroke: #3b82f6;
+        }
+        
+        /* --- General Tooltip Style (Base for both SVGs) --- */
+        .tooltip {
+            position: fixed; /* Use fixed for positioning relative to viewport */
+            display: none;
+            padding: 12px 16px;
+            background-color: #1f2937;
+            color: white;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.5;
+            pointer-events: none;
+            max-width: 280px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            z-index: 100;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .tooltip.visible {
+            display: block;
+            opacity: 1;
+        }
+        .tooltip-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #60a5fa;
+        }
+        .tooltip-section-title {
+            font-weight: 500;
+            color: #9ca3af;
+            margin-top: 0.75rem;
+            margin-bottom: 0.25rem;
+            font-size: 12px;
+        }
+        .tooltip ul { list-style-position: inside; padding-left: 0; margin: 0; }
+
+        /* --- Before/After Slider Styles --- */
+        .comparison-slider { position: relative; width: 100%; overflow: hidden; border-radius: 0.5rem; }
+        .comparison-slider .comparison-item { position: absolute; top: 0; left: 0; height: 100%; overflow: hidden; width: 50%; }
+        .comparison-slider .handle { position: absolute; top: 0; left: 50%; width: 4px; height: 100%; background-color: rgba(255, 255, 255, 0.9); cursor: ew-resize; transform: translateX(-50%); z-index: 40; display: flex; align-items: center; justify-content: center; }
+        .comparison-slider .handle-icon { width: 40px; height: 40px; background-color: rgba(255, 255, 255, 0.95); border: 2px solid #e5e7eb; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1); }
+   
+        /* --- Interactive Workbench SVG Styles --- */
+        .interactive-svg-container { background-color: #282828; border-radius: 12px; padding: 1rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -2px rgba(0,0,0,.1); }
+        .workbench-svg .clickable, .workbench-svg .info-hotspot { cursor: pointer; transition: opacity 0.2s ease-in-out; }
+        .workbench-svg .clickable:hover, .workbench-svg .info-hotspot:hover { opacity: 0.8; }
+        .workbench-svg .sidebar-text { fill: #a0a0a0; font-size: 14px; }
+        .workbench-svg .sidebar-text:hover { fill: #ffffff; }
+        .workbench-svg .sidebar-active-text { fill: #ffffff; font-weight: 500; }
+        .workbench-svg .run-button:hover rect { filter: brightness(1.1); }
+    </style>
+</head>
+<body class="text-gray-700">
+
+    <!-- Tooltip for Brain SVG -->
+    <div id="brain-tooltip" class="tooltip"></div>
+    <!-- Tooltip for Workbench SVG -->
+    <div id="workbench-tooltip" class="tooltip"></div>
+
+    <div class="container mx-auto px-4 py-8 md:py-16">
+        <main class="max-w-4xl mx-auto">
+            
+            <header class="text-center mb-12">
+                <h1 class="text-4xl md:text-5xl font-bold text-gray-900 leading-tight">AI in Medicine: A Practical Guide</h1>
+                <p class="mt-4 text-lg text-gray-600">Transforming Clinical Workflows with Large Language Models</p>
+            </header>
+
+            <!-- Table of Contents -->
+            <section class="mb-12 prose-custom">
+                <h2 class="text-2xl font-bold mb-6 border-b pb-2">Table of Contents</h2>
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                        <h3 class="text-lg font-semibold text-blue-600 mb-2">Part 1: The Case Presentation</h3>
+                        <p class="text-sm text-gray-600">Understanding the patient scenario and exploring brain anatomy through interactive visualization.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                        <h3 class="text-lg font-semibold text-green-600 mb-2">Part 2: How LLM Technology Can Assist</h3>
+                        <p class="text-sm text-gray-600">Comparing raw clinical notes with AI-enhanced structured summaries using interactive sliders.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                        <h3 class="text-lg font-semibold text-purple-600 mb-2">Part 3: The Clinician's AI Workbench</h3>
+                        <p class="text-sm text-gray-600">Exploring the interactive interface where clinicians can transform notes into structured summaries.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 1: The Case -->
+            <section class="mb-16 prose-custom">
+                <h2 class="text-3xl font-bold mb-4 border-b pb-2">Part 1: The Case Presentation</h2>
+                <p class="intro mb-6">We begin with a realistic clinical scenario: a 68-year-old patient presenting with cognitive decline. This case demonstrates how AI can help clinicians process complex patient information more efficiently. We'll explore the brain regions involved and see how technology can transform raw clinical notes into structured, actionable summaries.</p>
+                <p>A 68-year-old male presents with a 3-month history of progressive word-finding difficulties and intermittent confusion. His family reports recent episodes of getting lost in familiar places and difficulty managing his finances. His past medical history is significant for hypertension and hyperlipidemia, both well-controlled on medication. He has no history of stroke or traumatic brain injury.</p>
+                <div class="mt-6 bg-white rounded-lg shadow-md border border-gray-200 flex justify-center items-center py-4">
+                    <svg 
+                      id="brain-svg" 
+                      class="w-64 h-auto" 
+                      viewBox="20 35 135 120" 
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <g id="brain-regions">
+                        <path class="svg-hotspot" id="frontal-lobe" fill="#81e6d9" d="M 94,44 C 42,60 48,114 24,133 C 40,146 81,148 94,136 C 105,124 100,64 94,44 Z" />
+                        <path class="svg-hotspot" id="parietal-lobe" fill="#f6e05e" d="M 94,44 C 100,64 105,124 94,136 C 120,138 140,119 146,104 C 160,70 142,40 94,44 Z" />
+                        <path class="svg-hotspot" id="temporal-lobe" fill="#f6ad5e" d="M 94,136 C 81,148 40,146 24,133 C 28,144 48,160 74,158 C 90,157 100,146 94,136 Z" />
+                        <path class="svg-hotspot" id="occipital-lobe" fill="#a78bfa" d="M 94,142 C 120,144 140,125 146,110 C 160,76 142,46 94,50 C 100,70 105,130 94,142 Z" />
+                        <path class="svg-hotspot" id="cerebellum" fill="#f472b6" d="M 74,158 C 48,160 28,144 24,133 C 20,138 20,150 28,162 C 40,175 90,175 110,162 C 114,158 100,156 74,158 Z" />
+                      </g>
+                    </svg>
+                  </div>
+                  <p class="text-center text-sm text-gray-500 mt-2">Hover over regions for details.</p>
+                  
+            </section>
+
+            <!-- Section 2: Leveraging LLM Technology -->
+            <section class="mb-16 prose-custom">
+                <h2 class="text-3xl font-bold mb-4 border-b pb-2">Part 2: How LLM Technology Can Assist</h2>
+                <p class="intro mb-6">Large Language Models (LLMs) are powerful tools that can parse, summarize, and structure vast amounts of text. In a clinical setting, this can significantly reduce administrative burden and highlight key information from lengthy patient notes. An LLM can take a narrative HPI (History of Present Illness) and structure it into a concise, organized summary, making it easier for consulting physicians to quickly grasp the case.</p>
+                <div id="slider-container" class="comparison-slider mt-6 bg-white border" style="height: 450px;">
+                    <div class="comparison-item">
+                        <div class="p-6 h-full bg-blue-50">
+                            <h4 class="font-bold text-lg mb-2 text-blue-800">LLM-Enhanced Note</h4>
+                            <div class="text-blue-900 space-y-3">
+                                <p><strong>Patient:</strong> 68-Year-Old Male</p>
+                                <p><strong>Chief Complaint:</strong> Cognitive Decline</p>
+                                <p><strong>History of Present Illness:</strong> Patient presents with a 3-month history of progressive cognitive decline, characterized by:</p>
+                                <ul class="list-disc list-inside">
+                                    <li>Anomic aphasia (word-finding difficulty).</li>
+                                    <li>Visuospatial disorientation (getting lost in familiar locations).</li>
+                                    <li>Executive dysfunction (difficulty with financial management).</li>
+                                </ul>
+                                <p><strong>Past Medical History:</strong> Hypertension, Hyperlipidemia (well-controlled).</p>
+                                <p><strong>Review of Systems:</strong> No history of CVA or TBI. Neurological exam within normal limits except for cognitive deficits noted above.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6 h-full bg-red-50">
+                        <h4 class="font-bold text-lg mb-2 text-red-800">Original Raw Note</h4>
+                        <p class="text-red-900 whitespace-pre-line">pt is a 68yo man here w/ family. they say he's been having trouble finding his words for maybe 3 mo. also getting confused. wife says he got lost driving home from the grocery store last week, a trip he's made for 20 yrs. can't handle the bills anymore. hx of htn and high chol, but takes meds for it. denies any weakness or numbness. no head trauma. i checked him out, neuro exam is pretty much normal, cn ii-xii intact, 5/5 strength throughout. but his mmse score was low and he couldn't draw the clock right. seems like something's going on with his thinking. maybe alzheimers? need to investigate further.</p>
+                    </div>
+                    <div class="handle"><div class="handle-icon"><svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4"></path></svg></div></div>
+                </div>
+            </section>
+
+            <!-- Section 3: The Clinician's AI Workbench -->
+            <section class="prose-custom">
+                <h2 class="text-3xl font-bold mb-4 border-b pb-2">Part 3: The Clinician's AI Workbench</h2>
+                <p class="intro mb-6">So, how do we get from the raw note to the structured summary? This is done using an interface often called a "Workbench" or "Console." Instead of a static image, the diagram below is fully interactive. Hover over key elements like the sidebar buttons or the "Run" button to learn what they do.</p>
+                
+                <div class="my-8 interactive-svg-container">
+                    <svg class="workbench-svg" id="workbench-svg" width="100%" viewBox="0 0 1200 675" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="1200" height="675" rx="12" fill="#282828"/><g id="left-sidebar"><rect width="220" height="675" rx="12" fill="#1f1f1f"/><g id="company-logo" class="info-hotspot"><text x="24" y="45" font-family="Inter, sans-serif" font-size="16" font-weight="bold" fill="white">ANTHROP\C</text><path d="M190 35 L200 40 L190 45 Z" fill="#a0a0a0"/></g><g id="build-section" class="info-hotspot"><text x="24" y="90" font-family="Inter, sans-serif" font-size="12" font-weight="bold" fill="#7a7a7a">BUILD</text></g><g id="btn-dashboard" class="clickable"><rect x="16" y="105" width="188" height="30" rx="6" fill="transparent"/><text x="24" y="124" class="sidebar-text">Dashboard</text></g><g id="btn-workbench" class="clickable"><rect x="16" y="135" width="188" height="30" rx="6" fill="#333333"/><text x="24" y="154" class="sidebar-active-text">Workbench</text></g><g id="btn-files" class="clickable"><rect x="16" y="165" width="188" height="30" rx="6" fill="transparent"/><text x="24" y="184" class="sidebar-text">Files</text></g><g id="analytics-section" class="info-hotspot"><text x="24" y="230" font-family="Inter, sans-serif" font-size="12" font-weight="bold" fill="#7a7a7a">ANALYTICS</text></g><g id="btn-usage" class="clickable"><rect x="16" y="245" width="188" height="30" rx="6" fill="transparent"/><text x="24" y="264" class="sidebar-text">Usage</text></g><g id="btn-cost" class="clickable"><rect x="16" y="275" width="188" height="30" rx="6" fill="transparent"/><text x="24" y="294" class="sidebar-text">Cost</text></g><g id="btn-logs" class="clickable"><rect x="16" y="305" width="188" height="30" rx="6" fill="transparent"/><text x="24" y="324" class="sidebar-text">Logs</text></g><g id="user-profile" class="info-hotspot"><rect x="16" y="610" width="188" height="50" rx="8" fill="#111111"/><circle cx="40" cy="635" r="12" fill="#4a90e2"/><text x="35" y="640" font-family="Inter, sans-serif" font-size="14" fill="white">AN</text><text x="64" y="630" font-family="Inter, sans-serif" font-size="12" font-weight="500" fill="white">Aadhiraj Nayar</text><text x="64" y="648" font-family="Inter, sans-serif" font-size="10" fill="#a0a0a0">CRETORIAL MEDIA S...</text><path d="M188 630 L193 635 L188 640 Z" fill="#a0a0a0" transform="rotate(90 190.5 635)"/></g></g><g id="main-content">
+                            <!-- NEW: Top Bar Elements -->
+                            <g id="top-bar-menu" class="info-hotspot"><rect x="240" y="30" width="40" height="40" rx="8" fill="#3a3a3a"/><path d="M251 43 H261 M251 47 H261 M251 51 H261" stroke="white" stroke-width="1.5" stroke-linecap="round"/></g>
+                            <g id="top-bar-default" class="info-hotspot"><rect x="290" y="30" width="100" height="40" rx="8" fill="#3a3a3a"/><text x="300" y="55" font-family="Inter, sans-serif" font-size="14" fill="white">Default</text><path d="M365 52 L370 57 L375 52" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round"/></g>
+                            <g id="prompt-evaluate-toggle" class="info-hotspot"><rect x="500" y="110" width="180" height="34" rx="8" fill="#1f1f1f"/><rect x="502" y="112" width="88" height="30" rx="6" fill="#3a3a3a"/><text x="522" y="133" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="white">Prompt</text><text x="605" y="133" font-family="Inter, sans-serif" font-size="14" fill="#a0a0a0">Evaluate</text></g>
+                            
+                            <g id="main-title-group" class="info-hotspot"><text id="main-title" x="250" y="80" font-family="Inter, sans-serif" font-size="24" font-weight="bold" fill="white">Untitled</text><text x="250" y="105" font-family="Inter, sans-serif" font-size="12" fill="#a0a0a0">Last saved Aug 31 at 11:50 PM</text></g>
+                            
+                            <!-- NEW: Model Selector Bar -->
+                             <g id="model-selector-bar" class="info-hotspot"><text x="250" y="135" font-family="Inter, sans-serif" font-size="14" fill="#a0a0a0">claude-sonnet-4-20250514</text><text x="470" y="135" font-family="monospace" font-size="16" fill="#a0a0a0">{ }</text><text x="500" y="135" font-family="Inter, sans-serif" font-size="14" fill="#a0a0a0">Examples</text></g>
+                            
+                            <g id="btn-get-code" class="clickable"><rect x="900" y="45" width="100" height="40" rx="8" fill="#3a3a3a"/><text x="923" y="70" font-family="Inter, sans-serif" font-size="14" fill="white">Get Code</text></g>
+                            <g id="btn-run" class="clickable run-button"><rect x="1010" y="45" width="160" height="40" rx="8" fill="#4a90e2"/><text x="1065" y="70" font-family="Inter, sans-serif" font-size="14" font-weight="bold" fill="white">Run</text><text x="1125" y="70" font-family="Inter, sans-serif" font-size="12" fill="#d0e0f8">Ctrl+⮐</text><path d="M1030 62.5 L1040 67.5 L1030 72.5 Z" fill="white"/></g>
+                            
+                            <rect x="250" y="150" width="550" height="450" rx="8" fill="#1f1f1f" style="pointer-events:none;"/>
+                            <g id="system-prompt-area" class="info-hotspot"><rect x="255" y="155" width="540" height="70" fill="transparent"/><text x="270" y="180" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="white">System Prompt</text><text x="270" y="200" font-family="Inter, sans-serif" font-size="12" fill="#a0a0a0">Define a role, tone or context (optional)</text></g>
+                            <line x1="270" y1="230" x2="780" y2="230" stroke="#3a3a3a" stroke-width="1"/>
+                            
+                            <g id="user-prompt-area" class="info-hotspot"><rect x="255" y="235" width="540" height="310" fill="transparent" /><text x="270" y="260" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="white">User</text><g id="generate-prompt-button" class="clickable"><rect x="270" y="280" width="130" height="30" rx="6" fill="#3a3a3a"/><text x="280" y="300" font-family="Inter, sans-serif" font-size="13" fill="white">✨ Generate Prompt</text></g><text x="410" y="300" font-family="Inter, sans-serif" font-size="14" fill="#a0a0a0">or enter instructions...</text></g>
+
+                            <!-- NEW: Bottom controls -->
+                            <g id="pre-fill-response" class="info-hotspot"><rect x="270" y="550" width="16" height="16" rx="4" stroke="#a0a0a0" stroke-width="1.5" fill="none"/><text x="295" y="563" font-family="Inter, sans-serif" font-size="13" fill="#a0a0a0">Pre-fill response</text></g>
+                            <g id="add-message-pair" class="info-hotspot"><text x="420" y="563" font-family="Inter, sans-serif" font-size="13" fill="#a0a0a0">Add message pair</text></g>
+                        </g><g id="right-sidebar"><g id="output-panel" class="info-hotspot"><rect x="830" y="150" width="340" height="450" rx="8" fill="#1f1f1f"/><text x="850" y="180" font-family="Inter, sans-serif" font-size="16" font-weight="bold" fill="white">Welcome to Workbench</text><g class="info-text"><text x="850" y="220" font-family="Inter, sans-serif" font-size="13" fill="#e0e0e0"><tspan x="850" dy="0">→ Write a prompt in the left column, and</tspan><tspan x="850" dy="1.4em">   click ▶ Run to see Claude's response</tspan></text><text x="850" y="270" font-family="Inter, sans-serif" font-size="13" fill="#e0e0e0"><tspan x="850" dy="0">→ Editing the prompt, or changing</tspan><tspan x="850" dy="1.4em">   model parameters creates a new</tspan><tspan x="850" dy="1.4em">   version</tspan></text><text x="850" y="340" font-family="Inter, sans-serif" font-size="13" fill="#e0e0e0"><tspan x="850" dy="0">→ Write variables like this:</tspan><tspan x="850" dy="1.4em" fill="#4a90e2" font-family="monospace">{{VARIABLE_NAME}}</tspan></text></g></g></g>
+                    </svg>
+                </div>
+                <h3 class="text-2xl font-semibold mt-8 mb-4">Deconstructing the Workbench</h3>
+                <p>To use this tool effectively, you don't need to be a programmer; you just need to be good at giving clear instructions. Think of it like delegating a task to a junior resident. Let's break down the key components you see in the interactive diagram above.</p>
+                
+                <ul class="space-y-4 mt-6">
+                    <li><strong>System Prompt:</strong> This is where you set the AI's permanent role or personality. For clinical work, you might set it to: <em>"You are a helpful medical scribe. Your task is to take raw clinical notes and reformat them into a clear, structured HPI using standard medical terminology. Be concise and accurate."</em> This instruction acts as a permanent filter, ensuring every note you process adheres to the same professional standard.</li>
+                    <li><strong>User Prompt:</strong> This is the main instruction box for your specific, one-time task. Here, you would paste the raw, dictated note from our 68-year-old male patient and add a simple command like, <em>"Please structure the following note:"</em> followed by the text. This is the "what to do right now" part of the instruction.</li>
+                    <li><strong>Run Button:</strong> This is the "Go" button. Clicking it executes your command. The AI takes the text from the User Prompt and processes it according to the rules you established in the System Prompt.</li>
+                    <li><strong>Output Panel (Right Side):</strong> This is where the clean, structured, and ready-to-use clinical note appears. From here, it can be reviewed for accuracy and then copied directly into the patient's Electronic Health Record (EHR), saving significant time.</li>
+                    <li><strong>Sidebar Navigation (Left Side):</strong> This area helps you organize your work. The <strong>Workbench</strong> is your main workspace. The <strong>Dashboard</strong> provides an overview of your activity, while <strong>Files</strong> allows you to save prompts or upload documents for the AI to analyze, such as a patient's past medical records.</li>
+                </ul>
+            </section>
+        </main>
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // --- Generic Tooltip Positioning Function ---
+    function updateTooltipPosition(e, tooltipEl) {
+        const xOffset = 15;
+        const yOffset = 15;
+        const body = document.body;
+        const tooltipRect = tooltipEl.getBoundingClientRect();
+
+        let x = e.clientX + xOffset;
+        let y = e.clientY + yOffset;
+
+        if (x + tooltipRect.width > body.clientWidth) {
+            x = e.clientX - tooltipRect.width - xOffset;
+        }
+        if (y + tooltipRect.height > body.clientHeight) {
+            y = e.clientY - tooltipRect.height - yOffset;
+        }
+
+        tooltipEl.style.left = `${x}px`;
+        tooltipEl.style.top = `${y}px`;
+    }
+
+    // --- Brain SVG Tooltip Logic ---
+    const brainTooltip = document.getElementById('brain-tooltip');
+    const brainHotspots = document.querySelectorAll('#brain-svg .svg-hotspot');
+    const brainTooltipContent = {
+        'frontal-lobe': { title: 'Frontal Lobe', text: 'Responsible for executive functions like planning, problem-solving, personality, and motor control.' },
+        'parietal-lobe': { title: 'Parietal Lobe', text: 'Processes sensory information, including touch, temperature, and pain. Also involved in spatial awareness and navigation.' },
+        'temporal-lobe': { title: 'Temporal Lobe', text: 'Key for processing auditory information, memory formation (via the hippocampus), and language comprehension.' },
+        'occipital-lobe': { title: 'Occipital Lobe', text: 'The primary visual processing center of the brain. It interprets information from the eyes.' },
+        'cerebellum': { title: 'Cerebellum', text: 'Crucial for coordinating voluntary movements, balance, posture, and motor learning.' }
+    };
+
+    brainHotspots.forEach(hotspot => {
+        hotspot.addEventListener('mouseenter', (e) => {
+            const content = brainTooltipContent[hotspot.id];
+            if (content) {
+                brainTooltip.innerHTML = `<div class="tooltip-title">${content.title}</div><p>${content.text}</p>`;
+                brainTooltip.classList.add('visible');
+                updateTooltipPosition(e, brainTooltip);
+            }
+        });
+        hotspot.addEventListener('mouseleave', () => {
+            brainTooltip.classList.remove('visible');
+        });
+        hotspot.addEventListener('mousemove', (e) => {
+            if (brainTooltip.classList.contains('visible')) {
+                updateTooltipPosition(e, brainTooltip);
+            }
+        });
+    });
+    
+    // --- Workbench SVG Tooltip Logic ---
+    const workbenchTooltip = document.getElementById('workbench-tooltip');
+    const allWorkbenchHotspots = document.querySelectorAll('#workbench-svg .clickable, #workbench-svg .info-hotspot');
+    const workbenchTooltipsContent = {
+        'btn-run': { title: 'Run Button', whatItIs: 'The "Go" button. Pressing this sends your instructions to the AI so it can generate a response.', impact: 'Executes your prompt and is the main action to get a result from the AI.' },
+        'btn-get-code': { title: 'Get Code Button', whatItIs: 'This translates your interaction into a code snippet that developers can use in an application.', impact: 'Allows you to share your work with developers to integrate it into a real product.' },
+        'btn-dashboard': { title: 'Dashboard', whatItIs: 'Your mission control center. It gives you a high-level overview of your projects, usage, and costs.', impact: 'Helps you track your activity and spending without digging into complex reports.' },
+        'btn-workbench': { title: 'Workbench', whatItIs: "This is your creative canvas. It's where you write, test, and refine the instructions (prompts) you give to the AI.", impact: 'This is the primary area for interacting with the AI to get the results you want.' },
+        'btn-files': { title: 'Files', whatItIs: 'A storage area for project-related documents. Upload files for the AI to use or save the AI’s responses.', impact: 'Keeps your work organized and allows you to provide more context to the AI.' },
+        'btn-usage': { title: 'Usage', whatItIs: 'A detailed log of your AI usage.', impact: 'Provides granular data for tracking and auditing your activity.'},
+        'btn-cost': { title: 'Cost', whatItIs: 'An itemized breakdown of your spending.', impact: 'Helps you manage your budget and understand the cost of different tasks.'},
+        'btn-logs': { title: 'Logs', whatItIs: 'A technical record of all interactions.', impact: 'Useful for debugging issues with developers.'},
+        'system-prompt-area': { title: 'System Prompt', whatItIs: 'Sets the permanent role for the AI. It\'s the "stage direction" that applies to all subsequent tasks.', impact: 'Ensures consistent, high-quality output by defining the AI\'s persona and purpose upfront.' },
+        'user-prompt-area': { title: 'User Prompt', whatItIs: 'This is where you write your specific, one-time instruction for the current task.', impact: 'The primary input for telling the AI what you need it to do right now.'},
+        'output-panel': { title: 'Output Panel', whatItIs: 'Where the AI\'s response appears after you click "Run".', impact: 'This is where you get your results, ready to be reviewed and used.'},
+        'user-profile': { title: 'User Profile & Settings', whatItIs: 'Manages your account details, preferences, and security settings.', impact: 'Allows you to personalize your experience and manage your account.'},
+        'build-section': { title: 'Build Section', whatItIs: 'A collection of tools for creating and managing your AI prompts and workflows.', impact: 'This is the primary creative and development area.'},
+        'analytics-section': { title: 'Analytics Section', whatItIs: 'Tools for monitoring the performance, cost, and usage of your AI interactions.', impact: 'Provides critical data for managing and optimizing your AI usage.'},
+        'main-title-group': { title: 'Document Title', whatItIs: 'The name of your current session or experiment, just like a filename.', impact: 'Helps you save and organize your different prompts and workflows.'},
+        'top-bar-default': { title: 'Project Selector', whatItIs: 'This dropdown lets you switch between different project folders.', impact: 'Keeps your work organized by topic or client, each with its own settings.'},
+        'prompt-evaluate-toggle': { title: 'Mode Toggle', whatItIs: 'Switches between "Prompt" mode (for a single response) and "Evaluate" mode (for comparing multiple responses side-by-side).', impact: 'Evaluate mode is a power-user feature for A/B testing different instructions.' },
+        'model-selector-bar': { title: 'Model & Parameters', whatItIs: 'Here you select the AI "brain" (e.g., Sonnet 4), use variables {}, and see examples.', impact: 'Choosing the right model and using variables makes your workflow more powerful and efficient.' },
+        'generate-prompt-button': { title: 'Generate Prompt', whatItIs: 'An AI-powered assistant to help you write better instructions.', impact: 'Useful when you\'re unsure how to phrase a request for the best results.'},
+        'pre-fill-response': { title: 'Pre-fill Response', whatItIs: 'Lets you give the AI a starting point for its answer, guiding it in a specific direction.', impact: 'Helps in situations where you need the output to follow a very specific format.'},
+        'add-message-pair': { title: 'Add Message Pair', whatItIs: 'Allows you to simulate a back-and-forth conversation for the AI to follow.', impact: 'Essential for creating conversational AI agents or role-playing scenarios.'}
+    };
+
+    allWorkbenchHotspots.forEach(el => {
+        el.addEventListener('mouseenter', (e) => {
+            const content = workbenchTooltipsContent[el.id];
+            if (content) {
+                workbenchTooltip.innerHTML = `<div class="tooltip-title">${content.title}</div><div class="tooltip-section-title">What it is</div><p>${content.whatItIs}</p><div class="tooltip-section-title">How it impacts</div><p>${content.impact}</p>`;
+                workbenchTooltip.classList.add('visible');
+                updateTooltipPosition(e, workbenchTooltip);
+            }
+        });
+        el.addEventListener('mouseleave', () => {
+            workbenchTooltip.classList.remove('visible');
+        });
+        el.addEventListener('mousemove', (e) => {
+             if (workbenchTooltip.classList.contains('visible')) {
+                updateTooltipPosition(e, workbenchTooltip);
+            }
+        });
+    });
+
+    // --- Before/After Slider Logic ---
+    const sliderContainer = document.getElementById('slider-container');
+    if (sliderContainer) {
+        const comparisonItem = sliderContainer.querySelector('.comparison-item');
+        const handle = sliderContainer.querySelector('.handle');
+        let isDragging = false;
+        const startDrag = () => { isDragging = true; };
+        const stopDrag = () => { isDragging = false; };
+        const onDrag = (e) => {
+            if (!isDragging) return;
+            e.preventDefault();
+            const clientX = e.clientX || e.touches[0].clientX;
+            const rect = sliderContainer.getBoundingClientRect();
+            let x = Math.max(0, Math.min(clientX - rect.left, rect.width));
+            const percent = (x / rect.width) * 100;
+            handle.style.left = `${percent}%`;
+            comparisonItem.style.width = `${percent}%`;
+        };
+        handle.addEventListener('mousedown', startDrag);
+        document.addEventListener('mouseup', stopDrag);
+        document.addEventListener('mousemove', onDrag);
+        handle.addEventListener('touchstart', startDrag, { passive: true });
+        document.addEventListener('touchend', stopDrag);
+        document.addEventListener('touchmove', onDrag);
+    }
+});
+</script>
+
+</body>
+</html>
+

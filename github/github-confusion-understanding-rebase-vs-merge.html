@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Rebase vs. Merge</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- Compact Styles --- */
+        :root {
+            --bg-page: #f8f9fa;
+            --bg-surface: #ffffff;
+            --bg-muted: #f1f3f5;
+            --text-primary: #2c3e50;
+            --text-secondary: #6c757d;
+            --border-color: #dee2e6;
+            --accent: #dd6b20;
+            --font-main: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            --font-code: 'Courier New', Courier, monospace;
+        }
+
+        /* --- Base --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: var(--font-main); background: var(--bg-page); color: var(--text-primary); line-height: 1.5; }
+        
+        /* --- Layout --- */
+        .container { max-width: 800px; margin: 0 auto; padding: 1.5rem 1rem; }
+        h1 { text-align: center; margin-bottom: 1.5rem; font-size: 1.5rem; }
+        .panel { background: var(--bg-surface); border-radius: 8px; padding: 1.25rem; margin-bottom: 1.25rem; box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
+        .step-header { display: flex; align-items: center; margin-bottom: 1rem; }
+        .step-number { background: var(--accent); color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 0.75rem; flex-shrink: 0; font-size: 1rem; }
+        .step-title { font-size: 1.25rem; font-weight: 600; }
+        p { font-size: 0.95rem; margin-bottom: 1rem; }
+        
+        /* --- Visual Demo --- */
+        .visual-demo { background: var(--bg-muted); border: 1px solid var(--border-color); border-radius: 6px; padding: 1rem; margin: 1rem 0; display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 1rem; }
+        .explanation { background: var(--bg-muted); border-left: 3px solid var(--accent); border-radius: 4px; padding: 0.75rem 1rem; margin: 1rem 0; font-size: 0.9rem; }
+        .explanation strong { font-weight: 600; }
+        .next-button { background: var(--accent); color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 5px; font-size: 0.9rem; font-weight: 600; cursor: pointer; display: block; margin: 1rem auto 0; transition: opacity 0.2s; }
+        .next-button:hover { opacity: 0.85; }
+        .hidden { display: none; }
+        
+        /* --- DAG Visualization Styles --- */
+        .dag-container { font-family: var(--font-code); font-size: 0.8rem; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; width: 100%; position: relative;}
+        .commit-line { display: flex; align-items: center; gap: 0.5rem; }
+        .commit-node { background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-weight: bold; position: relative; cursor: pointer; }
+        .commit-line .arrow { font-size: 1.2rem; color: var(--text-secondary); cursor: pointer; position: relative; }
+        .pointers { display: flex; gap: 0.5rem; margin-left: 0.5rem; }
+        .pointer { padding: 0.25rem 0.6rem; border-radius: 100px; font-weight: bold; color: white; font-size: 0.75rem; position: relative; cursor: pointer; }
+        .pointer-branch { background: #27ae60; }
+        .pointer-head { background: var(--accent); }
+        .commit-node.rebased { border-style: dashed; border-color: var(--accent); color: var(--accent); }
+        
+        /* --- Tooltip Styles --- */
+        .tooltip {
+            position: absolute;
+            bottom: 110%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--text-primary);
+            color: white;
+            padding: 0.5rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            line-height: 1.4;
+            width: max-content;
+            max-width: 200px;
+            text-align: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s, visibility 0.2s;
+            z-index: 10;
+        }
+        .tooltip::after { /* Tooltip arrow */
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: var(--text-primary) transparent transparent transparent;
+        }
+        .has-tooltip:hover .tooltip, .tooltip.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        .commit-node, .pointer, .arrow {
+            position: relative; /* Ensure tooltips are positioned relative to these elements */
+        }
+        /* Make absolute elements interactive */
+        .interactive-arrow, .interactive-divergence {
+            position: absolute;
+            cursor: pointer;
+            z-index: 5;
+        }
+
+        /* Side by Side Styles */
+        .side-by-side { display: flex; flex-direction: column; gap: 1.5rem; }
+        @media (min-width: 640px) { .side-by-side { flex-direction: row; } }
+        .timeline { flex: 1; border: 1px solid var(--border-color); border-radius: 6px; padding: 1rem; }
+        .timeline h3 { font-size: 1rem; text-align: center; margin: 0 0 1rem 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Rebase vs. Merge</h1>
+
+        <!-- Step 1: The Setup -->
+        <div class="panel" id="step1">
+            <div class="step-header">
+                <div class="step-number">1</div>
+                <div class="step-title">The Setup</div>
+            </div>
+            <p>Imagine your `main` branch has new commits, and your `feature` branch also has new work. Your goal is to integrate the `feature` into `main`.</p>
+            <div class="visual-demo">
+                <div class="dag-container">
+                    <!-- Main Branch -->
+                    <div class="commit-line">
+                        <div class="commit-node has-tooltip" data-tooltip="Commit A: The common ancestor where both branches started.">A</div>
+                        <div class="arrow has-tooltip" data-tooltip="Commit B points to its parent, commit A.">&larr;</div>
+                        <div class="commit-node has-tooltip" data-tooltip="Commit B: New work on the main branch.">B</div>
+                        <div class="pointers">
+                            <div class="pointer pointer-branch has-tooltip" data-tooltip="The 'main' branch pointer.">main</div>
+                        </div>
+                    </div>
+                    <!-- Feature Branch Divergence -->
+                    <div class="interactive-divergence has-tooltip" data-tooltip="Branch 'feature' was created from commit A and has new work." style="left: 25px; top: 40px; font-size: 1.5rem; color: var(--text-secondary);">↖</div>
+                     <div class="commit-line" style="margin-left: -120px; margin-top: 1rem;">
+                        <div class="commit-node has-tooltip" data-tooltip="Commit C: First commit on the feature branch.">C</div>
+                        <div class="arrow has-tooltip" data-tooltip="Commit D points to its parent, commit C.">&larr;</div>
+                        <div class="commit-node has-tooltip" data-tooltip="Commit D: Second commit on the feature branch.">D</div>
+                        <div class="pointers">
+                            <div class="pointer pointer-branch has-tooltip" style="background: #3498db;" data-tooltip="The 'feature' branch pointer.">feature</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="explanation">
+                <strong>Key Point:</strong> Both branches share a common ancestor (`A`), but have since diverged. We need to combine the work from commits `C` and `D` with commit `B`.
+            </div>
+            <button class="next-button" onclick="showStep(2)">Show `git merge` &rarr;</button>
+        </div>
+
+        <!-- Step 2: Merge -->
+        <div class="panel hidden" id="step2">
+            <div class="step-header">
+                <div class="step-number">2</div>
+                <div class="step-title">The `merge` Approach</div>
+            </div>
+            <p>Running `git merge feature` creates a new "merge commit" (`E`). This special commit has two parents (`B` and `D`) and combines their histories.</p>
+            <div class="visual-demo">
+                 <div class="dag-container">
+                    <!-- Top line -->
+                    <div class="commit-line" style="margin-left: 140px;">
+                        <div class="commit-node has-tooltip" data-tooltip="Merge commit E joins the two separate histories together.">E</div>
+                         <div class="pointers">
+                            <div class="pointer pointer-branch has-tooltip" data-tooltip="'main' now points to the new merge commit.">main</div>
+                        </div>
+                    </div>
+                    <!-- Arrows down -->
+                    <div class="interactive-divergence" style="left: 140px; top: 40px;">
+                        <div class="has-tooltip" data-tooltip="E's first parent is B." style="font-size: 1.5rem; color: var(--text-secondary); display: inline-block; transform: rotate(45deg);">↙</div>
+                        <div class="has-tooltip" data-tooltip="E's second parent is D." style="font-size: 1.5rem; color: var(--text-secondary); display: inline-block; transform: rotate(-45deg);">↘</div>
+                    </div>
+                    <!-- Bottom line -->
+                    <div class="commit-line" style="margin-top: 1rem;">
+                        <div class="commit-node has-tooltip" data-tooltip="Commit B, from the 'main' branch.">B</div>
+                        <div class="arrow">&larr;</div>
+                        <div class="commit-node" style="opacity: 0;">A</div>
+                        <div class="arrow">&rarr;</div>
+                        <div class="commit-node has-tooltip" data-tooltip="Commit D, from the 'feature' branch.">D</div>
+                    </div>
+                 </div>
+            </div>
+            <div class="explanation">
+                <strong>Result:</strong> History is preserved exactly as it happened, showing the parallel work. This creates a "diamond" shape in the graph. The downside is that many merges can make the history look complex or "noisy".
+            </div>
+            <button class="next-button" onclick="showStep(3)">Show `git rebase` &rarr;</button>
+        </div>
+
+        <!-- Step 3: Rebase -->
+        <div class="panel hidden" id="step3">
+            <div class="step-header">
+                <div class="step-number">3</div>
+                <div class="step-title">The `rebase` Approach</div>
+            </div>
+            <p>Running `git rebase main` on your feature branch rewrites history. It takes your commits (`C`, `D`) and replays them *on top of* `main`.</p>
+            <div class="visual-demo">
+                <div class="dag-container">
+                    <div class="commit-line">
+                        <div class="commit-node has-tooltip" data-tooltip="Original common ancestor.">A</div>
+                        <div class="arrow">&larr;</div>
+                        <div class="commit-node has-tooltip" data-tooltip="Latest commit on main.">B</div>
+                         <div class="pointers">
+                            <div class="pointer pointer-branch has-tooltip" data-tooltip="'main' is still here for now.">main</div>
+                        </div>
+                        <div class="arrow has-tooltip" data-tooltip="Commit C' is now based on B.">&larr;</div>
+                        <div class="commit-node rebased has-tooltip" data-tooltip="Commit C was copied and re-applied here as C'. It has a new SHA hash.">C'</div>
+                        <div class="arrow has-tooltip" data-tooltip="Commit D' is now based on C'.">&larr;</div>
+                        <div class="commit-node rebased has-tooltip" data-tooltip="Commit D was copied and re-applied here as D'. It also has a new SHA hash.">D'</div>
+                         <div class="pointers">
+                            <div class="pointer pointer-branch has-tooltip" style="background: #3498db;" data-tooltip="'feature' now points to the newest rebased commit.">feature</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="explanation">
+                <strong>Result:</strong> The history is now perfectly linear. Your feature commits appear as if they were made *after* the latest work on `main`. Notice the new SHAs (`C'`, `D'`)—the original commits were discarded and new ones were created.
+            </div>
+            <button class="next-button" onclick="showStep(4)">Compare Side-by-Side &rarr;</button>
+        </div>
+
+        <!-- Step 4: Side-by-Side -->
+        <div class="panel hidden" id="step4">
+            <div class="step-header">
+                <div class="step-number">4</div>
+                <div class="step-title">Side-by-Side Comparison</div>
+            </div>
+            <p>Both methods achieve the same goal—integrating your feature. The difference is entirely in the shape of your project's history.</p>
+            <div class="visual-demo side-by-side">
+                <div class="timeline">
+                    <h3>Merge History</h3>
+                    <div class="dag-container">
+                         <div class="commit-line" style="margin-left: 60px;"><div class="commit-node">E</div><div class="pointers"><div class="pointer pointer-branch">main</div></div></div>
+                        <div style="position: absolute; left: 60px; top: 60px;"><div style="font-size: 1.5rem; color: var(--text-secondary); display: inline-block; transform: rotate(45deg);">↙</div><div style="font-size: 1.5rem; color: var(--text-secondary); display: inline-block; transform: rotate(-45deg);">↘</div></div>
+                        <div class="commit-line" style="margin-top: 1rem;"><div class="commit-node">B</div><div class="arrow">&larr;</div><div class="commit-node">A</div><div class="arrow">&rarr;</div><div class="commit-node">D</div></div>
+                    </div>
+                </div>
+                <div class="timeline">
+                    <h3>Rebase History</h3>
+                     <div class="dag-container">
+                        <div class="commit-line"><div class="commit-node">B</div><div class="arrow">&larr;</div><div class="commit-node rebased">C'</div><div class="arrow">&larr;</div><div class="commit-node rebased">D'</div><div class="pointers"><div class="pointer pointer-branch">main</div></div></div>
+                    </div>
+                </div>
+            </div>
+             <div class="explanation">
+                <strong>Merge:</strong> Preserves the true history. Best for teams who value a precise, auditable record of when work was done in parallel.<br>
+                <strong>Rebase:</strong> Creates a cleaner, easier-to-read linear history. Best for teams who prioritize a simple, straightforward log. The cardinal rule is to <strong>never rebase a shared, public branch</strong>.
+            </div>
+            <button class="next-button" onclick="showStep(1)">Start Over</button>
+        </div>
+    </div>
+
+    <script>
+        function showStep(stepNumber) {
+            document.querySelectorAll('.panel').forEach(panel => panel.classList.add('hidden'));
+            const stepToShow = document.getElementById('step' + stepNumber);
+            if (stepToShow) {
+                stepToShow.classList.remove('hidden');
+                stepToShow.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const tooltippedElements = document.querySelectorAll('.has-tooltip');
+
+            tooltippedElements.forEach(el => {
+                const tooltipText = el.dataset.tooltip;
+                if (!tooltipText) return;
+
+                const tooltip = document.createElement('div');
+                tooltip.classList.add('tooltip');
+                tooltip.textContent = tooltipText;
+                el.appendChild(tooltip);
+
+                // For mobile tap
+                el.addEventListener('click', (e) => {
+                    e.stopPropagation(); // prevent clicks from bubbling up to the body
+                    // Hide all other visible tooltips
+                    document.querySelectorAll('.tooltip.visible').forEach(t => {
+                        if (t !== tooltip) t.classList.remove('visible');
+                    });
+                    // Toggle current tooltip
+                    tooltip.classList.toggle('visible');
+                });
+            });
+
+            // Close tooltips if clicking anywhere else on the page
+            document.body.addEventListener('click', () => {
+                document.querySelectorAll('.tooltip.visible').forEach(t => t.classList.remove('visible'));
+            });
+        });
+    </script>
+</body>
+</html>
+

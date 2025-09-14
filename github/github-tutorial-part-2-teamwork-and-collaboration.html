@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Part 2: Teamwork & Collaboration</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* --- Base Theme --- */
+        :root {
+            --text: #212529; --bg: #fff; --muted: #f8f9fa; --border: #e9ecef;
+            --accent: #fd7e14; --accent-2: #e87312; --header-bg: #2c3e50; --header-fg: #f8f9fa;
+            --ok: #16a34a; --ok-soft: #dcfce7; --bad: #dc2626; --bad-soft: #fee2e2;
+            --code-bg: #2d3748; --code-fg: #e2e8f0;
+            --font-main: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            --font-code: 'Courier New', Courier, monospace;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body { 
+            font-family: var(--font-main); 
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--text); 
+            line-height: 1.7; 
+            font-size: 16px; 
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- Header / Footer --- */
+        .site-header, .site-footer { background: var(--header-bg); color: var(--header-fg); padding: 14px 24px; flex-shrink: 0; }
+        .site-header { display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .logo { font-weight: 700; font-size: 1.15rem; color: #fff; text-decoration: none; cursor: pointer; }
+        .site-footer { text-align: center; padding: 30px; }
+
+        /* --- Main Wizard Container --- */
+        .wizard-container {
+            padding: 1rem;
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .wizard-panel {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+        }
+        .wizard-panel h1 { font-size: 1.8rem; color: var(--accent-2); margin-bottom: 0.5rem; }
+        .wizard-panel p { font-size: 1.05rem; margin-bottom: 1rem; }
+        .wizard-panel h2 { font-size: 1.3rem; margin-top: 1.5rem; margin-bottom: 0.5rem; }
+        .start-btn { 
+            display: block; 
+            width: 100%; 
+            background: var(--accent); 
+            color: white; 
+            border: none; 
+            padding: 1rem; 
+            font-size: 1.2rem; 
+            font-weight: 700; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            margin-top: 1.5rem; 
+            transition: background-color 0.2s; 
+        }
+        .start-btn:hover { background: var(--accent-2); }
+        .start-btn:disabled { 
+            background-color: #ccc;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        .intro-primer {
+            background: var(--muted);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1.5rem;
+            text-align: left;
+        }
+        .intro-primer h3 {
+            font-weight: 600;
+            color: var(--accent-2);
+            margin-bottom: 0.5rem;
+        }
+        .intro-primer ul {
+            list-style-type: disc;
+            padding-left: 20px;
+        }
+
+        /* --- Select Screen --- */
+        .select-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        .select-card {
+            background: var(--muted);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            border-top: 4px solid var(--accent);
+        }
+        .select-card:hover { transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
+        .select-card h3 { color: var(--accent-2); margin-bottom: 0.5rem; }
+        .select-card p { font-size: 0.9rem; margin-bottom: 0; }
+        .select-card.completed {
+            background: #dcfce7;
+            border-color: #16a34a;
+            border-top-color: #16a34a;
+        }
+        
+        /* --- Tutorial Screen --- */
+        .tutorial-container {
+            display: none; /* Initially hidden */
+            grid-template-columns: 45% 1fr;
+            gap: 24px;
+            padding: 24px;
+            flex-grow: 1;
+        }
+        .left-column, .right-column { display: flex; flex-direction: column; gap: 24px; min-height: calc(100vh - 150px); }
+        
+        .panel { background: var(--bg); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .panel-header { padding: 12px 16px; border-bottom: 1px solid var(--border); background: var(--muted); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+        .panel-title { font-weight: 600; font-size: 1.1rem; }
+        .panel-body { padding: 16px; flex-grow: 1; overflow-y: auto; }
+        .back-btn { background: #6c757d; color: white; border: none; padding: 5px 12px; font-size: 0.9rem; border-radius: 6px; cursor: pointer; transition: background-color 0.2s; }
+        .back-btn:hover { background: #5a6268; }
+
+        /* --- Playground Tab Bar --- */
+        .playground-tabs { display: flex; border-bottom: 1px solid var(--border); flex-shrink: 0; flex-wrap: wrap; }
+        .crud-tab { flex-grow: 1; background: none; border: none; padding: 14px 10px; font-size: 1rem; font-weight: 600; cursor: pointer; border-bottom: 3px solid transparent; transition: background-color 0.2s, color 0.2s; }
+        .crud-tab.active { 
+            color: var(--accent); 
+            border-bottom-color: var(--accent); 
+            background-color: white; 
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .code-viewer { font-family: var(--font-code); font-size: 0.95rem; line-height: 1.6; background-color: var(--code-bg); color: var(--code-fg); padding: 16px; white-space: pre-wrap; margin: 0; flex-grow: 1;}
+        .output-viewer h1, .output-viewer h2 { margin-top: 1rem; margin-bottom: 0.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+        .output-viewer ul { margin-left: 20px; }
+        .output-viewer p { margin-bottom: 1rem; }
+        .commit-section { background: var(--muted); padding: 12px 16px; border-top: 1px solid var(--border); font-family: var(--font-code); font-size: 0.9rem; flex-shrink: 0;}
+        .commit-section strong { color: var(--accent-2); }
+        
+        /* --- Right Pane: Explanations --- */
+        #explanation-panel-body { padding: 0; min-height: 500px; }
+        .explanation-tabs { display: flex; border-bottom: 1px solid var(--border); padding: 0 16px; flex-shrink: 0; flex-wrap: wrap; }
+        .explanation-tab { background: none; border: none; padding: 12px 16px; font-size: 0.95rem; font-weight: 600; cursor: pointer; border-bottom: 3px solid transparent; }
+        .explanation-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+        .explanation-content { display: none; padding: 16px; }
+        .explanation-content.active { display: block; animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .explanation-content h3 { font-size: 1.2rem; color: var(--accent-2); margin-top: 0; margin-bottom: 12px; }
+        .explanation-content p { margin-bottom: 1rem; }
+        .explanation-content .analogy { background: var(--muted); border-left: 4px solid var(--accent); padding: 12px; border-radius: 4px; font-style: italic; }
+        .step-list { list-style-type: none; padding-left: 0; counter-reset: step-counter; }
+        .step-list li { counter-increment: step-counter; margin-bottom: 12px; display: flex; align-items: flex-start; text-align: left; }
+        .step-list li::before { content: counter(step-counter); background: var(--accent-2); color: white; font-weight: 700; border-radius: 50%; width: 24px; height: 24px; display: inline-flex; justify-content: center; align-items: center; margin-right: 12px; flex-shrink: 0; }
+        .quiz-question { margin-bottom: 24px; }
+        .quiz-question p { font-weight: 600; }
+        .quiz-option { display: block; margin: 8px 0; padding: 10px; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; transition: background-color 0.2s, border-color 0.2s; }
+        .quiz-option:hover { background: var(--muted); }
+        .quiz-option input { margin-right: 8px; }
+        .quiz-option.correct { background-color: var(--ok-soft); border-color: var(--ok); }
+        .quiz-option.incorrect { background-color: var(--bad-soft); border-color: var(--bad); }
+        .quiz-option.disabled { opacity: 0.6; pointer-events: none; }
+        
+        /* New Styles for Best Practices & Glossary */
+        .best-practices-section ul, .glossary-list ul { margin: 0; list-style-type: none; padding-left: 0; }
+        .best-practices-section li { margin-bottom: 8px; display: flex; align-items: flex-start; }
+        .best-practices-section .do-item::before { content: '✅'; margin-right: 10px; font-size: 1.2rem; flex-shrink: 0; margin-top: 2px; }
+        .best-practices-section .dont-item::before { content: '❌'; margin-right: 10px; font-size: 1.2rem; flex-shrink: 0; margin-top: 2px;}
+        .glossary-list li { margin-bottom: 10px; }
+        .glossary-list strong { color: var(--accent-2); }
+        .faq-list { margin-top: 1rem; }
+        .faq-list h4 { font-weight: 600; margin-bottom: 0.5rem; }
+        .faq-list p { margin-bottom: 1.2rem; }
+
+        /* General Quiz Styles */
+        .quiz-container { display: none; flex-direction: column; justify-content: center; align-items: center; flex-grow: 1; }
+        .quiz-container .quiz-panel { background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem 2rem; box-shadow: 0 5px 15px rgba(0,0,0,0.05); max-width: 800px; width: 100%; display: flex; flex-direction: column; text-align: left; }
+        .quiz-container .quiz-panel .q-card { min-height: 400px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .quiz-container .quiz-panel .q-card .q-content { flex-grow: 1; padding-bottom: 1rem; }
+        .quiz-container .quiz-panel .q-card h2 { font-size: 1.5rem; font-weight: 600; margin-bottom: 1rem; color: var(--accent-2); }
+        .quiz-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; }
+        .quiz-nav button { padding: 0.75rem 1.5rem; font-weight: bold; border-radius: 8px; transition: all 0.2s; background-color: var(--accent); color: white; border: none; }
+        .quiz-nav button:disabled { background-color: #ccc; cursor: not-allowed; opacity: 0.6; }
+        .quiz-nav button:hover:not(:disabled) { background-color: var(--accent-2); }
+        .progress-bar { width: 100%; height: 10px; background-color: #e9ecef; border-radius: 9999px; overflow: hidden; margin-bottom: 1.5rem; }
+        .progress-bar-fill { height: 100%; background-color: var(--accent); transition: width 0.3s ease-in-out; }
+        /* Quiz Question Types */
+        .question-body { margin-bottom: 1.5rem; }
+        .question-options label { display: block; background: var(--muted); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem 1rem; cursor: pointer; transition: all 0.2s; margin-bottom: 0.5rem; }
+        .question-options label:hover { background: #e9ecef; }
+        .question-options input[type="radio"], .question-options input[type="checkbox"] { margin-right: 0.75rem; }
+        .question-options label.correct { background-color: var(--ok-soft); border-color: var(--ok); }
+        .question-options label.incorrect { background-color: var(--bad-soft); border-color: var(--bad); }
+        .feedback { margin-top: 1rem; padding: 1rem; border-left: 4px solid; border-radius: 8px; }
+        .feedback.correct { border-color: var(--ok); background-color: var(--ok-soft); }
+        .feedback.incorrect { border-color: var(--bad); background-color: var(--bad-soft); }
+        
+        /* Sequence and Match Styles */
+        .seq-list { list-style: none; margin: 0; padding: 0; }
+        .seq-item { background: #fff; border: 1px solid var(--border); border-radius: 10px; padding: 0.6rem 0.8rem; display: flex; gap: 0.6rem; align-items: center; cursor: grab; user-select: none; margin-bottom: 0.4rem; transition: all 0.2s ease; }
+        .seq-item:hover { border-color: var(--accent); background: #f8f9fa; }
+        .seq-item .handle { opacity: 0.55; font-size: 1.2rem; }
+        .seq-item.dragging { opacity: 0.6; background: #fef3e7; border-color: var(--accent); transform: rotate(2deg); }
+        .match-grid { display: grid; gap: 1rem; }
+        @media(min-width: 760px) { .match-grid { grid-template-columns: 1fr 1fr; } }
+        .match-item { background: #fff; border: 1px solid var(--border); border-radius: 10px; padding: 0.55rem 0.7rem; cursor: pointer; transition: 0.2s; margin-bottom: 0.4rem; }
+        .match-item.is-picked { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(239, 125, 85, 0.18); }
+        
+    </style>
+</head>
+<body>
+
+    <header class="site-header">
+        <a class="logo" onclick="showScreen(introScreen)">GitHub Learning Series</a>
+    </header>
+
+    <!-- Screen 1: Intro -->
+    <div id="intro-screen" class="wizard-container">
+        <div class="wizard-panel">
+            <h1>Part 2: Teamwork & Collaboration 🤝</h1>
+            <p>In Part 1, you learned to manage a project like a personal diary. Now, you'll learn to work like you're co-authoring a story with a team. It's time to build on your foundation and learn the social processes for safe, effective collaboration.</p>
+            <div class="intro-primer">
+                <h3>A Quick Primer on Teamwork Etiquette</h3>
+                <ul>
+                    <li><strong>Communicate Clearly:</strong> Use descriptive names for branches and PRs.</li>
+                    <li><strong>Work in Parallel:</strong> Use branches to keep the main codebase stable.</li>
+                    <li><strong>Stay Updated:</strong> Sync your work frequently to avoid conflicts.</li>
+                </ul>
+            </div>
+            <button id="start-tutorial-btn" class="start-btn">Start Collaborating 🚀</button>
+        </div>
+    </div>
+    
+    <!-- Screen 2: Select Tutorial -->
+    <div id="select-screen" class="wizard-container" style="display: none;">
+        <div class="wizard-panel">
+            <h1>Teamwork Essentials ✨</h1>
+            <p>These concepts are the key to working with others, contributing to projects, and managing team tasks.</p>
+            <div id="select-grid" class="select-grid">
+                <div class="select-card" data-crud="branch">
+                    <h3>🌿 Branching for Teams</h3>
+                    <p>Work in parallel without breaking the main project.</p>
+                </div>
+                 <div class="select-card" data-crud="pr">
+                    <h3>🔄 Pull Requests</h3>
+                    <p>Propose changes and ask for feedback.</p>
+                </div>
+                <div class="select-card" data-crud="merge">
+                    <h3>⚔️ Basic Conflicts</h3>
+                    <p>Handle the most common type of merge issue.</p>
+                </div>
+                <div class="select-card" data-crud="fork">
+                    <h3>🍴 Forking & Contributing</h3>
+                    <p>Work on projects you don't own.</p>
+                </div>
+                <div class="select-card" data-crud="issues">
+                    <h3>📋 Issues & Project Boards</h3>
+                    <p>Plan and track your team's work.</p>
+                </div>
+                <div class="select-card" data-crud="syncing">
+                    <h3>🔄 Syncing Your Work</h3>
+                    <p>Keeping your local copy up-to-date.</p>
+                </div>
+            </div>
+            
+            <hr class="my-6 border-gray-300">
+
+            <h2>Final Test! 🧠</h2>
+            <p id="quiz-status-text">Complete at least 3 topics above to unlock the final quiz!</p>
+            <button id="start-quiz-btn" class="start-btn" disabled>Start Final Quiz</button>
+        </div>
+    </div>
+    
+    <!-- Screen 3: Tutorial -->
+    <main id="tutorial-screen" class="tutorial-container">
+        <!-- Left Column: Code and Output -->
+        <div class="left-column">
+             <div class="panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">Playground</h2>
+                    <button id="back-btn" class="back-btn">← Back to Topics</button>
+                </div>
+                <div class="panel-body" style="padding:0; display:flex; flex-direction:column; flex-grow:1;">
+                    <div class="playground-tabs">
+                        <button class="crud-tab" data-crud="branch">🌿 Branch</button>
+                        <button class="crud-tab" data-crud="pr">🔄 PR</button>
+                        <button class="crud-tab" data-crud="merge">⚔️ Conflicts</button>
+                        <button class="crud-tab" data-crud="fork">🍴 Fork</button>
+                        <button class="crud-tab" data-crud="issues">📋 Issues</button>
+                        <button class="crud-tab" data-crud="syncing">🔄 Syncing</button>
+                    </div>
+                    <pre id="code-viewer" class="code-viewer"></pre>
+                    <div id="commit-section" class="commit-section"></div>
+                </div>
+            </div>
+            <div class="panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">👀 What It Looks Like</h2>
+                </div>
+                <div id="output-viewer" class="panel-body output-viewer"></div>
+            </div>
+        </div>
+
+        <!-- Right Column: Learning Module -->
+        <div class="right-column">
+            <div class="panel" style="flex-grow: 1;">
+                <div id="explanation-panel-body" class="panel-body">
+                    <!-- Explanation content will be injected here -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Screen 4: Final Quiz -->
+    <div id="final-quiz-screen" class="wizard-container light-quiz-style hidden">
+        <div class="quiz-panel w-full max-w-2xl bg-white rounded-xl shadow-md p-6 sm:p-8">
+            <div class="flex justify-between items-center mb-4">
+                <div class="progress-bar-container w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+                    <div id="quiz-progress" class="progress-bar-fill h-full bg-orange-500 transition-all duration-300 ease-in-out" style="width: 0%;"></div>
+                </div>
+                <span id="quiz-counter" class="text-sm font-semibold text-orange-500 ml-4 whitespace-nowrap">Q 1 / 25</span>
+            </div>
+            <div class="q-card" id="quiz-card">
+                <!-- Quiz question will be rendered here -->
+            </div>
+            <div class="quiz-nav flex justify-between items-center mt-6">
+                <button id="quiz-prev-btn" class="px-4 py-2 bg-gray-300 text-gray-700 font-semibold rounded-lg shadow-sm hover:bg-gray-400 transition-colors duration-200" disabled>← Previous</button>
+                <button id="quiz-skip-btn" class="px-3 py-1 bg-yellow-500 text-white text-sm font-semibold rounded-lg shadow-sm hover:bg-yellow-600 transition-colors duration-200">Skip Question</button>
+                <button id="quiz-next-btn" class="px-4 py-2 bg-orange-500 text-white font-semibold rounded-lg shadow-sm hover:bg-orange-600 transition-colors duration-200">Submit Answer</button>
+            </div>
+        </div>
+    </div>
+
+
+    <footer class="site-footer">
+        <p>© 2025 A fun learning project. Let's make coding simple for everyone!</p>
+    </footer>
+
+    <script>
+    const playgroundData = {
+        branch: {
+            code: `> git checkout -b 'feat/add-login-button'
+
+# You are now on a new branch.
+# Your changes here won't affect the 'main' branch.`,
+            commit: "A new branch is created for a specific feature.",
+            output: "<h1>🌿 A New Branch is Created</h1><p>This is a safe, isolated space for you to work. Your teammate can continue working on the `main` branch without being affected by your changes.</p>",
+            explanation: {
+                concepts: {
+                    title: "Concept: Branching for Teamwork",
+                    analogy: "If the `main` branch is the master blueprint for a building, creating a **new branch** is like a single architect taking a copy of the blueprint to a separate desk to sketch out a new idea for the lobby. They can experiment freely, and their changes won't appear on the master blueprint until they are reviewed and approved.",
+                    text: "Branching is the single most important concept for team collaboration. It allows every developer to work on features or bug fixes in isolation without interfering with each other's work or breaking the stable, main version of the project. A team's most important rule is: **never work directly on the `main` branch.**"
+                },
+                steps: {
+                    title: "The Branching Workflow",
+                    list: [
+                        "Before starting a new task, you create a new branch from the latest version of `main`.",
+                        "You give your branch a clear, descriptive name (e.g., `feat/user-profile` or `fix/login-bug`).",
+                        "You make all your commits on this new branch.",
+                        "While you work, your teammates are doing the same on their own separate branches.",
+                        "The `main` branch remains stable and clean, only receiving tested, reviewed code."
+                    ]
+                },
+                quiz: [
+                    { q: "Why is it a bad idea for team members to work directly on the `main` branch?", options: ["It's too slow", "It risks introducing broken code into the stable version of the project", "It uses too much internet"], correct: 1, explain: "The `main` branch should always represent a stable, working version of the project. All new work should be done on separate branches to ensure this stability." },
+                    { q: "Which of these is the best name for a new branch?", options: ["'my-changes'", "'stuff'", "'fix/incorrect-header-color'"], correct: 2, explain: "A good branch name is descriptive and often prefixed with `feat/` or `fix/` to clearly communicate its purpose to the team." },
+                    { q: "Which command creates a new branch AND switches to it in one step?", options: ["`git branch <name>`", "`git new <name>`", "`git checkout -b <name>`"], correct: 2, explain: "The `-b` flag tells `checkout` to create a new branch before switching." },
+                    { q: "True or False: Deleting a branch also deletes all the commits made on it.", options: ["True", "False"], correct: 1, explain: "False. The commits still exist in the repository's history. Deleting a branch just removes the pointer to the last commit in that line of work. The commits can still be recovered if needed (usually via the `reflog`)." }
+                ],
+                bestPractices: {
+                    dos: ["Always create a new branch for each new feature or bug fix.", "Give your branch a descriptive name.", "Keep your branches short-lived. Merge them once the work is complete and tested."],
+                    donts: ["Don't work directly on the `main` branch.", "Don't use generic branch names like `my-changes` or `test`.", "Don't let a feature branch get too old without syncing it with the latest changes from `main`."],
+                    glossary: [
+                        { term: "Branch", def: "An independent line of development within a repository." },
+                        { term: "main", def: "The default branch, which should always represent a stable version of the project." },
+                        { term: "checkout", def: "The Git command used to switch between branches (`git checkout <branch-name>`)." },
+                        { term: "Feature Branch", def: "A short-lived branch created for a specific feature or task." }
+                    ]
+                },
+                faq: [
+                    { q: "How do I see all the branches in my project?", a: "You can run `git branch` to see all your local branches. The one you are currently on will be marked with an asterisk (*). Use `git branch -a` to see all local and remote branches."},
+                    { q: "I created a branch locally. Why can't my teammate see it?", a: "Branches you create are local to your machine until you explicitly push them to the remote repository. Run `git push -u origin <your-branch-name>` to publish your branch so others can see it."},
+                    { q: "What's the difference between `git checkout` and `git switch`?", a: "In modern Git, `git switch <branch-name>` is the new, recommended command for changing branches. `git checkout` is an older command that does many things (switch branches, restore files). While `checkout` still works, `switch` is clearer and safer for this specific task."}
+                ]
+            }
+        },
+        pr: {
+            code: `From: branch 'feat/add-glowing-sword'
+To: branch 'main'
+
+**Title: Add Glowing Sword Effect**
+
+Hi team, this PR adds a new visual effect to the knight's sword. 
+Please review and let me know your thoughts!
+
+Fixes #42`,
+            commit: "A Pull Request is a formal proposal to merge changes.",
+            output: "<h1>🔄 New Pull Request</h1><p>You've formally asked your teammates to review your work. They can now see your changes, leave comments, and approve it to be merged into the main project.</p>",
+            explanation: {
+                concepts: {
+                    title: "Concept: Pull Requests as a Social Contract",
+                    analogy: "A **Pull Request (PR)** is a formal request for a peer review. It's like submitting a research paper to a panel of experts. You're not just showing your work; you are opening a discussion. Your teammates act as reviewers to catch mistakes, suggest improvements, and ensure your work aligns with the project's standards before it's officially published.",
+                    text: "A Pull Request is the heart of collaboration on GitHub. After you've made commits on your feature branch and pushed it to GitHub, you open a PR. This provides a dedicated forum to discuss the changes. Teammates can comment on specific lines of code, you can push new commits to address their feedback, and a clear record of the entire conversation is kept."
+                },
+                steps: {
+                    title: "The Pull Request Lifecycle",
+                    list: [
+                        "You push your feature branch to the remote repository on GitHub.",
+                        "On GitHub, you click 'Compare & pull request'.",
+                        "You write a clear title and description, explaining the 'why' behind your changes. You can link to an Issue to provide context.",
+                        "You assign specific teammates as reviewers.",
+                        "A discussion and review process begins. You may push more commits based on feedback.",
+                        "Once approved, the branch is merged into `main`."
+                    ]
+                },
+                quiz: [
+                    { q: "What is the primary social purpose of a Pull Request?", options: ["To show off your code", "To ask for a code review and discuss changes with your team", "To back up your files"], correct: 1, explain: "A PR is fundamentally a communication tool designed to facilitate code review and collaboration." },
+                    { q: "What must you do *before* you can create a Pull Request on GitHub?", options: ["Delete your local branch", "Push your branch to GitHub", "Merge `main` into your branch"], correct: 1, explain: "A Pull Request is a request to merge a branch that exists on the remote (GitHub), so you must push it there first."},
+                    { q: "What is a 'Draft' Pull Request used for?", options: ["For changes that are final", "To signal that your work is in progress but you'd like early feedback", "To automatically merge your changes"], correct: 1, explain: "A Draft PR is a great way to start a conversation early without formally requesting a final review."},
+                    { q: "True or False: A good PR description only needs to say 'Fixed the bug.'", options: ["True", "False"], correct: 1, explain: "False. A good PR description explains *what* the change is, *why* it was made, and often links to the relevant Issue for context."}
+                ],
+                bestPractices: {
+                    dos: ["Write a clear title and description. Explain *what* the change is and *why* it's needed.", "Keep your PRs small and focused on a single task.", "Respond to feedback professionally and be open to suggestions."],
+                    donts: ["Don't open a PR with thousands of lines of code; it's impossible to review effectively.", "Don't merge your own PR without getting at least one approval from a teammate (most teams enforce this).", "Don't argue in comments. If a discussion is complex, have a quick call to resolve it."],
+                    glossary: [
+                        { term: "Pull Request (PR)", def: "A formal proposal to merge changes from one branch into another, serving as a forum for code review." },
+                        { term: "Code Review", def: "The process of a teammate inspecting your code for quality, correctness, and style." },
+                        { term: "Reviewer", def: "A team member assigned to inspect the code in a Pull Request." },
+                        { term: "Draft PR", def: "A PR marked as 'in-progress' to get early feedback without a formal review request." }
+                    ]
+                },
+                faq: [
+                    { q: "Can I add more commits to a PR after I've created it?", a: "Yes! As long as the PR isn't merged, you can add more commits to the branch on your local machine and `push` them. They will automatically appear in the PR, which is perfect for addressing reviewer feedback."},
+                    { q: "A reviewer suggested a change. How do I update the PR?", a: "Simple! Make the change in your code on your local feature branch, then `git add` and `git commit` as usual. Finally, `git push` your branch again. The new commit will automatically appear in the existing Pull Request."},
+                    { q: "What does the 'Suggest a change' feature do?", a: "It's a fantastic tool for reviewers! Instead of just writing a comment, a reviewer can suggest a specific code change directly in the PR. As the author, you can then accept that suggestion with a single click, which automatically creates a new commit on your branch."}
+                ]
+            }
+        },
+        merge: {
+            code: `> git pull origin main
+Auto-merging style.css
+CONFLICT (content): Merge conflict in style.css
+Automatic merge failed; fix conflicts and then commit the result.`,
+            commit: "A conflict was detected. Git needs a human to decide.",
+            output: "<h1>⚔️ Merge Conflict!</h1><p>Git doesn't know which change to keep. You and a teammate edited the same line. You must manually edit the file to resolve the conflict before you can merge.</p>",
+            explanation: {
+                concepts: {
+                    title: "Concept: Basic Merge Conflicts",
+                    analogy: "A **merge conflict** is like two authors editing the same sentence in a shared document. Author A changes it to 'The sky was blue.' Author B changes it to 'The sky was overcast.' When you try to combine their work, the editor doesn't know which version is correct. It freezes and asks a human to make the final decision.",
+                    text: "A conflict is a normal, unavoidable part of teamwork. It happens when Git can't automatically figure out how to combine changes. This almost always occurs when two people have modified the same lines in the same file. Git will mark the file with conflict markers (`<<<<<<<`, `=======`, `>>>>>>>`) and stop the merge process, waiting for you to resolve it."
+                },
+                steps: {
+                    title: "How to Resolve a Simple Conflict",
+                    list: [
+                        "Git will tell you which file has a conflict. Open that file in your editor.",
+                        "Look for the conflict markers. The code between `<<<<<<< HEAD` and `=======` is *your* change. The code between `=======` and `>>>>>>> main` is the *incoming* change from your teammate.",
+                        "Discuss with your teammate if necessary, then edit the block to be the final, correct version. This might mean keeping your code, their code, or a combination of both.",
+                        "Delete all the conflict marker lines (`<<<`, `===`, `>>>`).",
+                        "Save the file, `git add` the resolved file, and then `git commit` to finalize the merge."
+                    ]
+                },
+                quiz: [
+                    { q: "When does a merge conflict most commonly happen?", options: ["When you create a new file", "When two people change the same lines in the same file", "When you delete a branch"], correct: 1, explain: "Overlapping changes to the same lines are the most common cause of conflicts." },
+                    { q: "What is the best way to prevent merge conflicts?", options: ["Never work with a team", "Pull the latest changes from the `main` branch often", "Only work at night"], correct: 1, explain: "Keeping your own feature branch up-to-date with `main` by pulling or rebasing frequently is the best prevention. It allows you to resolve small conflicts early and often."},
+                    { q: "In a conflict, what does `HEAD` refer to?", options: ["The other person's branch", "Your current branch's changes", "The final version", "A mistake"], correct: 1, explain: "`HEAD` is Git's pointer to your current location, so in a conflict, it represents the changes coming from your branch." },
+                    { q: "After you manually fix a conflicted file and save it, what is the next step?", options: ["`git push`", "`git add <file>`", "`git resolve`"], correct: 1, explain: "After fixing the file, you must stage the resolved version using `git add` to tell Git that the conflict is handled." }
+                ],
+                bestPractices: {
+                    dos: ["Communicate with your team to avoid working on the same files at the same time if possible.", "Pull from `main` frequently to resolve small conflicts early.", "When a conflict happens, talk to the other person who changed the code to make sure you resolve it correctly."],
+                    donts: ["Don't be afraid of conflicts; they are a normal part of teamwork.", "Don't just delete your colleague's code in a conflict without understanding why they made their change.", "Don't merge a branch that has unresolved conflicts."],
+                    glossary: [
+                        { term: "Conflict", def: "When two branches have competing changes that Git cannot automatically combine." },
+                        { term: "Conflict Markers", def: "The `<<<`, `===`, and `>>>` symbols that Git adds to a file to show you where a conflict exists." },
+                        { term: "Resolve", def: "The act of manually editing a conflicted file to choose the final correct version." }
+                    ]
+                },
+                faq: [
+                    { q: "I'm in the middle of resolving a conflict and it's a mess. How can I start over?", a: "It's easy to get out of a messy merge! Just run `git merge --abort`. This will stop the merge process completely and return your branch to the state it was in before you started. It's a very safe and useful command."},
+                    { q: "What do the different 'merge' options on GitHub mean?", a: "GitHub offers a few ways to merge a PR. For now, you should always stick with the default 'Create a merge commit' option. We'll cover advanced strategies like 'Squash and merge' and 'Rebase and merge' in Part 3, as they are professional workflow optimizations." },
+                    { q: "My editor shows options like 'Accept Current Change' or 'Accept Incoming Change'. Can I use those?", a: "Yes! Most modern code editors understand Git conflict markers and provide helpful buttons or shortcuts to quickly resolve a conflict by choosing one side or the other, or both. These are very useful for speeding up the resolution process."}
+                ]
+            }
+        },
+        fork: {
+            code: `Original Repo: octocat/Spoon-Knife
+     |
+     +--> Your Fork: your-name/Spoon-Knife
+             |
+             +--> Your Local Clone`,
+            commit: "A fork creates an independent server-side copy.",
+            output: "<h1>🍴 Fork Created!</h1><p>You now have your very own version of the project on GitHub. You can experiment freely, and if you make a great improvement, you can propose it back to the original project via a Pull Request.</p>",
+            explanation: {
+                concepts: {
+                    title: "Concept: Forking for Open Source",
+                    analogy: "<strong>Forking</strong> is like officially publishing your own edition of a classic book. You get your own copy on the central library's servers (GitHub) that everyone can see. Your copy always remembers where it came from (the 'upstream' original). If you add a brilliant new chapter, you can send a formal request to the original author to include it in their next official printing.",
+                    text: "Forking is the primary way you contribute to projects that you don't have direct write access to, which is the case for most open-source projects. You create your own server-side copy (the fork), clone *your fork* to your local machine, and then work as you normally would. When you're ready to propose a change, you open a Pull Request from your fork's branch back to the original ('upstream') repository's `main` branch."
+                },
+                steps: {
+                    title: "The Open Source Contribution Workflow",
+                    list: [
+                        "Find a public project on GitHub and click the 'Fork' button.",
+                        "This creates a copy of the project under your own GitHub account.",
+                        "Clone *your fork* to your local machine: `git clone <URL of your fork>`.",
+                        "Create a new branch for your changes.",
+                        "Make your commits, then push them to your fork on GitHub.",
+                        "From your fork on GitHub, open a Pull Request back to the original ('upstream') project."
+                    ]
+                },
+                quiz: [
+                    { q: "What is the main difference between forking and cloning?", options: ["Forking is for teams, cloning is for individuals", "Forking creates a copy on GitHub's servers; cloning creates a copy on your local computer", "They do exactly the same thing"], correct: 1, explain: "Forking happens on GitHub and creates a new remote repository under your account. Cloning happens on your computer and downloads a repository from a remote." },
+                    { q: "To suggest changes from your fork back to the original project, you must...", options: ["Email the author", "Open a Pull Request", "Push directly to the original project"], correct: 1, explain: "A Pull Request is the standard mechanism for proposing changes from a fork." },
+                    { q: "What is the common name for the remote that points to the original repository you forked?", options: ["`origin`", "`main`", "`upstream`"], correct: 2, explain: "By convention, `origin` is your fork, and `upstream` is the original project."}
+                ],
+                bestPractices: {
+                    dos: ["Keep your fork's `main` branch synced with the original 'upstream' project.", "Make your changes on a feature branch within your fork, not on your fork's `main` branch.", "Make sure your proposed changes align with the project's contribution guidelines."],
+                    donts: ["Don't fork a project just to have a copy; star it instead. Fork only when you intend to make changes.", "Don't open a Pull Request with a huge number of unrelated changes.", "Don't expect your PR to be merged immediately. Be patient and responsive to feedback."],
+                    glossary: [
+                        { term: "Fork", def: "A personal, server-side copy of a repository on GitHub." },
+                        { term: "Upstream", def: "The original repository that you forked from." },
+                        { term: "Open Source", def: "Software with source code that anyone can inspect, modify, and enhance." }
+                    ]
+                },
+                faq: [
+                    { q: "How do I keep my fork updated with the original project?", a: "This is a key step! You need to configure the original repository as a remote called 'upstream'. Then, you can periodically run `git pull upstream main` to fetch the latest changes from the original project and merge them into your fork's local `main` branch." },
+                    { q: "Why is it called a Fork?", a: "It's like a 'fork in the road.' You are creating a new path for the project's development that diverges from the original. Your path can evolve independently, but you can also propose to merge it back into the main road later."},
+                    { q: "If I'm on a team where we all have write access, should we use forks?", a: "Generally, no. If your whole team has permission to push to the repository, the standard workflow is for everyone to work on branches within that single, shared repository. Forks are for when you *don't* have direct permission to push branches." }
+                ]
+            }
+        },
+        issues: {
+            code: `**Title:** Bug: Login button is broken
+**Assignee:** @alex-dev
+**Labels:** bug, high-priority
+**Project:** Website v2 Launch
+
+**Description:**
+When I click the login button on the homepage, I get a 404 error. This should take me to the login page.
+- Browser: Chrome
+- OS: Windows 11`,
+            commit: "A new issue is created, assigned, and categorized.",
+            output: "<h1>📋 New Task Created</h1><p>This issue is now a trackable unit of work. The team can see who is responsible, its priority, and how it fits into the larger project goals on a shared project board.</p>",
+            explanation: {
+                concepts: {
+                    title: "Concept: Issues as the Heart of Planning",
+                    analogy: "An **Issue** is like a formal work order ticket on a shared bulletin board. A **Project Board** is the bulletin board itself, organized into columns like 'To Do', 'In Progress', and 'Done'. This system provides complete transparency, allowing the entire team to see what needs to be done, who is doing it, and what the overall progress is.",
+                    text: "Issues are the fundamental unit of planning and tracking on GitHub. They can be bug reports, feature requests, or any other task. By using labels (`bug`, `feature`), assignees (`@username`), and project boards, a team can create a clear, shared understanding of their workload and priorities. A well-written issue provides all the context a developer needs to start working."
+                },
+                steps: {
+                    title: "The Issue and Project Board Workflow",
+                    list: [
+                        "A team member identifies a bug or a task and creates a 'New issue'.",
+                        "They write a clear title and a detailed description, providing steps to reproduce a bug if applicable.",
+                        "The issue is categorized with `labels` and assigned to a team member.",
+                        "The new issue card automatically appears in the 'To Do' column of a project board.",
+                        "When a developer starts working on it, they move the card to 'In Progress'. When their PR is merged, the card moves to 'Done'."
+                    ]
+                },
+                quiz: [
+                    { q: "What is a 'Project Board' primarily used for?", options: ["A physical whiteboard you buy", "Visually tracking the progress of issues", "A document for writing code"], correct: 1, explain: "A project board provides a visual, 'kanban-style' overview of all work items and their current status." },
+                    { q: "You've been assigned an issue. What is the very first step you should take?", options: ["Start writing code immediately", "Create a new branch with a name that references the issue number (e.g., `feat/123-user-profile`)", "Close the issue"], correct: 1, explain: "Best practice is to create a new branch specifically for the work related to that issue, often including the issue number in the branch name for easy tracking." },
+                    { q: "How can you link a Pull Request to an Issue so the issue closes automatically when the PR is merged?", options: ["Mention the issue number in a comment", "Use a keyword like `Fixes #123` in the PR description", "Assign the PR to the same person as the issue"], correct: 1, explain: "Using keywords like `Fixes`, `Closes`, or `Resolves` followed by the issue number automates the workflow and keeps your project board up to date."}
+                ],
+                bestPractices: {
+                    dos: ["Write issues with clear, descriptive titles and detailed descriptions.", "Use labels to categorize and prioritize your issues.", "Assign every issue to a specific person so there is clear ownership.", "Link your Pull Requests to the issues they resolve."],
+                    donts: ["Don't create vague issues like 'fix website'.", "Don't leave issues unassigned and un-labeled.", "Don't start work on something without an associated issue (unless it's a trivial fix)."],
+                    glossary: [
+                        { term: "Issue", def: "A trackable unit of work, such as a bug report or feature request." },
+                        { term: "Project Board", def: "A visual tool for organizing and tracking the status of issues." },
+                        { term: "Label", def: "A tag used to categorize issues (e.g., `bug`, `enhancement`)." },
+                        { term: "Assignee", def: "The person responsible for working on an issue." }
+                    ]
+                },
+                faq: [
+                    { q: "Should I create an issue for a tiny typo fix?", a: "It depends on the team's policy. For many teams, a small typo fix doesn't need a formal issue. You can just create a pull request directly. For larger changes, always start with an issue to allow for discussion before you start coding."},
+                    { q: "What's the difference between an Assignee and a Reviewer?", a: "An **Assignee** is the person responsible for completing the work described in an Issue. A **Reviewer** is the person responsible for checking the code quality and correctness in a Pull Request. Sometimes they are the same person, but often they are not."}
+                ]
+            }
+        },
+        syncing: {
+            code: `> git checkout main
+> git pull origin main
+Updating a1b2c3d..e5f6g7h
+Fast-forward
+...
+> git checkout my-feature-branch
+> git merge main`,
+            commit: "Keeping a local feature branch updated with remote changes.",
+            output: "<h1>🔄 Stay in Sync!</h1><p>Your teammate merged a change to `main`. By pulling their changes and merging them into your branch, you prevent your work from becoming outdated and reduce the chance of future merge conflicts.</p>",
+            explanation: {
+                concepts: {
+                    title: "Concept: Syncing Your Work",
+                    analogy: "Working on a team is like collaborating on a shared playlist. Before you add your new songs, you should always **sync** with the master playlist to get the latest tracks everyone else has added. If you don't, you might accidentally re-add a song that someone else already deleted, causing confusion and rework.",
+                    text: "When you work on a feature branch, the main `main` branch continues to evolve as your teammates merge their own PRs. It's crucial to regularly update your feature branch with these changes from `main`. This process is called 'syncing'. It makes your branch aware of the latest team progress, allows you to resolve small conflicts early, and ensures your feature is compatible with the newest code."
+                },
+                steps: {
+                    title: "Steps to Sync Your Branch with Main",
+                    list: [
+                        "Save your current work by committing it to your feature branch.",
+                        "Switch to your local `main` branch: `git checkout main`.",
+                        "Get the latest changes from the remote: `git pull origin main`.",
+                        "Switch back to your feature branch: `git checkout my-feature-branch`.",
+                        "Merge the updated `main` branch into your feature branch: `git merge main`. This applies all the new updates to your branch."
+                    ]
+                },
+                quiz: [
+                    { q: "What is the primary reason to frequently sync your feature branch with `main`?", options: ["To make your branch older", "To integrate the latest team changes and avoid large merge conflicts later", "To slow down your computer"], correct: 1, explain: "Frequent syncing is the best way to prevent big, complex merge conflicts and ensure your work stays compatible with the rest of the project." },
+                    { q: "What is the command to get the latest changes from the remote repository?", options: ["`git push`", "`git fetch`", "`git pull`"], correct: 2, explain: "`git pull` is the command that both fetches the latest changes from the remote and merges them into your current local branch."},
+                    { q: "What does the error 'updates were rejected' mean when you try to `git push`?", options: ["Your internet is down", "The remote branch has new commits that you don't have", "You don't have permission"], correct: 1, explain: "This common error is Git's safety mechanism to prevent you from overwriting a teammate's work. You must `git pull` first."}
+                ],
+                bestPractices: {
+                    dos: ["Sync your branch with `main` at least once a day, or whenever a major PR is merged.", "Resolve any small conflicts that arise during your sync merge immediately.", "Always sync your branch right before you create a Pull Request."],
+                    donts: ["Don't let your feature branch get hundreds of commits behind `main`. The final merge will be very difficult.", "Don't push your code without first pulling the latest changes.", "Don't resolve sync-related conflicts without understanding the changes your teammates made."],
+                    glossary: [
+                        { term: "Syncing", def: "The process of updating your local branch with the latest changes from another branch, typically the remote `main`." },
+                        { term: "git pull", def: "A command that fetches changes from a remote and merges them into the current branch." },
+                        { term: "git fetch", def: "A command that downloads changes from a remote but does not automatically merge them, giving you more control." }
+                    ]
+                },
+                faq: [
+                    { q: "What's the difference between `git pull` and `git fetch`?", a: "`git fetch` is the safer, more conservative option. It just downloads the new data from the remote but doesn't change any of your local files. `git pull` does a `git fetch` and then immediately tries to merge those changes. For beginners, `git pull` is usually fine, but experts often prefer `fetch` so they can inspect the changes before merging."},
+                    { q: "Should I use `git merge main` or `git rebase main` to sync my branch?", a: "This is a major topic that we will cover in Part 3! For now, `git merge main` is the simplest and safest option. It creates a 'merge commit' that clearly shows when you synced your branch. `Rebase` is a more advanced technique for creating a cleaner history, but comes with its own risks."}
+                ]
+            }
+        },
+    };
+
+    const finalQuizQuestions = [
+        { type: "MCQ", text: "Your teammate has just merged a major feature into `main`. What is the first thing you should do before continuing your own work?", options: ["Delete your branch and start over", "Sync your feature branch with the updated `main` branch", "Immediately open a Pull Request"], correct: 1, explain: "Syncing with `main` ensures your work is compatible with the latest code and helps prevent future conflicts." },
+        { type: "MCQ", text: "What is the main purpose of creating a new branch when you start working on a new feature?", options: ["To make your commits permanent", "To work in isolation without affecting the stable `main` branch", "To make it harder for others to see your code"], correct: 1, explain: "Branching is the core of safe collaboration, allowing parallel development without destabilizing the main codebase." },
+        { type: "TF", text: "A Pull Request is primarily a way to back up your code to the cloud.", correct: false, explain: "A PR is a tool for communication and code review. While pushing a branch does back it up, that is not the primary purpose of a PR." },
+        { type: "MCQ", text: "You've been assigned Issue #55. What is the best practice for naming your new branch?", options: ["`my-work`", "`issue-55`", "`feat/55-user-settings-page`", "`fix`"], correct: 2, explain: "Good branch names are descriptive, reference the issue, and use prefixes like `feat/` or `fix/` for clarity." },
+        { type: "MCQ", text: "You want to contribute to an open-source project that you don't have write access to. What is the first step?", options: ["Clone the repository", "Create an Issue", "Fork the repository", "Email the maintainer"], correct: 2, explain: "Forking creates a personal copy of the repository on your GitHub account, which you can then clone and modify." },
+        { type: "TF", text: "It is considered a best practice to resolve merge conflicts by always choosing your own changes (`HEAD`) over your teammate's.", correct: false, explain: "Conflicts must be resolved by understanding both sets of changes and creating a final version that works correctly, which may involve keeping their code, your code, or a combination." },
+        { type: "MCQ", text: "How do you formally request a code review from a specific teammate on GitHub?", options: ["Send them a direct message", "Assign them as a reviewer on the Pull Request", "Mention them in a commit message", "Add their name to the branch name"], correct: 1, explain: "Assigning reviewers is the official mechanism on GitHub to request and track code reviews." },
+        { type: "MCQ", text: "What is the purpose of a Project Board?", options: ["To write project documentation", "To visually track the progress of Issues from 'To Do' to 'Done'", "To list all the branches in the repository", "To chat with your team"], correct: 1, explain: "Project boards provide a high-level, visual overview of the team's workload and the status of each task." },
+        { type: "MCQ", text: "Your teammate asks you to review their Pull Request. What is the most constructive way to suggest a change?", options: ["Approve the PR but complain about the code in person", "Leave a comment like 'This is wrong, fix it.'", "Leave a specific, polite comment explaining your reasoning or use the 'Suggest a change' feature", "Reject the PR with no explanation"], correct: 2, explain: "Effective code review is about constructive, clear, and polite communication focused on improving the code." },
+        { type: "MMCQ", text: "Which of the following are good reasons to create an Issue? (Choose 2)", options: ["To ask a private question", "To report a bug you've found", "To propose a new feature idea", "To save a copy of a file"], correct: [1, 2], explain: "Issues are for tracking work items like bug reports and feature proposals, making them visible to the whole team." },
+        { type: "SEQ", text: "Put these steps for contributing to a teammate's project in the correct order: (1) Open a Pull Request, (2) Create a new branch, (3) Get your PR reviewed and merged, (4) Push your branch to GitHub", items: ["Push your branch to GitHub", "Create a new branch", "Open a Pull Request", "Get your PR reviewed and merged"], correct: ["Create a new branch", "Push your branch to GitHub", "Open a Pull Request", "Get your PR reviewed and merged"], explain: "The standard workflow is to create a branch, push it, open a PR for discussion, and then get it merged." },
+        { type: "MATCH", text: "Match the term to its primary purpose in teamwork.", stems: ["Branch", "Pull Request", "Issue", "Fork"], responses: ["Isolating work", "Reviewing changes", "Tracking a task", "Contributing externally"], correct: [{ s: 0, r: 0 }, { s: 1, r: 1 }, { s: 2, r: 2 }, { s: 3, r: 3 }], explain: "Each tool serves a distinct and vital role in the collaborative workflow." },
+        { type: "MCQ", text: "What command gets the latest changes from the remote repository and merges them into your current branch?", options: ["`git push`", "`git fetch`", "`git sync`", "`git pull`"], correct: 3, explain: "`git pull` combines fetching (downloading) and merging into a single command, making it the most common way to update your local branch." },
+        { type: "TF", text: "Once you create a Pull Request, you cannot add any more commits to it.", correct: false, explain: "You can and should add new commits to a PR's branch to address feedback from your reviewers. They will appear automatically." },
+        { type: "MCQ", text: "In a merge conflict block, what does the code between `<<<<<<< HEAD` and `=======` represent?", options: ["The final correct code", "The incoming changes from the other branch", "Your local changes", "A comment from Git"], correct: 2, explain: "`HEAD` always refers to your current branch's changes during a merge conflict." },
+        { type: "MMCQ", text: "Which of the following help to prevent large, difficult merge conflicts? (Choose 2)", options: ["Never talking to your teammates", "Syncing your branch with `main` frequently", "Making small, focused commits and PRs", "Waiting until your feature is 100% complete before syncing"], correct: [1, 2], explain: "Frequent syncing and small, atomic changes are the two best strategies for making merge conflicts manageable when they do occur." },
+        { type: "SEQ", text: "Put these steps for resolving a simple merge conflict in order: (1) `git commit`, (2) Edit the file to fix the conflict, (3) `git add` the resolved file, (4) `git pull` or `git merge` which causes the conflict", items: ["`git commit`", "Edit the file to fix the conflict", "`git add` the resolved file", "`git pull` or `git merge` which causes the conflict"], correct: ["`git pull` or `git merge` which causes the conflict", "Edit the file to fix the conflict", "`git add` the resolved file", "`git commit`"], explain: "The process is: trigger the conflict, manually edit the file, stage the newly resolved file, and commit to finalize the merge." },
+        { type: "MCQ", text: "What does it mean to 'link' an Issue to a Pull Request?", options: ["It copies all comments from the Issue to the PR", "It makes the Issue and PR private", "It creates a visible connection, and can automatically close the Issue when the PR is merged", "It deletes the Issue"], correct: 2, explain: "Linking issues provides context and automates project tracking, a key workflow for efficient teams." },
+        { type: "TF", text: "Every repository on GitHub has a Project Board by default.", correct: false, explain: "Issues are enabled by default, but Project Boards are an optional feature that you must set up to organize and track your issues." },
+        { type: "MCQ", text: "What is the 'upstream' repository in a forking workflow?", options: ["Your local copy on your computer", "Your fork on your GitHub account", "The original project that you forked from", "A backup copy"], correct: 2, explain: "'Upstream' is the standard name for the remote that points to the original, central repository." },
+        { type: "MCQ", text: "You just pushed a branch to GitHub to open a PR, but your team can't see the PR. What did you most likely forget to do?", options: ["Commit your work", "Actually click the 'Create Pull Request' button on the GitHub website", "Sync with `main` first"], correct: 1, explain: "Pushing a branch makes it visible to others, but it doesn't automatically create a Pull Request. That's a separate, manual step you must take on GitHub's interface." },
+        { type: "MCQ", text: "When you join a new project, what is the very first Git command you'll use to get the code on your machine?", options: ["`git pull`", "`git fork`", "`git clone`", "`git init`"], correct: 2, explain: "`git clone` is the command to create the initial local copy of a remote repository." },
+        { type: "MCQ", text: "When starting your work for the day, what command should you run in your `main` branch to get your teammates' latest updates?", options: ["`git push`", "`git pull`", "`git status`", "`git log`"], correct: 1, explain: "`git pull` is the essential command for downloading and integrating the latest changes from the remote repository before you start your own work." },
+        { type: "TF", text: "A 'Fork' is the best way to collaborate with a teammate when you both have write access to the same repository.", correct: false, explain: "When you have write access, the standard workflow is to create branches within the same repository. Forking is primarily for contributing to projects where you do *not* have direct write access." },
+        { type: "MCQ", text: "A teammate left a comment on your PR asking for a change. After you push the new commit, what should you do?", options: ["Close the PR and open a new one", "Reply to their comment to let them know it's done", "Wait for them to notice", "Merge the PR immediately"], correct: 1, explain: "Communication is key! Pushing the fix is the first step, but you should always reply to the comment to re-request their review and keep the conversation moving." }
+    ];
+
+    // Global state
+    let completedTutorials = [];
+    const minTutorialsForQuiz = 3;
+    let quizState = {
+        currentQ: 0,
+        score: 0,
+        answers: new Array(finalQuizQuestions.length).fill(null)
+    };
+
+    function renderMarkdown(text) {
+        if (!text) return '';
+        return text
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/g, '<em>$1</em>')
+            .replace(/`(.*?)`/g, '<code>$1</code>');
+    }
+    
+    // UI elements
+    const introScreen = document.getElementById('intro-screen');
+    const selectScreen = document.getElementById('select-screen');
+    const tutorialScreen = document.getElementById('tutorial-screen');
+    const finalQuizScreen = document.getElementById('final-quiz-screen');
+    const quizStatusText = document.getElementById('quiz-status-text');
+    const startQuizBtn = document.getElementById('start-quiz-btn');
+    const quizProgress = document.getElementById('quiz-progress');
+    const quizCard = document.getElementById('quiz-card');
+    const quizPrevBtn = document.getElementById('quiz-prev-btn');
+    const quizNextBtn = document.getElementById('quiz-next-btn');
+    const quizCounter = document.getElementById('quiz-counter');
+    const quizSkipBtn = document.getElementById('quiz-skip-btn');
+    
+    function showScreen(screen) {
+        introScreen.style.display = 'none';
+        selectScreen.style.display = 'none';
+        tutorialScreen.style.display = 'none';
+        finalQuizScreen.style.display = 'none';
+        screen.style.display = 'flex';
+        if (screen.id === 'tutorial-screen') {
+            screen.style.display = 'grid';
+        }
+        if (screen.id === 'final-quiz-screen') {
+            document.body.style.display = 'flex';
+            document.body.style.flexDirection = 'column';
+        } else {
+            document.body.style.display = 'flex';
+            document.body.style.flexDirection = 'column';
+        }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    
+    function updateQuizButton() {
+        if (completedTutorials.length >= minTutorialsForQuiz) {
+            startQuizBtn.disabled = false;
+            quizStatusText.textContent = `You've completed ${completedTutorials.length} topics! The quiz is now ready.`;
+        } else {
+            startQuizBtn.disabled = true;
+            quizStatusText.textContent = `Complete at least ${minTutorialsForQuiz} topics to unlock the final quiz! (${completedTutorials.length} / ${minTutorialsForQuiz})`;
+        }
+    }
+
+    function markTutorialCompleted(crudAction) {
+        if (!completedTutorials.includes(crudAction)) {
+            completedTutorials.push(crudAction);
+            document.querySelector(`.select-card[data-crud="${crudAction}"]`).classList.add('completed');
+            updateQuizButton();
+        }
+    }
+
+    function switchCrudTab(crudAction) {
+        const data = playgroundData[crudAction];
+        document.getElementById('code-viewer').textContent = data.code;
+        document.getElementById('commit-section').innerHTML = renderMarkdown(data.commit);
+        document.getElementById('output-viewer').innerHTML = renderMarkdown(data.output);
+        
+        document.querySelectorAll('.crud-tab').forEach(t => t.classList.toggle('active', t.dataset.crud === crudAction));
+        renderExplanation(crudAction);
+        markTutorialCompleted(crudAction);
+    }
+    
+    function renderExplanation(crudAction) {
+        const explanationPanel = document.getElementById('explanation-panel-body');
+        const data = playgroundData[crudAction].explanation;
+        
+        explanationPanel.innerHTML = `
+            <div class="explanation-tabs">
+                <button class="explanation-tab active" data-tab="concepts">Concepts</button>
+                <button class="explanation-tab" data-tab="steps">Steps</button>
+                <button class="explanation-tab" data-tab="quiz">Quiz</button>
+                <button class="explanation-tab" data-tab="bestPractices">Best Practices & Glossary</button>
+                <button class="explanation-tab" data-tab="faq">FAQs</button>
+            </div>
+            <div id="concepts-content" class="explanation-content active">
+                <h3>${data.concepts.title}</h3>
+                <p class="analogy">${renderMarkdown(data.concepts.analogy)}</p>
+                <p>${renderMarkdown(data.concepts.text)}</p>
+            </div>
+            <div id="steps-content" class="explanation-content">
+                <h3>${data.steps.title}</h3>
+                <ol class="step-list">
+                    ${data.steps.list.map((step) => `<li><span>${renderMarkdown(step)}</span></li>`).join('')}
+                </ol>
+            </div>
+            <div id="quiz-content" class="explanation-content">
+                <h3>Knowledge Check</h3>
+                ${data.quiz.map((quizItem, index) => `
+                    <div class="quiz-question" data-correct="${quizItem.correct}">
+                        <p><strong>Question ${index + 1}:</strong> ${renderMarkdown(quizItem.q)}</p>
+                        <div class="quiz-options">
+                        ${quizItem.options.map((opt, optIndex) => `
+                            <label class="quiz-option" for="q-${crudAction}-${index}-${optIndex}">
+                                <input type="radio" id="q-${crudAction}-${index}-${optIndex}" name="q-${crudAction}-${index}" value="${optIndex}"> <span>${renderMarkdown(opt)}</span>
+                            </label>
+                        `).join('')}
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+            <div id="bestPractices-content" class="explanation-content">
+                <h3>Best Practices & Glossary</h3>
+                <div class="best-practices-section">
+                    <h4>Do's and Don'ts</h4>
+                    <ul>
+                        ${data.bestPractices.dos.map((item) => `<li class="do-item"><span>${renderMarkdown(item)}</span></li>`).join('')}
+                    </ul>
+                    <ul class="mt-4">
+                        ${data.bestPractices.donts.map((item) => `<li class="dont-item"><span>${renderMarkdown(item)}</span></li>`).join('')}
+                    </ul>
+                </div>
+                <div class="glossary-section mt-6">
+                    <h4>Glossary</h4>
+                    <ul class="glossary-list">
+                        ${data.bestPractices.glossary.map((item) => `<li><strong>${item.term}</strong>: ${renderMarkdown(item.def)}</li>`).join('')}
+                    </ul>
+                </div>
+            </div>
+            <div id="faq-content" class="explanation-content">
+                <h3>Frequently Asked Questions</h3>
+                <div class="faq-list">
+                    ${data.faq.map((item) => `
+                        <div>
+                            <h4>${renderMarkdown(item.q)}</h4>
+                            <p>${renderMarkdown(item.a)}</p>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+        
+        setupExplanationTabsAndQuiz();
+    }
+    
+    function setupExplanationTabsAndQuiz() {
+        const expTabs = document.querySelectorAll('.explanation-tab');
+        const expContents = document.querySelectorAll('.explanation-content');
+        expTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabName = tab.dataset.tab;
+                expTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                expContents.forEach(content => {
+                    content.classList.toggle('active', content.id === `${tabName}-content`);
+                });
+            });
+        });
+
+        const quizQuestions = document.querySelectorAll('.quiz-question');
+        quizQuestions.forEach(quizQuestion => {
+            const optionsContainer = quizQuestion.querySelector('.quiz-options');
+            const correctAnswerIndex = parseInt(quizQuestion.dataset.correct);
+
+            optionsContainer.addEventListener('click', (e) => {
+                const selectedLabel = e.target.closest('label');
+                if (!selectedLabel || selectedLabel.classList.contains('disabled')) return;
+
+                const selectedIndex = parseInt(selectedLabel.querySelector('input').value);
+                const labels = optionsContainer.querySelectorAll('.quiz-option');
+
+                labels.forEach(label => label.classList.add('disabled'));
+
+                if (selectedIndex === correctAnswerIndex) {
+                    selectedLabel.classList.add('correct');
+                } else {
+                    selectedLabel.classList.add('incorrect');
+                    labels[correctAnswerIndex].classList.add('correct');
+                }
+            });
+        });
+    }
+
+    // --- Final Quiz Logic ---
+    function renderFinalQuizQuestion() {
+        const q = finalQuizQuestions[quizState.currentQ];
+        if (!q) {
+            showQuizResults();
+            return;
+        }
+        
+        if (!quizState.answers[quizState.currentQ]) {
+            quizState.answers[quizState.currentQ] = { answer: null, graded: false };
+        }
+
+        const progress = ((quizState.currentQ) / finalQuizQuestions.length) * 100;
+        quizProgress.style.width = `${progress}%`;
+        quizCounter.textContent = `Q ${quizState.currentQ + 1} / ${finalQuizQuestions.length}`;
+        quizPrevBtn.disabled = quizState.currentQ === 0;
+        
+        const isGraded = quizState.answers[quizState.currentQ] && quizState.answers[quizState.currentQ].graded;
+        quizNextBtn.textContent = isGraded ? (quizState.currentQ === finalQuizQuestions.length - 1 ? 'Finish Quiz' : 'Next Question →') : 'Submit Answer';
+        quizSkipBtn.style.display = isGraded ? 'none' : 'inline-block';
+
+        let questionContent = '';
+        const inputType = q.type === 'MMCQ' ? 'checkbox' : 'radio';
+
+        if (q.type === 'MCQ' || q.type === 'MMCQ' || q.type === 'TF') {
+            const options = q.type === 'TF' ? ['True', 'False'] : (q.options || []);
+            questionContent = `
+                <div class="question-body">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-800">${renderMarkdown(q.text)}</h2>
+                    <div class="question-options">
+                        ${options.map((option, index) => {
+                            const value = q.type === 'TF' ? (index === 0) : index;
+                            return `
+                            <label class="block bg-gray-100 border border-gray-300 rounded-lg p-4 shadow-sm hover:bg-orange-50 hover:border-orange-500 cursor-pointer transition-all duration-200 mb-2">
+                                <input type="${inputType}" name="q-${quizState.currentQ}" value="${value}" class="mr-3">
+                                <span class="text-lg text-gray-700">${renderMarkdown(option)}</span>
+                            </label>
+                        `}).join('')}
+                    </div>
+                </div>
+            `;
+        } else if (q.type === 'SEQ') {
+            const items = q.items || [];
+            questionContent = `
+                <div class="question-body">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-800">${renderMarkdown(q.text)}</h2>
+                    <ul id="sequence-list" class="space-y-2">
+                        ${shuffleArray([...items]).map(item => `
+                            <li draggable="true" class="seq-item">
+                                <span class="handle mr-3 text-gray-500">☰</span>
+                                <span class="text-lg text-gray-700">${renderMarkdown(item)}</span>
+                            </li>
+                        `).join('')}
+                    </ul>
+                </div>
+            `;
+        } else if (q.type === 'MATCH') {
+            const responses = q.responses || [];
+            const shuffledResponses = shuffleArray([...responses]);
+            const responseMap = {};
+            responses.forEach((resp, idx) => { responseMap[resp] = idx; });
+            const stems = q.stems || [];
+            questionContent = `
+                <div class="match-grid grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                    <div>
+                        <h3 class="text-lg font-semibold mb-2 text-gray-800">Stems</h3>
+                        ${stems.map((stem, index) => `
+                            <div class="match-item bg-gray-100 border border-gray-300 rounded-lg p-4 shadow-sm cursor-pointer transition-colors duration-200 mb-2" data-side="stem" data-index="${index}">
+                                <span class="text-lg text-gray-700">${renderMarkdown(stem)}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold mb-2 text-gray-800">Responses</h3>
+                        ${shuffledResponses.map((resp, index) => `
+                            <div class="match-item bg-gray-100 border border-gray-300 rounded-lg p-4 shadow-sm cursor-pointer transition-colors duration-200 mb-2" data-side="response" data-index="${responseMap[resp]}">
+                                <span class="text-lg text-gray-700">${renderMarkdown(resp)}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        quizCard.innerHTML = `
+            <div class="q-content flex-grow flex flex-col justify-center">
+                ${questionContent}
+            </div>
+            <div id="quiz-feedback" class="mt-4"></div>
+        `;
+        
+        if (q.type === 'SEQ') addDragAndDropListeners();
+        else if (q.type === 'MATCH') addMatchListeners();
+        else addOptionListeners();
+        
+        restoreQuizAnswers();
+        if (quizState.answers[quizState.currentQ] && quizState.answers[quizState.currentQ].graded) {
+            gradeFinalQuiz(true);
+        }
+    }
+    
+    function addOptionListeners() {
+        const inputs = quizCard.querySelectorAll('input');
+        inputs.forEach(input => {
+            input.addEventListener('change', () => {
+                const q = finalQuizQuestions[quizState.currentQ];
+                if (q.type === 'MMCQ') {
+                    const selected = [...quizCard.querySelectorAll('input:checked')].map(el => parseInt(el.value));
+                    quizState.answers[quizState.currentQ] = { answer: selected, graded: false };
+                } else if (q.type === 'TF') {
+                    quizState.answers[quizState.currentQ] = { answer: (input.value === 'true'), graded: false };
+                } else {
+                    quizState.answers[quizState.currentQ] = { answer: parseInt(input.value), graded: false };
+                }
+            });
+        });
+    }
+
+    function addDragAndDropListeners() {
+        let dragSrcEl = null;
+        document.querySelectorAll('#sequence-list li').forEach(item => {
+            item.addEventListener('dragstart', (e) => {
+                e.dataTransfer.effectAllowed = 'move'; dragSrcEl = item;
+                setTimeout(() => item.classList.add('dragging'), 0);
+            });
+            item.addEventListener('dragend', () => {
+                dragSrcEl.classList.remove('dragging'); saveSequenceOrder();
+            });
+            item.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                const after = getDragAfterElement(item.parentNode, e.clientY);
+                if (dragSrcEl && after !== dragSrcEl) { item.parentNode.insertBefore(dragSrcEl, after); }
+            });
+            item.addEventListener('drop', (e) => { e.preventDefault(); e.stopPropagation(); });
+        });
+        
+        function getDragAfterElement(container, y) {
+            const draggableElements = [...container.querySelectorAll('.seq-item:not(.dragging)')];
+            return draggableElements.reduce((closest, child) => {
+                const box = child.getBoundingClientRect();
+                const offset = y - box.top - box.height / 2;
+                if (offset < 0 && offset > closest.offset) { return { offset: offset, element: child }; } 
+                else { return closest; }
+            }, { offset: Number.NEGATIVE_INFINITY }).element;
+        }
+
+        function saveSequenceOrder() {
+            const currentOrder = Array.from(document.querySelectorAll('#sequence-list li')).map(el => el.querySelector('span:last-child').textContent);
+            quizState.answers[quizState.currentQ] = { answer: currentOrder, graded: false };
+        }
+    }
+
+    function addMatchListeners() {
+        let pickedA = null, pickedB = null;
+        const colorClasses = ['bg-yellow-100', 'bg-green-100', 'bg-blue-100', 'bg-pink-100'];
+        let pairIndex = 0;
+        
+        document.querySelectorAll('.match-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const side = item.dataset.side;
+                if (side === 'stem') {
+                    if (pickedA) pickedA.classList.remove('is-picked');
+                    pickedA = item; item.classList.add('is-picked');
+                } else {
+                    if (pickedB) pickedB.classList.remove('is-picked');
+                    pickedB = item; item.classList.add('is-picked');
+                }
+
+                if (pickedA && pickedB) {
+                    const pair = { s: parseInt(pickedA.dataset.index), r: parseInt(pickedB.dataset.index) };
+                    const currentAnswer = (quizState.answers[quizState.currentQ] && quizState.answers[quizState.currentQ].answer) || [];
+                    
+                    if (!currentAnswer.some(p => p.s === pair.s && p.r === pair.r)) {
+                         currentAnswer.push(pair);
+                         quizState.answers[quizState.currentQ] = { answer: currentAnswer, graded: false };
+
+                         const colorClass = colorClasses[pairIndex % colorClasses.length];
+                         pickedA.classList.remove('is-picked');
+                         pickedA.classList.add(colorClass, 'pointer-events-none');
+                         pickedB.classList.remove('is-picked');
+                         pickedB.classList.add(colorClass, 'pointer-events-none');
+                         
+                         pairIndex++; pickedA = null; pickedB = null;
+                    }
+                }
+            });
+        });
+    }
+
+    function restoreQuizAnswers() {
+        const q = finalQuizQuestions[quizState.currentQ];
+        const savedState = quizState.answers[quizState.currentQ];
+        if (!savedState || !savedState.answer) return;
+        const savedAnswer = savedState.answer;
+
+        if (q.type === 'MCQ' || q.type === 'TF') {
+            const valueToFind = q.type === 'TF' ? String(savedAnswer) : savedAnswer;
+            const input = quizCard.querySelector(`input[value="${valueToFind}"]`);
+            if (input) input.checked = true;
+        } else if (q.type === 'MMCQ') {
+            savedAnswer.forEach(val => {
+                const input = quizCard.querySelector(`input[value="${val}"]`);
+                if (input) input.checked = true;
+            });
+        } else if (q.type === 'SEQ') {
+            const list = document.getElementById('sequence-list');
+            if (list) {
+                list.innerHTML = savedAnswer.map(item => `
+                    <li draggable="true" class="seq-item">
+                        <span class="handle mr-3 text-gray-500">☰</span>
+                        <span class="text-lg text-gray-700">${renderMarkdown(item)}</span>
+                    </li>`).join('');
+                addDragAndDropListeners();
+            }
+        } else if (q.type === 'MATCH') {
+            const pairs = savedAnswer;
+            const colorClasses = ['bg-yellow-100', 'bg-green-100', 'bg-blue-100', 'bg-pink-100'];
+            pairs.forEach((pair, index) => {
+                const colorClass = colorClasses[index % colorClasses.length];
+                const stemEl = quizCard.querySelector(`.match-item[data-side="stem"][data-index="${pair.s}"]`);
+                const responseEl = quizCard.querySelector(`.match-item[data-side="response"][data-index="${pair.r}"]`);
+                if (stemEl) stemEl.classList.add(colorClass, 'pointer-events-none');
+                if (responseEl) responseEl.classList.add(colorClass, 'pointer-events-none');
+            });
+        }
+    }
+    
+    function gradeFinalQuiz(isRestoring = false) {
+        const q = finalQuizQuestions[quizState.currentQ];
+        const userAnswer = quizState.answers[quizState.currentQ] ? quizState.answers[quizState.currentQ].answer : null;
+        let isCorrect = false;
+
+        const feedbackDiv = document.getElementById('quiz-feedback');
+        if (!feedbackDiv) return;
+
+        if (q.type === 'MCQ' || q.type === 'TF') {
+            isCorrect = userAnswer === q.correct;
+            const allOptions = quizCard.querySelectorAll('label');
+            allOptions.forEach(label => label.classList.add('pointer-events-none'));
+            
+            const correctValue = q.type === 'TF' ? String(q.correct) : q.correct;
+            const correctOptionLabel = quizCard.querySelector(`input[value="${correctValue}"]`).closest('label');
+            if (correctOptionLabel) correctOptionLabel.classList.add('correct');
+            
+            if (!isCorrect && userAnswer !== null) {
+                const userValue = q.type === 'TF' ? String(userAnswer) : userAnswer;
+                const userOptionLabel = quizCard.querySelector(`input[value="${userValue}"]`).closest('label');
+                if (userOptionLabel) userOptionLabel.classList.add('incorrect');
+            }
+        } else if (q.type === 'MMCQ') {
+            const userAnswers = new Set(userAnswer || []);
+            const correctAnswers = new Set(q.correct || []);
+            isCorrect = userAnswers.size === correctAnswers.size && [...userAnswers].every(val => correctAnswers.has(val));
+            
+            const allOptions = quizCard.querySelectorAll('label');
+            allOptions.forEach(label => label.classList.add('pointer-events-none'));
+            
+            (q.options || []).forEach((opt, index) => {
+                const label = quizCard.querySelector(`input[value="${index}"]`).closest('label');
+                if (correctAnswers.has(index)) {
+                    label.classList.add('correct');
+                } else if (userAnswers.has(index)) {
+                    label.classList.add('incorrect');
+                }
+            });
+        } else if (q.type === 'SEQ') {
+            isCorrect = JSON.stringify(userAnswer) === JSON.stringify(q.correct);
+            const list = document.getElementById('sequence-list');
+            if (list) {
+                list.classList.add(isCorrect ? 'bg-green-100' : 'bg-red-100');
+                list.querySelectorAll('li').forEach(li => li.classList.add('cursor-not-allowed'));
+            }
+        } else if (q.type === 'MATCH') {
+            const pairs = userAnswer || [];
+            const correctPairs = new Set((q.correct || []).map(p => `${p.s}-${p.r}`));
+            let correctCount = pairs.filter(p => correctPairs.has(`${p.s}-${p.r}`)).length;
+            isCorrect = correctCount === (q.stems || []).length && pairs.length === (q.stems || []).length;
+            
+            const allItems = quizCard.querySelectorAll('.match-item');
+            allItems.forEach(item => item.classList.add('pointer-events-none'));
+        }
+
+        if (userAnswer !== null && !isRestoring) {
+            if (isCorrect && (!quizState.answers[quizState.currentQ] || !quizState.answers[quizState.currentQ].graded)) {
+                quizState.score++;
+            }
+            quizState.answers[quizState.currentQ] = { ...quizState.answers[quizState.currentQ], graded: true };
+        }
+        
+        quizNextBtn.textContent = (quizState.currentQ === finalQuizQuestions.length - 1) ? 'Finish Quiz' : 'Next Question →';
+        quizSkipBtn.style.display = 'none';
+
+        feedbackDiv.innerHTML = `
+            <div class="feedback ${isCorrect ? 'correct' : 'incorrect'}">
+                <p class="font-bold text-lg mb-1">${isCorrect ? 'Correct! 🎉' : 'Not quite.'}</p>
+                <p>${renderMarkdown(q.explain)}</p>
+            </div>
+        `;
+    }
+
+    function shuffleArray(array) {
+        if (!array) return [];
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    // --- Event Listeners ---
+    document.addEventListener('DOMContentLoaded', () => {
+        // Apply markdown rendering to static intro text
+        const introPanel = document.getElementById('intro-screen');
+        if (introPanel) {
+            introPanel.querySelectorAll('p').forEach(p => {
+                p.innerHTML = renderMarkdown(p.innerHTML);
+            });
+            introPanel.querySelectorAll('li').forEach(li => {
+                li.innerHTML = renderMarkdown(li.innerHTML);
+            });
+        }
+
+        const startBtn = document.getElementById('start-tutorial-btn');
+        const backBtn = document.getElementById('back-btn');
+        const selectCards = document.querySelectorAll('.select-card');
+        const tutorialTabs = document.querySelectorAll('.crud-tab');
+        
+        showScreen(introScreen);
+        
+        startBtn.addEventListener('click', () => {
+            showScreen(selectScreen);
+            updateQuizButton();
+        });
+        
+        backBtn.addEventListener('click', () => {
+            showScreen(selectScreen);
+        });
+        
+        selectCards.forEach(card => {
+            card.addEventListener('click', () => {
+                const crudAction = card.dataset.crud;
+                showScreen(tutorialScreen);
+                switchCrudTab(crudAction);
+            });
+        });
+
+        tutorialTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                switchCrudTab(tab.dataset.crud);
+            });
+        });
+
+        startQuizBtn.addEventListener('click', () => {
+            showScreen(finalQuizScreen);
+            quizState.currentQ = 0;
+            quizState.score = 0;
+            quizState.answers.fill(null);
+            renderFinalQuizQuestion();
+        });
+
+        quizPrevBtn.addEventListener('click', () => {
+            if (quizState.currentQ > 0) {
+                quizState.currentQ--;
+                renderFinalQuizQuestion();
+            }
+        });
+
+        quizSkipBtn.addEventListener('click', () => {
+            quizState.answers[quizState.currentQ] = { answer: null, graded: true, skipped: true };
+            if (quizState.currentQ < finalQuizQuestions.length - 1) {
+                quizState.currentQ++;
+                renderFinalQuizQuestion();
+            } else {
+                showQuizResults();
+            }
+        });
+
+        quizNextBtn.addEventListener('click', () => {
+            const currentAnswerState = quizState.answers[quizState.currentQ];
+            const hasAnswer = currentAnswerState && currentAnswerState.answer !== null && (Array.isArray(currentAnswerState.answer) ? currentAnswerState.answer.length > 0 : true);
+
+            if (!hasAnswer) {
+                const feedbackDiv = document.getElementById('quiz-feedback');
+                if(feedbackDiv) feedbackDiv.innerHTML = `<div class="feedback incorrect"><p class="font-bold">Please select an answer.</p></div>`;
+                return;
+            }
+
+            if (currentAnswerState && !currentAnswerState.graded) {
+                gradeFinalQuiz();
+            } else {
+                if (quizState.currentQ < finalQuizQuestions.length - 1) {
+                    quizState.currentQ++;
+                    renderFinalQuizQuestion();
+                } else {
+                    showQuizResults();
+                }
+            }
+        });
+    });
+
+    function showQuizResults() {
+        const totalMarks = finalQuizQuestions.length;
+        const skippedCount = quizState.answers.filter(a => a && a.skipped).length;
+        const answeredCount = totalMarks - skippedCount;
+        quizCard.innerHTML = `<div class="q-content text-center">
+                <h2 class="text-2xl font-bold">Teamwork Module Complete! 🎉</h2>
+                <p class="mt-4">${renderMarkdown(`You scored **${quizState.score}** out of **${answeredCount}** answered questions.`)}</p>
+                <div class="intro-primer mt-4">
+                    <h3>Team Recap & Retro</h3>
+                    <p>You've now co-authored your first story! You created separate ideas (branches), proposed them for review (pull requests), and handled creative differences (conflicts). This cycle is the core of all team-based software development.</p>
+                    <p><strong>Reflection:</strong> What was the muddiest point? What felt clearest? This is how real teams improve!</p>
+                </div>
+                <div class="mt-8">
+                    <button onclick="window.location.reload()" class="start-btn">Practice Again</button>
+                    <button onclick="showScreen(selectScreen);" class="back-btn mt-4">Back to Topics</button>
+                </div>
+            </div>`;
+        quizProgress.style.width = '100%';
+        document.querySelector('.quiz-nav').style.display = 'none';
+    }
+    
+    </script>
+</body>
+</html>
+
