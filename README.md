@@ -2,7 +2,7 @@
 
 Welcome to **Software Content Demos** — a living repository of interactive, standalone HTML experiences. Each file here is **self-contained** (HTML + CSS + JS), which means you can both:
 
-* **Render the content live** via [GitHub Pages](https://username.github.io/software-content-demos/)
+* **Render the content live** via [GitHub Pages](https://pawan-nayar.github.io/software-content-demos)
 * **Inspect the source code** directly in the repo to understand how it’s built.
 
 ---
