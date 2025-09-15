@@ -13,7 +13,7 @@ The repo is organized into **peer folders** (sets), each dedicated to a software
 
 * **GitHub** → Tutorials, confusion scenarios, professional workflows, quizzes.
 * **Salesforce** → 5-part Service Cloud series, API demos, glossary of concepts.
-* **Adobe Acrobat** → *The Ultimate Guide to Combining PDFs*, a 4-part masterclass.
+* **Adobe (Acrobat)** → *The Ultimate Guide to Combining PDFs*, a 4-part masterclass.
 * **Anthropic (Claude)** → Code tools, mnemonic builders, workflows, specialized training.
 * **Python** → Interactive learning tools, best practices, applied computer science demos.
 
@@ -42,7 +42,7 @@ In short: this repo showcases not only *files you can use now* but also a **blue
 
 ---
 
-## 🏗 Why This Matters
+## 🏗 If you are a content leader, product head or business chief, it impacts you!
 
 Traditional documentation, even at world-class companies like Google, Microsoft, Anthropic, OpenAI, or Adobe, often falls short:
 
@@ -58,6 +58,8 @@ This repo experiments with a **new standard**:
 * **Depth of Interaction** (from flip cards to quizzes to SVG workbenches).
 * **Depth of Instruction** (layered teaching, scaffolding, and cognitive progression).
 
+The shared content are samples, a reference exercise against a much larger 1000× ecosphere that builds on databases and headless CMS. These standalone HTMLs illustrate principles, while the real operating system scales across roles, personalization, user stages, context, needs, and industries. This repo is a window into that broader, adaptive, lifelong learning infrastructure.
+
 ---
 
 ## 📂 Repo Structure
@@ -66,11 +68,11 @@ This repo experiments with a **new standard**:
 software-content-demos/
 │
 ├── github/
-│   └── index.html + multiple tutorials
+│   └── github-learning-series.html (index hub) + multiple tutorials
 ├── salesforce/
 │   └── index.html + 5-part Service Cloud + API demos
 ├── adobe-acrobat/
-│   └── index.html + 4-part PDF masterclass
+│   └── acrobat-merge-pdf-files-index.html + 4-part PDF masterclass
 ├── anthropic/
 │   └── index.html + Claude workflows & training
 ├── python/
