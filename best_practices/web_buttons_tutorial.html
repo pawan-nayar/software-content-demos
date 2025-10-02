@@ -1,0 +1,1915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What is a Button? – Playground</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* --- Base Theme --- */
+        :root {
+            --text: #212529; --bg: #fff; --muted: #f8f9fa; --border: #e9ecef;
+            --accent: #fd7e14; --accent-2: #e87312; --header-bg: #2c3e50; --header-fg: #f8f9fa;
+            --ok: #16a34a; --ok-soft: #dcfce7; --bad: #dc2626; --bad-soft: #fee2e2;
+            --code-bg: #2d3748; --code-fg: #e2e8f0;
+            --font-main: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            --font-code: 'Courier New', Courier, monospace;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body { 
+            font-family: var(--font-main); 
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--text); 
+            line-height: 1.7; 
+            font-size: 16px; 
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        /* --- Header / Footer --- */
+        .site-header, .site-footer { background: var(--header-bg); color: var(--header-fg); padding: 14px 24px; flex-shrink: 0; }
+        .site-header { display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .logo { font-weight: 700; font-size: 1.15rem; color: #fff; text-decoration: none; }
+        .site-footer { text-align: center; padding: 30px; }
+        /* --- Main Wizard Container --- */
+        .wizard-container {
+            padding: 1rem;
+            flex-grow: 1; /* Pushes footer down */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .wizard-panel {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+        }
+        .wizard-panel h1 { font-size: 1.8rem; color: var(--accent-2); margin-bottom: 0.5rem; }
+        .wizard-panel p { font-size: 1.05rem; margin-bottom: 1rem; }
+        .wizard-panel h2 { font-size: 1.3rem; margin-top: 1.5rem; margin-bottom: 0.5rem; }
+        .start-btn { 
+            display: block; 
+            width: 100%; 
+            background: var(--accent); 
+            color: white; 
+            border: none; 
+            padding: 1rem; 
+            font-size: 1.2rem; 
+            font-weight: 700; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            margin-top: 1.5rem; 
+            transition: background-color 0.2s; 
+        }
+        .start-btn:hover { background: var(--accent-2); }
+        .tutorial-container {
+            display: none; /* Initially hidden */
+            grid-template-columns: 45% 1fr;
+            gap: 24px;
+            padding: 24px;
+            flex-grow: 1;
+        }
+        .left-column, .right-column { display: flex; flex-direction: column; gap: 24px; min-height: calc(100vh - 150px); }
+        .panel { background: var(--bg); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .panel-header { padding: 12px 16px; border-bottom: 1px solid var(--border); background: var(--muted); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+        .panel-title { font-weight: 600; font-size: 1.1rem; }
+        .panel-body { padding: 16px; flex-grow: 1; overflow-y: auto; }
+        .nav-btns { display: flex; justify-content: space-between; margin-top: 1rem; }
+        .nav-btn { background: var(--accent); color: white; border: none; padding: 10px 16px; font-size: 1rem; font-weight: 600; border-radius: 8px; cursor: pointer; transition: background-color 0.2s; }
+        .nav-btn:hover { background: var(--accent-2); }
+        .nav-btn.prev { background: #6c757d; }
+        .nav-btn.prev:hover { background: #5a6268; }
+        .nav-btn[disabled] { opacity: 0.5; cursor: not-allowed; }
+        .code-viewer { font-family: var(--font-code); font-size: 0.95rem; line-height: 1.6; background-color: var(--code-bg); color: var(--code-fg); padding: 16px; white-space: pre-wrap; margin: 0; flex-grow: 1; overflow: auto;}
+        .output-viewer { padding: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-grow: 1; }
+        .output-viewer h2 { margin-bottom: 1rem; }
+        
+        /* --- Right Pane Styles --- */
+        .explanation-tabs { display: flex; border-bottom: 1px solid var(--border); flex-shrink: 0; flex-wrap: wrap; }
+        .explanation-tab { 
+            background: none; 
+            border: none; 
+            padding: 12px 16px; 
+            font-size: 0.95rem; 
+            font-weight: 600; 
+            cursor: pointer; 
+            border-bottom: 3px solid transparent; 
+            transition: background-color 0.2s, color 0.2s, border-bottom 0.2s;
+            flex-grow: 1;
+        }
+        .explanation-tab.active { 
+            color: var(--accent); 
+            border-bottom-color: var(--accent); 
+            background-color: white; 
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .explanation-content { 
+            display: none; 
+            padding: 16px; 
+            animation: fadeIn 0.3s ease-in-out;
+            text-align: left;
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+        .explanation-content.active { display: block; }
+
+        .explanation-content h2 {
+            font-size: 1.8rem;
+            color: var(--accent-2);
+            font-weight: 700;
+            margin-bottom: 1rem;
+            padding-bottom: 10px; /* 10px underline */
+            border-bottom: 10px solid var(--accent);
+            display: inline-block; /* To contain the border-bottom */
+        }
+        .explanation-content h3 {
+            font-size: 1.5rem;
+            color: var(--accent-2);
+            font-weight: 600;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .explanation-content p {
+            font-size: 1.05rem;
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+        }
+        .explanation-content .analogy {
+            background: var(--muted);
+            border-left: 4px solid var(--accent);
+            padding: 1.25rem;
+            border-radius: 8px;
+            font-style: italic;
+            margin-bottom: 1.5rem;
+        }
+        .explanation-content ul, .explanation-content ol {
+            padding-left: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .explanation-content ul li {
+            margin-bottom: 0.5rem;
+            line-height: 1.6;
+        }
+        /* --- Button Styles for Playground --- */
+        .btn-preview {
+            font-family: var(--font-main);
+            font-size: 1rem;
+            font-weight: 600;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            border: 2px solid transparent;
+            text-decoration: none;
+            display: inline-block;
+            position: relative;
+            overflow: hidden;
+            outline: none;
+        }
+        .primary-btn {
+            background-color: var(--accent);
+            color: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .primary-btn:hover { background-color: var(--accent-2); transform: translateY(-2px); box-shadow: 0 6px 8px rgba(0,0,0,0.15); }
+        .secondary-btn {
+            background-color: var(--muted);
+            color: var(--text);
+            border-color: var(--border);
+        }
+        .secondary-btn:hover { background-color: #e9ecef; }
+        .tertiary-btn {
+            background: none;
+            color: var(--accent);
+            border-color: transparent;
+        }
+        .tertiary-btn:hover { text-decoration: underline; }
+        .icon-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        /* Underline Slide-in */
+        .btn-underline {
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+            color: var(--accent);
+            padding: 0;
+            font-weight: 600;
+        }
+        .btn-underline::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--accent);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.2s ease-in-out;
+        }
+        .btn-underline:hover::after {
+            transform: scaleX(1);
+        }
+        /* Background Fill Sweep */
+        .btn-sweep {
+            background-image: linear-gradient(90deg, var(--accent), var(--accent));
+            background-repeat: no-repeat;
+            background-size: 0% 100%;
+            transition: background-size 0.2s ease-in-out;
+        }
+        .btn-sweep:hover {
+            background-size: 100% 100%;
+            color: white;
+        }
+        /* Soft Shadow Lift */
+        .btn-lift {
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .btn-lift:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 12px rgba(0,0,0,0.15);
+        }
+        /* Animated Border */
+        .btn-border-anim {
+            background: none;
+            color: var(--accent);
+            border: 2px solid var(--accent);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        .btn-border-anim::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--accent);
+            z-index: -1;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-in-out;
+        }
+        .btn-border-anim:hover {
+            color: white;
+        }
+        .btn-border-anim:hover::before {
+            transform: translateX(0);
+        }
+        /* Ripple Effect */
+        .btn-ripple {
+            position: relative;
+            overflow: hidden;
+        }
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.4);
+            transform: scale(0);
+            animation: ripple-effect 0.6s linear;
+        }
+        @keyframes ripple-effect {
+            to {
+                transform: scale(2.5);
+                opacity: 0;
+            }
+        }
+        /* Shake on Error */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        .shake-btn.shake-active {
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+            transform: translate3d(0, 0, 0);
+            backface-visibility: hidden;
+            perspective: 1000px;
+        }
+         /* Bevel Retro */
+         .btn-bevel {
+             background: #f8f9fa;
+             color: #495057;
+             border: 2px solid #adb5bd;
+             border-top: 2px solid #ffffff;
+             border-left: 2px solid #ffffff;
+             box-shadow: 2px 2px 0px #343a40;
+             transition: all 0.1s ease-in-out;
+         }
+         .btn-bevel:active {
+             box-shadow: 1px 1px 0px #343a40;
+             transform: translate(1px, 1px);
+         }
+        /* Liquid Morph */
+        .btn-liquid {
+            position: relative;
+            background: none;
+            color: var(--accent);
+            border: 2px solid var(--accent);
+            transition: color 0.4s;
+            overflow: hidden;
+        }
+        .btn-liquid::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--accent);
+            border-radius: 45% 55% 55% 45% / 45% 45% 55% 55%;
+            transform: scale(0);
+            transition: transform 0.8s ease, border-radius 0.8s ease;
+            z-index: -1;
+        }
+        .btn-liquid:hover {
+            color: black;
+        }
+        .btn-liquid:hover::before {
+            transform: scale(1.4);
+            border-radius: 55% 45% 45% 55% / 55% 55% 45% 45%;
+        }
+        /* Heart icon for multi-state button */
+        .like-icon {
+            display: block;
+            width: 24px;
+            height: 24px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%236c757d' d='M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5A5.48 5.48 0 0 1 7.5 3a6.12 6.12 0 0 1 5.5 3.32A6.12 6.12 0 0 1 18.5 3a5.48 5.48 0 0 1 5.5 5.5c0 3.78-3.4 6.86-8.55 11.54z'/%3E%3C/svg%3E");
+            background-size: cover;
+            transition: background-image 0.2s ease-in-out;
+        }
+        .like-btn.liked .like-icon {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23e87312' d='M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5A5.48 5.48 0 0 1 7.5 3a6.12 6.12 0 0 1 5.5 3.32A6.12 6.12 0 0 1 18.5 3a5.48 5.48 0 0 1 5.5 5.5c0 3.78-3.4 6.86-8.55 11.54z'/%3E%3C/svg%3E");
+        }
+        .liked-count {
+            color: var(--accent);
+            font-weight: 600;
+        }
+        .valid-form-group input:not(:placeholder-shown):valid ~ .valid-btn {
+            background-color: var(--ok);
+            cursor: pointer;
+            pointer-events: auto;
+        }
+        .valid-btn {
+            pointer-events: none;
+            opacity: 0.5;
+            transition: all 0.3s ease;
+            cursor: not-allowed;
+        }
+        .valid-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+        .valid-btn:not(:disabled) {
+            opacity: 1;
+            cursor: pointer;
+            pointer-events: auto;
+        }
+         .form-control {
+             border: 1px solid var(--border);
+             padding: 10px;
+             border-radius: 8px;
+             width: 100%;
+         }
+
+         /* Modal Styles */
+         .modal-overlay {
+             position: fixed;
+             top: 0;
+             left: 0;
+             width: 100%;
+             height: 100%;
+             background-color: rgba(0, 0, 0, 0.5);
+             display: flex;
+             justify-content: center;
+             align-items: center;
+             z-index: 1000;
+             opacity: 0;
+             visibility: hidden;
+             transition: all 0.3s ease;
+         }
+         .modal-overlay.active {
+             opacity: 1;
+             visibility: visible;
+         }
+         .modal-content {
+             background: white;
+             border-radius: 12px;
+             padding: 2rem;
+             max-width: 400px;
+             width: 90%;
+             text-align: center;
+             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+             transform: scale(0.9);
+             transition: transform 0.3s ease;
+         }
+         .modal-overlay.active .modal-content {
+             transform: scale(1);
+         }
+         .modal-icon {
+             font-size: 3rem;
+             margin-bottom: 1rem;
+         }
+         .modal-title {
+             font-size: 1.5rem;
+             font-weight: 600;
+             color: var(--text);
+             margin-bottom: 0.5rem;
+         }
+         .modal-message {
+             color: var(--text);
+             margin-bottom: 1.5rem;
+         }
+         .modal-btn {
+             background-color: var(--accent);
+             color: white;
+             border: none;
+             padding: 0.75rem 1.5rem;
+             border-radius: 8px;
+             font-weight: 600;
+             cursor: pointer;
+             transition: background-color 0.2s;
+         }
+         .modal-btn:hover {
+             background-color: var(--accent-2);
+         }
+
+         /* Advanced Animation Styles */
+         .btn-bounce {
+             background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+             color: white;
+             border: none;
+             position: relative;
+             overflow: hidden;
+         }
+         .btn-bounce:hover {
+             animation: bounce 0.6s ease-in-out;
+         }
+         @keyframes bounce {
+             0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+             40% { transform: translateY(-10px); }
+             60% { transform: translateY(-5px); }
+         }
+
+         .btn-pulse {
+             background: linear-gradient(45deg, #667eea, #764ba2);
+             color: white;
+             border: none;
+             animation: pulse 2s infinite;
+         }
+         @keyframes pulse {
+             0% { transform: scale(1); }
+             50% { transform: scale(1.05); }
+             100% { transform: scale(1); }
+         }
+
+         .btn-rotate {
+             background: linear-gradient(45deg, #f093fb, #f5576c);
+             color: white;
+             border: none;
+             transition: transform 0.3s ease;
+         }
+         .btn-rotate:hover {
+             transform: rotate(5deg) scale(1.1);
+         }
+
+         .btn-slide {
+             background: linear-gradient(45deg, #4facfe, #00f2fe);
+             color: white;
+             border: none;
+             position: relative;
+             overflow: hidden;
+         }
+         .btn-slide::before {
+             content: '';
+             position: absolute;
+             top: 0;
+             left: -100%;
+             width: 100%;
+             height: 100%;
+             background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+             transition: left 0.5s;
+         }
+         .btn-slide:hover::before {
+             left: 100%;
+         }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .tutorial-container { grid-template-columns: 1fr; }
+            .left-column, .right-column { min-height: auto; }
+            .wizard-container { height: auto; padding: 2rem 1rem; }
+        }
+        @media (max-width: 600px) {
+            .tutorial-container { padding: 12px; }
+            .wizard-panel { padding: 1rem; }
+            .output-viewer > div {
+                flex-direction: row !important;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="site-header">
+        <a href="#" class="logo">Web Buttons Explained</a>
+    </header>
+
+    <!-- Screen 1: Intro -->
+    <div id="intro-screen" class="wizard-container">
+        <div class="wizard-panel">
+            <h1>What is a Button? 🖱️</h1>
+            <p>A button is a fundamental part of almost every website. It’s a special element that you can click or tap to perform an action, like saving a file, submitting a form, or starting a game!</p>
+            <p>Let's explore how buttons are made, what they can do, and how to style them to look amazing!</p>
+            <button id="start-tutorial-btn" class="start-btn">Begin Your Button Journey!</button>
+        </div>
+    </div>
+    
+    <!-- Screen 2: Tutorial -->
+    <main id="tutorial-screen" class="tutorial-container" style="display: none;">
+        <!-- Left Column: Playground -->
+        <div class="left-column">
+             <div class="panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">Playground</h2>
+                </div>
+                <div id="output-viewer" class="panel-body output-viewer">
+                    <!-- Dynamic button content goes here -->
+                </div>
+            </div>
+            <div class="panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">HTML & CSS Code</h2>
+                </div>
+                <pre id="code-viewer" class="code-viewer"></pre>
+            </div>
+            <div class="nav-btns">
+                <button id="prev-btn" class="nav-btn prev" disabled>← Previous</button>
+                <button id="next-btn" class="nav-btn">Next →</button>
+            </div>
+        </div>
+
+        <!-- Right Column: Learning Module -->
+        <div class="right-column">
+            <div class="panel" style="flex-grow: 1;">
+                <div id="explanation-panel-body" class="panel-body" style="padding: 0;">
+                    <!-- The tab content will be injected here -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>© 2025 A fun learning project. Let's make buttons simple for everyone!</p>
+    </footer>
+
+    <script>
+    const buttonTutorialData = [
+        {
+            title: "The Basic Button",
+            code: `<!-- The simplest HTML button -->
+<button>Click Me!</button>`,
+            output: `<div class="flex flex-col sm:flex-row gap-8 items-center">
+                        <button class="btn-preview primary-btn">Click Me!</button>
+                     </div>`,
+            explanation: {
+                tabs: [
+                    {
+                        name: "Concepts",
+                        content: `
+                            <h2>The Basic Button</h2>
+                            <p class="analogy">A button is like a doorbell. You press it (click it) and something happens (the door opens).</p>
+                            <p>A button is the HTML element—the physical thing you click. An action is the result, or what happens when you click it. A button is an element that a user clicks to perform an action. It’s one of the most fundamental building blocks of the web.</p>
+                            <p>Think of a button as an action trigger. It's for doing something on the page, like 'submitting a form' or 'playing a song'.</p>
+                            <h3>Key Concepts</h3>
+                            <ul>
+                                <li><strong>&lt;button&gt; tag:</strong> The HTML element used to create a clickable button.</li>
+                                <li><strong>Action:</strong> The task a button performs, like 'Save', 'Submit', or 'Buy Now'.</li>
+                                <li><strong>Accessibility:</strong> Buttons are important for people who use keyboards or screen readers. They are automatically understood as 'actionable' elements.</li>
+                            </ul>
+                        `
+                    },
+                    {
+                        name: "Best Practices",
+                        content: `
+                            <h2>Best Practices</h2>
+                            <p>To ensure your buttons are a delight to use and accessible for everyone, follow these key rules.</p>
+                            <h3>Dos</h3>
+                            <ul>
+                                <li><strong>Use the right element:</strong> Use a &lt;button&gt; tag for actions and an &lt;a&gt; tag for navigation.</li>
+                                <li><strong>Give clear labels:</strong> The text on the button should clearly explain what it does (e.g., "Save Changes" not "Click Here").</li>
+                                <li><strong>Make them look clickable:</strong> Use hover and focus effects to give users visual feedback.</li>
+                            </ul>
+                            <h3>Don'ts</h3>
+                            <ul>
+                                <li><strong>Don't misuse links:</strong> Avoid using a link (&lt;a&gt;) to trigger an action on the same page.</li>
+                                <li><strong>Don't make them too small:</strong> Buttons should be large enough to be easily tapped on a mobile device.</li>
+                                <li><strong>Don't hide them:</strong> Ensure buttons have enough contrast against the background so they are easy to see.</li>
+                            </ul>
+                        `
+                    },
+                    {
+                        name: "FAQs",
+                        content: `
+                            <h2>FAQs</h2>
+                            <h3>Frequently Asked Questions</h3>
+                            <ul>
+                                <li><strong>What's the difference between a button and a link?</strong>
+                                <p>A button is for performing an action on the current page, while a link is for navigating to another page or section of the page.</p></li>
+                                <li><strong>Why is it important to use a &lt;button&gt; tag?</strong>
+                                <p>The &lt;button&gt; tag is automatically understood by web browsers and assistive technologies as a clickable element, which is crucial for accessibility.</p></li>
+                                <li><strong>How can I make my button accessible to keyboard users?</strong>
+                                <p>Buttons are naturally accessible to keyboard users who can navigate to and activate them with the 'Enter' or 'Space' keys. You just need to ensure they are visible when in focus.</p></li>
+                                <li><strong>Can I use an image inside a button?</strong>
+                                <p>Yes, you can. However, you should provide a clear and descriptive text label for screen readers using attributes like <code>aria-label</code> or <code>title</code>.</p></li>
+                                <li><strong>What's a good size for a button?</strong>
+                                <p>The recommended minimum size for a tappable button on a touch screen is around 48px by 48px to ensure it's easy to press with a finger.</p></li>
+                            </ul>
+                        `
+                    }
+                ]
+            }
+        },
+        {
+            title: "Foundational Styles",
+            code: `/* CSS for a primary button */
+.primary-btn {
+    background-color: var(--accent);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: none;
+}
+                
+<!-- HTML for three button types -->
+<div class="flex flex-col sm:flex-row gap-4">
+    <button class="primary-btn">Primary</button>
+    <button class="secondary-btn">Secondary</button>
+    <a href="#" class="tertiary-btn">Tertiary Link</a>
+</div>`,
+            output: `<div class="flex flex-col sm:flex-row gap-4">
+                        <button class="btn-preview primary-btn">Primary Action</button>
+                        <button class="btn-preview secondary-btn">Secondary Action</button>
+                        <a href="#" class="btn-preview tertiary-btn">Tertiary Link</a>
+                     </div>`,
+            explanation: {
+                tabs: [
+                    {
+                        name: "Concepts",
+                        content: `
+                            <h2>Foundational Styles</h2>
+                            <p class="analogy">Think of buttons on a remote control. The big, colorful 'Power' button is a primary action. The smaller 'Volume' button is secondary, and a tiny 'Settings' link is tertiary.</p>
+                            <p>Designers often use a primary/secondary/tertiary system to tell users which button is the most important. This helps guide their eye to the main action on a page.</p>
+                            <h3>Key Concepts</h3>
+                            <ul>
+                                <li><strong>Primary:</strong> The most important action on the page. It's usually a solid, eye-catching color.</li>
+                                <li><strong>Secondary:</strong> A less important action. It might have a white background with a colored border.</li>
+                                <li><strong>Tertiary:</strong> The least important action. It often looks like a simple text link with no background or border.</li>
+                            </ul>
+                        `
+                    },
+                    {
+                        name: "Best Practices",
+                        content: `
+                            <h2>Best Practices</h2>
+                            <p>Here’s how to apply these styles for the best results.</p>
+                            <h3>Dos</h3>
+                            <ul>
+                                <li><strong>Be consistent:</strong> Use the same colors and styles for all your primary buttons.</li>
+                                <li><strong>Ensure contrast:</strong> Make sure the text color is easy to read against the button's background color.</li>
+                                <li><strong>Use a design system:</strong> A design system is a set of rules and components that helps you keep your design consistent across your entire website.</li>
+                            </ul>
+                            <h3>Don'ts</h3>
+                            <ul>
+                                <li><strong>Don't use too many colors:</strong> Too many different button colors can make your page look messy and confusing.</li>
+                                <li><strong>Don't confuse the user:</strong> Make sure the primary button always looks like the most important action.</li>
+                                <li><strong>Don't forget mobile:</strong> Buttons should be easy to tap on small screens.</li>
+                            </ul>
+                        `
+                    },
+                    {
+                        name: "FAQs",
+                        content: `
+                            <h2>FAQs</h2>
+                            <h3>Frequently Asked Questions</h3>
+                            <ul>
+                                <li><strong>How do I choose between a primary and secondary button?</strong>
+                                <p>Use a primary button for the one and only main action on a screen (e.g., 'Submit'). Use a secondary button for less important, optional actions (e.g., 'Cancel').</p></li>
+                                <li><strong>Should my buttons have different sizes?</strong>
+                                <p>In most cases, you should use a consistent size for all buttons of the same type to maintain a clean and predictable design.</p></li>
+                                <li><strong>How do I apply multiple CSS classes to a button?</strong>
+                                <p>You can add multiple class names to a single HTML element by separating them with a space, for example: <code>&lt;button class="primary-btn btn-lift"&gt;</code></p></li>
+                                <li><strong>What's the best practice for button padding?</strong>
+                                <p>Use consistent padding values (e.g., 12px vertical and 24px horizontal) to ensure a uniform look and feel across all your buttons.</p></li>
+                                <li><strong>Can I use a different font for my buttons?</strong>
+                                <p>Yes, you can! Just make sure the font is easy to read and complements the rest of your website's design.</p></li>
+                            </ul>
+                        `
+                    }
+                ]
+            }
+        },
+        {
+            title: "Hover Transitions",
+            code: `/* Hover effects make buttons feel alive */
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+}`,
+            output: `<div class="flex flex-col sm:flex-row gap-8 items-center">
+                        <button class="btn-preview btn-lift primary-btn">Soft Lift</button>
+                        <button class="btn-preview btn-sweep primary-btn">Sweep Fill</button>
+                        <a href="#" class="btn-preview btn-underline tertiary-btn">Underline</a>
+                     </div>`,
+            explanation: {
+                tabs: [
+                    {
+                        name: "Concepts",
+                        content: `
+                            <h2>Hover Transitions</h2>
+                            <p class="analogy">Hover effects are like when you get close to a flower and it slightly moves in the breeze. It's a gentle way to show you can interact with it.</p>
+                            <p>A 'hover' effect is a visual change that happens when you move your mouse cursor over a button. It provides a signal to the user that the element is clickable, making the interface feel more responsive.</p>
+                            <h3>Key Concepts</h3>
+                            <ul>
+                                <li><strong>Soft Lift:</strong> The button appears to 'lift' off the page with a subtle shadow.</li>
+                                <li><strong>Background Sweep:</strong> A solid color 'sweeps' across the button's background.</li>
+                                <li><strong>Underline:</strong> A simple line animates and slides under the button text.</li>
+                            </ul>
+                        `
+                    },
+                    {
+                        name: "Best Practices",
+                        content: `
+                            <h2>Best Practices</h2>
+                            <p>Creating smooth and professional-looking hover effects is all about a light touch.</p>
+                            <h3>Dos</h3>
+                            <ul>
+                                <li><strong>Keep it subtle:</strong> Over-the-top animations can be distracting and annoying.</li>
+                                <li><strong>Use CSS transitions:</strong> This makes the change happen smoothly over time, not instantly.</li>
+                                <li><strong>Respect user settings:</strong> Use the following JavaScript to check for a user's preference for reduced motion:
+                                    <pre><code>if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  // Do not play motion-based animations
+} else {
+  // Play animations
+}</code></pre>
+                                </li>
+                            </ul>
+                            <h3>Don'ts</h3>
+                            <ul>
+                                <li><strong>Don't make them too long:</strong> The animation should be quick and snappy, around 150-200 milliseconds.</li>
+                                <li><strong>Don't change size:</strong> Avoid animations that make the button larger, as this can cause the page layout to shift.</li>
+                                <li><strong>Don't use too many effects:</strong> Stick to one or two simple, elegant effects per button.</li>
+                            </ul>
+                        `
+                    },
+                    {
+                        name: "FAQs",
+                        content: `
+                            <h2>FAQs</h2>
+                            <h3>Frequently Asked Questions</h3>
+                            <ul>
+                                <li><strong>Why are hover effects important?</strong>
+                                <p>They provide visual feedback to users, indicating that an element is interactive and can be clicked. This is especially helpful for first-time visitors to your site.</p></li>
+                                <li><strong>What's the difference between a hover and a focus state?</strong>
+                                <p>A hover state is for mouse users, while a focus state (often a glowing outline) is for keyboard users who navigate using the 'Tab' key.</p></li>
+                                <li><strong>Should all my buttons have hover effects?</strong>
+                                <p>Yes, all interactive elements should provide some form of visual feedback to the user, whether it's a hover effect, a color change, or a subtle animation.</p></li>
+                                <li><strong>How do I add a glow effect to my button?</strong>
+                                <p>You can use the <code>box-shadow</code> property with a glowing color and a large blur radius to create a neon-like glow on hover.</p></li>
+                                <li><strong>What is a 'micro-interaction'?</strong>
+                                <p>A micro-interaction is a small, subtle animation that provides feedback to the user, like a button that shakes on an error or a ripple effect on a click.</p></li>
+                            </ul>
+                        `
+                    }
+                ]
+            }
+        },
+        {
+            title: "Click & Micro-Interactions",
+            code: `/* JavaScript for a ripple effect */
+button.addEventListener('click', (e) => {
+    // create a ripple element and add it to the button
+});`,
+            output: `<div class="flex flex-col sm:flex-row gap-8 items-center">
+                        <button class="btn-preview primary-btn btn-ripple">Ripple Effect</button>
+                        <button class="btn-preview primary-btn shake-btn">Shake on Error</button>
+                     </div>`,
+            explanation: {
+                tabs: [
+                    {
+                        name: "Concepts",
+                        content: `
+                            <h2>Click & Micro-Interactions</h2>
+                            <p class="analogy">A micro-interaction is like a tiny 'thank you' from the website. When you click a button, the website gives you a little visual reward, like a splash of water or a quick shake.</p>
+                            <p>Micro-interactions are small, delightful animations that provide feedback to the user, confirming that an action was received. They make an interface feel alive and well-designed.</p>
+                            <h3>Key Concepts</h3>
+                            <ul>
+                                <li><strong>Ripple Effect:</strong> A circular animation that spreads out from where you clicked, like a drop in water.</li>
+                                <li><strong>Shake on Error:</strong> A quick, short shake animation that signals something went wrong, like a wrong password.</li>
+                                <li><strong>Click Event:</strong> This is a JavaScript term for the moment a user clicks on an element.</li>
+                            </ul>
+                        `
+                    },
+                    {
+                        name: "Best Practices",
+                        content: `
+                            <h2>Best Practices</h2>
+                            <p>Micro-interactions should be functional and not just for show.</p>
+                            <h3>Dos</h3>
+                            <ul>
+                                <li><strong>Provide feedback:</strong> Tell the user that their action was received.</li>
+                                <li><strong>Be quick:</strong> The interaction should be instant and not slow down the user's experience.</li>
+                                <li><strong>Be intentional:</strong> Each micro-interaction should have a clear purpose, whether it's to confirm success or signal an error.</li>
+                            </ul>
+                            <h3>Don'ts</h3>
+                            <ul>
+                                <li><strong>Don't overdo it:</strong> Too many animations can be distracting and slow down your site.</li>
+                                <li><strong>Don't rely on it alone:</strong> A visual shake for an error should be paired with a text message to explain what went wrong.</li>
+                                <li><strong>Don't use it for simple actions:</strong> A micro-interaction should be reserved for more important actions like submitting a form or deleting an item.</li>
+                            </ul>
+                        `
+                    },
+                    {
+                        name: "FAQs",
+                        content: `
+                            <h2>FAQs</h2>
+                            <h3>Frequently Asked Questions</h3>
+                            <ul>
+                                <li><strong>Can micro-interactions slow down my website?</strong>
+                                <p>If done incorrectly, yes. Using complex animations on every button can impact performance, which is why it's important to keep them simple and use CSS for most effects.</p></li>
+                                <li><strong>How do I add a confetti effect to my button?</strong>
+                                <p>A confetti effect can be created using JavaScript and CSS to generate and animate small particles that pop out of the button on click.</p></li>
+                                <li><strong>Should I use micro-interactions on every button?</strong>
+                                <p>No, you should be selective. Reserve micro-interactions for important actions where the user needs clear feedback, like a 'Buy Now' or 'Submit' button.</p></li>
+                                <li><strong>What's the difference between a micro-interaction and a hover effect?</strong>
+                                <p>A hover effect happens when you mouse over a button, while a micro-interaction happens after a user has clicked or performed an action.</p></li>
+                                <li><strong>Are micro-interactions just for fun?</strong>
+                                <p>While they can be fun, their primary purpose is to provide feedback and improve the user experience by making the interface feel more responsive and alive.</p></li>
+                            </ul>
+                        `
+                    }
+                ]
+            }
+        },
+        {
+            title: "Progress & Async States",
+            code: `/* CSS for a progress bar */
+.progress-bar {
+    width: 0%;
+    transition: width 0.3s ease;
+}`,
+            output: `<div class="flex flex-col sm:flex-row gap-4 w-full max-w-sm">
+                        <button id="download-btn" class="btn-preview primary-btn">Download File</button>
+                        <div id="progress-container" class="w-full h-2 bg-gray-200 rounded-full mt-2 hidden">
+                            <div id="progress-bar" class="h-2 bg-green-500 rounded-full" style="width:0%;"></div>
+                        </div>
+                     </div>`,
+            explanation: {
+                tabs: [
+                    {
+                        name: "Concepts",
+                        content: `
+                            <h2>Progress & Async States</h2>
+                            <p class="analogy">A progress bar on a button is like a bar on a watering can. As you pour water, the bar goes down, showing you how much is left. It tells you what's happening!</p>
+                            <p>When a button's action takes time to complete (like downloading a file or submitting a form), it's important to show the user what's happening. These are called 'asynchronous states'.</p>
+                            <h3>Key Concepts</h3>
+                            <ul>
+                                <li><strong>Loading State:</strong> The button's text might change to 'Loading...' or a spinning icon appears to show the user to wait.</li>
+                                <li><strong>Progress Bar:</strong> A visual bar that fills up to show how much of a task is complete.</li>
+                                <li><strong>Disabled State:</strong> The button becomes unclickable and visually faded to prevent the user from clicking it again while the first action is still happening.</li>
+                            </ul>
+                        `
+                    },
+                    {
+                        name: "Best Practices",
+                        content: `
+                            <h2>Best Practices</h2>
+                            <p>Communicating the state of a button is crucial for a good user experience.</p>
+                            <h3>Dos</h3>
+                            <ul>
+                                <li><strong>Give clear feedback:</strong> Always tell the user that their request is being processed.</li>
+                                <li><strong>Disable the button:</strong> Prevent the user from re-clicking a button while it's in a loading state.</li>
+                                <li><strong>Use clear visuals:</strong> A progress bar or spinner gives the user a simple, visual cue that something is happening.</li>
+                            </ul>
+                            <h3>Don'ts</h3>
+                            <ul>
+                                <li><strong>Don't leave the user guessing:</strong> A button that doesn't respond to a click can feel broken.</li>
+                                <li><strong>Don't use vague messages:</strong> A message like "Please wait" is not as helpful as a progress bar or a specific message.</li>
+                                <li><strong>Don't forget to reset:</strong> After a task is complete (success or failure), make sure to reset the button to its normal state.</li>
+                            </ul>
+                        `
+                    },
+                    {
+                        name: "FAQs",
+                        content: `
+                            <h2>FAQs</h2>
+                            <h3>Frequently Asked Questions</h3>
+                            <ul>
+                                <li><strong>What does 'asynchronous' mean?</strong>
+                                <p>It means an action that takes time to complete. The computer can keep doing other things while it waits for the action to finish.</p></li>
+                                <li><strong>Should I use a progress bar for everything?</strong>
+                                <p>No, a progress bar is best for actions that take more than a second or two, like uploading a large file or submitting a complex form.</p></li>
+                                <li><strong>How do I handle errors during an asynchronous state?</strong>
+                                <p>You should display a clear error message to the user and change the button's state to let them know something went wrong.</p></li>
+                                <li><strong>What is the difference between a 'loading state' and a 'progress bar'?</strong>
+                                <p>A loading state is a general 'please wait' message, while a progress bar gives a more specific indication of how much of a task is complete.</p></li>
+                                <li><strong>Can I use a button with a form?</strong>
+                                <p>Yes, buttons are essential for forms! You can use a button with the <code>type="submit"</code> attribute to send the form data to a server.</p></li>
+                            </ul>
+                        `
+                    }
+                ]
+            }
+        },
+        {
+            title: "Advanced Effects",
+            code: `/* CSS for advanced effects */
+.btn-bevel {
+    background: #e9ecef;
+    border: 2px solid #adb5bd;
+    border-top: 2px solid #f8f9fa;
+    border-left: 2px solid #f8f9fa;
+    box-shadow: 2px 2px 0px #343a40;
+    transition: all 0.1s ease-in-out;
+}
+.btn-bevel:active {
+    box-shadow: 1px 1px 0px #343a40;
+    transform: translate(1px, 1px);
+}
+.btn-liquid {
+    position: relative;
+    background: none;
+    color: var(--accent);
+    border: 2px solid var(--accent);
+    transition: color 0.4s;
+    overflow: hidden;
+}
+.btn-liquid::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--accent);
+    border-radius: 45% 55% 55% 45% / 45% 45% 55% 55%;
+    transform: scale(0);
+    transition: transform 0.8s ease, border-radius 0.8s ease;
+    z-index: -1;
+}
+.btn-liquid:hover {
+    color: white;
+}
+.btn-liquid:hover::before {
+    transform: scale(1.4);
+    border-radius: 55% 45% 45% 55% / 55% 55% 45% 45%;
+}
+`,
+            output: `<div class="flex flex-col sm:flex-row gap-8 items-center">
+                        <button class="btn-preview btn-bevel primary-btn">Bevel Retro</button>
+                        <button class="btn-preview btn-liquid tertiary-btn">Liquid Morph</button>
+                     </div>`,
+            explanation: {
+                tabs: [
+                    {
+                        name: "Concepts",
+                        content: `
+                            <h2>Advanced Effects</h2>
+                            <p>Beyond simple hover and click effects, you can create more complex and visually interesting buttons. These effects often use advanced CSS properties to create a unique look and feel.</p>
+                            <h3>Key Concepts</h3>
+                            <ul>
+                                <li><strong>Bevel Retro:</strong> A layered border and shadow effect that simulates a classic, 3D button from older operating systems.</li>
+                                <li><strong>Liquid Morph:</strong> A CSS effect that uses a pseudo-element and <code>border-radius</code> to create a liquid-like animation that "fills" the button on hover.</li>
+                                <li><strong>Form Buttons:</strong> Buttons are crucial for forms. You can use a button to submit a form, or to perform a specific action like "Add another item."</li>
+                                <li><strong>E-Card Buttons:</strong> Buttons on an e-card might be used to play music, reveal a hidden message, or send the card to a friend.</li>
+                            </ul>
+                        `
+                    },
+                    {
+                        name: "Best Practices",
+                        content: `
+                            <h2>Best Practices</h2>
+                            <p>These advanced effects can be powerful, but use them with care to avoid overwhelming the user.</p>
+                            <h3>Dos</h3>
+                            <ul>
+                                <li><strong>Keep it subtle:</strong> Advanced animations should not distract from the main purpose of the button.</li>
+                                <li><strong>Ensure readability:</strong> Make sure the text is always readable, even during complex animations.</li>
+                                <li><strong>Provide fallbacks:</strong> For older browsers that don't support these effects, ensure the button still looks and works correctly.</li>
+                            </ul>
+                            <h3>Don'ts</h3>
+                            <ul>
+                                <li><strong>Don't use them everywhere:</strong> These effects should be reserved for special or important buttons to maintain a clean design.</li>
+                                <li><strong>Don't forget to test:</strong> Test your buttons on different devices and browsers to ensure the effects work as expected.</li>
+                                <li><strong>Don't rely on JavaScript alone:</strong> For performance, try to use CSS for most animations, as it's more efficient than JavaScript.</li>
+                            </ul>
+                        `
+                    },
+                    {
+                        name: "FAQs",
+                        content: `
+                            <h2>FAQs</h2>
+                            <h3>Frequently Asked Questions</h3>
+                            <ul>
+                                <li><strong>What's the difference between CSS and JavaScript for animations?</strong>
+                                <p>CSS is generally more performant for simple animations like color changes and transitions. JavaScript is better for complex, multi-step animations or when you need to control the animation based on user input or data.</p></li>
+                                <li><strong>Can I make a button that changes with an input field?</strong>
+                                <p>Yes, you can use JavaScript to listen for changes in a text field and change the button's color or state based on whether the input is valid or not.</p></li>
+                                <li><strong>What are some other cool button effects?</strong>
+                                <p>You can create a "Gooey" effect using SVG filters, a "Neon Glow" with <code>box-shadow</code>, or even a "Perspective Flip" using CSS <code>transform-style: preserve-3d</code>.</p></li>
+                                <li><strong>How do I make a button for an e-card?</strong>
+                                <p>An e-card button might use a combination of animations and JavaScript. For example, a "Play Music" button could animate a record spinning, or a "Reveal Message" button could have a subtle fade-in effect.</p></li>
+                                <li><strong>Are these advanced effects good for accessibility?</strong>
+                                <p>While visually appealing, complex animations can be difficult for some users. Always ensure you provide a good user experience for all users, including those who have motion-sickness. </p></li>
+                            </ul>
+                        `
+                    }
+                ]
+            }
+        },
+        {
+            title: "Multi-State Button Systems",
+            code: `<!-- Multi-state button with a heart icon -->
+<button id="like-btn" class="btn-preview secondary-btn like-btn">
+    <div class="flex items-center gap-2">
+        <span class="like-icon"></span>
+        <span id="like-count">0</span>
+    </div>
+</button>
+`,
+            output: `<div class="flex flex-col sm:flex-row gap-8 items-center">
+                        <button id="like-btn" class="btn-preview secondary-btn like-btn">
+                            <div class="flex items-center gap-2">
+                                <span class="like-icon"></span>
+                                <span id="like-count">0</span>
+                            </div>
+                        </button>
+                        <button id="play-btn" class="btn-preview primary-btn">Play</button>
+                     </div>`,
+            explanation: {
+                tabs: [
+                    {
+                        name: "Concepts",
+                        content: `
+                            <h2>Multi-State Button Systems</h2>
+                            <p class="analogy">A multi-state button is like a light switch with an 'on' and 'off' state. The button's appearance tells you its current status.</p>
+                            <p>Buttons don't have to be simple one-click actions. They can have multiple states that change based on the application's status. For example, a "Like" button changes from a hollow heart to a filled heart when you click it.</p>
+                            <h3>Key Concepts</h3>
+                            <ul>
+                                <li><strong>State Management:</strong> Using JavaScript to keep track of a button's current status (e.g., liked, unliked, playing, paused).</li>
+                                <li><strong>Visual Feedback:</strong> Changing the button's appearance (color, icon, text) to clearly show the user what state it is in.</li>
+                                <li><strong>Toggle Buttons:</strong> Buttons that switch between two states, like on and off.</li>
+                            </ul>
+                        `
+                    },
+                    {
+                        name: "Best Practices",
+                        content: `
+                            <h2>Best Practices</h2>
+                            <p>Designing effective multi-state buttons requires careful thought to avoid confusing the user.</p>
+                            <h3>Dos</h3>
+                            <ul>
+                                <li><strong>Be intuitive:</strong> The change in state should be obvious and easy for the user to understand.</li>
+                                <li><strong>Animate the change:</strong> Use subtle animations or transitions to make the state change feel smooth and intentional.</li>
+                                <li><strong>Provide a clear default state:</strong> A button should have a clear default state so the user knows what to expect.</li>
+                            </ul>
+                            <h3>Don'ts</h3>
+                            <ul>
+                                <li><strong>Don't use confusing icons:</strong> Make sure your icons clearly represent the button's action.</li>
+                                <li><strong>Don't hide the state:</strong> A user should be able to tell the button's state just by looking at it.</li>
+                                <li><strong>Don't make them too complex:</strong> A button with too many states can be confusing. Stick to simple, two-state toggles when possible.</li>
+                            </ul>
+                        `
+                    },
+                    {
+                        name: "FAQs",
+                        content: `
+                            <h2>FAQs</h2>
+                            <h3>Frequently Asked Questions</h3>
+                            <ul>
+                                <li><strong>How do I create a multi-state button?</strong>
+                                <p>You can use JavaScript to add or remove CSS classes on a button when it is clicked. For example, clicking a button could add a <code>.liked</code> class, which changes its color and icon.</p></li>
+                                <li><strong>How do I make a Play/Pause button?</strong>
+                                <p>You can use an icon that changes between a play symbol and a pause symbol and toggle a <code>.playing</code> class to reflect the media's current state.</p></li>
+                                <li><strong>What's the difference between a toggle button and a radio button?</strong>
+                                <p>A toggle button can be turned on or off independently. A radio button is part of a group, and only one button in the group can be selected at a time.</p></li>
+                                <li><strong>How do I handle the number of likes on a post?</strong>
+                                <p>You can use JavaScript to increment or decrement a number next to the like button when it's clicked, providing immediate visual feedback to the user.</p></li>
+                                <li><strong>Can a button have more than two states?</strong>
+                                <p>Yes, it's possible, but it's best to stick to two states for simplicity. For more complex states, a drop-down menu or a separate section of the UI may be a better choice.</p></li>
+                            </ul>
+                        `
+                    }
+                ]
+            }
+        },
+        {
+            title: "Form Integration & Validation",
+            code: `<!-- A simple form with a disabled button -->
+<form id="my-form" class="flex flex-col gap-4">
+  <input id="email-input-demo" type="email" placeholder="Your Email" class="form-control" required>
+  <button type="submit" id="submit-btn-demo" class="btn-preview primary-btn valid-btn" disabled>Submit Form</button>
+</form>
+`,
+            output: `<div class="p-4 rounded-lg bg-gray-100 valid-form-group">
+                        <form id="my-form" class="flex flex-col gap-4">
+                            <input id="email-input-demo" type="email" placeholder="Your Email" class="form-control" required>
+                            <p id="form-error-msg" class="text-red-600 hidden text-sm text-left">Please enter a valid email address.</p>
+                            <button type="submit" id="submit-btn-demo" class="btn-preview primary-btn valid-btn" disabled>Submit Form</button>
+                        </form>
+                     </div>`,
+            explanation: {
+                tabs: [
+                    {
+                        name: "Concepts",
+                        content: `
+                            <h2>Form Integration & Validation</h2>
+                            <p class="analogy">A button in a form is like the 'send' button on an envelope. It bundles up all the information inside the form and sends it off.</p>
+                            <p>Buttons are essential for forms, as they are the primary way a user submits their information. To improve the user experience, you can use JavaScript to validate the form's inputs and only enable the button when the form is ready to be submitted.</p>
+                            <h3>Key Concepts</h3>
+                            <ul>
+                                <li><strong>Form Submission:</strong> The process of sending form data to a server for processing.</li>
+                                <li><strong>Client-Side Validation:</strong> Checking the user's input in the browser before it's sent to the server.</li>
+                                <li><strong>Conditional Enabling:</strong> Using JavaScript to enable or disable a button based on the state of the form.</li>
+                            </ul>
+                        `
+                    },
+                    {
+                        name: "Best Practices",
+                        content: `
+                            <h2>Best Practices</h2>
+                            <p>Forms can be a major point of friction for users. Here’s how to make them smoother.</p>
+                            <h3>Dos</h3>
+                            <ul>
+                                <li><strong>Provide real-time feedback:</strong> Show users if an input is valid or invalid as they type.</li>
+                                <li><strong>Disable the submit button:</strong> Prevent users from clicking a button that won't work anyway.</li>
+                                <li><strong>Use semantic HTML:</strong> Use \`type="email"\` or \`type="tel"\` to give the browser hints on how to validate the input.</li>
+                            </ul>
+                            <h3>Don'ts</h3>
+                            <ul>
+                                <li><strong>Don't rely solely on client-side validation:</strong> Always validate on the server as well, as a user can bypass client-side checks.</li>
+                                <li><strong>Don't hide error messages:</strong> Make sure error messages are clearly visible and easy to understand.</li>
+                                <li><strong>Don't make your forms too long:</strong> Break complex forms into multiple steps with a "Next" and "Previous" button.</li>
+                            </ul>
+                        `
+                    },
+                    {
+                        name: "FAQs",
+                        content: `
+                            <h2>FAQs</h2>
+                            <h3>Frequently Asked Questions</h3>
+                            <ul>
+                                <li><strong>Why would I want to disable a submit button?</strong>
+                                <p>Disabling a submit button prevents the user from submitting a form with missing or invalid data, improving the user experience and preventing unnecessary requests to the server.</p></li>
+                                <li><strong>What's the difference between client-side and server-side validation?</strong>
+                                <p>Client-side validation happens in the browser and is for immediate feedback. Server-side validation happens on the server and is the ultimate source of truth, as it cannot be bypassed by the user.</p></li>
+                                <li><strong>How do I prevent double-submission of a form?</strong>
+                                <p>You can disable the submit button immediately after the first click and re-enable it only after you receive a response from the server.</p></li>
+                                <li><strong>What's a multi-step form?</strong>
+                                <p>A multi-step form breaks a long, complex form into several smaller, more manageable sections, with a "Next" and "Previous" button to navigate between them. This can reduce user fatigue.</p></li>
+                                <li><strong>Can I use a button to add more input fields to a form?</strong>
+                                <p>Yes, you can use a button with a \`type="button"\` attribute and a JavaScript event listener to dynamically add new fields to the form.</p></li>
+                            </ul>
+                        `
+                    }
+                ]
+            }
+        },
+        {
+            title: "Accessibility & Screen Reader Optimization",
+            code: `<!-- Buttons with accessible labels -->
+<button class="btn-preview primary-btn" aria-label="Submit Form">Submit Form</button>
+<button class="btn-preview secondary-btn" aria-label="Close menu">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+</button>
+`,
+            output: `<div class="flex flex-col sm:flex-row gap-8 items-center">
+                        <button class="btn-preview primary-btn" aria-label="Submit Form">Submit Form</button>
+                        <button class="btn-preview secondary-btn" aria-label="Close menu">
+                           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                        </button>
+                    </div>`,
+            explanation: {
+                tabs: [
+                    {
+                        name: "Concepts",
+                        content: `
+                            <h2>Accessibility & Screen Reader Optimization</h2>
+                            <p class="analogy">Making a button accessible is like putting braille on a sign. It allows everyone, including those who cannot see, to understand and use it.</p>
+                            <p>Accessibility is the practice of designing and developing web content to be usable by people with disabilities. For buttons, this means ensuring they can be navigated to and activated using only a keyboard and that their purpose is clear to a screen reader.</p>
+                            <h3>Key Concepts</h3>
+                            <ul>
+                                <li><strong>ARIA Attributes:</strong> Attributes like <code>aria-label</code> provide additional information to screen readers about the purpose of an element.</li>
+                                <li><strong>Keyboard Navigation:</strong> The ability to move between interactive elements using the 'Tab' key and activate them with 'Enter' or 'Space'.</li>
+                                <li><strong>Color Contrast:</strong> Ensuring the color of the text is visually distinct from the color of the background.</li>
+                            </ul>
+                        `
+                    },
+                    {
+                        name: "Best Practices",
+                        content: `
+                            <h2>Best Practices</h2>
+                            <p>Here are some crucial best practices for making your buttons accessible to everyone.</p>
+                            <h3>Dos</h3>
+                            <ul>
+                                <li><strong>Use semantic HTML:</strong> Always use the <code>&lt;button&gt;</code> tag for buttons, as it comes with built-in accessibility features.</li>
+                                <li><strong>Provide clear labels:</strong> For buttons with only an icon, use an <code>aria-label</code> attribute to describe the button's function.</li>
+                                <li><strong>Ensure focus visibility:</strong> Make sure the button has a clear focus outline so keyboard users know which element is currently selected.</li>
+                            </ul>
+                            <h3>Don'ts</h3>
+                            <ul>
+                                <li><strong>Don't remove the focus outline:</strong> Removing the focus outline breaks keyboard navigation for many users.</li>
+                                <li><strong>Don't rely on color alone:</strong> Don't use color as the sole means of conveying information, as some users may be colorblind.</li>
+                                <li><strong>Don't hide content from screen readers:</strong> Use attributes like <code>aria-hidden="true"</code> only for decorative content, not for essential information.</li>
+                            </ul>
+                        `
+                    },
+                    {
+                        name: "FAQs",
+                        content: `
+                            <h2>FAQs</h2>
+                            <h3>Frequently Asked Questions</h3>
+                            <ul>
+                                <li><strong>What's the difference between \`alt\` and \`aria-label\`?</strong>
+                                <p>The <code>alt</code> attribute is used for images, while <code>aria-label</code> is used for providing a descriptive text label to an element that doesn't have one, such as an icon-only button.</p></li>
+                                <li><strong>How can I test for accessibility?</strong>
+                                <p>You can use browser developer tools, automated accessibility checkers like Lighthouse, and, most importantly, test with actual users who rely on assistive technologies.</p></li>
+                                <li><strong>What's a 'focus trap'?</strong>
+                                <p>A focus trap is a design pattern that keeps the user's focus contained within a specific element (like a modal dialog) to prevent them from accidentally tabbing away and getting lost on the page.</p></li>
+                                <li><strong>How does a screen reader 'see' a button?</strong>
+                                <p>A screen reader reads the button's text label or its <code>aria-label</code> attribute to announce its purpose to the user, and it identifies the element as a button so the user knows they can click it.</p></li>
+                                <li><strong>What is the WCAG?</strong>
+                                <p>The Web Content Accessibility Guidelines (WCAG) is a set of guidelines that outlines how to make web content more accessible. It's the international standard for web accessibility.</p></li>
+                            </ul>
+                        `
+                    }
+                ]
+            }
+        },
+         {
+             title: "Advanced Animations & Performance",
+             code: `/* CSS for advanced animations */
+ .btn-bounce {
+     background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+     color: white;
+     border: none;
+     position: relative;
+     overflow: hidden;
+ }
+ .btn-bounce:hover {
+     animation: bounce 0.6s ease-in-out;
+ }
+ @keyframes bounce {
+     0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+     40% { transform: translateY(-10px); }
+     60% { transform: translateY(-5px); }
+ }
+ 
+ .btn-pulse {
+     background: linear-gradient(45deg, #667eea, #764ba2);
+     color: white;
+     border: none;
+     animation: pulse 2s infinite;
+ }
+ @keyframes pulse {
+     0% { transform: scale(1); }
+     50% { transform: scale(1.05); }
+     100% { transform: scale(1); }
+ }
+ 
+ .btn-rotate {
+     background: linear-gradient(45deg, #f093fb, #f5576c);
+     color: white;
+     border: none;
+     transition: transform 0.3s ease;
+ }
+ .btn-rotate:hover {
+     transform: rotate(5deg) scale(1.1);
+ }
+ 
+ .btn-slide {
+     background: linear-gradient(45deg, #4facfe, #00f2fe);
+     color: white;
+     border: none;
+     position: relative;
+     overflow: hidden;
+ }
+ .btn-slide::before {
+     content: '';
+     position: absolute;
+     top: 0;
+     left: -100%;
+     width: 100%;
+     height: 100%;
+     background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+     transition: left 0.5s;
+ }
+ .btn-slide:hover::before {
+     left: 100%;
+ }`,
+             output: `<div class="flex flex-col sm:flex-row gap-4 items-center">
+                         <button class="btn-preview btn-bounce">Bounce</button>
+                         <button class="btn-preview btn-pulse">Pulse</button>
+                         <button class="btn-preview btn-rotate">Rotate</button>
+                         <button class="btn-preview btn-slide">Slide</button>
+                     </div>`,
+            explanation: {
+                tabs: [
+                    {
+                        name: "Concepts",
+                        content: `
+                            <h2>Advanced Animations & Performance</h2>
+                            <p class="analogy">Advanced animations are like the special effects in a movie. They are exciting to watch, but a good director makes sure they don't distract from the story.</p>
+                            <p>Complex animations can make a button feel magical and engaging, but they must be implemented carefully to avoid impacting your website's performance. The key is to use efficient CSS properties and to offload heavy calculations from the main thread.</p>
+                            <h3>Key Concepts</h3>
+                            <ul>
+                                <li><strong>CSS Transforms:</strong> Properties like <code>transform: translate</code> and <code>transform: scale</code> are highly optimized for animations.</li>
+                                <li><strong>GPU Acceleration:</strong> Moving animation rendering from the CPU to the GPU, which makes animations smoother and more performant.</li>
+                                <li><strong>\`will-change\` Property:</strong> A CSS property that hints to the browser which elements will be animated, allowing it to optimize rendering in advance.</li>
+                            </ul>
+                        `
+                    },
+                    {
+                        name: "Best Practices",
+                        content: `
+                            <h2>Best Practices</h2>
+                            <p>Here’s how to create amazing animations without making your website slow.</p>
+                            <h3>Dos</h3>
+                            <ul>
+                                <li><strong>Use transforms over properties:</strong> Use CSS transforms (e.g., <code>translate</code>) instead of animating layout properties (e.g., <code>top</code> or <code>left</code>).</li>
+                                <li><strong>Keep animations short:</strong> Long, drawn-out animations can feel slow and unresponsive.</li>
+                                <li><strong>Test on all devices:</strong> What looks smooth on a desktop might lag on a mobile device. Always test on a range of devices.</li>
+                            </ul>
+                            <h3>Don'ts</h3>
+                            <ul>
+                                <li><strong>Don't animate too much:</strong> A single, well-done animation is better than ten choppy ones.</li>
+                                <li><strong>Don't over-rely on JavaScript:</strong> Use CSS for animations whenever possible, as it is more performant than JavaScript for simple tasks.</li>
+                                <li><strong>Don't animate color or background position:</strong> These are expensive properties to animate and can hurt performance.</li>
+                            </ul>
+                        `
+                    },
+                    {
+                        name: "FAQs",
+                        content: `
+                            <h2>FAQs</h2>
+                            <h3>Frequently Asked Questions</h3>
+                            <ul>
+                                <li><strong>What's a "3D flip" transition?</strong>
+                                <p>A 3D flip transition uses CSS properties like <code>transform-style: preserve-3d</code> to make an element appear to flip over in 3D space, revealing new content on the back.</p></li>
+                                <li><strong>How do I measure animation performance?</strong>
+                                <p>You can use the browser's built-in developer tools, such as the Performance panel, to record and analyze how your animations are affecting the frame rate.</p></li>
+                                <li><strong>What is "layout thrashing"?</strong>
+                                <p>Layout thrashing is a performance issue that happens when you repeatedly read and write to the DOM in a way that forces the browser to recalculate the layout, causing a performance hit.</p></li>
+                                <li><strong>When should I use JavaScript for animations?</strong>
+                                <p>You should use JavaScript for complex animations that depend on a user's input, physics-based effects, or when you need to animate properties that can't be done with CSS.</p></li>
+                                <li><strong>Can I use a morphing animation for a button?</strong>
+                                <p>Yes, morphing effects are great for buttons! You can use SVG filters or a CSS pseudo-element with animated <code>border-radius</code> to create a fluid, organic morphing effect on hover.</p></li>
+                            </ul>
+                        `
+                    }
+                ]
+            }
+        },
+        {
+            title: "Context-Aware & Intelligent Buttons",
+            code: `<!-- A context-aware button -->
+<button id="smart-btn" class="btn-preview primary-btn">Save</button>
+`,
+            output: `<div class="flex flex-col sm:flex-row gap-8 items-center">
+                        <button id="smart-btn-demo" class="btn-preview primary-btn">Save</button>
+                        <button id="undo-btn-demo" class="btn-preview secondary-btn">Undo</button>
+                     </div>`,
+            explanation: {
+                tabs: [
+                    {
+                        name: "Concepts",
+                        content: `
+                            <h2>Context-Aware & Intelligent Buttons</h2>
+                            <p class="analogy">An intelligent button is like a friend who anticipates what you need before you even ask for it. It changes its message to be as helpful as possible.</p>
+                            <p>Buttons can be made "smarter" by adapting to the user's behavior and the current context of the application. This could mean changing a button's text from "Save" to "Saved" after a user clicks it or providing a more relevant action based on the user's device.</p>
+                            <h3>Key Concepts</h3>
+                            <ul>
+                                <li><strong>Dynamic Button Text:</strong> Changing the button's text based on the application's state (e.g., "Login" vs "Logout").</li>
+                                <li><strong>Conditional Rendering:</strong> Showing or hiding a button based on specific conditions (e.g., showing an "Edit" button only to an authenticated user).</li>
+                                <li><strong>Smart Defaults:</strong> Pre-selecting a default action or input for the user to make their experience faster.</li>
+                            </ul>
+                        `
+                    },
+                    {
+                        name: "Best Practices",
+                        content: `
+                            <h2>Best Practices</h2>
+                            <p>Designing intelligent buttons requires a deep understanding of your users' needs and the application's context.</p>
+                            <h3>Dos</h3>
+                            <ul>
+                                <li><strong>Be predictable:</strong> The button's behavior should be predictable and not surprise the user.</li>
+                                <li><strong>Be clear:</strong> Even when the button is being "smart," its purpose should still be crystal clear to the user.</li>
+                                <li><strong>Test for different contexts:</strong> Test your buttons on different devices, screen sizes, and with various user inputs to ensure they adapt correctly.</li>
+                            </ul>
+                            <h3>Don'ts</h3>
+                            <ul>
+                                <li><strong>Don't be too smart:</strong> A button that changes too often can be confusing and frustrating for users.</li>
+                                <li><strong>Don't hide essential actions:</strong> Never hide a key action from the user just because the button is trying to be "smart."</li>
+                                <li><strong>Don't force a button's purpose:</strong> If a button has too many different actions, it may be a sign that you need to use a different UI element, like a dropdown menu.</li>
+                            </ul>
+                        `
+                    },
+                    {
+                        name: "FAQs",
+                        content: `
+                            <h2>FAQs</h2>
+                            <h3>Frequently Asked Questions</h3>
+                            <ul>
+                                <li><strong>How do I make a button change its text?</strong>
+                                <p>You can use JavaScript to change the <code>textContent</code> property of a button. For example, after a user clicks "Save," you can change the text to "Saved!" to provide immediate feedback.</p></li>
+                                <li><strong>What's an example of a "smart" action button?</strong>
+                                <p>A "smart" button might change from "Call" to "Email" on a mobile device, depending on whether the user is in a location where a phone call might be a bad idea, like a library.</p></li>
+                                <li><strong>What is 'progressive disclosure'?</strong>
+                                <p>Progressive disclosure is an interaction design technique that hides less important information or functionality from the user until they need it, which can be done with a "Show More" or "Read More" button.</p></li>
+                                <li><strong>How do I handle an "Undo" button?</strong>
+                                <p>An "Undo" button often works with a timer. After a user performs an action, an "Undo" button appears for a few seconds, giving them a chance to revert the change before it becomes permanent.</p></li>
+                                <li><strong>Can I use an intelligent button in an e-card?</strong>
+                                <p>Yes, an e-card button could change its text from "Click to reveal" to "Message revealed" after being clicked, or it could change its action from "Send now" to "Schedule for later" based on the user's input.</p></li>
+                            </ul>
+                        `
+                    }
+                ]
+            }
+        },
+        {
+            title: "When to use Buttons vs. Links",
+            code: `<!-- Use <button> for actions -->
+<button onclick="saveFile()">Save Changes</button>
+
+<!-- Use <a> for navigation -->
+<a href="/about-us">Learn more about us</a>`,
+            output: `<div class="flex flex-col sm:flex-row gap-8 items-center">
+                        <button class="btn-preview primary-btn">Perform an Action</button>
+                        <a href="#" class="btn-preview tertiary-btn">Go to another page</a>
+                     </div>`,
+            explanation: {
+                tabs: [
+                    {
+                        name: "Concepts",
+                        content: `
+                            <h2>Buttons vs. Links</h2>
+                            <p class="analogy">Buttons are for 'doing' things, while links are for 'going' places. A button might save your work, while a link takes you to the next chapter of your story.</p>
+                            <p>This is one of the most important rules in web development! Use a &lt;button&gt; tag when the user is performing an action on the current page, like submitting a form or playing a song. Use an &lt;a&gt; (anchor) tag when the user is navigating to a different page.</p>
+                            <h3>Key Concepts</h3>
+                            <ul>
+                                <li><strong>Button:</strong> For actions. It sends data or triggers a function.</li>
+                                <li><strong>Link (&lt;a&gt;):</strong> For navigation. It takes the user to a new URL or a different section of the same page.</li>
+                                <li><strong>Semantics:</strong> This is the idea of using the right HTML element for the right job. Using the correct element makes your website more accessible and easier for search engines to understand.</li>
+                            </ul>
+                        `
+                    },
+                    {
+                        name: "Best Practices",
+                        content: `
+                            <h2>Best Practices</h2>
+                            <p>Choosing the right element is a key part of writing good HTML.</p>
+                            <h3>Dos</h3>
+                            <ul>
+                                <li><strong>Use the correct tag:</strong> It's better for accessibility and search engine optimization.</li>
+                                <li><strong>Be explicit:</strong> Make sure your links and buttons are clearly defined and styled differently.</li>
+                                <li><strong>Use <code>aria</code> attributes:</strong> For complex interactions, use ARIA attributes like <code>aria-role</code> and <code>aria-label</code> to help screen readers.</li>
+                            </ul>
+                            <h3>Don'ts</h3>
+                            <ul>
+                                <li><strong>Don't style a link to look like a button:</strong> This can confuse users and break accessibility.</li>
+                                <li><strong>Don't use JavaScript for navigation:</strong> Let the &lt;a&gt; tag do the job of navigating between pages.</li>
+                                <li><strong>Don't forget the <code>href</code>:</strong> A link without an <code>href</code> is not a valid link!</li>
+                            </ul>
+                        `
+                    },
+                    {
+                        name: "FAQs",
+                        content: `
+                            <h2>FAQs</h2>
+                            <h3>Frequently Asked Questions</h3>
+                            <ul>
+                                <li><strong>Why can't I just style a <code>&lt;div&gt;</code> to be a button?</strong>
+                                <p>You can, but a <code>&lt;div&gt;</code> is not a button. It doesn't have built-in accessibility features or semantic meaning. Using the correct tag is always the best practice.</p></li>
+                                <li><strong>Is it bad to use <code>javascript:void(0)</code> in a link?</strong>
+                                <p>Yes, it's generally considered bad practice. It breaks normal link behavior, can confuse users, and is not good for accessibility. A button is a better choice for an action.</p></li>
+                                <li><strong>What is a 'semantic' element?</strong>
+                                <p>A semantic element is an HTML tag that clearly describes its purpose, such as <code>&lt;button&gt;</code>, <code>&lt;form&gt;</code>, or <code>&lt;header&gt;</code>. This helps browsers and developers understand the structure of the page.</p></li>
+                                <li><strong>Why is it important to use ARIA attributes?</strong>
+                                <p>ARIA (Accessible Rich Internet Applications) attributes provide additional information to assistive technologies, such as screen readers, to help users with disabilities understand and interact with your web page.</p></li>
+                                <li><strong>How do I handle a 'disabled' button?</strong>
+                                <p>You can use the <code>disabled</code> attribute on a button, which prevents it from being clicked and gives it a faded visual style. For links, you can use the <code>aria-disabled="true"</code> attribute to convey the same meaning to screen readers.</p></li>
+                            </ul>
+                        `
+                    }
+                 ]
+             }
+         },
+         {
+             title: "🎉 Congratulations! You've Mastered Buttons!",
+             code: `<!-- You now know how to create amazing buttons! -->
+ <button class="btn-preview primary-btn">You're a Button Expert!</button>`,
+             output: `<div class="flex flex-col items-center gap-8 p-8">
+                         <div class="text-center">
+                             <h2 class="text-3xl font-bold text-green-600 mb-4">🎉 Congratulations!</h2>
+                             <p class="text-lg mb-6">You've completed the Button Tutorial and learned all the essential concepts!</p>
+                         </div>
+                         <div class="grid grid-cols-2 gap-4 max-w-md">
+                             <button class="btn-preview primary-btn">Primary</button>
+                             <button class="btn-preview secondary-btn">Secondary</button>
+                             <button class="btn-preview btn-lift primary-btn">Hover Lift</button>
+                             <button class="btn-preview btn-ripple primary-btn">Ripple</button>
+                         </div>
+                     </div>`,
+             explanation: {
+                 tabs: [
+                     {
+                         name: "What You Learned",
+                         content: `
+                             <h2>🎓 Your Button Journey</h2>
+                             <p class="analogy">You've gone from button beginner to button expert! Like learning to drive, you now have all the skills to create amazing interactive experiences.</p>
+                             
+                             <h3>✅ Core Concepts Mastered</h3>
+                             <ul>
+                                 <li><strong>HTML Basics:</strong> You learned the fundamental <code>&lt;button&gt;</code> element and its proper usage</li>
+                                 <li><strong>CSS Styling:</strong> You mastered primary, secondary, and tertiary button styles</li>
+                                 <li><strong>Hover Effects:</strong> You can create smooth transitions and visual feedback</li>
+                                 <li><strong>Micro-interactions:</strong> You know how to add ripple effects and shake animations</li>
+                                 <li><strong>Form Integration:</strong> You understand how buttons work with forms and validation</li>
+                                 <li><strong>Accessibility:</strong> You learned to make buttons work for everyone</li>
+                                 <li><strong>Advanced Effects:</strong> You can create bevel, liquid morph, and other creative styles</li>
+                                 <li><strong>Performance:</strong> You understand how to optimize animations</li>
+                             </ul>
+                             
+                             <h3>🚀 Next Steps</h3>
+                             <ul>
+                                 <li><strong>Practice:</strong> Try creating your own button designs</li>
+                                 <li><strong>Experiment:</strong> Combine different effects and styles</li>
+                                 <li><strong>Build:</strong> Use these skills in your own projects</li>
+                                 <li><strong>Share:</strong> Show off your button creations!</li>
+                             </ul>
+                         `
+                     },
+                     {
+                         name: "Key Takeaways",
+                         content: `
+                             <h2>💡 Essential Button Principles</h2>
+                             <p>Remember these golden rules for creating great buttons:</p>
+                             
+                             <h3>🎯 Design Principles</h3>
+                             <ul>
+                                 <li><strong>Clarity:</strong> Button text should clearly explain what it does</li>
+                                 <li><strong>Hierarchy:</strong> Use primary/secondary/tertiary to guide user attention</li>
+                                 <li><strong>Consistency:</strong> Keep button styles consistent across your site</li>
+                                 <li><strong>Feedback:</strong> Always provide visual feedback on interaction</li>
+                             </ul>
+                             
+                             <h3>♿ Accessibility First</h3>
+                             <ul>
+                                 <li><strong>Semantic HTML:</strong> Use <code>&lt;button&gt;</code> for actions, <code>&lt;a&gt;</code> for navigation</li>
+                                 <li><strong>Keyboard Support:</strong> Ensure buttons work with Tab and Enter/Space</li>
+                                 <li><strong>Screen Readers:</strong> Provide clear labels and descriptions</li>
+                                 <li><strong>Color Contrast:</strong> Ensure text is readable against backgrounds</li>
+                             </ul>
+                             
+                             <h3>⚡ Performance Tips</h3>
+                             <ul>
+                                 <li><strong>CSS First:</strong> Use CSS for simple animations, JavaScript for complex ones</li>
+                                 <li><strong>Transform Properties:</strong> Animate transforms instead of layout properties</li>
+                                 <li><strong>Reduce Motion:</strong> Respect user preferences for reduced motion</li>
+                                 <li><strong>Test Performance:</strong> Check animations on different devices</li>
+                             </ul>
+                         `
+                     },
+                     {
+                         name: "Resources & Tools",
+                         content: `
+                             <h2>🛠️ Continue Your Learning</h2>
+                             <p>Here are some resources to help you continue improving your button skills:</p>
+                             
+                             <h3>📚 Learning Resources</h3>
+                             <ul>
+                                 <li><strong>MDN Web Docs:</strong> Comprehensive HTML and CSS documentation</li>
+                                 <li><strong>CSS Tricks:</strong> Great tutorials and examples for advanced CSS</li>
+                                 <li><strong>Web.dev:</strong> Google's web development learning platform</li>
+                                 <li><strong>Accessibility Guidelines:</strong> WCAG 2.1 for accessibility best practices</li>
+                             </ul>
+                             
+                             <h3>🎨 Design Inspiration</h3>
+                             <ul>
+                                 <li><strong>Dribbble:</strong> See amazing button designs from designers worldwide</li>
+                                 <li><strong>CodePen:</strong> Explore interactive button examples and code</li>
+                                 <li><strong>GitHub:</strong> Find open-source button libraries and components</li>
+                                 <li><strong>Design Systems:</strong> Study button patterns from companies like Material Design</li>
+                             </ul>
+                             
+                             <h3>🔧 Development Tools</h3>
+                             <ul>
+                                 <li><strong>Browser DevTools:</strong> Test and debug your button interactions</li>
+                                 <li><strong>Lighthouse:</strong> Check accessibility and performance</li>
+                                 <li><strong>Color Contrast Checkers:</strong> Ensure your buttons meet accessibility standards</li>
+                                 <li><strong>Animation Libraries:</strong> Consider libraries like Framer Motion for complex animations</li>
+                             </ul>
+                             
+                             <div class="analogy">
+                                 <strong>Remember:</strong> Great buttons are like good friends - they're reliable, helpful, and make your experience better. Keep practicing, keep experimenting, and most importantly, keep making the web more interactive and accessible for everyone!
+                             </div>
+                         `
+                     }
+                 ]
+             }
+         }
+     ];
+
+    let currentStep = 0;
+
+    const introScreen = document.getElementById('intro-screen');
+    const tutorialScreen = document.getElementById('tutorial-screen');
+    const startBtn = document.getElementById('start-tutorial-btn');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const explanationPanelBody = document.getElementById('explanation-panel-body');
+
+    function showScreen(screen) {
+        introScreen.style.display = 'none';
+        tutorialScreen.style.display = 'none';
+        if (screen.id === 'tutorial-screen') {
+            screen.style.display = 'grid';
+        } else {
+            screen.style.display = 'flex';
+        }
+    }
+
+    function renderStep() {
+        const step = buttonTutorialData[currentStep];
+        
+        // Render explanation with tabs
+        explanationPanelBody.innerHTML = `
+            <div class="explanation-tabs">
+                ${step.explanation.tabs.map((tab, index) => `
+                    <button class="explanation-tab ${index === 0 ? 'active' : ''}" data-tab-index="${index}">${tab.name}</button>
+                `).join('')}
+            </div>
+            ${step.explanation.tabs.map((tab, index) => `
+                <div class="explanation-content ${index === 0 ? 'active' : ''}" data-tab-content-index="${index}">
+                    ${tab.content}
+                </div>
+            `).join('')}
+        `;
+
+        // Render code and output
+        document.getElementById('code-viewer').textContent = step.code;
+        document.getElementById('output-viewer').innerHTML = step.output;
+        
+         // Handle button states
+         prevBtn.disabled = currentStep === 0;
+         nextBtn.disabled = currentStep === buttonTutorialData.length - 1;
+         
+         // Special handling for summary screen (last screen)
+         if (currentStep === buttonTutorialData.length - 1) {
+             nextBtn.style.display = 'none';
+             prevBtn.textContent = '← Previous';
+             
+             // Add Start Again button
+             if (!document.getElementById('start-again-btn')) {
+                 const startAgainBtn = document.createElement('button');
+                 startAgainBtn.id = 'start-again-btn';
+                 startAgainBtn.className = 'nav-btn';
+                 startAgainBtn.textContent = '🔄 Start Again';
+                 startAgainBtn.onclick = () => {
+                     currentStep = 0;
+                     showScreen(introScreen);
+                 };
+                 document.querySelector('.nav-btns').appendChild(startAgainBtn);
+             }
+         } else {
+             nextBtn.style.display = 'inline-block';
+             const startAgainBtn = document.getElementById('start-again-btn');
+             if (startAgainBtn) {
+                 startAgainBtn.remove();
+             }
+         }
+
+        // Setup tab switching logic
+        document.querySelectorAll('.explanation-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabIndex = tab.dataset.tabIndex;
+                document.querySelectorAll('.explanation-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.explanation-content').forEach(c => c.classList.remove('active'));
+                tab.classList.add('active');
+                document.querySelector(`[data-tab-content-index="${tabIndex}"]`).classList.add('active');
+            });
+        });
+
+        // Special case for interactive effects
+        const rippleBtn = document.querySelector('.btn-ripple');
+        if (rippleBtn) {
+            rippleBtn.onclick = (e) => {
+                const rect = e.target.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const ripple = document.createElement('span');
+                ripple.className = 'ripple';
+                ripple.style.left = `${x}px`;
+                ripple.style.top = `${y}px`;
+                rippleBtn.appendChild(ripple);
+                setTimeout(() => ripple.remove(), 600);
+            };
+        }
+
+        const shakeBtn = document.querySelector('.shake-btn');
+        if (shakeBtn) {
+            shakeBtn.onclick = () => {
+                shakeBtn.classList.add('shake-active');
+                setTimeout(() => shakeBtn.classList.remove('shake-active'), 500);
+            };
+        }
+
+        const downloadBtn = document.getElementById('download-btn');
+        if (downloadBtn) {
+            downloadBtn.onclick = () => {
+                const progressContainer = document.getElementById('progress-container');
+                const progressBar = document.getElementById('progress-bar');
+                downloadBtn.disabled = true;
+                downloadBtn.textContent = 'Downloading...';
+                progressContainer.classList.remove('hidden');
+
+                let progress = 0;
+                const interval = setInterval(() => {
+                    progress += 10;
+                    progressBar.style.width = `${progress}%`;
+                    if (progress >= 100) {
+                        clearInterval(interval);
+                        downloadBtn.textContent = 'Download Complete!';
+                        downloadBtn.style.backgroundColor = 'var(--ok)';
+                        setTimeout(() => {
+                            downloadBtn.disabled = false;
+                            downloadBtn.textContent = 'Download File';
+                            downloadBtn.style.backgroundColor = 'var(--accent)';
+                            progressBar.style.width = '0%';
+                            progressContainer.classList.add('hidden');
+                        }, 1500);
+                    }
+                }, 150);
+            };
+        }
+        
+        // Advanced Effect Interactivity
+        const bevelBtn = document.querySelector('.btn-bevel');
+        if (bevelBtn) {
+            bevelBtn.addEventListener('mousedown', () => {
+                bevelBtn.style.boxShadow = "1px 1px 0px var(--text)";
+                bevelBtn.style.transform = "translate(1px, 1px)";
+            });
+            bevelBtn.addEventListener('mouseup', () => {
+                bevelBtn.style.boxShadow = "2px 2px 0px var(--text)";
+                bevelBtn.style.transform = "translate(0px, 0px)";
+            });
+            bevelBtn.addEventListener('mouseleave', () => {
+                 bevelBtn.style.boxShadow = "2px 2px 0px var(--text)";
+                 bevelBtn.style.transform = "translate(0px, 0px)";
+            });
+        }
+        const likeBtn = document.getElementById('like-btn');
+        if (likeBtn) {
+            let liked = false;
+            let count = 0;
+            const likeCount = document.getElementById('like-count');
+            likeBtn.onclick = () => {
+                if (liked) {
+                    liked = false;
+                    count--;
+                    likeBtn.classList.remove('liked');
+                } else {
+                    liked = true;
+                    count++;
+                    likeBtn.classList.add('liked');
+                }
+                likeCount.textContent = count;
+            }
+        }
+        const playBtn = document.getElementById('play-btn');
+        if (playBtn) {
+            let isPlaying = false;
+            playBtn.onclick = () => {
+                if (isPlaying) {
+                    playBtn.textContent = "Play";
+                    isPlaying = false;
+                } else {
+                    playBtn.textContent = "Pause";
+                    isPlaying = true;
+                }
+            }
+        }
+
+        const emailInput = document.getElementById('email-input-demo');
+        const submitBtn = document.getElementById('submit-btn-demo');
+        const errorMsg = document.getElementById('form-error-msg');
+        if (emailInput && submitBtn) {
+            // Initialize button as disabled
+            submitBtn.disabled = true;
+            submitBtn.classList.add('opacity-50');
+            submitBtn.style.pointerEvents = 'none';
+            
+            emailInput.addEventListener('input', () => {
+                const isValid = emailInput.validity.valid && emailInput.value.trim() !== '';
+                if (isValid) {
+                    submitBtn.disabled = false;
+                    submitBtn.classList.remove('opacity-50');
+                    submitBtn.style.pointerEvents = 'auto';
+                    submitBtn.style.backgroundColor = 'var(--accent)';
+                    submitBtn.style.cursor = 'pointer';
+                    errorMsg.classList.add('hidden');
+                } else {
+                    submitBtn.disabled = true;
+                    submitBtn.classList.add('opacity-50');
+                    submitBtn.style.pointerEvents = 'none';
+                    submitBtn.style.backgroundColor = '';
+                    submitBtn.style.cursor = 'not-allowed';
+                    if (emailInput.value !== '') {
+                         errorMsg.classList.remove('hidden');
+                    } else {
+                         errorMsg.classList.add('hidden');
+                    }
+                }
+            });
+             submitBtn.addEventListener('click', (e) => {
+                 e.preventDefault();
+                 showModal();
+             });
+        }
+    }
+
+    // Modal functions
+    function showModal() {
+        const modal = document.getElementById('form-modal');
+        modal.classList.add('active');
+    }
+
+    function closeModal() {
+        const modal = document.getElementById('form-modal');
+        modal.classList.remove('active');
+    }
+
+    // Close modal when clicking outside
+    document.addEventListener('click', (e) => {
+        const modal = document.getElementById('form-modal');
+        if (e.target === modal) {
+            closeModal();
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        showScreen(introScreen);
+        
+        startBtn.addEventListener('click', () => {
+            showScreen(tutorialScreen);
+            currentStep = 0;
+            renderStep();
+        });
+        
+        nextBtn.addEventListener('click', () => {
+            if (currentStep < buttonTutorialData.length - 1) {
+                currentStep++;
+                renderStep();
+                window.scrollTo(0, 0);
+            }
+        });
+        
+        prevBtn.addEventListener('click', () => {
+            if (currentStep > 0) {
+                currentStep--;
+                renderStep();
+                window.scrollTo(0, 0);
+            }
+        });
+     });
+     </script>
+
+     <!-- Modal for form submission -->
+     <div id="form-modal" class="modal-overlay">
+         <div class="modal-content">
+             <div class="modal-icon">✅</div>
+             <div class="modal-title">Form Submitted!</div>
+             <div class="modal-message">Thank you for your submission. We'll get back to you soon!</div>
+             <button class="modal-btn" onclick="closeModal()">Close</button>
+         </div>
+     </div>
+ </body>
+ </html>
