@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Mini-Playbook: 10 Mistakes I Won’t Repeat</title>
+    <meta name="description" content="A detailed playbook for new Google programmers on avoiding the 10 most common Git and GitHub mistakes, with interactive examples and best practices.">
+    <meta name="keywords" content="GitHub, Git, Version Control, Common Mistakes, Best Practices, Google, Developer Guide, Git Commit, Branching, Pull Request, Code Review">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ================= Base / Theme (From Reference) ================= */
+        :root {
+            --text:#212529; --bg:#fff; --muted:#f8f9fa; --border:#e9ecef;
+            --accent:#fd7e14; --accent-2:#e87312; --header-bg:#212529; --header-fg:#f8f9fa;
+            --ok:#198754; --ok-soft:#d1e7dd; --bad:#dc3545; --bad-soft:#f8d7da;
+            --metaphor-color: #6c757d; --metaphor-soft: #e9ecef;
+        }
+        *{box-sizing:border-box;margin:0;padding:0}
+        html,body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;}
+        .container{max-width:800px;margin:auto;padding:24px;background:#fff}
+        a{color:var(--accent);text-decoration:none}
+        a:hover{text-decoration:underline}
+
+        /* ================= Header / Footer ================= */
+        .site-header,.site-footer{background:var(--header-bg);color:var(--header-fg);padding:14px 24px}
+        .site-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;position:sticky;top:0;z-index:100}
+        .logo{font-weight:700;font-size:1.15rem;color:#fff}
+        .site-footer{text-align:center;margin-top:50px;padding:40px}
+
+        /* ================= Typography & Layout ================= */
+        h1{font-size:clamp(2rem,5vw,2.6rem);text-align:left;margin-bottom:8px;color:#111827;line-height:1.2}
+        .byline{font-size:clamp(1rem,3vw,1.2rem);font-style:italic;color:#4b5563;margin-bottom:24px}
+        h2{font-size:clamp(1.5rem,4vw,2rem);color:var(--text);margin:56px 0 16px;border-bottom:2px solid var(--border);padding-bottom:8px;display: flex; align-items: center; gap: 12px;}
+        h2 .section-icon { color: var(--accent); font-size: 1.2em; }
+        h3{font-size:clamp(1.2rem,3vw,1.5rem);color:var(--text);margin-top:32px;margin-bottom:12px}
+        h4{font-size:clamp(1rem,2.5vw,1.2rem);font-weight:bold;color:var(--accent-2);margin-bottom:10px}
+        p{margin-bottom:16px;word-wrap:break-word}
+        ul, ol {margin-left:24px;margin-bottom:24px; padding-left:1em}
+        li{margin-bottom:12px;padding-left:0.5em}
+        .intro{font-size:1.1rem;line-height:1.8;background:var(--muted);padding:20px;border-radius:12px;border-left:4px solid var(--accent);margin:24px 0}
+        .img-frame{position:relative;width:100%;overflow:hidden;border-radius:12px;margin:16px 0 24px;box-shadow:0 4px 15px rgba(0,0,0,0.1); text-align: center; background: #f8f9fa; padding: 20px;}
+        
+        /* ================= Interactive & Structural Elements ================= */
+        .accordion{display:grid;gap:8px}
+        .accordion-header{width:100%;text-align:left;background:var(--muted);border:1px solid var(--border);padding:16px 20px;border-radius:8px;cursor:pointer;font-size:1.1rem;font-weight:bold;display:flex;align-items:center}
+        .accordion-header .accordion-title { margin-right: auto; padding-right: 1rem; }
+        .accordion-header::after{content:'+';color:#6b7280}
+        .accordion-header[aria-expanded="true"]{background:#e9ecef;border-bottom-left-radius:0;border-bottom-right-radius:0}
+        .accordion-header[aria-expanded="true"]::after{content:'−'}
+        .accordion-content{padding:20px;display:none;border:1px solid var(--border);border-top:none;border-radius:0 0 8px 8px; background: #fff;}
+
+        /* --- Code Block Styles --- */
+        .code-block { background: #2d2d2d; color: #f8f8f2; font-family: 'Courier New', Courier, monospace; padding: 1.2em; border-radius: 8px; overflow-x: auto; font-size: 0.95rem; }
+        .code-block .code-comment { color: #75715e; } .code-block .code-keyword { color: #f92672; } .code-block .code-string { color: #e6db74; } .code-block .code-function { color: #a6e22e; } .code-block .code-variable { color: #66d9ef; }
+        
+        /* --- Styled Cards --- */
+        .best-practice-card { background: var(--ok-soft); border-left: 4px solid var(--ok); padding: 20px; border-radius: 8px; margin: 24px 0; }
+        .best-practice-card h3 { color: var(--ok); margin-top: 0; margin-bottom: 12px; }
+        .what-not-to-do-card { background: var(--bad-soft); border-left: 4px solid var(--bad); padding: 20px; border-radius: 8px; margin: 24px 0; }
+        .what-not-to-do-card h3 { color: var(--bad); margin-top: 0; margin-bottom: 12px; }
+        .metaphor-card { background: var(--metaphor-soft); border-left: 4px solid var(--metaphor-color); padding: 16px; border-radius: 8px; margin: 24px 0; font-style: italic; color: var(--metaphor-color); text-align: center; }
+
+        /* --- Interactive Playground --- */
+        .playground { border: 1px solid var(--border); border-radius: 12px; margin-top: 24px; background: #fff; overflow: hidden; }
+        .playground-controls { padding: 16px; background: var(--muted); border-bottom: 1px solid var(--border); display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+        .playground-controls .btn { background: var(--accent); color: #fff; border: none; padding: 10px 14px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: background-color 0.2s ease; }
+        .playground-controls .btn:hover:not(:disabled) { background-color: var(--accent-2); }
+        .playground-controls .btn:disabled { background-color: #adb5bd; cursor: not-allowed; }
+        .playground-controls .btn.bad { background-color: #c92a2a; }
+        .playground-controls .btn.bad:hover:not(:disabled) { background-color: #a61e1e; }
+        .playground-terminal { background: #212529; color: #e9ecef; padding: 20px; font-family: 'Courier New', Courier, monospace; font-size: 0.9rem; white-space: pre-wrap; min-height: 200px; }
+        .playground-terminal .prompt { color: #a6e22e; }
+        .playground-terminal .output-line { display: block; margin-bottom: 4px; }
+        .playground-terminal .commit-hash { color: #fcc419; }
+        .playground-terminal .commit-msg { color: #f8f9fa; }
+        .playground-terminal .error-msg { color: #ff8787; }
+        .playground-terminal .conflict-marker { color: #ff6b6b; }
+        .playground-terminal .our-change { color: #4dabf7; }
+        .playground-terminal .their-change { color: #94d82d; }
+
+        /* --- Quiz & Glossary --- */
+        .quiz-container{padding:20px;border:2px solid var(--border);border-radius:12px;background:#fff}
+        .quiz-navigation{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border)}
+        .quiz-option.selected.correct label{background:var(--ok-soft);border-color:var(--ok)}
+        .quiz-option.selected.wrong label{background:var(--bad-soft);border-color:var(--bad)}
+        .quiz-option .explanation{display:none;margin-top:10px;padding:15px;border-radius:6px;border-left-width:4px;border-left-style:solid;}
+        .quiz-option.correct .explanation{border-left-color:var(--ok);background:var(--ok-soft)}
+        .quiz-option.wrong .explanation{border-left-color:var(--bad);background:var(--bad-soft)}
+        .quiz-option label{display:flex;align-items:center;gap:12px;padding:14px;border:2px solid var(--border);border-radius:8px;cursor:pointer;background:#f8f9fa}
+        .glossary-cloud{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px;justify-content:center}
+        .glossary-chip{position:relative;display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:999px;background:#fff7ed;border:1px solid #ffd8a8;color:#d9480f;font-weight:600;cursor:pointer;box-shadow:0 2px 6px rgba(253,126,20,.12)}
+        .chip-tip{position:fixed;z-index:101;min-width:240px;max-width:min(92vw,420px);background:var(--accent);color:#fff;padding:16px 18px;border-radius:12px;box-shadow:0 12px 28px rgba(253,126,20,.35);opacity:0;visibility:hidden;transition:.15s;line-height:1.45;text-align:left}
+        .chip-tip.show{opacity:1;visibility:visible}
+        .chip-tip .arrow{position:absolute;width:12px;height:12px;background:var(--accent);transform:rotate(45deg);bottom:-6px;left:50%;margin-left:-6px}
+
+    </style>
+</head>
+<body>
+    <header class="site-header"><a href="#" class="logo">Developer Playbook</a></header>
+    <div class="container">
+        <h1>🟢 GitHub Mini-Playbook: 10 Mistakes I Won't Repeat</h1>
+        <p class="byline">A guide from one developer to another on navigating version control without the headaches.</p>
+        <p class="intro">The principles of managing code collaboratively are universal, but whether you're using a large monorepo or a small project on GitHub, the learning curve can be steep.
+<br><br>
+I’ve mentored many new programmers, and I see the same patterns—the same mistakes I made when I started. I’ve nuked branches, leaked credentials, and created merge conflicts so complex they required a whiteboard and three cups of coffee to untangle.
+<br><br>
+Getting comfortable with Git and GitHub isn't just about memorizing commands; it’s about building a workflow that keeps you, your code, and your team safe and efficient.
+<br><br>
+Let’s dive into my personal playbook of the top 10 mistakes I’ve made and the concrete actions I now take to avoid them.</p>
+
+        <!-- All 10 sections will be fully fleshed out here -->
+        <section id="mistake1">
+            <h2><span class="section-icon">📜</span>1. A Messy, Unreadable Commit History</h2>
+            <div class="what-not-to-do-card">
+                <h3>The Mistake</h3>
+                <p>Making giant, vague commits like <code>git commit -m "progress"</code> or lumping dozens of unrelated changes (a bug fix, a new feature, a typo correction) into a single monster commit.</p>
+            </div>
+            <div class="best-practice-card">
+                <h3>The Playbook: Treat Commits like Checkpoints, Not Save Files</h3>
+                <h4>Core Principle: A commit should be a single, logical, atomic unit of change.</h4>
+                <ol>
+                    <li><strong>Commit Often:</strong> Commit every 15-30 minutes. Small, frequent commits are easy to understand and revert.</li>
+                    <li><strong>Commit One Idea at a Time:</strong> If you fix a bug and refactor a function, make two separate commits.</li>
+                    <li><strong>Use the Staging Area Intelligently:</strong> Use <code>git add -p</code> to stage changes chunk by chunk, splitting one file into multiple commits.</li>
+                    <li><strong>Write Clear, Standardized Commit Messages:</strong> Use prefixes like <code>feat:</code>, <code>fix:</code>, <code>docs:</code>. Explain the *why*, not just the *what*.</li>
+                </ol>
+            </div>
+            <div class="metaphor-card"><p>“Write diary notes daily, not novels once a year.”</p></div>
+        </section>
+
+        <section id="mistake2">
+            <h2><span class="section-icon">🌿</span>2. Branching Gone Wild</h2>
+            <div class="what-not-to-do-card">
+                <h3>The Mistake</h3>
+                <p>Creating a branch and then working on it for weeks. These "mega-branches" diverge so far from <code>main</code> that merging them becomes a nightmare of resolving conflicts.</p>
+            </div>
+            <div class="best-practice-card">
+                <h3>The Playbook: Branches are for Sprints, Not Marathons</h3>
+                <ol>
+                    <li><strong>Keep Branches Short-Lived (1–3 days):</strong> If a task is bigger, break it into smaller sub-tasks and smaller branches.</li>
+                    <li><strong>Merge Quickly:</strong> Once tested and reviewed, merge your branch. Don't let it sit idle.</li>
+                    <li><strong>Delete Branches After Merging:</strong> Keep the repository clean. Use <code>git branch -d feature-name</code>.</li>
+                </ol>
+            </div>
+            <div class="metaphor-card"><p>“Don’t keep doodle pages lying around; paste them back into your notebook fast.”</p></div>
+        </section>
+
+        <section id="mistake3">
+            <h2><span class="section-icon">🤯</span>3. Fear of Conflicts</h2>
+            <div class="what-not-to-do-card">
+                <h3>The Mistake</h3>
+                <p>Avoiding `git pull` for days because you're scared of merge conflicts. This only makes the eventual conflict larger and more complex.</p>
+            </div>
+            <div class="best-practice-card">
+                <h3>The Playbook: Resolve Conflicts Early and Often</h3>
+                <ol>
+                    <li><strong>Pull Daily (or More):</strong> Start every day with <code>git pull --rebase origin main</code>. This downloads the latest changes and replays your local commits on top.</li>
+                    <li><strong>Resolve Small Conflicts Immediately:</strong> A 3-line conflict is easy to fix. A 300-line conflict is a recipe for introducing new bugs.</li>
+                    <li><strong>Communicate:</strong> If you and a teammate are working in the same file, talk to each other! A quick chat can prevent hours of frustrating conflict resolution.</li>
+                </ol>
+            </div>
+            <div class="metaphor-card"><p>“Erase pencil smudges daily, don’t wait for the whole notebook to get messy.”</p></div>
+            <div class="playground">
+                <div class="playground-controls">
+                    <h4>🕹️ Merge Conflict Playground</h4>
+                    <button class="btn" id="conflict-setup">1. Setup Scenario</button>
+                    <button class="btn" id="conflict-pull" disabled>2. Try to Pull Changes</button>
+                    <button class="btn" id="conflict-resolve" disabled>3. Resolve Conflict</button>
+                </div>
+                <div class="playground-terminal" id="conflict-terminal"><span class="prompt">$</span> Ready to practice resolving a merge conflict!</div>
+            </div>
+        </section>
+
+        <section id="mistake4">
+            <h2><span class="section-icon">👤</span>4. Unclear Ownership</h2>
+            <div class="what-not-to-do-card"><h3>The Mistake</h3><p>A Pull Request (PR) sits for days with no reviewer, or a critical bug is found and no one knows who the expert on that part of the code is.</p></div>
+            <div class="best-practice-card">
+                <h3>The Playbook: Assign Everything Clearly</h3>
+                <ol>
+                    <li><strong>Assign Issues and PRs:</strong> Every Issue and PR should have a clear assignee who is responsible for driving it to completion.</li>
+                    <li><strong>Use CODEOWNERS file:</strong> For critical parts of the codebase, define owners in a `CODEOWNERS` file. GitHub will automatically request reviews from them on any PR that touches those files.</li>
+                    <li><strong>Require at Least One Approver:</strong> Configure branch protection rules to require at least one approving review before a PR can be merged.</li>
+                </ol>
+            </div>
+            <div class="metaphor-card"><p>“Every homework page must have one student’s name on top.”</p></div>
+        </section>
+
+        <section id="mistake5">
+            <h2><span class="section-icon">✅</span>5. Skipping or Rushing Code Reviews</h2>
+            <div class="what-not-to-do-card"><h3>The Mistake</h3><p>Pushing directly to `main` to bypass review, or getting a "LGTM" (Looks Good To Me) from a peer five seconds after opening the PR.</p></div>
+            <div class="best-practice-card">
+                <h3>The Playbook: Reviews are a Safety Net, Not a Hurdle</h3>
+                <ol>
+                    <li><strong>Protect `main`:</strong> The `main` (or `master`) branch should be protected. Disable direct pushes and force pushes completely.</li>
+                    <li><strong>Always Open a Pull Request:</strong> No code should enter `main` without a PR, even if it's your own small fix.</li>
+                    <li><strong>Give and Get Thoughtful Reviews:</strong> A good review checks for logic errors, tests edge cases, and improves readability. Don't just check for style. A good PR description helps reviewers understand the context.</li>
+                </ol>
+            </div>
+            <div class="metaphor-card"><p>“Show your draft to a friend before handing it to the teacher.”</p></div>
+        </section>
+
+        <section id="mistake6">
+            <h2><span class="section-icon">📚</span>6. Documentation Debt</h2>
+            <div class="what-not-to-do-card"><h3>The Mistake</h3><p>A repo with a two-year-old `README.md` that still says "TODO: Add setup instructions," making it impossible for a new team member to get started.</p></div>
+            <div class="best-practice-card">
+                <h3>The Playbook: Document as You Code</h3>
+                <ol>
+                    <li><strong>Keep `README.md` Evergreen:</strong> Your README is the front door to your project. It must have a clear purpose, setup instructions, and examples. Update it in the same PR that changes the setup process.</li>
+                    <li><strong>Add `CONTRIBUTING.md`:</strong> This file tells new contributors how to set up their environment, run tests, and what your coding standards are.</li>
+                    <li><strong>Use Issue and PR Templates:</strong> Create templates (`.github/` directory) to guide people to provide the right information when they open an issue or PR.</li>
+                </ol>
+            </div>
+            <div class="metaphor-card"><p>“Every science experiment must have a lab report.”</p></div>
+        </section>
+        
+        <section id="mistake7">
+            <h2><span class="section-icon">🤖</span>7. Over-automation Without Understanding</h2>
+            <div class="what-not-to-do-card"><h3>The Mistake</h3><p>Copying a complex 20-step GitHub Actions workflow from another project without understanding what each step does. When it fails, debugging is impossible.</p></div>
+            <div class="best-practice-card">
+                <h3>The Playbook: Automate Incrementally</h3>
+                <ol>
+                    <li><strong>Start with One Action:</strong> Your first action should be running your tests on every push. Get that working and stable.</li>
+                    <li><strong>Add Linting and Builds Next:</strong> Once testing is solid, add a linter to check code style, and then a build step if your project requires it.</li>
+                    <li><strong>Scale Slowly:</strong> Only add more complex automation (like deployments, code analysis) as the project's needs grow and the team understands the existing CI/CD pipeline.</li>
+                </ol>
+            </div>
+            <div class="metaphor-card"><p>“Add one robot helper at a time — don’t flood the classroom with machines.”</p></div>
+        </section>
+
+        <section id="mistake8">
+            <h2><span class="section-icon">💥</span>8. Losing or Corrupting History</h2>
+            <div class="what-not-to-do-card"><h3>The Mistake</h3><p>Using <code>git push --force</code> on a shared branch, or performing a complex interactive rebase (`git rebase -i`) that accidentally deletes a teammate's commits.</p></div>
+            <div class="best-practice-card">
+                <h3>The Playbook: Treat History as Sacred</h3>
+                <ol>
+                    <li><strong>NEVER Force Push to `main`:</strong> This is the cardinal sin of Git. Branch protection rules should make this impossible anyway.</li>
+                    <li><strong>Prefer Merge to Rebase on Shared Branches:</strong> Rebasing rewrites history. It's great for cleaning up your *local*, un-pushed commits, but dangerous on branches others are using. A standard merge is safer for collaboration.</li>
+                    <li><strong>Use `git reflog`:</strong> If you think you've lost a commit, `git reflog` is your time machine. It shows a log of every action you've taken, allowing you to recover "lost" work.</li>
+                </ol>
+            </div>
+            <div class="metaphor-card"><p>“Never tear pages out of your diary; even mistakes tell the story.”</p></div>
+        </section>
+
+        <section id="mistake9">
+            <h2><span class="section-icon">🔒</span>9. Security Blind Spots</h2>
+            <div class="what-not-to-do-card"><h3>The Mistake</h3><p>Committing an API key, password, or other secret directly into the code. Even if you remove it later, it's still in the Git history forever.</p></div>
+            <div class="best-practice-card">
+                <h3>The Playbook: Assume Everything is Public</h3>
+                <ol>
+                    <li><strong>Master `.gitignore`:</strong> Your first commit in any project should be a `.gitignore` file. Add patterns for secret files (`.env`, `credentials.json`), dependency folders (`node_modules/`), and OS files (`.DS_Store`).</li>
+                    <li><strong>Use GitHub's Secret Scanning:</strong> Enable this in your repository settings. It will automatically scan your code for patterns that look like secrets and alert you.</li>
+                    <li><strong>Use Environment Variables:</strong> Never hardcode secrets. Load them from environment variables or a secure vault service.</li>
+                </ol>
+            </div>
+            <div class="metaphor-card"><p>“Never write your locker combination on the notebook cover.”</p></div>
+        </section>
+
+        <section id="mistake10">
+            <h2><span class="section-icon">♻️</span>10. Reinventing the Wheel</h2>
+            <div class="what-not-to-do-card"><h3>The Mistake</h3><p>Writing a custom shell script to send a Slack notification when a GitHub Action could do it in three lines of YAML.</p></div>
+            <div class="best-practice-card">
+                <h3>The Playbook: Leverage the Ecosystem</h3>
+                <ol>
+                    <li><strong>Search the Actions Marketplace First:</strong> Before you write a script for CI/CD, search the GitHub Actions Marketplace. There's likely a well-maintained, community-vetted action for what you need.</li>
+                    <li><strong>Reuse Proven Workflows:</strong> Many Google projects have starter workflows. Look for existing `.github/workflows` files in similar projects and adapt them.</li>
+                    <li><strong>Customize Only When Necessary:</strong> Use existing actions as building blocks. Only write your own from scratch when your needs are truly unique.</li>
+                </ol>
+            </div>
+            <div class="metaphor-card"><p>“Borrow your friend’s ruler instead of carving one from wood.”</p></div>
+        </section>
+        
+        <!-- Quiz Section -->
+        <section id="quiz-main">
+            <h2>Test Your Git Instincts: 10 MCQs</h2>
+            <div class="quiz-container">
+                <div class="quiz-navigation">
+                    <button class="btn" id="quizPrevBtn" disabled>⮜ Prev</button>
+                    <span id="quiz-counter">1 of 10</span>
+                    <button class="btn" id="quizNextBtn">Next ⮞</button>
+                </div>
+                <div id="quiz-body-container"></div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section id="faq">
+            <h2>Frequently Asked Questions</h2>
+            <p>Alright, let's wrap up with a quick Q&A. These are real questions I've been asked by new developers during code reviews and mentoring sessions. There are no stupid questions when it comes to Git—we've all been confused by it at some point. I've grouped them by topic to make things easier to find.</p>
+            <div class="accordion" id="faq-accordion-container"></div>
+        </section>
+
+        <!-- Glossary Section -->
+        <section id="glossary">
+            <h2>Key Git & GitHub Terms</h2>
+            <div class="glossary-cloud" id="glossary-cloud-container"></div>
+        </section>
+
+    </div>
+    <footer class="site-footer"><p>&copy; 2025 Developer Playbook. Happy Coding!</p></footer>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- DATA ---
+        const quizQuestions = [
+            { q: "You've fixed a typo and added a new feature. What's the best action?", a: 1, options: ["One big commit: 'updated code'", "Two separate commits: 'docs: fix typo' and 'feat: add login button'", "Commit only the feature, forget the typo"] },
+            { q: "Your feature branch is 3 weeks old and has 50 commits. This is a sign of...", a: 0, options: ["A branch that is too large and long-lived", "Excellent, detailed work", "A normal development cycle"] },
+            { q: "To keep your feature branch updated with `main`, what is the safest command for daily use?", a: 2, options: ["git merge main", "git push --force", "git pull --rebase origin main"] },
+            { q: "Where should you define who must review changes to critical files?", a: 1, options: ["In the README.md", "In a CODEOWNERS file", "In a PR comment"] },
+            { q: "What is the primary purpose of a Pull Request (PR)?", a: 0, options: ["To propose changes and request a code review before merging", "To show your manager you are working", "To back up your code online"] },
+            { q: "You accidentally committed an API key. What should you do FIRST?", a: 2, options: ["Delete the repository", "Commit a new version without the key", "Rotate the API key immediately, then clean the history"] },
+            { q: "What command lets you stage parts of a file for a commit?", a: 1, options: ["git add .", "git add -p", "git stage --partial"] },
+            { q: "What does `git push --force` do?", a: 0, options: ["Rewrites the remote branch's history with your local history", "A normal push, but faster", "Pushes only the most important files"] },
+            { q: "Where should you store sensitive information like passwords?", a: 2, options: ["Hardcoded in the source file", "In a text file committed to the repo", "As an environment variable or using a secrets manager"] },
+            { q: "You need to run tests on every PR. Where should you look first?", a: 1, options: ["Write a complex custom script from scratch", "Search the GitHub Actions Marketplace", "Ask a teammate to run them manually"] },
+        ];
+        const glossaryTerms = [
+            { term: "Commit", def: "Think of it as saving a snapshot of your code at a specific moment. Like taking a photo of your work - you can always go back to this exact state." }, 
+            { term: "Branch", def: "Your own private workspace where you can experiment without messing up the main code. It's like having a separate notebook for each project." },
+            { term: "Merge", def: "When you combine your changes with someone else's work. It's like merging two different versions of a document into one final version." }, 
+            { term: "Pull Request (PR)", def: "Your way of saying 'Hey team, check out my changes and let me know what you think before we add them to the main code.'" },
+            { term: "Conflict", def: "When you and a teammate edit the same line of code differently. Git gets confused and asks you to choose which version to keep." }, 
+            { term: "Rebase", def: "Rewriting your commit history to make it look like you started your work from the latest version. It's like reorganizing your notes to be in perfect order." },
+            { term: "HEAD", def: "Git's way of pointing to where you are right now in your project's history. It's like a bookmark showing your current position." }, 
+            { term: "Staging Area", def: "A preparation zone where you decide exactly what changes to include in your next commit. It's like choosing which items to pack before a trip." },
+            { term: "Clone", def: "Downloading a complete copy of someone's project to your computer so you can work on it locally." }, 
+            { term: "Fetch", def: "Checking what's new in the remote repository without actually changing your local files. It's like peeking at updates without applying them yet." },
+            { term: "Pull", def: "Grabbing the latest changes from the remote repository and adding them to your local copy. It's like syncing your work with the team." }, 
+            { term: "Push", def: "Uploading your local changes to the remote repository so others can see and use your work." },
+            { term: "Fork", def: "Creating your own personal copy of someone else's project that you can modify however you want." }, 
+            { term: "origin", def: "The default name for the original repository you downloaded from. It's like the 'home base' for your project." },
+            { term: "gitignore", def: "A special file that tells Git to ignore certain files and folders. Perfect for keeping secrets and temporary files out of your repository." }, 
+            { term: "GitHub Actions", def: "Your automated assistant that can run tests, build your code, and deploy it whenever you make changes." },
+            { term: "CI/CD", def: "A workflow where your code is automatically tested and deployed every time you make changes. It's like having a robot assistant that never sleeps." }, 
+            { term: "git blame", def: "A detective tool that shows you who wrote each line of code and when. Great for finding the person to ask about confusing code." },
+            { term: "git bisect", def: "A smart search tool that helps you find exactly which commit introduced a bug by testing different versions automatically." }, 
+            { term: "reflog", def: "Your safety net - a log of everything you've done in Git. If you ever lose something, this shows you where to find it." },
+        ];
+        const faqs = {
+            "Core Git Concepts": [
+                { q: "What's the real difference between Git and GitHub?", a: "Think of it this way: Git is the tool, GitHub is the workshop. <strong>Git</strong> is the command-line version control system that runs on your machine. <strong>GitHub</strong> is a web platform that hosts your Git repositories and provides the collaboration layer on top (Pull Requests, Issues, Actions, etc.)." },
+                { q: "Can I undo a commit I already pushed?", a: "Yes, but you should never rewrite history on a shared branch. The safe way is to use <code>git revert &lt;commit-hash&gt;</code>. This creates a *new* commit that is the exact inverse of the bad commit, effectively undoing its changes without deleting it from the history." },
+                { q: "What is the Staging Area, and why do I need it?", a: "The Staging Area (or 'index') is a crucial intermediate step. It lets you craft your commit precisely. Instead of committing all changes, you `git add` only the specific files (or even parts of files with `git add -p`) that belong to one logical change. It's how you make small, atomic commits." },
+                { q: "What is `HEAD` pointing to?", a: "`HEAD` is simply a pointer to your current location in the repository's history. Usually, it points to the latest commit of the branch you have checked out. If you check out a specific commit hash, you enter a 'detached HEAD' state." }
+            ],
+            "Branching & Merging": [
+                { q: "When should I merge vs. rebase?", a: "Simple rule: <strong>Rebase</strong> your local feature branch to clean it up *before* you open a PR. <strong>Merge</strong> when bringing changes from `main` into your branch for updates, or when your PR is approved. Rebasing rewrites history, which is dangerous on shared branches. Merging preserves it." },
+                { q: "What's the point of deleting branches after merging?", a: "It's pure hygiene. A repository with hundreds of old, merged branches is cluttered and confusing. Deleting them (both locally and on the remote) after they are merged into `main` ensures that the list of active branches is clean and only shows work that is currently in progress." },
+                { q: "How do I resolve a complex merge conflict?", a: "First, stay calm! Open the conflicted file and look for the conflict markers (`<<<<<<<`, `=======`, `>>>>>>>`). Talk to the person who wrote the conflicting code if possible. Use a visual merge tool in an IDE like VS Code. Test thoroughly after resolving to ensure you didn't break anything." }
+            ],
+            "GitHub Actions & CI/CD": [
+                { q: "What is a 'workflow' in GitHub Actions?", a: "A workflow is an automated process defined by a YAML file in your `.github/workflows/` directory. It's triggered by an event (like a push or PR), and it runs a series of 'jobs', which in turn run a series of 'steps' (commands or actions)." },
+                { q: "Are GitHub Actions free?", a: "For public repositories, they are completely free. For private repositories, your GitHub account includes a generous amount of free minutes per month (e.g., 2,000 for the free plan). You only pay if you exceed that usage, making it very cost-effective for most projects." },
+                { q: "What's the difference between an 'action' and a 'step'?", a: "A 'step' is a single task within a job. That task can either be a simple shell command (<code>run: npm test</code>) or it can be a reusable unit of code called an 'action' (<code>uses: actions/checkout@v3</code>). Actions are like functions you can call in your workflow." }
+            ],
+            "Codespaces & Development": [
+                { q: "What is GitHub Codespaces?", a: "It's a complete, cloud-based development environment. It spins up a container with a full VS Code editor in your browser, pre-configured with all the tools and dependencies your project needs. You can start coding on any project in seconds, on any machine, without any local setup." },
+                { q: "How is a Codespace different from just cloning a repo?", a: "Cloning a repo just gives you the code. You still have to install the right language version, dependencies, database, and tools on your local machine. A Codespace, configured with a `.devcontainer` folder, automates all of that, giving you a ready-to-run environment instantly." },
+                { q: "Is Codespaces free to use?", a: "Similar to Actions, there is a free monthly quota of 'core hours' for personal accounts. It's enough to do a significant amount of development. Beyond that, it's a pay-as-you-go service. For organizations, it's a paid feature." }
+            ],
+            "Community & Open Source": [
+                { q: "What is a 'fork' and how is it different from a 'clone'?", a: "You <strong>clone</strong> a repository you have write access to. You <strong>fork</strong> a repository you *don't* have write access to. A fork creates a personal copy of the repository under your own GitHub account, which you can then clone and push changes to. To contribute back, you open a Pull Request from your fork to the original repository." },
+                { q: "What makes a good first contribution to an open-source project?", a: "Look for issues labeled `good first issue` or `help wanted`. Improving documentation, fixing a typo, or writing a missing unit test are all excellent first contributions. They let you learn the project's workflow without needing to understand the entire codebase." },
+                { q: "What is a `CONTRIBUTING.md` file?", a: "It's a file in the root of a repository that explains how to contribute to the project. It typically includes instructions on the branching strategy, how to run tests, coding style guidelines, and the code of conduct. Always read it before opening a PR." }
+            ],
+            "Repository Hygiene": [
+                { q: "Why is a `.gitignore` file so important?", a: "It prevents you from accidentally committing files that don't belong in version control, such as secrets (`.env`), bulky dependency folders (`node_modules`), and OS-specific files (`.DS_Store`). It keeps your repository lean and secure." },
+                { q: "My repo is huge. How can I find what's taking up space?", a: "You can use a command-line tool like `git-sizer` or BFG Repo-Cleaner (in read-only mode) to analyze your repository's history for large files that may have been committed by mistake. The best solution is to avoid committing large binary files in the first place." },
+                { q: "What are Issue and PR templates?", a: "They are markdown files in the `.github/` directory that pre-populate the text box when someone opens a new issue or pull request. They are essential for guiding contributors to provide all the necessary information, like steps to reproduce a bug or a checklist for a PR." }
+            ],
+            "Advanced Git": [
+                { q: "What does `git cherry-pick` do?", a: "It allows you to select a single commit from one branch and apply it as a new commit onto your current branch. It's incredibly useful for grabbing a specific hotfix from `main` without merging the entire branch." },
+                { q: "What is the `reflog` and when would I use it?", a: "The `reflog` is your safety net. It's a log of *every* action you've taken in your local repo (commits, resets, checkouts). If you ever feel like you've 'lost' a commit (e.g., after a bad `git reset --hard`), `git reflog` will show you where it was, and you can recover it." },
+                { q: "What's the difference between `reset --soft`, `--mixed`, and `--hard`?", a: "They all move the `HEAD` pointer, but differ in what they do with your files. <strong>`--soft`</strong>: Un-commits changes but leaves them staged. <strong>`--mixed`</strong> (the default): Un-commits and un-stages changes. <strong>`--hard`</strong>: Un-commits and permanently deletes the changes from your files. Be very careful with `--hard`." }
+            ],
+            "Identity & Professionalism": [
+                { q: "Why is my personal email showing up in commits?", a: "Git associates your commits with the name and email configured globally on your machine (`git config --global user.name`). Many developers set up a work-specific Git config in their project directory to separate their professional and personal identities." },
+                { q: "How can I set a different email for a specific project?", a: "Navigate into your project's directory and run the config command without the `--global` flag. This creates a local config that overrides your global settings for that repo only.<br><code>cd ~/work/my-project</code><br><code>git config user.email \"your.work.email@example.com\"</code>" },
+                { q: "What makes a GitHub profile look professional?", a: "A good profile picture, a concise bio, pinned repositories showcasing your best work (with good READMEs!), and a contribution graph that shows consistent activity. It's a living resume that demonstrates your passion and skills." }
+            ]
+        };
+
+        // --- SETUP FUNCTIONS ---
+        function setupAccordions(containerSelector) {
+            document.querySelectorAll(`${containerSelector} .accordion-header`).forEach(header => {
+                header.addEventListener('click', () => {
+                    const content = header.nextElementSibling;
+                    const isExpanded = header.getAttribute('aria-expanded') === 'true';
+                    header.setAttribute('aria-expanded', String(!isExpanded));
+                    content.style.display = isExpanded ? 'none' : 'block';
+                });
+            });
+        }
+        
+        function setupConflictPlayground() {
+            const term = document.getElementById('conflict-terminal');
+            const setupBtn = document.getElementById('conflict-setup');
+            const pullBtn = document.getElementById('conflict-pull');
+            const resolveBtn = document.getElementById('conflict-resolve');
+            
+            let state = 'initial';
+
+            setupBtn.addEventListener('click', () => {
+                term.innerHTML = `<span class="prompt">$ git checkout -b my-feature</span><br>
+                <span class="prompt">$ # You edit line 5 in config.js to 'version = 2'</span><br>
+                <span class="prompt">$ git commit -am "feat: update version"</span><br>
+                <span class="output-line">Meanwhile, a teammate merged a change to main where line 5 is now 'version = 1.5'</span><br>
+                <span class="output-line">Scenario is ready. Now try to pull.</span>`;
+                pullBtn.disabled = false;
+                setupBtn.disabled = true;
+                state = 'setup';
+            });
+
+            pullBtn.addEventListener('click', () => {
+                term.innerHTML += `<br><span class="prompt">$ git pull origin main</span><br>
+                <span class="error-msg">CONFLICT (content): Merge conflict in config.js</span><br>
+                <span class="output-line">Automatic merge failed; fix conflicts and then commit the result.</span><br>
+                <span class="output-line">File content:</span><br>
+                <span class="conflict-marker">&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD (Your change)</span><br>
+                <span class="our-change">version = 2</span><br>
+                <span class="conflict-marker">=======</span><br>
+                <span class="their-change">version = 1.5</span><br>
+                <span class="conflict-marker">&gt;&gt;&gt;&gt;&gt;&gt;&gt; origin/main (Their change)</span>`;
+                resolveBtn.disabled = false;
+                pullBtn.disabled = true;
+                state = 'conflicted';
+            });
+
+            resolveBtn.addEventListener('click', () => {
+                term.innerHTML += `<br><span class="prompt">$ # You manually edit the file to be 'version = 2' and save.</span><br>
+                <span class="prompt">$ git add config.js</span><br>
+                <span class="prompt">$ git commit</span><br>
+                <span class="output-line">Successfully resolved conflict! Your branch is now up to date.</span>`;
+                resolveBtn.disabled = true;
+                state = 'resolved';
+            });
+        }
+        
+        function setupQuiz() {
+            const container = document.getElementById('quiz-body-container');
+            const nextBtn = document.getElementById('quizNextBtn');
+            const prevBtn = document.getElementById('quizPrevBtn');
+            const counter = document.getElementById('quiz-counter');
+            let currentQ = 0;
+
+            const renderQuestion = () => {
+                const q = quizQuestions[currentQ];
+                let optionsHTML = q.options.map((opt, i) => `
+                    <div class="quiz-option" data-index="${i}">
+                        <label><input type="radio" name="q${currentQ}" value="${i}"> <span>${opt}</span></label>
+                        <div class="explanation"></div>
+                    </div>`).join('');
+                container.innerHTML = `<p><strong>Q${currentQ + 1}:</strong> ${q.q}</p><div class="quiz-options">${optionsHTML}</div>`;
+                counter.textContent = `${currentQ + 1} of ${quizQuestions.length}`;
+                prevBtn.disabled = currentQ === 0;
+                nextBtn.disabled = currentQ === quizQuestions.length - 1;
+            };
+
+            container.addEventListener('change', e => {
+                if (e.target.type === 'radio') {
+                    const selectedIndex = parseInt(e.target.value);
+                    const q = quizQuestions[currentQ];
+                    const options = container.querySelectorAll('.quiz-option');
+                    options.forEach(opt => {
+                        opt.classList.remove('selected', 'correct', 'wrong');
+                        opt.querySelector('.explanation').style.display = 'none';
+                    });
+
+                    const selectedOpt = e.target.closest('.quiz-option');
+                    selectedOpt.classList.add('selected');
+                    selectedOpt.classList.toggle('correct', selectedIndex === q.a);
+                    selectedOpt.classList.toggle('wrong', selectedIndex !== q.a);
+                    const explanationEl = selectedOpt.querySelector('.explanation');
+                    explanationEl.textContent = selectedIndex === q.a ? '✅ Correct!' : '❌ Incorrect.';
+                    explanationEl.style.display = 'block';
+                }
+            });
+
+            nextBtn.addEventListener('click', () => { if (currentQ < quizQuestions.length - 1) { currentQ++; renderQuestion(); }});
+            prevBtn.addEventListener('click', () => { if (currentQ > 0) { currentQ--; renderQuestion(); }});
+            renderQuestion();
+        }
+
+        function setupGlossary() {
+            const cloud = document.getElementById('glossary-cloud-container');
+            if (!cloud) return;
+            cloud.innerHTML = glossaryTerms.map(kw => `<button class="glossary-chip" type="button"><span>${kw.term}</span></button>`).join('');
+            
+            let tip = document.querySelector('.chip-tip');
+            if (!tip) {
+                tip = document.createElement('div');
+                tip.className = 'chip-tip';
+                tip.innerHTML = '<div class="arrow"></div><div class="tip-content"></div>';
+                document.body.appendChild(tip);
+            }
+            const tipContent = tip.querySelector('.tip-content');
+            
+            // Ensure tip is hidden initially
+            tip.classList.remove('show');
+            tipContent.textContent = '';
+            
+            cloud.querySelectorAll('.glossary-chip').forEach((btn, i) => {
+                btn.addEventListener('mouseenter', (e) => {
+                    tipContent.textContent = glossaryTerms[i].def;
+                    tip.classList.add('show');
+                    positionTipFor(e.target, tip);
+                });
+                btn.addEventListener('mouseleave', () => {
+                    tip.classList.remove('show');
+                    tipContent.textContent = '';
+                });
+            });
+        }
+        
+        function positionTipFor(btn, tip) {
+            const rect = btn.getBoundingClientRect();
+            tip.style.left = `${rect.left + rect.width / 2 - tip.offsetWidth / 2}px`;
+            tip.style.top = `${rect.top - tip.offsetHeight - 10}px`;
+            if (rect.top - tip.offsetHeight < 10) {
+                 tip.style.top = `${rect.bottom + 10}px`;
+            }
+        }
+
+        function setupFAQs() {
+            const container = document.getElementById('faq-accordion-container');
+            let html = '';
+            for (const level in faqs) {
+                html += `<h3>${level} Questions</h3>`;
+                html += faqs[level].map(faq => `
+                    <div class="accordion-item">
+                        <button class="accordion-header" aria-expanded="false"><span class="accordion-title">${faq.q}</span></button>
+                        <div class="accordion-content"><p>${faq.a}</p></div>
+                    </div>`).join('');
+            }
+            container.innerHTML = html;
+            setupAccordions('#faq-accordion-container');
+        }
+
+        // --- INITIALIZE ---
+        setupConflictPlayground();
+        setupQuiz();
+        setupGlossary();
+        setupFAQs();
+    });
+    </script>
+</body>
+</html>
+
+
+
+
