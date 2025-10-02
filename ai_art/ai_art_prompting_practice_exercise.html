@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Art Prompting - Advanced Practice</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: rgb(29, 30, 34);
+            color: #333;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+            min-height: 100vh;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgb(29, 30, 34);
+            color: white;
+            border-radius: 10px;
+        }
+        .header h1 { font-size: 2.2em; margin-bottom: 10px; }
+        .header p { font-size: 1.1em; opacity: 0.9; }
+        
+        .start-screen { text-align: center; padding: 40px 20px; }
+        .start-instructions {
+            text-align: left;
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 25px 0;
+            line-height: 1.6;
+            border-left: 5px solid #4a90e2;
+        }
+        .start-instructions ul { list-style-position: inside; margin-top: 10px; }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            background: #4a90e2;
+            color: white;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(74, 144, 226, 0.4);
+            background: #357ABD;
+        }
+        .hidden { display: none; }
+
+        .exam-paper { padding: 10px; }
+        .exam-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #333;
+            margin-bottom: 20px;
+        }
+        .exam-header h2 { font-size: 1.5em; }
+        .exam-header p { font-weight: bold; }
+
+        .section { margin-bottom: 30px; }
+        .section-title {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #4a90e2;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #f1f1f1;
+        }
+        .question-block {
+            margin-bottom: 25px;
+            padding: 20px;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            background: #fdfdfd;
+        }
+        .question-instruction {
+            font-weight: bold;
+            color: #495057;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .passage {
+            background: #f8f9fa;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #4a90e2;
+            border-radius: 8px;
+            line-height: 1.7;
+        }
+        .question-list li, .sub-question {
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+        .hint {
+            font-style: italic;
+            color: #555;
+            background-color: #f0f8ff;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 8px;
+            font-size: 0.9em;
+            border-left: 3px solid #17a2b8;
+        }
+        .parameter-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        .parameter-table th, .parameter-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+            vertical-align: top;
+        }
+        .parameter-table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        .parameter-table td:first-child { font-family: 'Roboto Mono', monospace; color: #d63384; }
+        .param-category {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #333;
+            margin-top: 25px;
+            margin-bottom: 10px;
+        }
+        code {
+             font-family: 'Roboto Mono', monospace;
+             background-color: #e9ecef;
+             padding: 2px 5px;
+             border-radius: 4px;
+             color: #333;
+        }
+    </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Start Screen -->
+    <div id="startScreen" class="start-screen">
+      <div class="header">
+        <h1>Advanced AI Art Prompting 🎨</h1>
+        <p>Parameters & Control Practice</p>
+      </div>
+      
+      <div class="start-instructions">
+        <h3>Welcome to Your 45-Minute Practice Session!</h3>
+        <ul>
+          <li><strong>Goal:</strong> To learn and practice using advanced parameters to control AI art generation.</li>
+          <li><strong>How it Works:</strong>
+            <ol>
+              <li>First, review the <strong>Parameter Reference Guide</strong> to understand the tools.</li>
+              <li>Then, choose <strong>ANY THREE</strong> of the 10 exercises to complete. Each exercise focuses on different skills.</li>
+              <li>Completing three exercises should take about 45 minutes.</li>
+            </ol>
+          </li>
+          <li><strong>Get Hands-On:</strong> We strongly encourage you to copy the prompts you create and test them in an AI art generator like Midjourney or Firefly to see your results!</li>
+        </ul>
+      </div>
+      
+      <button class="btn" onclick="startExam()">Begin Exercise</button>
+    </div>
+
+    <!-- Main Content -->
+    <div id="examPaper" class="exam-paper hidden">
+        <div class="exam-header">
+            <div>
+                <h2>AI Art Prompt Engineering</h2>
+                <p>Advanced Practice</p>
+            </div>
+            <div>
+                <p>Focus: Learning & Application</p>
+                <p>Time: ~45 Minutes</p>
+            </div>
+        </div>
+
+        <!-- REFERENCE GUIDE -->
+        <div class="section">
+            <h2 class="section-title">Part 1: Parameter Reference Guide</h2>
+            <div class="question-block">
+                <p class="question-instruction">Use this guide to help you with the exercises. These are common parameters used in tools like Midjourney.</p>
+                
+                <h3 class="param-category">Technical Parameters</h3>
+                <table class="parameter-table">
+                    <tr><th>Parameter</th><th>Description</th></tr>
+                    <tr><td><code>--ar [ratio]</code></td><td><strong>Aspect Ratio:</strong> Sets the shape of the image. Examples: <code>--ar 2:3</code> (portrait), <code>--ar 16:9</code> (landscape), <code>--ar 1:1</code> (square).</td></tr>
+                    <tr><td><code>--q [value]</code></td><td><strong>Quality:</strong> Sets rendering quality. Higher values (e.g., <code>--q 2</code>, <code>--q 4</code>) add more detail but take longer. <code>--q 1</code> is the default.</td></tr>
+                    <tr><td><code>--s [value]</code></td><td><strong>Stylize:</strong> Controls how artistic the AI gets. Low values (e.g., <code>--s 50</code>) are literal. High values (e.g., <code>--s 800</code>) add dramatic, creative flair.</td></tr>
+                    <tr><td><code>--c [value]</code></td><td><strong>Chaos:</strong> Controls how varied and unexpected the results are. Low values (e.g., <code>--c 10</code>) are safe. High values (e.g., <code>--c 90</code>) are experimental.</td></tr>
+                    <tr><td><code>--stop [value]</code></td><td><strong>Stop:</strong> Stops the generation process early. A low value (e.g., <code>--stop 30</code>) creates a sketch-like look. A higher value (e.g., <code>--stop 70</code>) looks semi-complete.</td></tr>
+                    <tr><td><code>[word] ::[weight]</code></td><td><strong>Prompt Weights:</strong> Emphasizes or de-emphasizes parts of a prompt. <code>wolf ::2 ranger ::0.5</code> makes the wolf much more dominant than the ranger.</td></tr>
+                </table>
+
+                <h3 class="param-category">Artistic & Cinematic Modifiers</h3>
+                <table class="parameter-table">
+                     <tr><th>Category</th><th>Examples</th></tr>
+                     <tr><td><strong>Lighting</strong></td><td><code>dramatic lighting</code>, <code>soft natural light</code>, <code>backlit</code>, <code>golden hour light</code></td></tr>
+                     <tr><td><strong>Camera Angle</strong></td><td><code>close-up shot</code>, <code>wide shot</code>, <code>over-the-shoulder view</code>, <code>low angle shot</code></td></tr>
+                     <tr><td><strong>Mood</strong></td><td><code>epic atmosphere</code>, <code>whimsical mood</code>, <code>dark fantasy setting</code>, <code>hopeful tone</code></td></tr>
+                     <tr><td><strong>Art Style</strong></td><td><code>pixel art style</code>, <code>watercolor style</code>, <code>oil painting</code>, <code>ink sketch</code>, <code>claymation style</code></td></tr>
+                     <tr><td><strong>Photography</strong></td><td><code>black and white photo</code>, <code>macro photography</code>, <code>tilt-shift photography</code>, <code>long exposure</code></td></tr>
+                     <tr><td><strong>Effects</strong></td><td><code>fire aura</code>, <code>ice aura</code>, <code>lightning strikes</code>, <code>glowing runes</code></td></tr>
+                     <tr><td><strong>Composition</strong></td><td><code>symmetrical composition</code>, <code>off-center composition</code></td></tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- EXERCISES -->
+        <div class="section">
+            <h2 class="section-title">Part 2: Practice Exercises (Choose ANY THREE)</h2>
+            
+            <div class="question-block">
+                <p class="question-instruction">Exercise 1: Mastering Aspect Ratio & Composition</p>
+                 <ol class="question-list">
+                    <li>You want a full-body image of a character. Which aspect ratio is best suited for this: <code>--ar 16:9</code>, <code>--ar 1:1</code>, or <code>--ar 2:3</code>?</li>
+                     <div class="hint"><strong>Hint:</strong> Think vertical vs. horizontal. A full body fits best in a portrait (taller than it is wide) orientation.</div>
+                    <li>Write a prompt for a "vast, cinematic desert scene with a lone wanderer." You must include parameters for a landscape aspect ratio and an off-center composition.</li>
+                     <div class="hint"><strong>Hint:</strong> Use <code>--ar 16:9</code> for landscape. Add the phrase "off-center composition" to your text prompt.</div>
+                </ol>
+            </div>
+
+            <div class="question-block">
+                <p class="question-instruction">Exercise 2: Controlling Quality & Finish</p>
+                 <ol class="question-list">
+                    <li>You are creating a concept sketch and don't need a fully finished image. Which parameter would you use to get an "unfinished" look?</li>
+                     <div class="hint"><strong>Hint:</strong> Look for the parameter that halts the image generation process before it's 100% complete.</div>
+                    <li>Take the base prompt "A detailed portrait of a queen on her throne." Modify it to have the maximum level of polish and sharpness.</li>
+                     <div class="hint"><strong>Hint:</strong> The guide mentions a specific parameter and value for maximum refinement. Add it to the end of the prompt.</div>
+                </ol>
+            </div>
+
+            <div class="question-block">
+                <p class="question-instruction">Exercise 3: Defining Art Style</p>
+                 <ol class="question-list">
+                    <li>You want the AI to follow your prompt very literally, without adding too much of its own creative flair. Should you use a high or low <code>--s</code> (Stylize) value?</li>
+                     <div class="hint"><strong>Hint:</strong> The reference guide states that low stylize values stay closer to the text prompt.</div>
+                    <li>Create a prompt for the subject "A dragon sleeping on a pile of gold." The final image should have a soft, storybook quality.</li>
+                     <div class="hint"><strong>Hint:</strong> Choose the art style from the guide that is described as "soft" and often used in storybooks.</div>
+                </ol>
+            </div>
+
+            <div class="question-block">
+                <p class="question-instruction">Exercise 4: Embracing Chaos & Mood</p>
+                 <ol class="question-list">
+                    <li>You're feeling experimental and want the AI to generate four very different and unpredictable images from a single prompt. Which parameter and value range would be most effective?</li>
+                     <div class="hint"><strong>Hint:</strong> Find the parameter that controls unpredictability and choose a high value.</div>
+                    <li>Write a prompt for "An abandoned cathedral." It must include modifiers for both a "dark fantasy" mood and "dramatic" lighting.</li>
+                     <div class="hint"><strong>Hint:</strong> Simply add the phrases `dark fantasy setting` and `dramatic lighting` to your base prompt.</div>
+                </ol>
+            </div>
+            
+            <div class="question-block">
+                <p class="question-instruction">Exercise 5: Directing the Camera</p>
+                 <ol class="question-list">
+                    <li>You want to create an image that makes a single goblin look powerful and intimidating. Which camera angle would be best to achieve this effect?</li>
+                     <div class="hint"><strong>Hint:</strong> Shooting from below makes subjects appear larger and more imposing.</div>
+                    <li>Create a prompt for "A spy looking at a city from a rooftop." The image should be framed from behind the spy, looking out at the view with them.</li>
+                     <div class="hint"><strong>Hint:</strong> There's a specific camera angle in the guide for this narrative perspective.</div>
+                </ol>
+            </div>
+
+             <div class="question-block">
+                <p class="question-instruction">Exercise 6: Photographic Styles</p>
+                 <ol class="question-list">
+                    <li>You want to capture the intricate, tiny details on a steampunk pocket watch. Which photography style should you specify in your prompt?</li>
+                     <div class="hint"><strong>Hint:</strong> Look for the photography term that means "extreme close detail."</div>
+                    <li>Write a prompt for "A classic detective in a rainy alley." The image should have a timeless, classic film look.</li>
+                     <div class="hint"><strong>Hint:</strong> Use the photography style that removes color to create a dramatic, classic feel.</div>
+                </ol>
+            </div>
+
+            <div class="question-block">
+                <p class="question-instruction">Exercise 7: Using Weights & Effects</p>
+                 <ol class="question-list">
+                    <li>In the prompt "A giant mech fighting a small kaiju," how would you use prompt weights to make the mech the clear focus and much larger than the kaiju?</li>
+                     <div class="hint"><strong>Hint:</strong> Use the <code>::</code> syntax. Give the 'mech' a higher number (e.g., 2) and the 'kaiju' a lower number (e.g., 0.5).</div>
+                    <li>Create a prompt for "A powerful wizard casting a spell." The image must include a mystical effect of glowing symbols around their hands.</li>
+                     <div class="hint"><strong>Hint:</strong> The "Effects" category has the perfect modifier for this magical look.</div>
+                </ol>
+            </div>
+
+             <div class="question-block">
+                <p class="question-instruction">Exercise 8: Combining Mood & Lighting</p>
+                 <ol class="question-list">
+                    <li>Which lighting style would best complement a prompt with a "hopeful mood"?</li>
+                     <div class="hint"><strong>Hint:</strong> Think about what kind of light feels warm and optimistic. Golden hour or soft natural light often work well.</div>
+                    <li>Write a complete prompt for "A group of friends around a campfire at night." Combine a "whimsical mood" with a lighting style that fits the scene.</li>
+                     <div class="hint"><strong>Hint:</strong> The campfire itself is a light source. You could describe it as a 'soft glow' or 'warm light'.</div>
+                </ol>
+            </div>
+
+            <div class="question-block">
+                <p class="question-instruction">Exercise 9: Combining Style & Composition</p>
+                 <ol class="question-list">
+                    <li>You want to create an icon of a "perfectly balanced yin-yang symbol made of fire and water." Which composition term is essential for this prompt?</li>
+                     <div class="hint"><strong>Hint:</strong> The keyword is "balanced." Look for the composition term that matches.</div>
+                    <li>Create a prompt for "An ancient temple entrance." It should be an "oil painting" and use a "symmetrical composition."</li>
+                     <div class="hint"><strong>Hint:</strong> Combine the subject with the style and composition phrases. For an extra touch, you could specify an aspect ratio like <code>--ar 1:1</code> for a balanced, square frame.</div>
+                </ol>
+            </div>
+
+            <div class="question-block">
+                <p class="question-instruction">Exercise 10: The Full Prompt</p>
+                 <ol class="question-list">
+                    <li>Analyze this prompt: "Hero standing on mountain peak, epic atmosphere, golden hour light, oil painting, wide shot --ar 16:9". Identify the <strong>Mood</strong>, <strong>Lighting</strong>, and <strong>Camera Angle</strong> used.</li>
+                     <div class="hint"><strong>Hint:</strong> Break the prompt down phrase by phrase and match each part to a category in the reference guide.</div>
+                    <li>Construct a single, detailed prompt for a "cat adventurer." You must include a <strong>Camera Angle</strong>, an <strong>Art Style</strong>, a <strong>Mood</strong>, and a specific <strong>Aspect Ratio</strong>. Be creative!</li>
+                     <div class="hint"><strong>Hint:</strong> Example structure: "[Art Style] of a [Subject], [Camera Angle], [Mood] --ar [ratio]". Try combining something fun like 'Claymation style' with a 'low angle shot' to make the cat look heroic.</div>
+                </ol>
+            </div>
+
+        </div>
+        
+        <div class="header" style="margin-top: 40px;">
+            <p>End of Practice Session</p>
+        </div>
+    </div>
+    
+  </div>
+
+  <script>
+    function startExam() {
+      document.getElementById('startScreen').classList.add('hidden');
+      document.getElementById('examPaper').classList.remove('hidden');
+    }
+  </script>
+</body>
+</html>
