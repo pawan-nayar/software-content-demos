@@ -1,0 +1,1414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎨 The Ultimate AI Art Command Deck</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    body { 
+      background-color: #f3f4f6; 
+      font-family: 'Inter', sans-serif;
+      overflow: hidden;
+    }
+
+    /* --- Intro & Confetti --- */
+    #intro-screen {
+      transition: opacity 0.5s ease-out;
+    }
+    .confetti-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 9999;
+    }
+    .confetti {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background-color: #f97316;
+      opacity: 0.7;
+      animation: fall 5s linear infinite;
+    }
+    @keyframes fall {
+      to {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    /* --- Flip Card --- */
+    .flip-card { 
+      perspective: 1500px; 
+      width: 100%; 
+      max-width: 900px; /* Wider for table */
+      height: 600px;
+    }
+    .flip-inner { 
+      position: relative; 
+      width: 100%; 
+      height: 100%; 
+      transition: transform 0.7s; 
+      transform-style: preserve-3d; 
+    }
+    .flipped .flip-inner { 
+      transform: rotateY(180deg); 
+    }
+    .flip-front, .flip-back { 
+      position: absolute; 
+      width: 100%; 
+      height: 100%; 
+      backface-visibility: hidden; 
+      border-radius: 1rem; 
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1); 
+      background: white; 
+      padding: 1.5rem; 
+      display: flex; 
+      flex-direction: column; 
+      justify-content: space-between; 
+      overflow: hidden;
+    }
+    
+    /* Content area styling for proper scrolling */
+    .card-content {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding-right: 0.5rem;
+      margin-right: -0.5rem;
+    }
+    
+    .card-content::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    .card-content::-webkit-scrollbar-track {
+      background: #f1f5f9;
+      border-radius: 3px;
+    }
+    
+    .card-content::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 3px;
+    }
+    
+    .card-content::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+    
+    /* Control buttons styling */
+    .card-controls {
+      flex-shrink: 0;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid #e2e8f0;
+      background: white;
+    }
+    .flip-back { 
+      transform: rotateY(180deg); 
+    }
+    
+    /* --- Content Styling --- */
+    .pill-btn { 
+      border-radius: 9999px; 
+      padding: 0.6rem 1.25rem; 
+      font-size: 0.9rem; 
+      font-weight: 600; 
+      transition: all 0.25s ease; 
+      background-color: #f97316; 
+      color: #fff; 
+      border: none; 
+      cursor: pointer; 
+    }
+    .pill-btn:hover { 
+      transform: translateY(-2px); 
+      box-shadow: 0 6px 14px rgba(249, 115, 22, 0.3); 
+    }
+    .pill-btn:active { 
+      transform: scale(0.97); 
+    }
+    .header-ribbon { 
+      font-size: 0.75rem; 
+      font-weight: 700; 
+      color: white; 
+      background-color: #f97316; 
+      padding: 0.25rem 0.75rem; 
+      border-radius: 0.4rem; 
+      display: inline-block; 
+    }
+    /* Updated Label for Front Card */
+    .label {
+        font-size: 0.8rem;
+        font-weight: 700; /* BOLD */
+        color: #6b7280;
+        text-transform: uppercase;
+        margin-top: 1rem;
+        margin-bottom: 0.25rem;
+        border-bottom: 2px solid #f3f4f6;
+        padding-bottom: 0.25rem;
+    }
+
+    /* --- Back Card Horizontal Sections --- */
+    .platform-section {
+        border-bottom: 1px solid #e5e7eb;
+        padding-bottom: 1rem;
+        margin-bottom: 1rem;
+    }
+    .platform-section:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+    }
+    .platform-heading {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 0.5rem;
+    }
+    .platform-details {
+        font-size: 0.85rem;
+        color: #4b5563;
+        line-height: 1.5;
+    }
+    .platform-details ol, .platform-details ul {
+        list-style-position: inside;
+        padding-left: 0.5rem;
+        margin-top: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+    .platform-details ol { list-style-type: decimal; }
+    .platform-details ul { list-style-type: disc; }
+    .platform-details li { margin-bottom: 0.25rem; }
+    .platform-details strong { color: #f97316; font-weight: 600; }
+    .pro-tip {
+        background-color: #fffbeb;
+        border-left: 3px solid #facc15;
+        padding: 0.75rem;
+        margin-top: 0.75rem;
+        font-size: 0.8rem;
+        color: #713f12;
+        border-radius: 0 0.5rem 0.5rem 0;
+    }
+    .pro-tip strong {
+        color: #b45309;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .flip-card {
+            height: 90vh;
+            max-width: 100%;
+        }
+        .flip-front, .flip-back {
+            padding: 1rem;
+        }
+        h2 { font-size: 1.25rem; }
+        .platform-heading { font-size: 0.9rem; }
+        .platform-details { font-size: 0.8rem; }
+    }
+
+  </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+  <!-- Intro Screen -->
+  <div id="intro-screen" class="text-center bg-white p-10 rounded-2xl shadow-xl max-w-lg mx-auto">
+    <h1 class="text-5xl font-bold mb-4">🎨</h1>
+    <h2 class="text-2xl font-bold text-gray-800 mb-2">The Ultimate AI Art Command Deck</h2>
+    <p class="text-gray-600 mb-8">52 essential commands for image generation, explained for every major platform. Flip the cards to learn.</p>
+    <button id="start-btn" class="pill-btn text-lg">Start Learning</button>
+  </div>
+
+  <!-- Confetti Container -->
+  <div class="confetti-container" id="confetti-container"></div>
+
+  <!-- Main Content (Hidden Initially) -->
+  <div id="main-content" class="hidden w-full flex-col items-center">
+    <div class="flip-card" id="card">
+      <div class="flip-inner">
+        <!-- Front -->
+        <div class="flip-front" id="frontContent"></div>
+        <!-- Back -->
+        <div class="flip-back" id="backContent"></div>
+      </div>
+    </div>
+    <footer class="text-center text-gray-500 text-sm mt-6">
+      @ Beyond Dictionary, 2025
+    </footer>
+  </div>
+
+<script>
+let currentIndex = 0;
+const frontDiv = document.getElementById("frontContent");
+const backDiv = document.getElementById("backContent");
+const card = document.getElementById("card");
+const introScreen = document.getElementById("intro-screen");
+const mainContent = document.getElementById("main-content");
+const startBtn = document.getElementById("start-btn");
+const confettiContainer = document.getElementById("confetti-container");
+
+// --- Confetti Logic ---
+let confettiInterval = null;
+function startConfetti() {
+    const colors = ['#f97316', '#fb923c', '#fdba74', '#fed7aa'];
+    confettiInterval = setInterval(() => {
+        const confetti = document.createElement('div');
+        confetti.classList.add('confetti');
+        confetti.style.left = Math.random() * 100 + 'vw';
+        confetti.style.animationDuration = Math.random() * 3 + 4 + 's';
+        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.width = (Math.random() * 8 + 6) + 'px';
+        confetti.style.height = confetti.style.width;
+        confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+        confettiContainer.appendChild(confetti);
+        setTimeout(() => confetti.remove(), 7000);
+    }, 100);
+}
+
+function stopConfetti() {
+    clearInterval(confettiInterval);
+    setTimeout(() => {
+        confettiContainer.innerHTML = '';
+    }, 3000);
+}
+
+// --- Card Rendering Logic ---
+function renderCard(index) {
+  const c = commands[index];
+
+  // --- Front Content ---
+  frontDiv.innerHTML = `
+    <div class='card-content'>
+      <div class='flex justify-between items-center'>
+        <span class='header-ribbon'>🎨 Command ${index + 1}/${commands.length}</span>
+      </div>
+      <h2 class='text-center text-3xl font-bold mt-4 mb-6'>${c.command}</h2>
+      <div class="space-y-4">
+        <div><div class='label'>Description</div><p class='text-gray-700'>${c.desc5}</p></div>
+        <div><div class='label'>Gamer Description</div><p class='text-gray-700'>${c.desc15}</p></div>
+        <div><div class='label'>Casino Game Example</div><p class='italic text-gray-600'>${c.example}</p></div>
+        <div><div class='label'>Mnemonic</div><p class='font-semibold text-orange-600'>${c.mnemonic}</p></div>
+      </div>
+    </div>
+    <div class='card-controls'>
+      <div class='flex justify-between items-center'>
+      <button onclick="prev()" class='pill-btn'>⏮ Prev</button>
+      <button onclick="flipCard()" class='pill-btn'>🔄 Flip to Details</button>
+      <button onclick="next()" class='pill-btn'>Next ⏭</button>
+      </div>
+    </div>
+  `;
+
+  // --- Back Content (Horizontal Sections) ---
+  let backContentHTML = `
+    <div class='card-content'>
+        <div class='flex justify-between items-center mb-4'>
+            <span class='header-ribbon'>⚙️ Platform Details</span>
+            <h3 class='text-xl font-bold text-gray-800'>${c.command}</h3>
+        </div>
+        <div class="space-y-4">
+  `;
+  c.table.headers.forEach((header, i) => {
+    const detail = c.table.rows[0][i];
+    backContentHTML += `<div class="platform-section"><h4 class="platform-heading">${header}</h4><div class="platform-details">${detail}</div></div>`;
+  });
+  backContentHTML += `
+        </div>
+    </div>
+    <div class='card-controls'>
+        <div class='flex justify-between items-center'>
+        <button onclick="prev()" class='pill-btn'>⏮ Prev</button>
+        <button onclick="flipCard()" class='pill-btn'>🔄 Flip to Summary</button>
+        <button onclick="next()" class='pill-btn'>Next ⏭</button>
+        </div>
+    </div>
+  `;
+  backDiv.innerHTML = backContentHTML;
+}
+
+// --- Navigation ---
+function flipCard() { card.classList.toggle("flipped"); }
+
+function prev() { 
+    currentIndex = (currentIndex - 1 + commands.length) % commands.length; 
+    if (card.classList.contains('flipped')) {
+        card.classList.remove('flipped');
+        setTimeout(() => renderCard(currentIndex), 350);
+    } else {
+        renderCard(currentIndex); 
+    }
+}
+
+function next() { 
+    currentIndex = (currentIndex + 1) % commands.length; 
+    if (card.classList.contains('flipped')) {
+        card.classList.remove('flipped');
+        setTimeout(() => renderCard(currentIndex), 350);
+    } else {
+       renderCard(currentIndex); 
+    }
+}
+
+// --- Initialization ---
+startBtn.addEventListener('click', () => {
+  introScreen.style.opacity = '0';
+  startConfetti();
+  setTimeout(() => {
+    introScreen.classList.add('hidden');
+    mainContent.classList.remove('hidden');
+    mainContent.classList.add('flex');
+    renderCard(currentIndex);
+    stopConfetti();
+  }, 1500);
+});
+
+const commands = [
+  {
+    command: "Aspect Ratio",
+    desc5: "Adjust image width-to-height balance.",
+    desc15: "Set screen’s width and height balance for optimal gameplay immersion and character visuals.",
+    example: "Adjust the slot machine screen to a cinematic 21:9 ratio, letting the reels stretch wide while maintaining sharpness in card animations and poker table details for maximum casino immersion.",
+    mnemonic: "Shape the screen's viewing frame.",
+    table: {
+      headers: ["Photoshop (2025)", "Canva", "Adobe Firefly (v3)", "Midjourney (v7 on Web UI)", "DALL·E 4 (in ChatGPT)", "Gemini (in Google AI Studio)"],
+      rows: [
+        [
+          "<ol><li><strong>Use the Crop Tool (C):</strong> This is the primary tool for reframing your image.</li><li><strong>Select from Presets:</strong> In the top options bar, choose a preset ratio like 16:9 or enter custom dimensions.</li><li><strong>Use Generative Expand:</strong> To change the ratio non-destructively, drag the crop handles outwards and let AI fill in the new space.</li></ol><div class='pro-tip'><strong>Pro Tip:</strong> Hold the Shift key while dragging a corner of the Crop Tool to maintain the current aspect ratio.</div>",
+          "<p>Use the <strong>'Resize & Magic Switch'</strong> feature. This allows you to select from dozens of preset social media formats (like Instagram Post or YouTube Thumbnail) or input your own custom pixel dimensions to reframe the entire design.</p>",
+          "<p>Select the desired aspect ratio from a dedicated dropdown menu before generating an image. Common options include:</p><ul><li>Square (1:1)</li><li>Portrait (3:4)</li><li>Landscape (4:3)</li><li>Widescreen (16:9)</li></ul>",
+          "<p>You have two main options for setting the aspect ratio:</p><ol><li><strong>Use the Aspect Ratio slider:</strong> The web UI provides a simple slider to select common ratios.</li><li><strong>Use the `--ar` parameter:</strong> In Discord or the prompt box, type `--ar` followed by the ratio (e.g., `--ar 16:9`, `--ar 2:3`).</li></ol><div class='pro-tip'><strong>Pro Tip:</strong> Use `--ar 7:4` for the widest cinematic aspect ratio that Midjourney officially supports for high-quality compositions.</div>",
+          "<p>Choose from three simple aspect ratio buttons directly within the prompt interface before submitting your request:</p><ul><li><strong>Square (1:1):</strong> For profile pictures or grid layouts.</li><li><strong>Wide (16:9):</strong> For desktop wallpapers or cinematic scenes.</li><li><strong>Tall (9:16):</strong> For mobile wallpapers or social media stories.</li></ul>",
+          "<p>Select from a range of aspect ratio presets before generating. This ensures your outputs are perfectly sized for their intended use, such as social media, presentations, or print.</p>"
+        ]
+      ]
+    }
+  },
+  {
+    command: "Resolution Upscale",
+    desc5: "Increase image detail and clarity.",
+    desc15: "Boost visual fidelity by upscaling resolution, making characters, maps, and assets sharper.",
+    example: "Use upscaling to render roulette wheels with high clarity, ensuring each number slot looks crisp for professional casino-style digital experiences.",
+    mnemonic: "Make small details look bigger.",
+    table: {
+      headers: ["Photoshop (2025)", "Canva", "Adobe Firefly (v3)", "Midjourney (v7 on Web UI)", "DALL·E 4 (in ChatGPT)", "Gemini (in Google AI Studio)"],
+      rows: [
+        [
+          "<p>Photoshop offers several advanced methods for increasing image resolution:</p><ol><li><strong>Go to Image → Image Size:</strong> Manually enter larger pixel dimensions.</li><li><strong>Choose an Algorithm:</strong> For best results, select 'Preserve Details 2.0' from the Resample dropdown to let AI intelligently add detail.</li><li><strong>Use Super Resolution:</strong> In the 'Enhance' dialog, this feature uses AI to double the resolution while maintaining clarity.</li></ol>",
+          "<p>Canva's <strong>'Magic Upscaler'</strong> tool enhances image resolution up to 2x. It's designed to sharpen details and improve clarity, making lower-quality images more suitable for print and high-resolution digital displays.</p>",
+          "<p>After an initial image is generated, Firefly provides a one-click <strong>'Enhanced Upscale'</strong> option. This feature increases the image resolution by 4x and uses AI to intelligently refine details, textures, and clarity for a professional finish.</p>",
+          "<p>The 'Upscale' option in the web UI now provides two choices for increasing resolution while adding significant detail:</p><ul><li><strong>Upscale (2x):</strong> Doubles the resolution.</li><li><strong>Upscale (4x):</strong> Quadruples the resolution for maximum detail and texture synthesis.</li></ul>",
+          "<p>All images generated are now high-resolution by default. For the absolute highest quality, you can enable the optional <strong>'HD+'</strong> toggle, which applies a cinematic-grade upscaling algorithm for stunning clarity and detail.</p>",
+          "<p>Gemini generates high-resolution images natively. For specialized needs, you can include specific requests in your prompt, such as <strong>'UHD,' '8K resolution,'</strong> or <strong>'photorealistic detail'</strong> to generate exceptionally large and detailed outputs.</p>"
+        ]
+      ]
+    }
+  },
+  {
+    command: "Resolution Downscale",
+    desc5: "Lower resolution for speed.",
+    desc15: "Reduce screen resolution for faster frame rates without heavy GPU usage.",
+    example: "Downscale blackjack environments to load faster on budget hardware, while keeping cards and chips visible enough for gameplay.",
+    mnemonic: "Less detail for more speed.",
+    table: {
+        headers: ["Photoshop (2025)", "Canva", "Adobe Firefly (v3)", "Midjourney (v7 on Web UI)", "DALL·E 4 (in ChatGPT)", "Gemini (in Google AI Studio)"],
+        rows: [
+            [
+                "<p>The <strong>'Export As'</strong> dialog (File → Export → Export As) provides superior downscaling algorithms to maintain clarity when reducing image size. Choose 'Bicubic Sharper' for the best results.</p>",
+                "<p>When exporting your design, you have multiple options to reduce resolution:</p><ul><li><strong>Choose a smaller size:</strong> Export at 0.5x or enter custom smaller dimensions.</li><li><strong>Lower the quality slider:</strong> For JPGs, reducing the quality significantly lowers file size.</li></ul>",
+                "<p>This functionality is not available directly in Firefly. It's intended to be a post-processing step in other Adobe tools like Photoshop or Lightroom, which offer more control for optimal results.</p>",
+                "<p>Midjourney does not have a direct downscale command. The best practice is to generate at the desired final resolution or to downscale the high-resolution output using an external image editor for maximum control.</p>",
+                "<p>While there is no direct command, you can request a 'lower resolution' or 'web-optimized' image in your prompt. However, for precise dimensions, manual resizing after generation is more reliable.</p>",
+                "<p>You can specify 'low resolution' or 'for web' in your prompt to get a smaller image. Alternatively, the integrated editor allows you to resize the image to specific dimensions before exporting.</p>"
+            ]
+        ]
+    }
+},
+{
+    command: "Tiling",
+    desc5: "Repeat pattern seamlessly across canvas.",
+    desc15: "Generate seamless textures for walls, floors, or skyboxes with consistent repetition.",
+    example: "Create tiling patterns for casino floor carpets that extend infinitely without breaks, keeping the classic diamond and clover motifs intact.",
+    mnemonic: "Repeat patterns, hide the seams.",
+    table: {
+        headers: ["Photoshop (2025)", "Canva", "Adobe Firefly (v3)", "Midjourney (v7 on Web UI)", "DALL·E 4 (in ChatGPT)", "Gemini (in Google AI Studio)"],
+        rows: [
+            [
+                "<p>The <strong>'Pattern Preview'</strong> mode (View → Pattern Preview) offers a live, interactive canvas. Any element you move or edit will update in real-time to show you exactly how it will look as a repeating pattern.</p>",
+                "<p>Use Canva's <strong>'Seamless Pattern'</strong> generator, found in the Apps section. This tool can create simple, repeatable backgrounds from text prompts or by using elements from the Canva library.</p>",
+                "<p>Prompting with keywords like <strong>'seamless pattern,' 'repeatable tile,'</strong> or <strong>'texture'</strong> now uses a dedicated pattern generation model, ensuring flawless, edge-to-edge tiling without manual adjustments.</p>",
+                "<p>The <strong>`--tile`</strong> parameter is highly refined for creating perfect seamless patterns. It works exceptionally well for creating textures, fabrics, and intricate backgrounds. You can preview the tiling effect directly in the web UI.</p>",
+                "<p>The <strong>`--tile`</strong> parameter is now officially supported. Adding this to the end of your prompt will instruct DALL·E to generate an image that can be seamlessly repeated for textures and backgrounds.</p>",
+                "<p>By including <strong>'seamless tile'</strong> or <strong>'repeatable pattern'</strong> in your prompt, Gemini will use a specialized mode to generate a perfectly tiling image suitable for use as a texture or background.</p>"
+            ]
+        ]
+    }
+},
+{
+    command: "Cropping",
+    desc5: "Cut unwanted image parts.",
+    desc15: "Focus attention on critical elements by trimming unnecessary visuals from edges.",
+    example: "Crop slot machine interface to highlight reels only, removing unnecessary background distractions to emphasize player focus on spin results.",
+    mnemonic: "Trim the edges, focus inside.",
+    table: {
+        headers: ["Photoshop (2025)", "Canva", "Adobe Firefly (v3)", "Midjourney (v7 on Web UI)", "DALL·E 4 (in ChatGPT)", "Gemini (in Google AI Studio)"],
+        rows: [
+            [
+                "<p>The <strong>Crop Tool (C)</strong> is the standard. A powerful related feature is <strong>'Content-Aware Crop,'</strong> which can intelligently fill in the edges with new pixels if you rotate or expand the crop beyond the original image boundaries.</p>",
+                "<p>Canva offers a simple and intuitive cropping tool. You can drag the crop handles freely or choose from a list of preset ratios (e.g., 1:1 Square, 16:9 Film). All cropping is non-destructive within the editor.</p>",
+                "<p>There is no internal crop tool. Cropping is intended to be a post-generation step performed in Adobe Express or Photoshop, which provide more precise control over the final composition.</p>",
+                "<p>The Midjourney web UI now includes a powerful <strong>'Reframe'</strong> tool. This not only allows for traditional cropping but also lets you extend the image with new generative content to perfect the composition.</p>",
+                "<p>A robust image editor is now available after generation. It allows for full manual cropping and reframing. It also uses AI to suggest optimal compositions based on the main subject of the image.</p>",
+                "<p>The built-in image editor offers full manual control over the crop area. It also features a <strong>'Smart Crop'</strong> tool that automatically suggests a crop to focus on the main subject.</p>"
+            ]
+        ]
+    }
+},
+{
+    command: "Orientation",
+    desc5: "Change direction of display.",
+    desc15: "Rotate or flip the view for unique gameplay perspectives or artistic styles.",
+    example: "Flip baccarat table orientation for overhead camera angles, giving players a new immersive viewpoint in live casino simulations.",
+    mnemonic: "Flip the view, change direction.",
+    table: {
+        headers: ["Photoshop (2025)", "Canva", "Adobe Firefly (v3)", "Midjourney (v7 on Web UI)", "DALL·E 4 (in ChatGPT)", "Gemini (in Google AI Studio)"],
+        rows: [
+            [
+                "<p>You have multiple options for orientation:</p><ul><li><strong>Canvas Rotation:</strong> Go to Image → Image Rotation for presets (90°, 180°).</li><li><strong>Layer Rotation:</strong> Use the Free Transform tool (Ctrl/Cmd+T) for precise manual rotation and flipping of individual layers.</li></ul>",
+                "<p>The editor provides simple, direct controls. The <strong>'Flip'</strong> command allows for instant horizontal or vertical flipping, while the rotate handle on any selected element offers free, manual rotation.</p>",
+                "<p>There are no post-generation rotation tools. You must specify the desired orientation directly in your prompt, using descriptive terms like <strong>'overhead shot,' 'side profile,' 'view from below,'</strong> or <strong>'fisheye lens view.'</strong></p>",
+                "<p>Prompt for specific camera views like 'top-down' or 'isometric.' Additionally, the <strong>'Reframe'</strong> tool in the web UI can be used to make minor adjustments to the final image's orientation and rotation.</p>",
+                "<p>Describe any orientation in your prompt, such as 'portrait of a person,' 'landscape of a city,' or 'a bird's-eye view of a car.' The integrated editor also allows for basic rotation and flipping after generation.</p>",
+                "<p>Prompt for specific camera angles to control orientation. After generation, the powerful integrated editor can be used to perform precise rotation and flipping of the final image to perfect the composition.</p>"
+            ]
+        ]
+    }
+},
+{
+    command: "Pan",
+    desc5: "Shift camera horizontally or vertically.",
+    desc15: "Move camera view smoothly across horizontal or vertical axis for exploration.",
+    example: "Pan across poker tables to highlight dealer’s hands and chips distribution, simulating a real casino walkaround experience.",
+    mnemonic: "Slide the camera view around.",
+    table: {
+        headers: ["Photoshop (2025)", "Canva", "Adobe Firefly (v3)", "Midjourney (v7 on Web UI)", "DALL·E 4 (in ChatGPT)", "Gemini (in Google AI Studio)"],
+        rows: [
+            [
+                "<p>You can pan in two ways:</p><ol><li><strong>To view:</strong> Use the Hand Tool (H) to move around the canvas when you are zoomed in.</li><li><strong>To create:</strong> Use 'Generative Expand' by dragging the canvas borders in one direction to extend the scene with new, AI-generated content.</li></ol>",
+                "<p>When you are zoomed into your design, you can click and drag the canvas to pan your view. However, this action does not extend the canvas or create new content.</p>",
+                "<p>Use the <strong>'Generative Expand'</strong> feature to pan the 'camera' out from the original image. By extending the canvas in any direction, Firefly will fill the new space with context-aware content.</p>",
+                "<p>After upscaling an image, <strong>Pan buttons (Up, Down, Left, Right)</strong> appear. Clicking one of these will extend the image by generating a new strip of content in the chosen direction, keeping the original scene intact.</p>",
+                "<p>The <strong>'Expand'</strong> tool is used for panning. It allows you to extend the canvas borders in any direction, and DALL·E will generate new content to fill the space, revealing more of the scene.</p>",
+                "<p>Use the <strong>'Magic Expand'</strong> feature. This allows you to drag the borders of your image outward, and the AI will seamlessly fill in the newly created space to pan the view and expand the scene.</p>"
+            ]
+        ]
+    }
+},
+{
+    command: "Zoom",
+    desc5: "Enlarge or shrink focal area.",
+    desc15: "Zoom in or out to emphasize critical gameplay or broader environments.",
+    example: "Zoom into roulette wheel during spin to capture ball movement, then zoom out for entire casino hall effect.",
+    mnemonic: "Move closer or zoom out.",
+    table: {
+        headers: ["Photoshop (2025)", "Canva", "Adobe Firefly (v3)", "Midjourney (v7 on Web UI)", "DALL·E 4 (in ChatGPT)", "Gemini (in Google AI Studio)"],
+        rows: [
+            [
+                "<p>Photoshop handles zoom for viewing and creation separately:</p><ul><li><strong>Viewing:</strong> Use the Zoom Tool (Z) or Ctrl/Cmd +/- to change your magnification.</li><li><strong>Creating (Zoom Out):</strong> Use 'Generative Expand' to add new content around the edges of your image.</li></ul>",
+                "<p>Use the zoom slider located at the bottom-right of the editor to change your view magnification. This action does not alter the actual image content, resolution, or file size.</p>",
+                "<p>You can simulate a zoom effect using other tools:</p><ul><li><strong>Zoom Out:</strong> Use 'Generative Expand' to extend the canvas and reveal more of the scene.</li><li><strong>Zoom In:</strong> Crop the image in a separate application like Photoshop to focus on a detail.</li></ul>",
+                "<p>After upscaling, the <strong>'Zoom Out'</strong> feature (with 1.5x, 2x, or Custom values) extends the canvas to show a wider, context-aware scene. The 'Reframe' tool can be used to crop and simulate a zoom in.</p>",
+                "<p>Use the <strong>'Expand'</strong> tool to perform an AI-powered zoom out. To zoom in, use the editor to crop the image, and then you can optionally use the 'HD+' feature to upscale the result and restore clarity.</p>",
+                "<p>Use <strong>'Magic Expand'</strong> to zoom out and reveal more of the scene. To zoom in, use the crop tool to select a specific area, and then use the <strong>'Enhance Detail'</strong> feature to maintain high resolution.</p>"
+            ]
+        ]
+    }
+},
+{
+    command: "Tilt",
+    desc5: "Angle camera for perspective.",
+    desc15: "Adjust the horizon tilt for dramatic or stylistic visual flair.",
+    example: "Apply tilt to slot machine reels for a diagonal cinematic presentation during bonus rounds, heightening visual drama.",
+    mnemonic: "Angle the camera's horizon line.",
+    table: {
+        headers: ["Photoshop (2025)", "Canva", "Adobe Firefly (v3)", "Midjourney (v7 on Web UI)", "DALL·E 4 (in ChatGPT)", "Gemini (in Google AI Studio)"],
+        rows: [
+            [
+                "<p>The <strong>Free Transform tool (Ctrl/Cmd+T)</strong> allows for precise numerical rotation to achieve a tilt. For correction, the Ruler tool's <strong>'Straighten Layer'</strong> button will automatically level the horizon.</p>",
+                "<p>Select any element and use the rotate handle that appears to apply a manual tilt. There are no automatic horizon leveling tools available in Canva's editor.</p>",
+                "<p>There is no specific tilt tool. You must describe the desired camera effect in the prompt using phrases like <strong>'dutch angle,' 'tilted horizon,' 'canted frame,'</strong> or <strong>'low-angle shot'</strong> to create the effect during generation.</p>",
+                "<p>Prompt for a <strong>'dutch angle'</strong> or <strong>'canted frame.'</strong> Additionally, the <strong>'Reframe'</strong> tool in the web UI allows for minor rotational adjustments to the final generated image during post-processing.</p>",
+                "<p>Include phrases like <strong>'tilted frame'</strong> or <strong>'dutch angle shot'</strong> in your prompt. After generation, the integrated editor allows for manual rotation to tilt the final image to your exact preference.</p>",
+                "<p>Prompt for a <strong>'tilted perspective'</strong> to get the effect. The editor's rotate tool is also very powerful and includes a <strong>'Straighten'</strong> feature that can automatically level a crooked image.</p>"
+            ]
+        ]
+    }
+},
+{
+    command: "Rotation",
+    desc5: "Rotate scene or object view.",
+    desc15: "Spin the camera or objects for dynamic or stylized effects.",
+    example: "Rotate the roulette wheel model for 360° perspective animations, enhancing realism in online casino experiences.",
+    mnemonic: "Spin the view, turn around.",
+    table: {
+        headers: ["Photoshop (2025)", "Canva", "Adobe Firefly (v3)", "Midjourney (v7 on Web UI)", "DALL·E 4 (in ChatGPT)", "Gemini (in Google AI Studio)"],
+        rows: [
+            [
+                "<p>Rotation can be applied in two ways:</p><ul><li><strong>Layer Rotation:</strong> Free Transform (Ctrl/Cmd+T) provides granular control over individual layer rotation.</li><li><strong>Canvas Rotation:</strong> The Image → Image Rotation menu affects the entire canvas at once.</li></ul>",
+                "<p>Select any element and use the rotate handle for freeform rotation. You can also input a specific degree of rotation in the toolbar for precise, numerical adjustments.</p>",
+                "<p>There are no post-generation rotation tools. You must describe the object's state of motion in the prompt itself, for example, <strong>'a casino chip spinning on a table'</strong> or <strong>'a rotating carousel.'</strong></p>",
+                "<p>You can prompt for a rotating object. For post-processing, the <strong>'Reframe'</strong> tool now allows for minor rotation of the entire generated image to correct horizons or add a slight tilt.</p>",
+                "<p>Describe the rotation directly in your prompt, such as <strong>'a rotating nebula in space.'</strong> After the image is generated, the editor allows you to freely rotate the final static image as needed.</p>",
+                "<p>Prompt for an action that implies rotation, like <strong>'a car drifting around a corner.'</strong> For static images, the powerful editor can be used to rotate the final output to any angle you desire.</p>"
+            ]
+        ]
+    }
+},
+{
+    command: "Depth of Field",
+    desc5: "Focus on key elements.",
+    desc15: "Blur background while keeping subject sharp for cinematic focus.",
+    example: "Apply shallow focus on dealer’s hands and cards while blurring background players to direct player’s attention effectively in blackjack simulations.",
+    mnemonic: "Blur background, focus on subject.",
+    table: {
+        headers: ["Photoshop (2025)", "Canva", "Adobe Firefly (v3)", "Midjourney (v7 on Web UI)", "DALL·E 4 (in ChatGPT)", "Gemini (in Google AI Studio)"],
+        rows: [
+            [
+                "<p>The <strong>'Lens Blur'</strong> filter provides advanced, realistic bokeh effects. For a more automated approach, use the Neural Filters' <strong>'Depth Blur'</strong> for AI-powered focus control that can simulate different lens apertures.</p>",
+                "<p>The <strong>'Blur'</strong> effect can be applied to background images. For more precise control, use the <strong>'Focal Blur'</strong> tool in the photo editor to define a specific point of focus and blur the rest of the image.</p>",
+                "<p>An <strong>'Aperture'</strong> setting is now available in the Effects panel. This slider allows you to control the depth of field from shallow (e.g., f/1.4 for maximum blur) to deep (e.g., f/22 for maximum sharpness).</p>",
+                "<p>For the most precise depth of field control, prompt for specific camera lenses and apertures, for example, <strong>'a portrait shot with an 85mm lens at f/1.8, with a bokeh background.'</strong></p>",
+                "<p>DALL·E 4 has an advanced understanding of photographic terms. Prompting for <strong>'shallow depth of field,' 'cinematic focus,'</strong> or <strong>'bokeh'</strong> will yield beautifully blurred backgrounds and sharp subjects.</p>",
+                "<p>Prompt for <strong>'cinematic focus'</strong> or <strong>'bokeh background'</strong> to achieve the effect. The editor also includes a powerful <strong>'Lens Blur'</strong> tool that allows you to apply and adjust depth of field effects after generation.</p>"
+            ]
+        ]
+    }
+},
+{
+    command: "Quality",
+    desc5: "Overall rendering polish.",
+    desc15: "Control detail level from draft to ultra-fidelity renders.",
+    example: "Set poker chip textures to ultra-quality while maintaining lower settings for chairs and tables to balance rendering speed and detail.",
+    mnemonic: "How polished the final render.",
+    table: {
+        headers: ["Photoshop (2025)", "Canva", "Adobe Firefly (v3)", "Midjourney (v7 on Web UI)", "DALL·E 4 (in ChatGPT)", "Gemini (in Google AI Studio)"],
+        rows: [
+            [
+                "<p>The <strong>'Export As'</strong> dialog gives you fine-tuned control over quality settings for formats like JPG and WebP, allowing you to balance file size against image detail for web and print.</p>",
+                "<p>When downloading a design as a JPG, a quality slider appears. This allows you to choose between a smaller file size (lower quality) or higher image fidelity (larger file size). For best quality, always choose PNG.</p>",
+                "<p>Quality is consistently high by default. You can select different Firefly Image models (e.g., Image v2 vs. Image v3), which may have different aesthetic characteristics and levels of detail.</p>",
+                "<p>The <strong>`--quality`</strong> or <strong>`--q`</strong> parameter (from .25 to 1) is still available but less necessary, as the default quality of the v7 model is extremely high and optimized for detail.</p>",
+                "<p>Quality is consistently high and not user-configurable. The model is optimized by OpenAI to provide the best possible output by default. The 'HD+' toggle can be used for even greater fidelity.</p>",
+                "<p>All outputs are generated at high quality. However, users can prompt for different levels of fidelity, such as requesting a <strong>'draft sketch'</strong> versus a <strong>'hyperrealistic photograph'</strong> to control the level of polish.</p>"
+            ]
+        ]
+    }
+},
+{
+    command: "Speed",
+    desc5: "Render faster with trade-offs.",
+    desc15: "Reduce rendering time by compromising on details or effects.",
+    example: "Generate quick slot prototype reels with fast rendering, sacrificing background detail but maintaining functional gameplay for testing.",
+    mnemonic: "Faster renders, less detail given.",
+    table: {
+        headers: ["Photoshop (2025)", "Canva", "Adobe Firefly (v3)", "Midjourney (v7 on Web UI)", "DALL·E 4 (in ChatGPT)", "Gemini (in Google AI Studio)"],
+        rows: [
+            [
+                "<p>Application performance is dependent on your computer's hardware. Using GPU acceleration in Photoshop's Preferences and working with smaller files can significantly speed up filter processing.</p>",
+                "<p>Canva's performance is cloud-based and generally very fast. For the quickest experience, work with simpler designs that have fewer complex elements, videos, or high-resolution images.</p>",
+                "<p>Generation speed is managed by Adobe's servers and is typically very fast. There are currently no user-facing controls to trade quality for speed (e.g., there is no 'Turbo' or 'Relax' mode).</p>",
+                "<p>Midjourney offers different generation speeds based on your subscription:</p><ul><li><strong>Relax Mode:</strong> Free but slower.</li><li><strong>Fast Mode:</strong> Uses your GPU credits for priority processing.</li><li><strong>Turbo Mode:</strong> Uses more credits for near-instantaneous generations.</li></ul>",
+                "<p>Generation speed is managed by OpenAI's servers. It is typically very fast, usually delivering a full set of images in under 15 seconds, depending on server load.</p>",
+                "<p>Gemini offers different model tiers that affect speed. A <strong>'Speed'</strong> mode is available for rapid prototyping, while the standard <strong>'Quality'</strong> mode takes slightly longer to generate a more refined result.</p>"
+            ]
+        ]
+    }
+},
+{
+    command: "Detail",
+    desc5: "Increase complexity of render.",
+    desc15: "Add finer details like textures, reflections, and shading to enrich environments.",
+    example: "Enhance slot machine lever textures with realistic scratches, lights, and reflections for immersive casino appeal.",
+    mnemonic: "Add more complexity and texture.",
+    table: {
+        headers: ["Photoshop (2025)", "Canva", "Adobe Firefly (v3)", "Midjourney (v7 on Web UI)", "DALL·E 4 (in ChatGPT)", "Gemini (in Google AI Studio)"],
+        rows: [
+            [
+                "<p>Use the <strong>'Texture'</strong> and <strong>'Clarity'</strong> sliders in the Camera Raw Filter, or the <strong>'Details'</strong> panel in Neural Filters to intelligently enhance fine surface details and textures in your photographs.</p>",
+                "<p>The <strong>'Enhance'</strong> tool in the photo editor can improve detail. You can also increase the perceived detail in a design by adding high-resolution textures or graphical elements from the library.</p>",
+                "<p>To guide the model toward finer outputs, add descriptive keywords to your prompt like <strong>'intricate,' 'hyper-detailed,' 'sharp focus,' '4K,'</strong> and <strong>'realistic textures.'</strong></p>",
+                "<p>The v7 model excels at rendering incredible detail. Use specific prompts like <strong>'macro photography of a bee,' 'intricate filigree on armor,'</strong> or <strong>'ultra-detailed environment'</strong> for stunning, high-fidelity results.</p>",
+                "<p>DALL·E 4 generates highly detailed images by default. To enhance this, add specific requests to your prompt like <strong>'detailed embroidery on silk,'</strong> or <strong>'realistic human skin texture with pores.'</strong></p>",
+                "<p>You can prompt for <strong>'fine details,' 'sharp textures,'</strong> or <strong>'8K resolution.'</strong> After generation, the editor's <strong>'Clarity'</strong> tool can be used to further enhance the sharpness and definition of textures.</p>"
+            ]
+        ]
+    }
+},
+{
+    command: "Consistency",
+    desc5: "Maintain visual stability.",
+    desc15: "Keep assets uniform across multiple frames or outputs.",
+    example: "Ensure blackjack cards maintain consistent suits and colors across animations, avoiding flickering between hands.",
+    mnemonic: "Keep the look and feel same.",
+    table: {
+        headers: ["Photoshop (2025)", "Canva", "Adobe Firefly (v3)", "Midjourney (v7 on Web UI)", "DALL·E 4 (in ChatGPT)", "Gemini (in Google AI Studio)"],
+        rows: [
+            [
+                "<p>Use <strong>Smart Objects, templates,</strong> and batch <strong>Actions</strong> to apply the same effects, filters, and styles across multiple files. This is essential for maintaining brand consistency in large projects.</p>",
+                "<p>Use <strong>'Brand Kits'</strong> to save logos, color palettes, and fonts. The <strong>'Copy Style'</strong> feature allows you to quickly paste formatting from one element to another to ensure your design is consistent.</p>",
+                "<p>Use the <strong>'Style Reference'</strong> feature with a consistent source image. The <strong>'Generative Structure'</strong> feature can also be used to maintain a similar composition and layout across multiple generations.</p>",
+                "<p>Use a combination of commands for high consistency:</p><ul><li><strong>`--seed`</strong>: Use the same seed number for similar noise patterns.</li><li><strong>`--cref`</strong>: Use a character reference image.</li><li><strong>`--sref`</strong>: Use a style reference image.</li></ul>",
+                "<p>For consistency, reference your saved <strong>'Character Profiles'</strong> with `@profilename`. You can also use the <strong>`gen_id`</strong> of a previous image to strongly inform the style of a new generation.</p>",
+                "<p>Use the <strong>'Character Lock'</strong> and <strong>'Style Lock'</strong> features. These allow you to save a reference image or a specific style that can be easily applied to all subsequent generations until it is disabled.</p>"
+            ]
+        ]
+    }
+},
+{
+    command: "Noise",
+    desc5: "Control grain or randomness.",
+    desc15: "Adjust grain levels for atmosphere or style.",
+    example: "Add film-like noise to roulette video sequences, creating vintage casino aesthetics reminiscent of smoky underground halls.",
+    mnemonic: "Add grain for vintage style.",
+    table: {
+        headers: ["Photoshop (2025)", "Canva", "Adobe Firefly (v3)", "Midjourney (v7 on Web UI)", "DALL·E 4 (in ChatGPT)", "Gemini (in Google AI Studio)"],
+        rows: [
+            [
+                "<p>The simple <strong>'Add Noise'</strong> filter (Filter → Noise → Add Noise) provides basic grain. For more realistic and customizable film grain, use the <strong>'Grain'</strong> controls within the Camera Raw Filter.</p>",
+                "<p>Search for 'grain' or 'noise' in the Elements tab and add a semi-transparent overlay image to your design. Adjusting the transparency will control the intensity of the noise effect.</p>",
+                "<p>You can control noise and grain with sliders in the <strong>'Effects'</strong> panel after generation. Alternatively, you can prompt for styles like <strong>'grainy film photo'</strong> or <strong>'lo-fi aesthetic'</strong> to add it during generation.</p>",
+                "<p>Prompting for <strong>'film grain'</strong> is very effective. For more specific and realistic results, you can also prompt for particular film types, such as <strong>'shot on Portra 400, film grain.'</strong></p>",
+                "<p>To add noise and texture to your images, include stylistic descriptions in your prompt, such as <strong>'grainy photo,' 'analog film photograph,'</strong> or <strong>'dust and scratches.'</strong></p>",
+                "<p>Prompt for <strong>'film grain.'</strong> The integrated editor also includes an <strong>'Effects'</strong> panel with adjustable sliders for grain, noise, and vignetting to give your image an analog feel.</p>"
+            ]
+        ]
+    }
+},
+{
+    command: "Sharpness",
+    desc5: "Control image clarity edges.",
+    desc15: "Adjust edge clarity for crisper or softer visuals.",
+    example: "Sharpen slot symbols like cherries and sevens, ensuring they pop clearly against animated spinning reels.",
+    mnemonic: "Make the edges crisp, clear.",
+    table: {
+        headers: ["Photoshop (2025)", "Canva", "Adobe Firefly (v3)", "Midjourney (v7 on Web UI)", "DALL·E 4 (in ChatGPT)", "Gemini (in Google AI Studio)"],
+        rows: [
+            [
+                "<p>Use the <strong>'Unsharp Mask'</strong> or <strong>'Smart Sharpen'</strong> filters for advanced, professional-grade sharpening with fine control over radius and amount. The basic 'Sharpen' tool provides a simpler, one-click alternative.</p>",
+                "<p>The <strong>'Adjust'</strong> panel in the photo editor includes a <strong>'Sharpness'</strong> slider. Dragging this to the right will increase the clarity and edge contrast of an image, making it appear crisper.</p>",
+                "<p>Sharpness is primarily controlled by the model's high-quality output. To enhance it, use prompts that include specific keywords like <strong>'sharp focus,' 'crisp,'</strong> and <strong>'highly detailed.'</strong></p>",
+                "<p>The v7 model produces exceptionally sharp images by default. Prompting for terms like <strong>'sharp focus'</strong> or <strong>'tack sharp'</strong> will further enhance this effect, resulting in very crisp details.</p>",
+                "<p>DALL·E 4 generates very sharp images by default. For extra pop and clarity, you can specify <strong>'ultra-sharp'</strong> or <strong>'maximum clarity'</strong> in your prompt to guide the generation.</p>",
+                "<p>The built-in editor has a dedicated <strong>'Sharpness'</strong> tool. You can also prompt for <strong>'tack sharp'</strong> or <strong>'crisp details'</strong> during generation for the clearest possible results.</p>"
+            ]
+        ]
+    }
+},
+{
+    command: "Style",
+    desc5: "Apply artistic rendering mode.",
+    desc15: "Change game’s look using artistic or thematic filters.",
+    example: "Render blackjack scenes in neon cyberpunk style, with glowing cards and futuristic casino architecture.",
+    mnemonic: "Apply a unique artistic filter.",
+    table: {
+        headers: ["Photoshop (2025)", "Canva", "Adobe Firefly (v3)", "Midjourney (v7 on Web UI)", "DALL·E 4 (in ChatGPT)", "Gemini (in Google AI Studio)"],
+        rows: [
+            [
+                "<p>The <strong>Filter Gallery</strong> contains dozens of artistic effects. The <strong>'Neural Filters'</strong> panel has a powerful <strong>Style Transfer</strong> feature that can apply the complete look and feel of one image to another.</p>",
+                "<p>Canva has a vast library of <strong>'Filters'</strong> and <strong>'Effects'</strong> in the photo editor. These can change the mood, color, and overall style of your images with a single click, from vintage to futuristic.</p>",
+                "<p>The <strong>'Style Reference'</strong> feature is extremely powerful for mimicking an aesthetic. You can also select from dozens of pre-made styles like 'Steampunk' or 'Synthwave' in the Effects panel.</p>",
+                "<p>The <strong>Style Reference (`--sref`)</strong> feature is the primary method for controlling style. It allows you to upload a reference image and have Midjourney mimic its aesthetic, color palette, and composition.</p>",
+                "<p>Describe any artistic style imaginable directly in your prompt. You can reference artists, eras, or genres, such as <strong>'in the style of Van Gogh,' '1980s synthwave,'</strong> or <strong>'ancient Roman mosaic.'</strong></p>",
+                "<p>You can prompt for any style imaginable. Additionally, the <strong>'Style Transfer'</strong> feature in the editor can intelligently apply the aesthetic of a reference image to your generated content.</p>"
+            ]
+        ]
+    }
+},
+{
+    command: "Image Character",
+    desc5: "Preserve subject integrity.",
+    desc15: "Maintain fidelity of central subject while modifying environment.",
+    example: "Keep dealer’s face clear while altering casino background into a futuristic holographic dome.",
+    mnemonic: "Keep the main subject intact.",
+    table: {
+        headers: ["Photoshop (2025)", "Canva", "Adobe Firefly (v3)", "Midjourney (v7 on Web UI)", "DALL·E 4 (in ChatGPT)", "Gemini (in Google AI Studio)"],
+        rows: [
+            [
+                "<p>This is a manual process in Photoshop. Use selections and masks to isolate a character from their background, allowing you to edit the environment without affecting the subject.</p>",
+                "<p>This is a manual process. You would typically use the 'Background Remover' tool to isolate the character, then place them on a new, separately designed background.</p>",
+                "<p>The <strong>'Generative Structure'</strong> feature is designed for this. You can upload a character sheet or reference image to maintain high consistency in a character's appearance, pose, and clothing across different scenes.</p>",
+                "<p>The <strong>`--cref` (Character Reference) V2</strong> is highly effective. Use an image URL of your character to maintain their appearance and features across a wide variety of different scenes and styles.</p>",
+                "<p>You can create a <strong>'Character Profile'</strong> with images and text descriptions. This profile can then be referenced with <strong>`@profilename`</strong> in future prompts to ensure high character consistency.</p>",
+                "<p>The <strong>'Character Lock'</strong> feature allows you to upload a reference image or save a previously generated character. This will maintain their appearance in subsequent prompts until you disable the lock.</p>"
+            ]
+        ]
+    }
+},
+{
+    command: "Omni-Reference",
+    desc5: "Fuse multiple inspirations.",
+    desc15: "Mix references from different sources into one cohesive design.",
+    example: "Combine Monte Carlo elegance with Vegas neon vibes to create a hybrid casino floor style.",
+    mnemonic: "Mix many ideas into one.",
+    table: {
+        headers: ["Photoshop (2025)", "Canva", "Adobe Firefly (v3)", "Midjourney (v7 on Web UI)", "DALL·E 4 (in ChatGPT)", "Gemini (in Google AI Studio)"],
+        rows: [
+            [
+                "<p>Combine multiple source images into a single, cohesive composition by using layers, layer masks, and advanced blending mode techniques to control how they interact.</p>",
+                "<p>Combine various photos, graphics, and text from the extensive Elements library onto a single canvas to create a rich, multi-faceted composite design.</p>",
+                "<p>Write a single, detailed prompt that fuses multiple distinct concepts together. For example, <strong>'A knight in chrome armor riding a horse made of water in a desert of black sand.'</strong></p>",
+                "<p>While the `/blend` command exists, it's now more effective to describe the fusion in a detailed text prompt, using <strong>`--sref`</strong> to reference and blend multiple visual styles at once.</p>",
+                "<p>Describe the desired combination in your prompt. DALL·E 4 is highly adept at merging disparate and even conflicting concepts into a single, cohesive, and creative image.</p>",
+                "<p>Gemini excels at understanding complex prompts that fuse multiple ideas. You can also provide multiple images as part of your input to guide the visual fusion process.</p>"
+            ]
+        ]
+    }
+},
+{
+    command: "Style Reference",
+    desc5: "Follow visual source cues.",
+    desc15: "Adopt stylistic references from chosen images or artworks.",
+    example: "Base poker chip designs on Art Deco posters, blending old glamour with digital precision.",
+    mnemonic: "Copy a style from source.",
+    table: {
+        headers: ["Photoshop (2025)", "Canva", "Adobe Firefly (v3)", "Midjourney (v7 on Web UI)", "DALL·E 4 (in ChatGPT)", "Gemini (in Google AI Studio)"],
+        rows: [
+            [
+                "<p>The <strong>'Match Color'</strong> command and the <strong>'Neural Style Transfer'</strong> filter allow you to automatically apply the color palette and overall artistic style of a source image to your target image.</p>",
+                "<p>The <strong>'Copy Style'</strong> tool can copy colors and fonts between elements. You can also use the color picker tool to sample specific tones from an uploaded reference photo.</p>",
+                "<p>The <strong>'Style Reference'</strong> feature is a core part of the workflow. You can upload one or more images to strongly guide the color palette, mood, and overall aesthetic of the generated output.</p>",
+                "<p>The <strong>`--sref` (Style Reference)</strong> parameter is the most powerful way to control style. You can use an image URL to have Midjourney precisely mimic its aesthetic. You can even blend multiple style references.</p>",
+                "<p>You can now upload a reference image directly in the prompt window. Then, you can ask DALL·E to <strong>'use the style of this image'</strong> or <strong>'match the color palette of the uploaded image.'</strong></p>",
+                "<p>The <strong>'Style Lock'</strong> feature allows you to upload or select a reference image. This image will then dictate the visual style for all subsequent generations until the lock is disabled, ensuring a consistent aesthetic.</p>"
+            ]
+        ]
+    }
+},
+{
+    command: "Personalization",
+    desc5: "Adapt to player profile.",
+    desc15: "Customize assets according to user identity, style, or preferences.",
+    example: "Personalize slot themes based on user’s preferred colors and symbols, like dragons or lucky sevens.",
+    mnemonic: "Change it for the user.",
+    table: {
+        headers: ["Photoshop (2025)", "Canva", "Adobe Firefly (v3)", "Midjourney (v7 on Web UI)", "DALL·E 4 (in ChatGPT)", "Gemini (in Google AI Studio)"],
+        rows: [
+            [
+                "<p>Use <strong>Actions</strong> and the <strong>Variables</strong> panel to batch-process a large number of images with personalized text, watermarks, or other data for a highly customized workflow.</p>",
+                "<p>Use templates and <strong>Brand Kits</strong> to quickly apply personal or brand-specific logos, fonts, and color palettes to any design, ensuring every creation is personalized to you or your company.</p>",
+                "<p>Prompts are inherently personal. Users craft their text input to generate images that match their specific vision, ideas, brand guidelines, or creative requirements.</p>",
+                "<p>The entire platform is geared toward personalization through the use of detailed prompts, unique style references, character references, and fine-tuned parameter adjustments.</p>",
+                "<p>The ability to create and reference your own <strong>'Character Profiles'</strong> and have an ongoing conversation with the AI makes the creative experience highly personalized and iterative.</p>",
+                "<p>AI Studio can be personalized with saved <strong>'Locks'</strong> (for characters and styles) and custom instructions to tailor all future outputs to your specific artistic or brand needs.</p>"
+            ]
+        ]
+    }
+},
+{
+    command: "Identity Preservation",
+    desc5: "Retain recognizable elements.",
+    desc15: "Ensure unique elements like logos or avatars remain intact.",
+    example: "Keep casino’s brand logo visible in all slot machines regardless of background or design variations.",
+    mnemonic: "Keep key logos, avatars same.",
+    table: {
+        headers: ["Photoshop (2025)", "Canva", "Adobe Firefly (v3)", "Midjourney (v7 on Web UI)", "DALL·E 4 (in ChatGPT)", "Gemini (in Google AI Studio)"],
+        rows: [
+            [
+                "<p>Use <strong>Smart Objects</strong> to protect logos or key elements from destructive edits. You can also lock layers to prevent any accidental changes to important brand assets.</p>",
+                "<p><strong>Lock</strong> elements on the canvas to prevent them from being moved or edited. Use <strong>Brand Kits</strong> to ensure that the correct, official logos are always used consistently across all designs.</p>",
+                "<p>Use <strong>'Style Reference'</strong> and highly detailed, consistent prompts to ensure that key branding elements or character features remain recognizable across multiple generated images.</p>",
+                "<p>Use a combination of commands:</p><ul><li><strong>`--cref`</strong> for characters.</li><li><strong>`--sref`</strong> for style.</li><li>A consistent <strong>`--seed`</strong> for object placement and noise.</li></ul><p>This will maintain the identity of elements across generations.</p>",
+                "<p>Reference your saved <strong>'Character Profile'</strong> (`@profilename`) to preserve a character's identity. For objects, re-use very specific and descriptive language in your prompts to maintain consistency.</p>",
+                "<p>Use the <strong>'Character Lock'</strong> and <strong>'Style Lock'</strong> features. These are specifically designed to ensure that your signature characters, elements, and styles are preserved across all your projects.</p>"
+            ]
+        ]
+    }
+},
+{
+    command: "Variance",
+    desc5: "Change degree of variation.",
+    desc15: "Adjust how much final outputs differ from original.",
+    example: "Produce small or dramatic changes in roulette design—minor table tweaks or fully reimagined wheel structures.",
+    mnemonic: "How much to change things.",
+    table: {
+        headers: ["Photoshop (2025)", "Canva", "Adobe Firefly (v3)", "Midjourney (v7 on Web UI)", "DALL·E 4 (in ChatGPT)", "Gemini (in Google AI Studio)"],
+        rows: [
+            [
+                "<p>The legacy <strong>'Variations'</strong> adjustment layer or simply duplicating layers and applying different filters and blend modes allows for a high degree of creative exploration and variation.</p>",
+                "<p>Create copies of your design by using the <strong>'Duplicate Page'</strong> function. You can then experiment with different colors, fonts, layouts, or elements on each version to find the best one.</p>",
+                "<p>Every time you run a prompt, Firefly provides multiple initial variations. From there, the <strong>'Generate Similar'</strong> button will create a new set of options based on a selected favorite.</p>",
+                "<p>After upscaling an image, the <strong>'Vary (Subtle)'</strong> and <strong>'Vary (Strong)'</strong> options are still available. These create four new variations of your selected image with minor or major changes.</p>",
+                "<p>Re-running the exact same prompt will automatically produce four new, unique variations. You can also add phrases like 'give me more options' or 'show me different styles' to your prompt.</p>",
+                "<p>Every prompt generates multiple image options by default, giving you inherent variance. You can also select a favorite image and ask for <strong>'more versions like this'</strong> to explore similar ideas.</p>"
+            ]
+        ]
+    }
+},
+{
+    command: "Seed",
+    desc5: "Generate repeatable randomness.",
+    desc15: "Use numerical seeds to recreate identical results for testing or creativity.",
+    example: "Set seed to replicate winning slot sequence visuals during promotional demonstrations.",
+    mnemonic: "Same number, same random result.",
+    table: {
+        headers: ["Photoshop (2025)", "Canva", "Adobe Firefly (v3)", "Midjourney (v7 on Web UI)", "DALL·E 4 (in ChatGPT)", "Gemini (in Google AI Studio)"],
+        rows: [
+            [
+                "<p>This is not applicable in the generative AI sense. However, some procedural filters, like the Clouds filter, have a <strong>'Random Seed'</strong> option for creating replicable procedural textures.</p>",
+                "<p>There is no concept of a seed for controlling the placement, style, or color of elements in the Canva editor. All design choices are made manually by the user.</p>",
+                "<p>You can view the seed number of any image you generate and copy it. By re-using that exact seed with the exact same prompt, you can replicate the image perfectly.</p>",
+                "<p>The web UI prominently displays the seed number for every generated image. You can re-use this seed with the <strong>`--seed`</strong> parameter to reproduce a result or make minor, iterative tweaks to a prompt.</p>",
+                "<p>The <strong>`gen_id`</strong> (generation ID) for each image is accessible. Providing this ID in a new prompt helps the AI to generate new images in a very similar style and composition.</p>",
+                "<p>A seed number is assigned to each generation and can be viewed in the image details. You can copy and reuse this seed to create reproducible results for any given prompt.</p>"
+            ]
+        ]
+    }
+},
+{
+    command: "Chaos",
+    desc5: "Add randomness to variation.",
+    desc15: "Increase unpredictability in outputs for creative exploration.",
+    example: "Introduce chaotic variations in poker table designs—chips scatter unpredictably with randomized light reflections.",
+    mnemonic: "Add more unpredictable random changes.",
+    table: {
+        headers: ["Photoshop (2025)", "Canva", "Adobe Firefly (v3)", "Midjourney (v7 on Web UI)", "DALL·E 4 (in ChatGPT)", "Gemini (in Google AI Studio)"],
+        rows: [
+            [
+                "<p>You can introduce randomness and chaos into your designs by using filters like <strong>'Liquify,'</strong> running scripts, or by using various blend modes with abstract textures and patterns.</p>",
+                "<p>Canva's tools are designed for deliberate, controlled design and do not include features for introducing random or chaotic variations into your compositions.</p>",
+                "<p>There is no direct 'Chaos' slider or control. To increase the randomness and unpredictability of your outputs, use more vague, abstract, or even conflicting terms in your text prompt.</p>",
+                "<p>The <strong>`--chaos`</strong> parameter (with a value from 0 to 100) is a powerful tool for controlling the diversity and unpredictability of the images in the initial 2x2 grid. Higher values lead to more varied results.</p>",
+                "<p>Chaos is an inherent part of the generation process. For more chaos, use simple or abstract prompts. For less chaos and more control, provide extremely detailed and specific instructions.</p>",
+                "<p>Prompt with abstract or unusual terms to increase randomness. There is also a <strong>'Surprise Me'</strong> feature that can combine your prompt with random stylistic elements for unpredictable results.</p>"
+            ]
+        ]
+    }
+},
+{
+    command: "Weighted Prompts",
+    desc5: "Balance prompt priorities.",
+    desc15: "Assign importance to different input elements during rendering.",
+    example: "Emphasize slot reel symbols over background curtains by increasing weight of object descriptors.",
+    mnemonic: "Give some words more power.",
+    table: {
+        headers: ["Photoshop (2025)", "Canva", "Adobe Firefly (v3)", "Midjourney (v7 on Web UI)", "DALL·E 4 (in ChatGPT)", "Gemini (in Google AI Studio)"],
+        rows: [
+            [
+                "<p>This is not applicable in the generative AI sense. However, you can use layer masks and adjust layer opacity to give more 'weight' or visual prominence to certain effects or layers.</p>",
+                "<p>Element prominence is controlled manually through design principles like size, placement, and color, not through weighted text commands or prompts.</p>",
+                "<p>Weight is controlled through natural language and word order. Placing important keywords at the beginning of your prompt gives them more influence over the final result.</p>",
+                "<p>The <strong>`::`</strong> syntax (e.g., `space::2 casino::-1`) is still used for advanced prompt weighting, but the v7 model's natural language understanding is now so effective that it is often not needed.</p>",
+                "<p>Natural language is the key to weighting. Emphasize concepts by using phrases like 'focus on...' or by using asterisks to add *emphasis* to a specific word or phrase in your prompt.</p>",
+                "<p>Use parentheses to add or reduce the weight of a concept, for example, <strong>`(a cat:1.3) wearing a (hat:0.8)`</strong>. Natural language emphasis (e.g., 'a very large cat') also works effectively.</p>"
+            ]
+        ]
+    }
+},
+{
+    command: "Versioning",
+    desc5: "Select model iteration.",
+    desc15: "Choose between AI model versions for varied outcomes.",
+    example: "Run slots in v3 for realistic lighting, v4 for faster animation testing.",
+    mnemonic: "Choose which AI model version.",
+    table: {
+        headers: ["Photoshop (2025)", "Canva", "Adobe Firefly (v3)", "Midjourney (v7 on Web UI)", "DALL·E 4 (in ChatGPT)", "Gemini (in Google AI Studio)"],
+        rows: [
+            [
+                "<p>You can access previous versions of a saved cloud document through the <strong>'Version History'</strong> panel. This allows you to view and restore older states of your work at any time.</p>",
+                "<p>The <strong>'Version History'</strong> feature (available to Canva Pro users) allows you to view and restore previous, saved versions of your design, tracking all changes that have been made.</p>",
+                "<p>You can select from different Firefly Image models (e.g., <strong>Image 3, Image 4</strong>) from a dropdown menu. Each model offers different styles, capabilities, and levels of realism.</p>",
+                "<p>The web UI allows you to easily select which model version to use (e.g., <strong>`--v 6`, `--v 7`</strong>). You can also choose different stylized models, such as <strong>`--niji 6`</strong> for anime and illustrative styles.</p>",
+                "<p>The model (DALL·E 4) is automatically updated by OpenAI. You cannot choose older versions, but you can sometimes select different modes, like 'Cinematic' or 'Photorealistic,' if available.</p>",
+                "<p>You can choose between different powerful Google models, such as <strong>Gemini Pro</strong> for general use or <strong>Imagen 4</strong> for photorealism. Each has different strengths for various creative tasks.</p>"
+            ]
+        ]
+    }
+},
+{
+    command: "No Parameter",
+    desc5: "Exclude specific elements.",
+    desc15: "Use negative prompts to prevent unwanted objects.",
+    example: "Remove dice from casino scene render by applying “no dice” parameter.",
+    mnemonic: "Tell the AI to exclude.",
+    table: {
+        headers: ["Photoshop (2025)", "Canva", "Adobe Firefly (v3)", "Midjourney (v7 on Web UI)", "DALL·E 4 (in ChatGPT)", "Gemini (in Google AI Studio)"],
+        rows: [
+            [
+                "<p>The <strong>'Remove Tool'</strong> and <strong>'Generative Fill'</strong> (when used with an empty prompt) are incredibly effective and AI-powered methods for removing unwanted objects from any image.</p>",
+                "<p>The <strong>'Magic Erase'</strong> tool allows you to simply brush over unwanted objects or people in your photos, and Canva's AI will remove them quickly and easily.</p>",
+                "<p>Use the <strong>'Exclude from image'</strong> text field, located in the control panel on the right. Add any keywords for objects or concepts that you want the AI to avoid generating.</p>",
+                "<p>The <strong>`--no`</strong> parameter remains the primary way to specify negative prompts. For example, adding <strong>`--no text`</strong> will help prevent the model from generating words or letters.</p>",
+                "<p>Negative prompting is done using natural language. Simply add a sentence to your main prompt, such as, <strong>'Make sure there are no cars in the image,'</strong> to guide the AI.</p>",
+                "<p>A dedicated <strong>'Negative Prompt'</strong> field is available in the advanced settings. This offers precise control by allowing you to list any keywords you want to exclude from the output.</p>"
+            ]
+        ]
+    }
+},
+{
+    command: "Model Choice",
+    desc5: "Select AI model.",
+    desc15: "Choose algorithm or engine best suited for style or task.",
+    example: "Use cinematic model for blackjack tutorials and lightweight model for fast slot prototypes.",
+    mnemonic: "Pick the best AI engine.",
+    table: {
+        headers: ["Photoshop (2025)", "Canva", "Adobe Firefly (v3)", "Midjourney (v7 on Web UI)", "DALL·E 4 (in ChatGPT)", "Gemini (in Google AI Studio)"],
+        rows: [
+            [
+                "<p>This is not applicable. You use the tools and features available within the single, currently installed version of the Photoshop application on your computer.</p>",
+                "<p>This is not applicable. You use the tools available within the unified Canva platform, which may be powered by different AI models behind the scenes, but this is not user-selectable.</p>",
+                "<p>The primary model choice is between major Firefly Image versions (e.g., <strong>Image 3 vs. Image 4</strong>). These can be selected from a dropdown menu and offer different capabilities.</p>",
+                "<p>The web UI has a simple dropdown menu for choosing the model version (e.g., <strong>v7, v6</strong>) or specialized models like <strong>Niji</strong>, which is specifically trained for anime and illustrative styles.</p>",
+                "<p>Your model choice is DALL·E 4. You may have options to switch to specialized modes that have been fine-tuned for specific tasks, such as 'Cinematic' or 'Product Photography'.</p>",
+                "<p>The AI Studio allows you to select which powerful Google model to use for your generation, such as <strong>Veo</strong> for video or <strong>Imagen 4</strong> for photorealistic images.</p>"
+            ]
+        ]
+    }
+},
+{
+    command: "Tile Function",
+    desc5: "Enable repeating tiles.",
+    desc15: "Create infinite repeatable assets for walls or cloth.",
+    example: "Tile roulette cloth textures across digital tables seamlessly for realism.",
+    mnemonic: "Make seamless, repeatable patterns again.",
+    table: {
+        headers: ["Photoshop (2025)", "Canva", "Adobe Firefly (v3)", "Midjourney (v7 on Web UI)", "DALL·E 4 (in ChatGPT)", "Gemini (in Google AI Studio)"],
+        rows: [
+            [
+                "<p>The <strong>'Pattern Preview'</strong> mode provides a live, interactive canvas that infinitely repeats your document, allowing you to design and test seamless patterns in real-time.</p>",
+                "<p>Use the <strong>'Seamless Pattern'</strong> generator, which can be found in the Apps section. This tool can create simple, tileable backgrounds from text prompts or from existing elements in your design.</p>",
+                "<p>Prompting for a <strong>'seamless pattern'</strong> or <strong>'tile'</strong> uses a dedicated model that is specifically trained to ensure the generated image is perfectly repeatable without any visible seams.</p>",
+                "<p>The <strong>`--tile`</strong> parameter is a core feature for creating seamless textures and patterns. It works flawlessly with the v7 model and is ideal for game assets and fabric designs.</p>",
+                "<p>The <strong>`--tile`</strong> parameter is now a standard, fully supported feature. Adding it to the end of your prompt allows for the easy creation of seamless, repeatable assets for any purpose.</p>",
+                "<p>Prompting for a <strong>'seamless tile'</strong> or <strong>'repeatable pattern'</strong> instructs Gemini to use a specialized mode that guarantees the generation of perfectly tiling images.</p>"
+            ]
+        ]
+    }
+},
+{
+    command: "Stop",
+    desc5: "Interrupt rendering early.",
+    desc15: "Stop generation mid-way for abstract or stylistic results.",
+    example: "Stop card dealing animation at 70% to create surreal, semi-rendered visuals for casino promos.",
+    mnemonic: "Halt generation before it's done.",
+    table: {
+        headers: ["Photoshop (2025)", "Canva", "Adobe Firefly (v3)", "Midjourney (v7 on Web UI)", "DALL·E 4 (in ChatGPT)", "Gemini (in Google AI Studio)"],
+        rows: [
+            [
+                "<p>Pressing the <strong>Escape key</strong> on your keyboard will cancel most long-running filters or processes in Photoshop, preventing them from completing the operation.</p>",
+                "<p>This is not applicable. Most Canva operations are cloud-based and complete too quickly for a stop command to be necessary or useful for the user.</p>",
+                "<p>This is not applicable. The image generation is handled on Adobe's servers and cannot be stopped by the user once the process has been initiated. It will always run to completion.</p>",
+                "<p>The <strong>`--stop`</strong> parameter (with a value from 10 to 100) is still supported but rarely used. It produces intentionally unfinished-looking, abstract, or blurry images, which can be used for artistic effect.</p>",
+                "<p>This is not applicable. The generation process is managed by OpenAI's servers and cannot be interrupted by the user once it has started. You must wait for the images to be delivered.</p>",
+                "<p>This is not applicable. Once a generation request is sent to the model, it cannot be stopped. You must wait for the results to be generated and displayed.</p>"
+            ]
+        ]
+    }
+},
+{
+    command: "Blend",
+    desc5: "Combine images or prompts.",
+    desc15: "Fuse two or more prompts into one hybrid output.",
+    example: "Blend poker table with cyberpunk skyline to create futuristic gambling hall design.",
+    mnemonic: "Fuse two images or prompts.",
+    table: {
+        headers: ["Photoshop (2025)", "Canva", "Adobe Firefly (v3)", "Midjourney (v7 on Web UI)", "DALL·E 4 (in ChatGPT)", "Gemini (in Google AI Studio)"],
+        rows: [
+            [
+                "<p>Photoshop has a huge array of <strong>'Blending Modes'</strong> (like Multiply, Screen, Overlay). These allow for sophisticated and artistic blending of different layers and effects in your document.</p>",
+                "<p>You can adjust the <strong>'Transparency'</strong> of overlapping elements to create simple blends. The <strong>'Blend'</strong> tool can also be used to smoothly merge colors in gradients.</p>",
+                "<p>There is no direct image blending command. You can use <strong>'Style Reference'</strong> to blend aesthetics, or you can describe the desired fusion of two concepts in a single, detailed text prompt.</p>",
+                "<p>While the <strong>`/blend`</strong> command still exists for merging uploaded images, describing the blend in a detailed text prompt often yields superior and more creatively cohesive results.</p>",
+                "<p>You can now upload multiple images directly into the prompt window and ask DALL·E to <strong>'blend the concepts, styles, and subjects'</strong> of the uploaded images into a new, single image.</p>",
+                "<p>You can provide multiple images as direct input for a single prompt. Then, you can ask the AI to <strong>'blend these images into a new, cohesive scene'</strong> for a powerful fusion.</p>"
+            ]
+        ]
+    }
+},
+{
+    command: "Inpainting",
+    desc5: "Edit within specific area.",
+    desc15: "Modify or add details only in masked regions.",
+    example: "Replace single blackjack card face with Ace of Spades while leaving rest of table unchanged.",
+    mnemonic: "Edit a specific small part.",
+    table: {
+        headers: ["Photoshop (2025)", "Canva", "Adobe Firefly (v3)", "Midjourney (v7 on Web UI)", "DALL·E 4 (in ChatGPT)", "Gemini (in Google AI Studio)"],
+        rows: [
+            [
+                "<p><strong>'Generative Fill'</strong> is the primary tool for inpainting. Simply select any area of your image and use a text prompt to add, remove, or change the content within that selection seamlessly.</p>",
+                "<p><strong>'Magic Edit'</strong> allows you to brush over a part of an image and then describe the change you want to make in a text box, such as 'change the color of this shirt to blue.' A selection of results will be provided.</p>",
+                "<p>Use <strong>'Generative Fill'</strong>. Select an area with the brush tool and then describe the desired change. You can now also provide a <strong>'Reference Image'</strong> to guide the fill for more precise results.</p>",
+                "<p>The 'Vary (Region)' tool in the web UI is now called <strong>'Inpaint.'</strong> Select any area of your upscaled image and use a new, targeted prompt to change it with a high degree of precision.</p>",
+                "<p>The <strong>'Edit'</strong> tool is very powerful. Select any area of the image with a brush and then type what you want to add, remove, or change in that specific spot. The rest of the image will remain untouched.</p>",
+                "<p>The editor's <strong>'Inpaint'</strong> feature lets you select any area of the image with a brush or selection tool and then use a text prompt to regenerate just that portion of the image with new content.</p>"
+            ]
+        ]
+    }
+},
+{
+    command: "Outpainting",
+    desc5: "Expand canvas outward.",
+    desc15: "Extend image boundaries with new creative content.",
+    example: "Expand slot machine scene to show entire casino floor beyond original frame.",
+    mnemonic: "Expand the image's canvas outward.",
+    table: {
+        headers: ["Photoshop (2025)", "Canva", "Adobe Firefly (v3)", "Midjourney (v7 on Web UI)", "DALL·E 4 (in ChatGPT)", "Gemini (in Google AI Studio)"],
+        rows: [
+            [
+                "<p><strong>'Generative Expand'</strong> is the core outpainting feature. Simply drag the canvas borders outward to any size or aspect ratio, and the newly created empty space will be filled with context-aware, AI-generated content.</p>",
+                "<p>This is not applicable. Canva's canvas can be resized, but it does not have an AI feature that can generatively fill the new, empty space with matching content.</p>",
+                "<p>Use the <strong>'Generative Expand'</strong> feature. This allows you to change the aspect ratio or freely expand the canvas in any direction, and Firefly will fill in the new areas with matching, context-aware content.</p>",
+                "<p>The <strong>'Pan'</strong> and <strong>'Zoom Out'</strong> features are the primary methods for outpainting. They allow you to extend the original canvas in any direction with new, context-aware details generated by the AI.</p>",
+                "<p>The <strong>'Expand'</strong> tool allows you to extend the image's borders in any direction. DALL·E will then generate new content that seamlessly matches the style and context of the original image.</p>",
+                "<p><strong>'Magic Expand'</strong> is the dedicated outpainting tool. You can drag the image borders outward to any new size, and the AI will generate a wider, cohesive scene that matches the original.</p>"
+            ]
+        ]
+    }
+},
+{
+    command: "Masking",
+    desc5: "Protect parts from edit.",
+    desc15: "Define areas to remain unchanged during rendering.",
+    example: "Keep roulette wheel intact while replacing surrounding casino with space-station background.",
+    mnemonic: "Protect areas from any changes.",
+    table: {
+        headers: ["Photoshop (2025)", "Canva", "Adobe Firefly (v3)", "Midjourney (v7 on Web UI)", "DALL·E 4 (in ChatGPT)", "Gemini (in Google AI Studio)"],
+        rows: [
+            [
+                "<p><strong>Layer Masks</strong> are a fundamental feature in Photoshop. They allow you to non-destructively hide or reveal parts of a layer by painting with black (to hide) and white (to reveal).</p>",
+                "<p>This is not applicable. Canva does not have advanced masking tools; it uses a simpler layering system and a one-click background remover instead.</p>",
+                "<p>The selection brush that you use in <strong>'Generative Fill'</strong> effectively acts as a mask. It defines the area to be changed while protecting the rest of the image from any edits or alterations.</p>",
+                "<p>The selection that you make with the <strong>'Inpaint'</strong> tool creates a temporary mask. This ensures that only the area you have selected is affected by the new prompt, while the rest of the image is protected.</p>",
+                "<p>The selection brush in the <strong>'Edit'</strong> tool acts as the mask. The area that you do not select is protected from any changes during the regeneration process.</p>",
+                "<p>The selection tool in the editor (which is used for Inpainting or applying effects) creates a mask. This protects the unselected areas of the image from any changes.</p>"
+            ]
+        ]
+    }
+},
+{
+    command: "Static Image",
+    desc5: "Generate still outputs.",
+    desc15: "Produce non-moving, high-quality static visuals.",
+    example: "Create poster-quality slot reel designs for casino advertising campaigns.",
+    mnemonic: "Create one single still picture.",
+    table: {
+        headers: ["Photoshop (2025)", "Canva", "Adobe Firefly (v3)", "Midjourney (v7 on Web UI)", "DALL·E 4 (in ChatGPT)", "Gemini (in Google AI Studio)"],
+        rows: [
+            [
+                "<p>This is the default output for Photoshop. You can use <strong>'File → Export'</strong> to save your work as a static JPG, PNG, TIFF, or a wide variety of other standard image formats.</p>",
+                "<p>This is the standard output format. You can download any of your designs as static JPG, PNG, or print-ready PDF files for a wide range of uses.</p>",
+                "<p>The default output from the Text to Image module is always a static image. These can typically be downloaded as high-resolution JPEG files.</p>",
+                "<p>The default output from a prompt is a grid of four static images. You can then choose one to upscale into a single, high-resolution static image for download.</p>",
+                "<p>This is the default output. DALL·E is designed to generate static images in response to text prompts. Any animation or video must be specifically requested if the feature is available.</p>",
+                "<p>This is the standard output for image models. The result of a text prompt is a set of static images that you can then save, edit, or upscale as needed.</p>"
+            ]
+        ]
+    }
+},
+{
+    command: "Dynamic Image",
+    desc5: "Produce motion frames.",
+    desc15: "Create moving images for dynamic effects.",
+    example: "Animate poker chips stacking and shuffling in slow motion for cinematic casino ads.",
+    mnemonic: "Make parts of the image move.",
+    table: {
+        headers: ["Photoshop (2025)", "Canva", "Adobe Firefly (v3)", "Midjourney (v7 on Web UI)", "DALL·E 4 (in ChatGPT)", "Gemini (in Google AI Studio)"],
+        rows: [
+            [
+                "<p>The <strong>'Timeline'</strong> panel can be used to create frame-by-frame animations. These complex animations can then be exported as either animated GIFs or full video files.</p>",
+                "<p>You can add animations to individual elements from a preset library (e.g., Fade, Pan, Rise). The entire design can then be exported as a GIF or an MP4 video.</p>",
+                "<p>This is not available directly in the image generator. For this functionality, you would use other Adobe tools like Adobe Express to animate static images or After Effects for more complex motion graphics.</p>",
+                "<p>You can now animate any static image that you've created. After upscaling, select the image and choose from a variety of motion presets like <strong>'Pan,' 'Zoom,'</strong> or <strong>'Flicker'</strong> to create a short video clip.</p>",
+                "<p>After an image has been generated, you can ask DALL·E to <strong>'animate this image.'</strong> This will use the powerful Sora 2 model to create a short, seamlessly looping video clip based on the static image.</p>",
+                "<p>Select any generated image and use the <strong>'Animate'</strong> feature. You can then choose from various motion effects (like Pan, Tilt, Zoom) to create a short video or an animated GIF.</p>"
+            ]
+        ]
+    }
+},
+{
+    command: "Video",
+    desc5: "Generate continuous motion.",
+    desc15: "Create full video output sequences.",
+    example: "Produce 30-second slot reel animation with flashing lights and sound sync for immersive digital casino promotion.",
+    mnemonic: "Generate a full motion clip.",
+    table: {
+        headers: ["Photoshop (2025)", "Canva", "Adobe Firefly (v3)", "Midjourney (v7 on Web UI)", "DALL·E 4 (in ChatGPT)", "Gemini (in Google AI Studio)"],
+        rows: [
+            [
+                "<p>The <strong>Timeline panel</strong> offers advanced, multi-track video editing capabilities, including the powerful <strong>'Generative Fill for Video'</strong> which allows you to add or remove objects from moving footage.</p>",
+                "<p>Canva includes a user-friendly video editor. It allows you to trim and combine clips, add text overlays, transitions, and audio from a vast library before exporting as an MP4.</p>",
+                "<p>Firefly's video capabilities are now deeply integrated into <strong>Premiere Pro</strong> and <strong>After Effects</strong>. This includes Text-to-Video generation, Generative Fill for video, and clip extension tools.</p>",
+                "<p>You can use the <strong>`--video`</strong> parameter in Midjourney's V7 model. This will take your text prompt and generate short, high-fidelity video clips that reflect the unique and artistic Midjourney style.</p>",
+                "<p>OpenAI's powerful <strong>Sora 2</strong> model is now integrated into ChatGPT. This allows for the generation of high-quality, minute-long videos from detailed and complex text prompts.</p>",
+                "<p>Google's powerful <strong>Veo</strong> model is now integrated into the platform. This enables the generation of high-definition video clips with remarkable realism and excellent adherence to the user's prompt.</p>"
+            ]
+        ]
+    }
+},
+{
+    command: "Asset Export",
+    desc5: "Deliver isolated components.",
+    desc15: "Output elements as individual usable assets.",
+    example: "Export blackjack cards, dealer, and chips as separate layers for reuse in casino game engines.",
+    mnemonic: "Output parts as separate files.",
+    table: {
+        headers: ["Photoshop (2025)", "Canva", "Adobe Firefly (v3)", "Midjourney (v7 on Web UI)", "DALL·E 4 (in ChatGPT)", "Gemini (in Google AI Studio)"],
+        rows: [
+            [
+                "<p>The <strong>'Export As'</strong> dialog allows you to export specific layers or layer groups as individual files (PNG, JPG, etc.). The 'Layers to Files' script can automate this process for large documents.</p>",
+                "<p>You can download individual elements from your design with a transparent background. This is a Canva Pro feature and is perfect for creating reusable assets for other projects.</p>",
+                "<p>Prompt for an object <strong>'on a transparent background'</strong> and then use the one-click <strong>'Remove Background'</strong> feature to export a clean, isolated PNG asset for use in other applications.</p>",
+                "<p>The web UI allows you to download your upscaled images as high-resolution PNG files. If you prompt for an object on a simple background, they can often be used as assets with easy background removal.</p>",
+                "<p>You can now request an asset <strong>'on a transparent background.'</strong> The integrated editor also features a one-click background removal tool that you can use before downloading the final asset.</p>",
+                "<p>Prompt for an <strong>'isolated object, transparent background'</strong> to get a clean asset. The editor's 'Remove Background' tool is highly accurate and can be used to perfect the export.</p>"
+            ]
+        ]
+    }
+},
+{
+    command: "Foreground Edit",
+    desc5: "Change main subject area.",
+    desc15: "Focus changes on primary object or character.",
+    example: "Swap dealer’s outfit into tuxedo while preserving casino backdrop.",
+    mnemonic: "Only change the main subject.",
+    table: {
+        headers: ["Photoshop (2025)", "Canva", "Adobe Firefly (v3)", "Midjourney (v7 on Web UI)", "DALL·E 4 (in ChatGPT)", "Gemini (in Google AI Studio)"],
+        rows: [
+            [
+                "<p>The <strong>'Select Subject'</strong> command provides a one-click selection of the main foreground subject. This selection can then be used to apply adjustments, filters, or masks independently of the background.</p>",
+                "<p>Use the <strong>'Background Remover'</strong> tool to completely isolate the foreground subject. You can then replace the background or download the isolated subject as a transparent PNG.</p>",
+                "<p>Use <strong>'Generative Fill.'</strong> Select the main foreground subject with the brush tool and then enter a text prompt describing exactly how you want to alter it, for example, 'change shirt to red.'</p>",
+                "<p>Use the <strong>'Inpaint'</strong> tool to select the foreground object. You can then provide a new prompt to change its color, texture, or even its entire form, while the background remains untouched.</p>",
+                "<p>The editor can automatically detect and select the foreground subject of an image. This allows you to then apply targeted edits or new prompts exclusively to that subject.</p>",
+                "<p>The editor's <strong>'Select Subject'</strong> tool allows for precise foreground isolation. After selecting, you can apply new prompts or manual adjustments only to that part of the image.</p>"
+            ]
+        ]
+    }
+},
+{
+    command: "Background Edit",
+    desc5: "Change environmental setting.",
+    desc15: "Modify or replace surrounding environment.",
+    example: "Transform casino floor into underwater Atlantis theme while keeping slot machines recognizable.",
+    mnemonic: "Only change the setting, environment.",
+    table: {
+        headers: ["Photoshop (2025)", "Canva", "Adobe Firefly (v3)", "Midjourney (v7 on Web UI)", "DALL·E 4 (in ChatGPT)", "Gemini (in Google AI Studio)"],
+        rows: [
+            [
+                "<p><strong>Invert</strong> your <strong>'Select Subject'</strong> selection to edit only the background. You can also use <strong>'Generative Fill'</strong> to completely replace the background with a new, AI-generated scene.</p>",
+                "<p>The <strong>'Background Remover'</strong> is the primary tool for this. Once the original background has been removed, you can easily replace it with a solid color, a new photo, or even a video.</p>",
+                "<p>Use the one-click <strong>'Remove Background'</strong> feature, or select the background area with <strong>'Generative Fill'</strong> and then use a text prompt to describe a completely new scene or environment.</p>",
+                "<p>Use the <strong>'Inpaint'</strong> tool. Carefully select the background area around your main subject and then enter a new prompt to generate a completely different scene behind them.</p>",
+                "<p>The editor can automatically select the background of an image. From there, you can use a text prompt to replace it, blur it for a depth-of-field effect, or simply change its color scheme.</p>",
+                "<p>The editor's <strong>'Select Background'</strong> tool lets you perfectly isolate the background for targeted edits. This includes full replacement with a new scene via a text prompt.</p>"
+            ]
+        ]
+    }
+},
+{
+    command: "Character Edit",
+    desc5: "Alter character’s appearance.",
+    desc15: "Modify player or NPC visual traits.",
+    example: "Change poker dealer’s hairstyle and uniform to futuristic cyber-dealer outfit.",
+    mnemonic: "Change how a character looks.",
+    table: {
+        headers: ["Photoshop (2025)", "Canva", "Adobe Firefly (v3)", "Midjourney (v7 on Web UI)", "DALL·E 4 (in ChatGPT)", "Gemini (in Google AI Studio)"],
+        rows: [
+            [
+                "<p>Use a combination of tools for character edits:</p><ul><li><strong>'Generative Fill'</strong> on parts like clothing.</li><li>The <strong>'Liquify'</strong> filter for adjusting facial features.</li><li><strong>'Puppet Warp'</strong> for posing and limb adjustments.</li></ul>",
+                "<p>You can use photo effects and adjustments for color changes. For major changes like swapping outfits, you would need to manually layer new image elements on top of the character.</p>",
+                "<p>Use <strong>'Generative Fill.'</strong> Select specific parts of a character, such as their clothing, hair, or accessories, and then use a text prompt to describe the desired modifications in detail.</p>",
+                "<p>Use the <strong>'Inpaint'</strong> tool on a generated character. This allows you to change their clothing, hairstyle, or expression with a new, targeted prompt while preserving their identity.</p>",
+                "<p>With a <strong>'Character Profile'</strong> active, you can make high-level requests like <strong>'Put @profilename in a red dress.'</strong> You can also use the inpainting tool to edit smaller details.</p>",
+                "<p>With <strong>'Character Lock'</strong> enabled, you can make high-level requests (e.g., 'change their outfit to a spacesuit') or use the inpainting tool to make minor edits to facial features or accessories.</p>"
+            ]
+        ]
+    }
+},
+{
+    command: "Small Asset Add",
+    desc5: "Add minor decorative objects.",
+    desc15: "Insert props or small visual assets.",
+    example: "Add glowing lucky charm coin on slot machine lever.",
+    mnemonic: "Insert a minor new object.",
+    table: {
+        headers: ["Photoshop (2025)", "Canva", "Adobe Firefly (v3)", "Midjourney (v7 on Web UI)", "DALL·E 4 (in ChatGPT)", "Gemini (in Google AI Studio)"],
+        rows: [
+            [
+                "<p>Use <strong>'Generative Fill.'</strong> Simply make a selection on your canvas where you want the new object to appear and then describe the object in the text prompt (e.g., 'a small red ball').</p>",
+                "<p>The <strong>'Elements'</strong> tab contains millions of searchable graphics, stickers, and photos that you can simply drag and drop onto your design to add small assets and decorations.</p>",
+                "<p>Use <strong>'Generative Fill.'</strong> Select an empty space in your image with the brush tool and then enter a prompt describing the small object you wish to add into the scene.</p>",
+                "<p>Use the <strong>'Inpaint'</strong> tool. Select an area on a table or in the background of your image and then prompt for the specific object you wish to add to the scene (e.g., 'a golden key').</p>",
+                "<p>Use the <strong>'Edit'</strong> tool to select a location on your image and then provide a prompt for the new asset, for example, <strong>'add a steaming coffee cup on the table here.'</strong></p>",
+                "<p>Use the <strong>'Inpaint'</strong> tool. Brush over an area where you want to add an object and then provide a prompt for the desired asset, such as <strong>'add a small, golden key on the ground.'</strong></p>"
+            ]
+        ]
+    }
+},
+{
+    command: "Overlay Asset",
+    desc5: "Add top-layer visuals.",
+    desc15: "Place symbolic or brand elements above main scene.",
+    example: "Overlay casino’s brand logo onto roulette table felt.",
+    mnemonic: "Add a layer on top.",
+    table: {
+        headers: ["Photoshop (2025)", "Canva", "Adobe Firefly (v3)", "Midjourney (v7 on Web UI)", "DALL·E 4 (in ChatGPT)", "Gemini (in Google AI Studio)"],
+        rows: [
+            [
+                "<p>Place logos, text, or graphics on new layers above your main image. You can then adjust the blending modes and opacity of these layers for a seamless look.</p>",
+                "<p>You can drag text boxes, logos, or other graphics from the Elements tab and position them on top of your background images or video to create an overlay.</p>",
+                "<p>This is not available directly in the generator. Any overlays, such as logos or text, must be added in a post-processing application like Adobe Express or Photoshop.</p>",
+                "<p>This is not available. While you can attempt to prompt for watermarks, adding a specific, existing logo or overlay must be done in post-processing software.</p>",
+                "<p>The integrated editor allows you to upload another image (like a company logo) and overlay it onto your generated image. You can also add and style text boxes.</p>",
+                "<p>The editor's <strong>'Overlay'</strong> feature allows you to upload your own images (like a brand logo) or add stylized text boxes on top of your generated content.</p>"
+            ]
+        ]
+    }
+},
+{
+    command: "Playable Asset",
+    desc5: "Add interactive object.",
+    desc15: "Insert object designed for interaction or mini-game.",
+    example: "Add bonus spin button glowing beside reels as special feature.",
+    mnemonic: "Add an interactive game object.",
+    table: {
+        headers: ["Photoshop (2025)", "Canva", "Adobe Firefly (v3)", "Midjourney (v7 on Web UI)", "DALL·E 4 (in ChatGPT)", "Gemini (in Google AI Studio)"],
+        rows: [
+            [
+                "<p>This is not applicable. Photoshop is a tool for creating visual assets. Any functionality or interactivity must be added in a game engine like Unity or Unreal Engine.</p>",
+                "<p>This is not applicable. Canva is a tool for visual design and does not have the capability to create interactive or playable game assets.</p>",
+                "<p>This is not applicable. Firefly generates static or video assets. It does not produce 3D models or interactive elements that would be required for game engines.</p>",
+                "<p>This is not applicable. Midjourney generates 2D visual assets. These can be imported into game engines, but they are not playable or interactive on their own.</p>",
+                "<p>This is not applicable. DALL·E generates 2D images or video assets. Any game functionality must be programmed in a separate development environment.</p>",
+                "<p>This is not applicable. Gemini is used to create visual assets. It does not export interactive components that could be used in game development platforms.</p>"
+            ]
+        ]
+    }
+},
+{
+    command: "Value Asset",
+    desc5: "Insert utility-driven asset.",
+    desc15: "Add elements enhancing usability or experience.",
+    example: "Add timer overlay on slot screen showing countdown for bonus rounds.",
+    mnemonic: "Insert a helpful utility element.",
+    table: {
+        headers: ["Photoshop (2025)", "Canva", "Adobe Firefly (v3)", "Midjourney (v7 on Web UI)", "DALL·E 4 (in ChatGPT)", "Gemini (in Google AI Studio)"],
+        rows: [
+            [
+                "<p>You can add informational layers using text, shapes, and guides. The <strong>'Frame'</strong> tool is also useful for creating placeholders for content that will be added later.</p>",
+                "<p>Add charts, graphs, tables, and stylized text boxes from the extensive Elements library to convey information and add value to your design.</p>",
+                "<p>You can attempt to generate UI elements or infographics directly via a text prompt, but for precise, functional results, these assets should be created in Adobe Express or Illustrator.</p>",
+                "<p>Prompting for UI elements like buttons or menus can create excellent concept art for games or apps, but the generated assets are static images and not functional.</p>",
+                "<p>DALL·E can generate high-fidelity UI/UX design concepts, charts, and graphs from text prompts. However, these are static images, not interactive data visualizations.</p>",
+                "<p>Gemini can generate complex infographics, charts, and UI mockups from data or text descriptions, creating valuable visual assets for presentations and reports.</p>"
+            ]
+        ]
+    }
+},
+{
+    command: "Identity Asset",
+    desc5: "Insert signature marker.",
+    desc15: "Add recognizable identity-related object.",
+    example: "Embed custom avatar portrait on poker table as player’s seat marker.",
+    mnemonic: "Add a unique signature marker.",
+    table: {
+        headers: ["Photoshop (2025)", "Canva", "Adobe Firefly (v3)", "Midjourney (v7 on Web UI)", "DALL·E 4 (in ChatGPT)", "Gemini (in Google AI Studio)"],
+        rows: [
+            [
+                "<p>Place a verified brand logo or a custom watermark as a top layer in your document. You can also use templates to ensure brand consistency across multiple files.</p>",
+                "<p>Upload and store your logos in a <strong>'Brand Kit.'</strong> You can then easily drag and drop your official logo onto any design to add your brand identity instantly.</p>",
+                "<p>This is not available. You cannot upload and apply your own logo or identity asset directly. This must be done in a separate design application after the image has been generated.</p>",
+                "<p>This is not available. A specific, existing logo must be added in a post-processing application. You cannot upload a brand asset to be included by Midjourney during generation.</p>",
+                "<p>You can upload a logo in the editor and overlay it onto your image. You can also add it to a <strong>'Brand Kit'</strong> for repeated, consistent use across multiple projects.</p>",
+                "<p>The editor's <strong>'Overlay'</strong> feature allows you to upload and position a logo or other identity asset. A <strong>'Brand Kit'</strong> feature also lets you save it for future, consistent use.</p>"
+            ]
+        ]
+    }
+},
+{
+    command: "Text Asset",
+    desc5: "Insert written content.",
+    desc15: "Add labels, captions, or dynamic text overlays.",
+    example: "Add jackpot amount text glowing above slot reels.",
+    mnemonic: "Put written words on image.",
+    table: {
+        headers: ["Photoshop (2025)", "Canva", "Adobe Firefly (v3)", "Midjourney (v7 on Web UI)", "DALL·E 4 (in ChatGPT)", "Gemini (in Google AI Studio)"],
+        rows: [
+            [
+                "<p>The <strong>Type Tool (T)</strong> offers extensive and professional-grade control over all aspects of typography, including fonts, kerning, tracking, and complex paragraph styles.</p>",
+                "<p>A powerful and user-friendly <strong>Text</strong> tool allows you to add headings, subheadings, and body text. You have access to a massive library of fonts and pre-made text styles.</p>",
+                "<p>The <strong>'Text Effects'</strong> module is a dedicated tool for generating text with creative styles and textures applied via a text prompt (e.g., 'text made of fire and ice').</p>",
+                "<p>Midjourney's v7 model has significantly improved its ability to render text, but it can still be inconsistent with complex words. It is best used for artistic text rather than legible paragraphs.</p>",
+                "<p>DALL·E 4 offers near-perfect text rendering. It can accurately create logos with text, signs in scenes, and even small, legible paragraphs of text directly within an image.</p>",
+                "<p>Gemini has state-of-the-art text rendering capabilities. It can accurately place legible and stylistically consistent text within generated images, making it ideal for posters and memes.</p>"
+            ]
+        ]
+    }
+},
+{
+    command: "Emotion Asset",
+    desc5: "Convey mood or feeling.",
+    desc15: "Introduce visual or symbolic cues of emotions.",
+    example: "Add glowing aura of excitement above slot machine during win animation.",
+    mnemonic: "Show a feeling visually.",
+    table: {
+        headers: ["Photoshop (2025)", "Canva", "Adobe Firefly (v3)", "Midjourney (v7 on Web UI)", "DALL·E 4 (in ChatGPT)", "Gemini (in Google AI Studio)"],
+        rows: [
+            [
+                "<p>Use <strong>'Color Grading'</strong> (in the Camera Raw Filter), adjustment layers, and lighting effects like <strong>'Lens Flare'</strong> to expertly evoke a specific mood or emotion in your image.</p>",
+                "<p>Use color palettes, expressive fonts, and stickers or graphics from the Elements library to visually represent a wide range of emotions and moods in your designs.</p>",
+                "<p>Control the emotion of your image through descriptive prompt keywords (e.g., 'a joyful, celebratory scene,' 'a lonely, melancholic atmosphere') and by using the <strong>'Style Reference'</strong> feature.</p>",
+                "<p>Prompting for emotions is highly effective in Midjourney. You can use phrases like <strong>'a melancholic portrait,' 'a scene of pure chaos and excitement,'</strong> or <strong>'a serene and peaceful landscape.'</strong></p>",
+                "<p>Describe the desired emotion in your prompt. DALL·E 4 has a very nuanced understanding of how to translate abstract moods and feelings into compelling visual elements.</p>",
+                "<p>Prompt for any emotion or mood, such as <strong>'a hopeful landscape at sunrise'</strong> or <strong>'an image conveying deep nostalgia.'</strong> The AI will translate this into color, light, and composition.</p>"
+            ]
+        ]
+    }
+},
+{
+    command: "Color Asset",
+    desc5: "Change palette or tone.",
+    desc15: "Alter global or local color scheme.",
+    example: "Shift roulette wheel color scheme to royal gold and emerald for VIP casino aesthetic.",
+    mnemonic: "Change the entire color palette.",
+    table: {
+        headers: ["Photoshop (2025)", "Canva", "Adobe Firefly (v3)", "Midjourney (v7 on Web UI)", "DALL·E 4 (in ChatGPT)", "Gemini (in Google AI Studio)"],
+        rows: [
+            [
+                "<p><strong>'Color Balance'</strong> and <strong>'Selective Color'</strong> adjustment layers provide precise, professional control. A <strong>'Gradient Map'</strong> can be used to completely remap the tones in your image for artistic effect.</p>",
+                "<p>You can apply a consistent color palette from your saved <strong>'Brand Kit'</strong> or use the <strong>'Styles'</strong> tab to apply pre-made, professionally designed color combinations to your entire design with one click.</p>",
+                "<p>Specify colors directly in your prompt (e.g., 'a casino with a neon pink and cyan color scheme') or use the <strong>'Color and Tone'</strong> controls in the UI to guide the generation.</p>",
+                "<p>Prompting for specific color palettes (e.g., <strong>'triadic color scheme,' 'monochromatic blue,' 'pastel colors'</strong>) gives you precise control over the final image's colors and mood.</p>",
+                "<p>Describe the desired color scheme in your prompt in detail, for example, <strong>'Use a warm, autumnal color palette of orange, brown, and gold'</strong> for a specific seasonal feel.</p>",
+                "<p>You can prompt for any color scheme (e.g., <strong>'a pastel vaporwave aesthetic'</strong>). The integrated editor also has powerful, professional-grade color grading tools for post-generation adjustments.</p>"
+            ]
+        ]
+    }
+},
+{
+    command: "Gradient Asset",
+    desc5: "Add smooth color transitions.",
+    desc15: "Blend colors for depth or atmospheric visuals.",
+    example: "Apply neon gradient lighting across slot background to mimic casino nightlife glow.",
+    mnemonic: "Add smooth blended color transitions.",
+    table: {
+        headers: ["Photoshop (2025)", "Canva", "Adobe Firefly (v3)", "Midjourney (v7 on Web UI)", "DALL·E 4 (in ChatGPT)", "Gemini (in Google AI Studio)"],
+        rows: [
+            [
+                "<p>The <strong>Gradient Tool (G)</strong> and the <strong>'Gradient Overlay'</strong> layer style offer complete and precise control over creating and applying custom, multi-color gradients to your images and designs.</p>",
+                "<p>Use the <strong>'Gradients'</strong> section in the background panel for a quick gradient background. You can also apply gradient effects to shapes, text, and other design elements.</p>",
+                "<p>Describe the gradients you want in your prompt (e.g., 'a soft, ethereal pink to orange gradient background') or use style keywords like <strong>'iridescent'</strong> or <strong>'holographic'</strong> for metallic gradient effects.</p>",
+                "<p>Prompting for <strong>'gradient lighting,' 'rainbow colors,'</strong> or <strong>'holographic colors'</strong> is the best way to incorporate beautiful, smooth gradients into the fabric of the image itself.</p>",
+                "<p>Describe the gradient you want in natural language, for example, <strong>'a sunset gradient sky blending from a bright orange to a deep purple.'</strong></p>",
+                "<p>You can prompt for a <strong>'gradient background'</strong> directly. The integrated editor also features a powerful <strong>'Gradient'</strong> tool that allows you to apply custom gradients as overlays or background fills.</p>"
+            ]
+        ]
+    }
+}
+];
+</script>
+</body>
+</html>
+
+
