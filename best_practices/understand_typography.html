@@ -1,0 +1,1557 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beyond Dictionary: Designer Typography Playground</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@300;400;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- General Reset & Body Styles --- */
+        body {
+            margin: 0;
+            font-family: 'Arial', sans-serif; /* Basic fallback font */
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh; /* Full viewport height */
+            overflow: hidden; /* Prevent body scroll, panes will scroll */
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        header {
+            background-color: #2c3e50; /* Dark blue-grey */
+            color: white;
+            padding: 0.5rem 1rem; /* Reduced padding further */
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 10; /* Ensure header stays on top */
+            height: 30px; /* Reduced fixed height for header */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        header h1 {
+            margin: 0; /* Remove default margin */
+            font-size: 1.3rem; /* Adjust font size */
+            color: white;
+        }
+
+        footer {
+            background-color: #2c3e50;
+            color: white;
+            padding: 0.5rem 1rem;
+            text-align: center;
+            font-size: 0.8rem;
+        }
+
+        h2, h3, h4 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        h2 { font-size: 1.3rem; } /* Slightly smaller for pane headers */
+        h3 { font-size: 1.1rem; }
+
+        /* --- App Container (Main Layout) --- */
+        #app-container {
+            display: grid;
+            flex-grow: 1; /* Allows container to fill available vertical space */
+            overflow: hidden; /* Prevents app container from scrolling itself */
+            height: calc(100vh - 30px - 30px); /* Header 30px, Footer ~30px */
+        }
+
+        .pane {
+            padding: 1rem;
+            border-bottom: 1px solid #ddd; /* Default for mobile/stacked */
+            overflow-y: auto; /* Allows content within panes to scroll */
+            box-sizing: border-box; /* Include padding in element's total width and height */
+        }
+
+        #left-pane {
+            background-color: #ecf0f1; /* Light grey-blue */
+        }
+        #mid-pane {
+            background-color: #ffffff; /* White */
+            display: flex;
+            flex-direction: column; /* Stack header and preview content */
+            align-items: center; /* Horizontally center content */
+            padding-bottom: 2rem; /* Add some space at the bottom */
+            border-right: 1px solid #ddd; /* Desktop separator */
+        }
+        #mid-pane h2 {
+            align-self: center; /* Override default stretch for flex item, center the h2 */
+            margin-bottom: 1rem; /* Space below header */
+        }
+
+        /* IMPORTANT: Revisions for typography-preview and kerning elements */
+        #typography-preview {
+            max-width: 90%; /* Prevent text from touching edges in mid-pane */
+            flex-grow: 1; /* Allow preview to take remaining vertical space */
+            text-align: center; /* Center the text itself within its block */
+            line-height: normal; /* Resetting specific to mid-pane */
+            word-wrap: break-word; /* Ensure long words break */
+            white-space: normal; /* Ensure text wraps normally */
+            padding: 10px; /* Add some padding so the draggable handles aren't right at the edge */
+            
+            /* Crucial for kerning: apply user-select to the parent, let children override */
+            user-select: none; /* Disable text selection for preview area */
+            -webkit-user-select: none; /* Safari */
+            -moz-user-select: none; /* Firefox */
+            -ms-user-select: none; /* IE/Edge */
+        }
+
+        /* Kerning specific styles */
+        .kerning-line { /* New container for each word in kerning demo */
+            display: block; /* Each word on its own line */
+            margin-bottom: 1.5em; /* Space between words */
+            line-height: 1.2; /* Ensure consistent line height */
+        }
+
+        .kerning-char {
+            display: inline-block; /* Allows individual manipulation and wrapping */
+            vertical-align: top; /* Ensures characters align on the baseline */
+            white-space: pre; /* Preserve white space for single characters, prevents collapse */
+            position: relative; /* For highlights */
+            transition: background-color 0.3s ease; /* Smooth highlight transition */
+            min-width: 1px; /* Ensure it has a minimum width for selection */
+            
+            /* Crucial for kerning: allows interaction to pass through to the gap */
+            pointer-events: none; /* Character itself is not draggable target */
+        }
+        .kerning-char.highlight-char {
+            background-color: rgba(255, 255, 0, 0.4); /* Yellow highlight for character */
+            border-radius: 3px;
+        }
+
+        .kerning-pair-space {
+            display: inline-block; /* Allows individual manipulation and wrapping */
+            width: var(--kerning-space, 0em); /* Controlled by JS */
+            height: 1.2em; /* Ensure it's visually aligned with text height */
+            background-color: rgba(0, 0, 255, 0.15); /* Subtle blue overlay */
+            cursor: ew-resize; /* Indicate horizontal resizing */
+            vertical-align: top; /* Align with text baseline */
+            overflow: visible; /* Make sure the full min-width is visible */
+            min-width: 30px; /* **Increased min-width significantly for clear visibility/clickability** */
+            transition: background-color 0.2s ease, width 0.2s ease; /* Smooth hover and width changes */
+            box-sizing: border-box; /* Ensure padding/border doesn't affect width calc */
+            position: relative; /* For highlights */
+            margin: 0; /* Remove any default margins that might interfere */
+            padding: 0; /* Remove any default padding */
+            
+            /* Crucial for kerning: must be clickable */
+            pointer-events: auto; /* Allow this element to capture mouse events */
+            user-select: none; /* Disable text selection on the bar itself */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+        .kerning-pair-space:hover {
+            background-color: rgba(0, 0, 255, 0.4); /* Darken on hover */
+        }
+        .kerning-pair-space.highlight-gap {
+             /* Red border to draw attention to the problem gap */
+            background-color: rgba(255, 0, 0, 0.3); /* Red highlight for awkward gap */
+            border: 2px solid red;
+            box-shadow: 0 0 10px rgba(255,0,0,0.5);
+        }
+
+        /* Other pane content styles (no significant change, but included for completeness) */
+        .experience-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #ccc;
+        }
+        .experience-selector button {
+            background-color: #3498db; /* Blue */
+            color: white;
+            border: none;
+            padding: 0.6rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+        .experience-selector button:hover {
+            background-color: #2980b9;
+        }
+        .experience-selector button.active {
+            background-color: #2c3e50; /* Darker blue-grey for active */
+            transform: scale(1.05);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .control-group {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background-color: #fcfcfc;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .control-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #555;
+            font-size: 0.95rem;
+        }
+        .control-group input[type="range"] {
+            width: 100%;
+            -webkit-appearance: none; /* Remove default styling */
+            appearance: none;
+            height: 8px;
+            background: #dcdcdc;
+            outline: none;
+            border-radius: 5px;
+            transition: opacity .2s;
+            margin-top: 0.5rem;
+        }
+        .control-group input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #3498db;
+            cursor: pointer;
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 0 5px rgba(0,0,0,0.3);
+        }
+        .control-group input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #3498db;
+            cursor: pointer;
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 0 5px rgba(0,0,0,0.3);
+        }
+        .control-group p {
+            font-size: 0.9rem;
+            line-height: 1.4;
+            color: #666;
+            margin-top: 1rem;
+        }
+
+        /* Button alignment for Show/Reset Kerning */
+        .kerning-buttons {
+            display: flex;
+            justify-content: space-between; /* Space out buttons */
+            gap: 10px; /* Gap between buttons */
+            margin-top: 15px;
+        }
+        .kerning-buttons button {
+            flex-grow: 1; /* Allow buttons to take equal width */
+        }
+
+        /* New control group styles */
+        .control-group select, .control-group input[type="text"], .control-group input[type="number"], .control-group input[type="color"] {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box; /* Include padding in width */
+        }
+        .control-group input[type="color"] {
+            height: 38px; /* Match height of select/text inputs */
+            padding: 0; /* Remove padding for color input */
+            border: none; /* Remove border for color input */
+            background: none; /* Remove background for color input */
+            cursor: pointer;
+        }
+
+        /* Styles for the Experience It All Grid */
+        #experience-it-all-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* Changed to 3 columns */
+            grid-auto-rows: minmax(auto, auto); /* Rows adjust to content */
+            gap: 10px; /* Increased gap between cells */
+            width: 100%;
+            height: auto; /* Allow height to adjust */
+            max-width: 800px; /* Limit grid size */
+            overflow: auto; /* Allow scrolling if grid is too large */
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        .grid-cell {
+            display: flex;
+            flex-direction: column; /* Stack text and icon */
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            border: 1px solid #eee;
+            background-color: #fdfdfd;
+            padding: 10px; /* Increased padding */
+            word-wrap: break-word; /* Allow text wrapping within cell */
+            white-space: normal; /* Allow text wrapping within cell */
+            overflow: hidden; /* Hide overflowing text */
+            min-height: 70px; /* Ensure a minimum height for cells */
+            position: relative; /* For info icon positioning */
+            cursor: default; /* Default cursor for cells */
+        }
+        .grid-cell-text {
+            flex-grow: 1; /* Allow text to take available space */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%; /* Ensure text content takes full width */
+            line-height: 1.2; /* Consistent line height for text */
+        }
+
+        .info-icon {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background-color: rgba(0,0,0,0.1);
+            color: #555;
+            font-size: 0.8em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.2s ease, color 0.2s ease;
+            z-index: 1; /* Ensure icon is above text */
+        }
+        .info-icon:hover {
+            background-color: rgba(0,0,0,0.3);
+            color: #fff;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000; /* Above everything else */
+        }
+
+        .modal-content {
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            max-width: 400px;
+            width: 90%;
+            text-align: left;
+            position: relative;
+        }
+
+        .modal-content h4 {
+            margin-top: 0;
+            color: #2c3e50;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+
+        .modal-content p {
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+        .modal-content p strong {
+            color: #3498db;
+        }
+
+        .modal-close-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #555;
+        }
+        .modal-close-button:hover {
+            color: #333;
+        }
+
+        /* Emoji Integration Styles */
+        #emoji-text-display {
+            font-size: 1.8rem; /* Larger text for emoji integration */
+            line-height: 1.5;
+            margin-bottom: 1rem;
+            border: 1px solid #ccc;
+            padding: 15px;
+            min-height: 150px; /* Ensure enough space for text and drops */
+            text-align: left; /* Allow natural text flow */
+            cursor: text; /* Indicate editable area */
+            outline: none; /* Remove default focus outline */
+            user-select: text; /* Allow text selection within contenteditable */
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+        }
+        .emoji-word-link {
+            text-decoration: underline;
+            color: #007bff;
+            cursor: pointer;
+            transition: color 0.2s ease;
+            text-underline-offset: 3px; /* Slightly lift underline */
+        }
+        .emoji-word-link:hover {
+            color: #0056b3;
+        }
+        #emoji-summary-display {
+            font-size: 4rem; /* Very large for summary emoji */
+            margin-bottom: 1rem;
+            display: block; /* Ensure it takes its own line */
+            text-align: center; /* Center the summary emoji */
+        }
+        .emoji-palette {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+            padding: 10px;
+            border: 1px dashed #ccc;
+            border-radius: 5px;
+            justify-content: center;
+        }
+        .draggable-emoji {
+            font-size: 2.5rem;
+            cursor: grab;
+            transition: transform 0.1s ease;
+            user-select: none;
+        }
+        .draggable-emoji:active {
+            cursor: grabbing;
+            transform: scale(1.1);
+        }
+
+        /* New Section Styles */
+        .section-content {
+            /* Common styling for content within new sections */
+            font-size: 1.2rem;
+            line-height: 1.6;
+            color: #444;
+        }
+        .section-content h4 {
+            color: #2c3e50;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Text Layout Specifics */
+        .text-layout-demo {
+            width: 80%; /* Constrain width for alignment/line length demo */
+            margin: 0 auto;
+            border: 1px solid #ddd;
+            padding: 15px;
+            min-height: 200px;
+            background-color: #fcfcfc;
+            overflow: auto;
+            resize: horizontal; /* Allow user to resize horizontally for line length demo */
+            cursor: ew-resize; /* Indicate resizability */
+        }
+        .text-layout-demo p {
+            /* This will be overridden by JS for dynamic spacing */
+            margin-bottom: 1em; 
+        }
+
+        /* Text Style Specifics */
+        .text-style-demo span {
+            display: block; /* Each example on its own line */
+            margin-bottom: 10px;
+            padding: 5px;
+            border: 1px dashed #eee;
+        }
+
+        /* Font Pairing Specifics */
+        .font-pairing-demo h1, .font-pairing-demo h2, .font-pairing-demo p {
+            margin-bottom: 0.5em;
+        }
+        .font-pairing-demo h1 { font-size: 2.5rem; }
+        .font-pairing-demo h2 { font-size: 1.8rem; }
+        .font-pairing-demo p { font-size: 1.1rem; }
+        .font-pairing-demo .caption { font-size: 0.9rem; color: #777; }
+
+
+        /* --- Responsive Design (Mobile First) --- */
+        /* Default for small screens (e.g., mobile portrait) */
+        #app-container {
+            grid-template-columns: 1fr; /* Stacks panes vertically */
+            grid-template-rows: auto auto auto; /* Auto height for stacked panes */
+            height: calc(100vh - 30px - 30px); /* Account for header/footer */
+        }
+        /* Hide right pane by default on small screens, show only on specific actions or make collapsible */
+        #right-pane {
+            display: block; /* For MVP, keep it visible */
+            border-bottom: none; /* Last pane, no bottom border */
+        }
+        #mid-pane {
+            border-right: none; /* No vertical border on mobile */
+        }
+
+        /* Medium screens (e.g., tablets, larger phones) */
+        @media (min-width: 768px) {
+            #app-container {
+                grid-template-columns: 1fr 1.5fr 1fr; /* Wider mid-pane, slightly more balanced */
+                grid-template-rows: 1fr; /* Single row */
+                height: calc(100vh - 30px - 30px); /* Adjust based on actual header/footer combined height */
+            }
+            .pane {
+                border-bottom: none;
+            }
+            #left-pane { border-right: 1px solid #ddd; }
+            #mid-pane { border-right: 1px solid #ddd; }
+            #right-pane { display: block; }
+        }
+
+        /* Large screens (e.g., desktops, laptops) */
+        @media (min-width: 1024px) {
+            #app-container {
+                grid-template-columns: 1fr 2fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Beyond Dictionary: Designer Typography Playground</h1>
+    </header>
+
+    <main id="app-container">
+        <aside id="left-pane" class="pane">
+            <h2>Controls / Experiences</h2>
+            <div class="experience-selector">
+                <button data-experience="spacing" class="active">Spacing</button>
+                <button data-experience="text">Text</button>
+                <button data-experience="emoji">Emoji</button>
+            </div>
+            </aside>
+
+        <section id="mid-pane" class="pane">
+            <h2>Live Preview</h2>
+            <div id="typography-preview">
+                </div>
+        </section>
+
+        <aside id="right-pane" class="pane">
+            <h2>Instructions</h2>
+            </aside>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Beyond Dictionary</p>
+    </footer>
+
+    <div id="info-modal-overlay" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <button class="modal-close-button">&times;</button>
+            <h4>Font Details</h4>
+            <p><strong>Font Family:</strong> <span id="modal-font-family"></span></p>
+            <p><strong>Font Size:</strong> <span id="modal-font-size"></span></p>
+            <p><strong>Font Weight:</strong> <span id="modal-font-weight"></span></p>
+            <p><strong>Font Color:</strong> <span id="modal-font-color"></span></p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const leftPane = document.getElementById('left-pane');
+            const midPane = document.getElementById('mid-pane');
+            const rightPane = document.getElementById('right-pane');
+            const typographyPreview = document.getElementById('typography-preview');
+            const infoModalOverlay = document.getElementById('info-modal-overlay');
+            const modalCloseButton = infoModalOverlay.querySelector('.modal-close-button');
+
+            let kerningAnimationInterval = null; // To control the animation
+            let kerningAnimationStepIndex = 0; // Current step in the animation sequence
+            const animationStepDuration = 2500; // 2.5 seconds per animation step
+
+            // Store event listener references for kerning drag-and-drop to allow proper removal
+            let onMouseDownHandler = null;
+            let onMouseMoveHandler = null;
+            let onMouseUpHandler = null;
+
+            const app = {
+                currentExperience: 'spacing', // Default experience is now 'spacing'
+
+                typographyState: { // Holds current typography settings
+                    fontFamily: 'Arial, sans-serif',
+                    fontSize: 1.5, // rem
+                    fontWeight: 400,
+                    fontColor: '#333333',
+                    lineHeight: 1.5,
+                    letterSpacing: 0,
+                    
+                    // For "Experience It All"
+                    customText: 'Life is beautiful', 
+                    
+                    // For "Emoji Integration"
+                    customEmojiText: 'Hello world! This is a test sentence for emoji integration. It contains words like happy, sad, love, and idea.', 
+                    summaryEmoji: '💡', // Pre-determined summary emoji (no LLM call)
+                    showSummaryEmoji: false, // Flag to control visibility of summary emoji
+                    
+                    // For "Text Layout"
+                    textAlign: 'left',
+                    lineLength: 80, // % width
+                    paragraphSpacing: 1.0, // em
+
+                    // For "Text Style"
+                    textTransform: 'none',
+                    textDecoration: 'none',
+
+                    // For "Font Pairing"
+                    headingFontFamily: 'Arial, sans-serif',
+                    bodyFontFamily: 'Verdana, sans-serif',
+
+                    kerningAdjustments: { /* ... initialized with 0s ... */ }
+                },
+                sampleTexts: {
+                    general: "The quick brown fox jumps over the lazy dog. This sentence demonstrates the impact of leading, tracking, and kerning on readability and visual appeal. Typography is a fundamental aspect of effective communication.",
+                    kerningExampleWords: ["AVATAR", "TOAST", "WALRUS"],
+                    textLayoutParagraph: `Typography is the art and technique of arranging type to make written language readable, legible, and appealing when displayed. The arrangement of type involves selecting typefaces, point sizes, line lengths, leading (line spacing), and letter-spacing (tracking).
+                    <br><br>
+                    Good typography is crucial for effective communication. It guides the reader's eye, establishes visual hierarchy, and conveys the tone and mood of the content. Poor typography, on the other hand, can make text difficult to read, frustrating users, and diminishing the message's impact.
+                    <br><br>
+                    Understanding these principles allows designers to create visually harmonious and highly functional text layouts that enhance the user experience.`,
+                    // For Text Style Demo
+                    textStyleExample: `This is normal text.
+                    <br><br>
+                    <span class="text-transform-example" data-transform="uppercase">This text is meant to be uppercase.</span>
+                    <br><br>
+                    <span class="text-transform-example" data-transform="lowercase">THIS TEXT IS MEANT TO BE LOWERCASE.</span>
+                    <br><br>
+                    <span class="text-transform-example" data-transform="capitalize">this text is meant to be capitalized.</span>
+                    <br><br>
+                    <span class="text-decoration-example" data-decoration="underline">This text is underlined.</span>
+                    <br><br>
+                    <span class="text-decoration-example" data-decoration="line-through">This text is strikethrough.</span>
+                    <br><br>
+                    <span class="text-decoration-example" data-decoration="overline">This text is overlined.</span>`,
+                    fontPairingHeadline: "The Art of Typography",
+                    fontPairingSubheadline: "Crafting Visual Harmony with Type",
+                    fontPairingBody: `Typography is more than just choosing pretty fonts; it's about creating a visual language that enhances communication. The right font pairing can establish mood, guide the reader's eye, and ensure legibility across various contexts.`,
+                    fontPairingCaption: `Design Principle: Font Pairing`
+                },
+                
+                fontOptions: [
+                    { name: 'Arial', value: 'Arial, sans-serif' },
+                    { name: 'Verdana', value: 'Verdana, sans-serif' },
+                    { name: 'Georgia', value: 'Georgia, serif' },
+                    { name: 'Times New Roman', value: 'Times New Roman, serif' },
+                    { name: 'Courier New', value: 'Courier New, monospace' },
+                    { name: 'Inter', value: 'Inter, sans-serif' },
+                    { name: 'Roboto', value: 'Roboto, sans-serif' },
+                    { name: 'Merriweather', value: 'Merriweather, serif' }
+                ],
+                
+                // Common emojis for draggable palette
+                emojiPalette: ['😀', '👍', '❤️', '🤔', '💡', '🚀', '🌟', '🎉', '🔥', '✅', '😂', '😭', '🤯', '🤩', '👋', '🙏', '💯', '✨', '🔥', '🌈'],
+                
+                // Words to replace with emojis (expanded to 10)
+                emojiReplaceWords: [
+                    { word: 'happy', emoji: '😊' },
+                    { word: 'sad', emoji: '😔' },
+                    { word: 'love', emoji: '❤️' },
+                    { word: 'idea', emoji: '💡' },
+                    { word: 'fire', emoji: '🔥' },
+                    { word: 'star', emoji: '🌟' },
+                    { word: 'rocket', emoji: '🚀' },
+                    { word: 'celebrate', emoji: '🎉' },
+                    { word: 'world', emoji: '🌎' },
+                    { word: 'test', emoji: '🧪' }
+                ],
+
+                kerningAnimationSequence: [
+                    {
+                        commentary: "Welcome to the <strong>Kerning Demo</strong>! <strong>Kerning</strong> fine-tunes the space between <strong>specific pairs</strong> of letters for visual balance. Observe these words with their default spacing.",
+                        kerningValues: { }, highlights: []
+                    },
+                    {
+                        commentary: "Notice the awkward, uneven space between 'A' and 'V' in <strong>AVATAR</strong>? Fonts don't always get it right automatically. See the gap between 'T' and 'O' in <strong>TOAST</strong> too.",
+                        kerningValues: { 'AV': 0.08, 'TO': 0.06 },
+                        highlights: [
+                            { type: 'gap', pair: 'AV', wordIndex: 0 }, { type: 'char', chars: ['A', 'V'], wordIndex: 0 },
+                            { type: 'gap', pair: 'TO', wordIndex: 1 }, { type: 'char', chars: ['T', 'O'], wordIndex: 1 }
+                        ]
+                    },
+                    {
+                        commentary: "Watch how the 'AV' gap in <strong>AVATAR</strong> is now <strong>adjusted</strong>. Kerning closes or widens these individual spaces, making the text look more harmonious.",
+                        kerningValues: { 'AV': -0.05, 'TO': 0.06 },
+                        highlights: [{ type: 'gap', pair: 'AV', wordIndex: 0 }, { type: 'char', chars: ['A', 'V'], wordIndex: 0 }]
+                    },
+                    {
+                        commentary: "And now see how the 'TO' gap in <strong>TOAST</strong> is <strong>tightened</strong>. The goal is to eliminate distracting gaps or clumps, creating a smooth visual flow.",
+                        kerningValues: { 'AV': 0, 'TO': -0.04 },
+                        highlights: [{ type: 'gap', pair: 'TO', wordIndex: 1 }, { type: 'char', chars: ['T', 'O'], wordIndex: 1 }]
+                    },
+                    {
+                        commentary: "The animation showed you how kerning works. Now it's your turn! Click and drag the <strong>blue bars</strong> between any letters to manually adjust their spacing. Try to make the words look smooth and evenly spaced.",
+                        kerningValues: { },
+                        highlights: []
+                    }
+                ],
+
+                // --- Core Rendering Functions ---
+                renderLeftPane: function(experienceType) {
+                    let content = '';
+                    // Generate all experience buttons
+                    const experienceButtonsHtml = `
+                        <button data-experience="spacing" class="${experienceType === 'spacing' ? 'active' : ''}">Spacing</button>
+                        <button data-experience="text" class="${experienceType === 'text' ? 'active' : ''}">Text</button>
+                        <button data-experience="emoji" class="${experienceType === 'emoji' ? 'active' : ''}">Emoji</button>
+                    `;
+
+                    if (experienceType === 'spacing') {
+                        const kerningButtonText = app.kerningDemoActive ? 'Reset Kerning Demo' : 'Show Kerning Demo';
+                        const kerningButtonColor = app.kerningDemoActive ? '#f0ad4e' : '#28a745';
+
+                        content = `
+                            <h3>Adjust Spacing</h3>
+                            <div class="control-group">
+                                <label for="leading-slider">Leading (Line Height): <span id="leading-value">${app.typographyState.lineHeight.toFixed(2)}</span></label>
+                                <input type="range" id="leading-slider" min="0.8" max="2.5" step="0.05" value="${app.typographyState.lineHeight}">
+                                <p><strong>Leading</strong> controls the vertical space between lines of text. Adequate leading improves readability by giving lines room to breathe. Too little makes text cramped, too much breaks visual flow.</p>
+                            </div>
+                            <div class="control-group">
+                                <label for="tracking-slider">Tracking (Letter Spacing): <span id="tracking-value">${app.typographyState.letterSpacing.toFixed(3)}</span></label>
+                                <input type="range" id="tracking-slider" min="-0.08" max="0.15" step="0.005" value="${app.typographyState.letterSpacing}">
+                                <p><strong>Tracking</strong> adjusts the uniform horizontal space between all characters in a block of text. It's often used sparingly to open up dense text or for stylistic effect in headlines. Avoid excessive tracking in body text.</p>
+                            </div>
+                            <div class="control-group">
+                                <label for="kerning-info">Kerning (Individual Pairs):</label>
+                                <p><strong>Kerning</strong> is the adjustment of space between <em>specific pairs</em> of characters to improve visual balance. Unlike tracking, it's not applied uniformly. Click and drag the highlighted gaps between letters in the middle pane to manually adjust their kerning.</p>
+                                <div class="kerning-buttons">
+                                    <button id="kerning-toggle-btn" style="background-color: ${kerningButtonColor};">${kerningButtonText}</button>
+                                </div>
+                            </div>
+                        `;
+                    } else if (experienceType === 'text') {
+                        content = `
+                            <h3>Font Appearance</h3>
+                            <div class="control-group">
+                                <label for="font-family-select">Font Family:</label>
+                                <select id="font-family-select">
+                                    ${app.fontOptions.map(font => `<option value="${font.value}" ${app.typographyState.fontFamily === font.value ? 'selected' : ''}>${font.name}</option>`).join('')}
+                                </select>
+                                <p>Choose a font family to see how different typefaces impact readability and style.</p>
+                            </div>
+                            <div class="control-group">
+                                <label for="font-size-slider">Font Size (rem): <span id="font-size-value">${app.typographyState.fontSize.toFixed(1)}</span></label>
+                                <input type="range" id="font-size-slider" min="0.8" max="4.0" step="0.1" value="${app.typographyState.fontSize}">
+                                <p>Adjust the font size to understand its effect on hierarchy and legibility.</p>
+                            </div>
+                             <div class="control-group">
+                                <label for="font-weight-slider">Font Weight: <span id="font-weight-value">${app.typographyState.fontWeight}</span></label>
+                                <input type="range" id="font-weight-slider" min="100" max="900" step="100" value="${app.typographyState.fontWeight}">
+                                <p>Experiment with font weight to create emphasis and visual interest.</p>
+                            </div>
+                            <div class="control-group">
+                                <label for="font-color-picker">Font Color:</label>
+                                <input type="color" id="font-color-picker" value="${app.typographyState.fontColor}">
+                                <p>Select a font color to see its impact on contrast and visual appeal.</p>
+                            </div>
+
+                            <h3>Text Layout</h3>
+                            <div class="control-group">
+                                <button data-align="left" class="align-button">Left</button>
+                                <button data-align="center" class="align-button">Center</button>
+                                <button data-align="right" class="align-button">Right</button>
+                                <button data-align="justify" class="align-button">Justify</button>
+                                <p>Adjust text alignment to see its impact on readability and visual balance.</p>
+                            </div>
+                            <h3>Line Length (Measure)</h3>
+                            <div class="control-group">
+                                <label for="line-length-slider">Adjust Width: <span id="line-length-value">${app.typographyState.lineLength}%</span></label>
+                                <input type="range" id="line-length-slider" min="30" max="100" step="1" value="${app.typographyState.lineLength}">
+                                <p>Change the width of the text block to understand optimal line length for readability.</p>
+                            </div>
+                            <h3>Text Style</h3>
+                            <div class="control-group">
+                                <button data-transform="none" class="text-transform-button">None</button>
+                                <button data-transform="uppercase" class="text-transform-button">Uppercase</button>
+                                <button data-transform="lowercase" class="text-transform-button">Lowercase</button>
+                                <button data-transform="capitalize" class="text-transform-button">Capitalize</button>
+                                <p>See how text transformation affects legibility and visual impact.</p>
+                            </div>
+                            <h3>Text Decoration</h3>
+                            <div class="control-group">
+                                <button data-decoration="none" class="text-decoration-button">None</button>
+                                <button data-decoration="underline" class="text-decoration-button">Underline</button>
+                                <button data-decoration="line-through" class="text-decoration-button">Strikethrough</button>
+                                <button data-decoration="overline" class="text-decoration-button">Overline</button>
+                                <p>Apply various text decorations to understand their use cases and effects.</p>
+                            </div>
+                            <h3>Font Pairing</h3>
+                            <div class="control-group">
+                                <label for="heading-font-select">Heading Font:</label>
+                                <select id="heading-font-select">
+                                    ${app.fontOptions.map(font => `<option value="${font.value}">${font.name}</option>`).join('')}
+                                </select>
+                                <p>Choose a font for headlines.</p>
+                            </div>
+                            <div class="control-group">
+                                <label for="body-font-select">Body Font:</label>
+                                <select id="body-font-select">
+                                    ${app.fontOptions.map(font => `<option value="${font.value}">${font.name}</option>`).join('')}
+                                </select>
+                                <p>Choose a font for body text.</p>
+                            </div>
+                            <button id="apply-font-pairing-button" style="background-color: #3498db; color: white; border: none; padding: 0.6rem 1rem; border-radius: 5px; cursor: pointer; margin-top: 10px; width: 100%;">Apply Pairing</button>
+                            <p>Experiment with different combinations to find harmonious font pairings.</p>
+                            <h3>Experience It All</h3>
+                            <div class="control-group">
+                                <label for="custom-text-input">Your Text:</label>
+                                <input type="text" id="custom-text-input" value="${app.typographyState.customText}">
+                                <button id="experience-it-button" style="background-color: #3498db; color: white; border: none; padding: 0.6rem 1rem; border-radius: 5px; cursor: pointer; margin-top: 10px; width: 100%;">Experience It!</button>
+                                <p>Enter your own text and see it rendered across a grid with various font families, sizes, and weights.</p>
+                            </div>
+                        `;
+                    } else if (experienceType === 'emoji') {
+                        content = `
+                            <h3>Emoji Integration</h3>
+                            <div class="control-group">
+                                <label for="emoji-text-display-static">Text for Summary Emoji:</label>
+                                <input type="text" id="emoji-text-display-static" value="${app.typographyState.customEmojiText}" readonly style="background-color: #eee;">
+                                <button id="show-summary-emoji-button" style="background-color: #3498db; color: white; border: none; padding: 0.6rem 1rem; border-radius: 5px; cursor: pointer; margin-top: 10px; width: 100%;">Show Summary Emoji</button>
+                                <p>Click the button to reveal a pre-determined summary emoji for the text above. Drag emojis below into the text in the preview pane. Click underlined words to replace them!</p>
+                            </div>
+                            <div class="control-group">
+                                <label>Drag & Drop Emojis:</label>
+                                <div id="emoji-palette" class="emoji-palette">
+                                    ${app.emojiPalette.map(emoji => `<span class="draggable-emoji" draggable="true">${emoji}</span>`).join('')}
+                                </div>
+                                <p>Drag these emojis into the text box in the Live Preview pane to see how they integrate.</p>
+                            </div>
+                        `;
+                    }
+                    leftPane.innerHTML = `
+                        <div class="experience-selector">
+                            ${experienceButtonsHtml}
+                        </div>
+                        ${content}
+                    `;
+                    app.addLeftPaneListeners(experienceType); // Attach listeners after content is rendered
+                },
+
+                renderMidPane: function(textData, styles = {}, isKerningDemo = false, isExperienceAllDemo = false, isEmojiIntegrationDemo = false, isTextLayoutDemo = false, isTextStyleDemo = false, isFontPairingDemo = false) {
+                    typographyPreview.innerHTML = ''; // Clear previous content
+                    
+                    // Always clear animation/highlights when rendering mid-pane
+                    clearInterval(kerningAnimationInterval);
+                    app.clearHighlights(); 
+                    
+                    // Apply current typography state (base for all modes)
+                    typographyPreview.style.fontFamily = app.typographyState.fontFamily; // Apply font family
+                    typographyPreview.style.fontSize = `${app.typographyState.fontSize}rem`; // Apply font size
+                    typographyPreview.style.fontWeight = app.typographyState.fontWeight; // Apply font weight
+                    typographyPreview.style.color = app.typographyState.fontColor; // Apply font color
+                    typographyPreview.style.lineHeight = app.typographyState.lineHeight;
+                    typographyPreview.style.letterSpacing = `${app.typographyState.letterSpacing}em`;
+
+                    Object.assign(typographyPreview.style, styles); // Apply specific styles if provided
+
+                    // Reset grid/block/flex display properties for all modes
+                    typographyPreview.style.display = 'flex'; // Default to flex for general text
+                    typographyPreview.style.gridTemplateColumns = 'none'; // Disable grid
+                    typographyPreview.style.textAlign = 'center'; // Default to center
+                    typographyPreview.style.whiteSpace = 'normal'; // Default to normal
+                    typographyPreview.style.cursor = 'default'; // Reset cursor
+                    typographyPreview.style.width = 'auto'; // Reset width for line length demo
+                    typographyPreview.style.margin = '0 auto'; // Reset margin for line length demo
+                    typographyPreview.style.textTransform = 'none'; // Reset text transform
+                    typographyPreview.style.textDecoration = 'none'; // Reset text decoration
+                    typographyPreview.style.boxSizing = 'content-box'; // Reset box sizing for layout demo
+
+                    if (isKerningDemo) {
+                        typographyPreview.style.display = 'block'; 
+                        typographyPreview.style.textAlign = 'center';
+                        typographyPreview.style.whiteSpace = 'normal'; 
+                        typographyPreview.style.cursor = 'default';
+                        typographyPreview.style.fontSize = `${app.typographyState.fontSize}rem`; // Ensure current font size for kerning demo
+
+                        textData.forEach((word, wordIndex) => {
+                            const wordContainer = document.createElement('div');
+                            wordContainer.className = 'kerning-line';
+                            for (let i = 0; i < word.length; i++) {
+                                const charSpan = document.createElement('span');
+                                charSpan.className = 'kerning-char';
+                                charSpan.textContent = word[i];
+                                charSpan.dataset.wordIndex = wordIndex;
+                                charSpan.dataset.charIndex = i;
+                                wordContainer.appendChild(charSpan);
+
+                                if (i < word.length - 1) {
+                                    const pairKey = word[i] + word[i+1];
+                                    const gapSpan = document.createElement('span');
+                                    gapSpan.className = 'kerning-pair-space';
+                                    gapSpan.dataset.pair = pairKey;
+                                    gapSpan.dataset.wordIndex = wordIndex;
+                                    gapSpan.dataset.pairIndex = i;
+                                    gapSpan.style.setProperty('--kerning-space', `${app.typographyState.kerningAdjustments[pairKey] || 0}em`);
+                                    wordContainer.appendChild(gapSpan);
+                                }
+                            }
+                            typographyPreview.appendChild(wordContainer);
+                        });
+                        app.setupKerningDraggable();
+                    } else if (isExperienceAllDemo) {
+                        typographyPreview.style.display = 'grid'; 
+                        typographyPreview.style.gridTemplateColumns = 'repeat(3, 1fr)'; 
+                        typographyPreview.style.gridAutoRows = 'minmax(auto, auto)'; 
+                        typographyPreview.style.gap = '10px'; 
+                        typographyPreview.style.fontSize = '1rem'; 
+                        typographyPreview.style.fontWeight = 'normal'; 
+                        typographyPreview.style.lineHeight = '1.2'; 
+                        typographyPreview.style.letterSpacing = '0em'; 
+                        typographyPreview.style.color = '#333333';
+
+                        const families = ['Arial', 'Inter', 'Merriweather']; // Use simplified names for display
+                        const sizes = [0.8, 1.2, 1.6, 2.0]; // rem values
+                        const weights = [300, 500, 700];
+                        const colors = ['#333333', '#007bff', '#dc3545'];
+
+                        families.forEach(fontFamilyName => {
+                            const fontFamilyValue = app.fontOptions.find(f => f.name === fontFamilyName)?.value || fontFamilyName;
+                            sizes.forEach(fontSize => {
+                                weights.forEach(fontWeight => {
+                                    colors.forEach(fontColor => {
+                                        const cell = document.createElement('div');
+                                        cell.className = 'grid-cell';
+                                        
+                                        const textSpan = document.createElement('span');
+                                        textSpan.className = 'grid-cell-text';
+                                        textSpan.textContent = app.typographyState.customText;
+                                        cell.appendChild(textSpan);
+
+                                        const infoIcon = document.createElement('div');
+                                        infoIcon.className = 'info-icon';
+                                        infoIcon.textContent = 'i';
+                                        infoIcon.onclick = (e) => {
+                                            e.stopPropagation();
+                                            app.showInfoModal({
+                                                fontFamily: fontFamilyName, // Use simplified name for display
+                                                fontSize: `${fontSize}rem`,
+                                                fontWeight: fontWeight,
+                                                fontColor: fontColor
+                                            });
+                                        };
+                                        cell.appendChild(infoIcon);
+
+                                        cell.style.fontFamily = fontFamilyValue;
+                                        cell.style.fontSize = `${fontSize}rem`;
+                                        cell.style.fontWeight = fontWeight;
+                                        cell.style.color = fontColor;
+                                        typographyPreview.appendChild(cell);
+                                    });
+                                });
+                            });
+                        });
+                    } else if (isEmojiIntegrationDemo) {
+                        typographyPreview.style.display = 'flex';
+                        typographyPreview.style.flexDirection = 'column';
+                        typographyPreview.style.alignItems = 'center';
+                        typographyPreview.style.justifyContent = 'flex-start'; // Align content to top
+                        typographyPreview.style.textAlign = 'left'; // Allow natural text flow
+                        typographyPreview.style.cursor = 'text'; // Indicate editable area
+                        typographyPreview.style.fontSize = '1.8rem'; // Base font size for emoji integration text
+                        typographyPreview.style.userSelect = 'text'; // Enable text selection for contenteditable
+                        typographyPreview.style.webkitUserSelect = 'text';
+                        typographyPreview.style.mozUserSelect = 'text';
+                        typographyPreview.style.msUserSelect = 'text';
+
+                        const summaryEmojiDisplay = document.createElement('span');
+                        summaryEmojiDisplay.id = 'emoji-summary-display';
+                        // Initially hidden, revealed by button click
+                        summaryEmojiDisplay.style.display = app.typographyState.showSummaryEmoji ? 'block' : 'none';
+                        summaryEmojiDisplay.textContent = app.typographyState.summaryEmoji;
+                        typographyPreview.appendChild(summaryEmojiDisplay);
+
+                        const editableTextDiv = document.createElement('div');
+                        editableTextDiv.id = 'emoji-text-display';
+                        editableTextDiv.contentEditable = true;
+                        editableTextDiv.style.width = '100%';
+                        editableTextDiv.style.border = '1px solid #ccc';
+                        editableTextDiv.style.padding = '15px';
+                        editableTextDiv.style.minHeight = '150px';
+                        editableTextDiv.style.outline = 'none';
+                        editableTextDiv.style.whiteSpace = 'normal';
+
+                        // Populate with initial text, wrapping specific words in spans for click-to-replace
+                        let processedText = app.typographyState.customEmojiText;
+                        app.emojiReplaceWords.forEach(item => {
+                            const regex = new RegExp(`\\b(${item.word})\\b`, 'gi'); 
+                            processedText = processedText.replace(regex, `<span class="emoji-word-link" data-emoji="${item.emoji}">${item.word}</span>`);
+                        });
+                        editableTextDiv.innerHTML = processedText;
+
+                        typographyPreview.appendChild(editableTextDiv);
+
+                        editableTextDiv.addEventListener('dragover', app.handleDropDragOver);
+                        editableTextDiv.addEventListener('drop', app.handleDrop);
+                        editableTextDiv.addEventListener('click', app.handleClickToReplace);
+
+                        editableTextDiv.oninput = (e) => {
+                            // Update the state with current plain text content
+                            app.typographyState.customEmojiText = editableTextDiv.textContent; 
+                        };
+
+                    } else if (isTextLayoutDemo) {
+                        typographyPreview.style.display = 'block';
+                        typographyPreview.style.textAlign = app.typographyState.textAlign; 
+                        typographyPreview.style.width = `${app.typographyState.lineLength}%`;
+                        typographyPreview.style.margin = '0 auto';
+                        typographyPreview.style.lineHeight = app.typographyState.lineHeight; 
+                        typographyPreview.style.wordWrap = 'break-word';
+                        typographyPreview.style.whiteSpace = 'normal'; 
+                        typographyPreview.style.boxSizing = 'border-box'; // Ensure padding/border are included in width
+
+                        const demoDiv = document.createElement('div');
+                        demoDiv.className = 'text-layout-demo';
+                        demoDiv.innerHTML = app.sampleTexts.textLayoutParagraph;
+                        demoDiv.style.textAlign = app.typographyState.textAlign;
+                        
+                        // Apply paragraph spacing by setting margin-bottom to paragraphs within the demoDiv
+                        demoDiv.querySelectorAll('p').forEach(p => {
+                            p.style.marginBottom = `${app.typographyState.paragraphSpacing}em`;
+                        });
+                        // Remove margin-bottom from the last paragraph to prevent extra space
+                        const paragraphs = demoDiv.querySelectorAll('p');
+                        if (paragraphs.length > 0) {
+                            paragraphs[paragraphs.length - 1].style.marginBottom = '0';
+                        }
+                        
+                        typographyPreview.appendChild(demoDiv);
+
+                    } else if (isTextStyleDemo) {
+                        typographyPreview.style.display = 'block';
+                        typographyPreview.style.textAlign = 'left'; 
+                        typographyPreview.style.fontSize = `${app.typographyState.fontSize}rem`; 
+                        typographyPreview.style.fontWeight = app.typographyState.fontWeight; 
+                        typographyPreview.style.color = app.typographyState.fontColor; 
+                        typographyPreview.style.lineHeight = '1.5'; 
+                        // Apply current text transform and decoration from state
+                        typographyPreview.style.textTransform = app.typographyState.textTransform;
+                        typographyPreview.style.textDecoration = app.typographyState.textDecoration;
+
+                        const demoDiv = document.createElement('div');
+                        demoDiv.className = 'text-style-demo';
+                        demoDiv.innerHTML = app.sampleTexts.textStyleExample;
+                        typographyPreview.appendChild(demoDiv);
+
+                        // Ensure styles are applied to spans within the demo content
+                        demoDiv.querySelectorAll('.text-transform-example').forEach(span => {
+                            span.style.textTransform = span.dataset.transform;
+                        });
+                        demoDiv.querySelectorAll('.text-decoration-example').forEach(span => {
+                            span.style.textDecoration = span.dataset.decoration;
+                        });
+
+
+                    } else if (isFontPairingDemo) {
+                        typographyPreview.style.display = 'block';
+                        typographyPreview.style.textAlign = 'left';
+                        typographyPreview.style.fontSize = '1rem'; 
+                        typographyPreview.style.fontWeight = 'normal'; 
+                        typographyPreview.style.lineHeight = '1.5'; 
+
+                        const demoDiv = document.createElement('div');
+                        demoDiv.className = 'font-pairing-demo';
+                        demoDiv.innerHTML = `
+                            <h1 style="font-family: ${app.typographyState.headingFontFamily};">${app.sampleTexts.fontPairingHeadline}</h1>
+                            <h2 style="font-family: ${app.typographyState.headingFontFamily};">${app.sampleTexts.fontPairingSubheadline}</h2>
+                            <p style="font-family: ${app.typographyState.bodyFontFamily};">${app.sampleTexts.fontPairingBody}</p>
+                            <span class="caption" style="font-family: ${app.typographyState.bodyFontFamily};">${app.sampleTexts.fontPairingCaption}</span>
+                        `;
+                        typographyPreview.appendChild(demoDiv);
+
+                    } else {
+                        // General text display
+                        typographyPreview.style.display = 'flex'; 
+                        typographyPreview.style.alignItems = 'center';
+                        typographyPreview.style.justifyContent = 'center';
+                        typographyPreview.style.gridTemplateColumns = 'none'; 
+                        typographyPreview.textContent = textData || app.sampleTexts.general;
+                    }
+                },
+
+                renderRightPane: function(commentaryText) {
+                    // Replace ** with <strong> for proper bolding
+                    const formattedText = commentaryText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                    rightPane.innerHTML = `<h3>Instructions</h3><p>${formattedText}</p>`;
+                },
+
+                // --- Event Listeners & Handlers ---
+                addLeftPaneListeners: function(experienceType) {
+                    // Remove all previous listeners from experience selector buttons
+                    document.querySelectorAll('.experience-selector button').forEach(button => {
+                        button.onclick = null; // Clear existing handlers
+                    });
+
+                    // Re-attach listeners for experience selector buttons
+                    document.querySelectorAll('.experience-selector button').forEach(button => {
+                        button.onclick = (e) => {
+                            const newExperience = e.target.dataset.experience;
+                            if (app.currentExperience !== newExperience) { // Only switch if different
+                                app.currentExperience = newExperience;
+                                app.resetAllExperienceStates(); // Reset states when switching sections
+                                app.renderLeftPane(app.currentExperience); // Re-render left pane
+                                app.updateMidAndRightPanes(); // Update mid and right panes
+                            }
+                        };
+                    });
+
+                    // Specific listeners based on current experience type
+                    if (experienceType === 'spacing') {
+                        const leadingSlider = document.getElementById('leading-slider');
+                        const trackingSlider = document.getElementById('tracking-slider');
+                        const kerningToggleButton = document.getElementById('kerning-toggle-btn');
+
+                        if (leadingSlider) {
+                            leadingSlider.oninput = (e) => {
+                                if (app.kerningDemoActive) { app.resetKerningDemoState(); }
+                                app.typographyState.lineHeight = parseFloat(e.target.value);
+                                document.getElementById('leading-value').textContent = app.typographyState.lineHeight.toFixed(2);
+                                app.renderMidPane(app.sampleTexts.general); 
+                                app.renderRightPane("You're adjusting the <strong>leading (line height)</strong>. Observe how increasing the space improves readability, while decreasing it can make the text feel dense and hard to follow. Finding the right balance is key!");
+                            };
+                        }
+                        if (trackingSlider) {
+                            trackingSlider.oninput = (e) => {
+                                if (app.kerningDemoActive) { app.resetKerningDemoState(); }
+                                app.typographyState.letterSpacing = parseFloat(e.target.value);
+                                document.getElementById('tracking-value').textContent = app.typographyState.letterSpacing.toFixed(3);
+                                app.renderMidPane(app.sampleTexts.general);
+                                app.renderRightPane("You're adjusting the <strong>tracking (letter spacing)</strong>. Notice how subtle changes can improve word legibility. Too much spacing breaks words apart, while too little can make them blur together. Use sparingly, especially in body text.");
+                            };
+                        }
+                        if (kerningToggleButton) {
+                            kerningToggleButton.onclick = () => {
+                                if (kerningToggleButton.textContent === 'Show Kerning Demo') {
+                                    app.kerningDemoActive = true;
+                                    app.renderMidPane(app.sampleTexts.kerningExampleWords, {}, true, false, false, false, false, false); // Render kerning demo
+                                    kerningAnimationStepIndex = 0; // Reset animation to start
+                                    app.playKerningAnimationStep(); // Start the first step
+                                    app.renderLeftPane(app.currentExperience); // Re-render left pane to update button state
+                                } else { // It's 'Reset Kerning Demo'
+                                    app.resetKerningDemoState();
+                                    app.renderLeftPane(app.currentExperience); // Re-render left pane to update button state
+                                }
+                            };
+                        }
+                    } else if (experienceType === 'text') {
+                        const fontFamilySelect = document.getElementById('font-family-select'); 
+                        const fontSizeSlider = document.getElementById('font-size-slider');     
+                        const fontWeightSlider = document.getElementById('font-weight-slider'); 
+                        const fontColorPicker = document.getElementById('font-color-picker'); 
+                        const customTextInput = document.getElementById('custom-text-input'); 
+                        const experienceItButton = document.getElementById('experience-it-button'); 
+                        const alignButtons = document.querySelectorAll('.align-button');
+                        const lineLengthSlider = document.getElementById('line-length-slider');
+                        const paraSpacingSlider = document.getElementById('para-spacing-slider');
+                        const transformButtons = document.querySelectorAll('.text-transform-button');
+                        const decorationButtons = document.querySelectorAll('.text-decoration-button');
+                        const headingFontSelect = document.getElementById('heading-font-select');
+                        const bodyFontSelect = document.getElementById('body-font-select');
+                        const applyFontPairingButton = document.getElementById('apply-font-pairing-button');
+
+
+                        // Font Appearance Listeners
+                        if (fontFamilySelect) {
+                            fontFamilySelect.onchange = (e) => {
+                                app.typographyState.fontFamily = e.target.value;
+                                app.renderMidPane(app.sampleTexts.general);
+                                app.renderRightPane(`You've changed the font to <strong>${e.target.options[e.target.selectedIndex].text}</strong>. Observe how different font families convey unique moods and impact readability.`);
+                            };
+                        }
+                        if (fontSizeSlider) {
+                            fontSizeSlider.oninput = (e) => {
+                                app.typographyState.fontSize = parseFloat(e.target.value);
+                                document.getElementById('font-size-value').textContent = app.typographyState.fontSize.toFixed(1);
+                                app.renderMidPane(app.sampleTexts.general);
+                                app.renderRightPane(`You're adjusting the <strong>font size</strong>. Larger sizes can create emphasis and improve legibility, while smaller sizes are suitable for fine print.`);
+                            };
+                        }
+                        if (fontWeightSlider) {
+                            fontWeightSlider.oninput = (e) => {
+                                app.typographyState.fontWeight = parseInt(e.target.value);
+                                document.getElementById('font-weight-value').textContent = app.typographyState.fontWeight;
+                                app.renderMidPane(app.sampleTexts.general);
+                                app.renderRightPane(`You're adjusting the <strong>font weight</strong>. Heavier weights add prominence, while lighter weights offer a more delicate feel. Not all fonts support all weights.`);
+                            };
+                        }
+                        if (fontColorPicker) {
+                            fontColorPicker.oninput = (e) => {
+                                app.typographyState.fontColor = e.target.value;
+                                app.renderMidPane(app.sampleTexts.general);
+                                app.renderRightPane(`You've changed the <strong>font color</strong> to ${e.target.value}. Consider how color affects readability and mood, especially against different backgrounds.`);
+                            };
+                        }
+
+                        // Experience It All Listeners
+                        if (customTextInput) {
+                            customTextInput.oninput = (e) => {
+                                app.typographyState.customText = e.target.value;
+                            };
+                        }
+                        if (experienceItButton) {
+                            experienceItButton.onclick = () => {
+                                app.renderMidPane(app.typographyState.customText, {}, false, true, false, false, false, false); // Render as Experience All demo
+                                app.renderRightPane(`You're experiencing your text: "<strong>${app.typographyState.customText}</strong>" across various font families, sizes, and weights. This helps you quickly compare and feel the differences.`);
+                            };
+                        }
+
+                        // Text Layout Listeners
+                        alignButtons.forEach(button => {
+                            button.onclick = (e) => {
+                                app.typographyState.textAlign = e.target.dataset.align;
+                                app.renderMidPane(null, {}, false, false, false, true, false, false);
+                                app.renderRightPane(`Text alignment changed to <strong>${e.target.dataset.align}</strong>. Observe how alignment affects the shape and readability of the text block.`);
+                            };
+                        });
+                        if (lineLengthSlider) {
+                            lineLengthSlider.oninput = (e) => {
+                                app.typographyState.lineLength = parseInt(e.target.value);
+                                document.getElementById('line-length-value').textContent = `${app.typographyState.lineLength}%`;
+                                app.renderMidPane(null, {}, false, false, false, true, false, false);
+                                app.renderRightPane(`Line length adjusted to <strong>${app.typographyState.lineLength}%</strong>. Optimal line length (around 45-75 characters) improves reading comfort.`);
+                            };
+                        }
+                        if (paraSpacingSlider) {
+                            paraSpacingSlider.oninput = (e) => {
+                                app.typographyState.paragraphSpacing = parseFloat(e.target.value);
+                                document.getElementById('para-spacing-value').textContent = `${app.typographyState.paragraphSpacing.toFixed(1)}em`;
+                                // Re-render Text Layout demo to apply new paragraph spacing
+                                app.renderMidPane(null, {}, false, false, false, true, false, false);
+                                app.renderRightPane(`Paragraph spacing adjusted to <strong>${app.typographyState.paragraphSpacing.toFixed(1)}em</strong>. Proper spacing creates clear visual breaks between paragraphs.`);
+                            };
+                        }
+
+                        // Text Style Listeners
+                        transformButtons.forEach(button => {
+                            button.onclick = (e) => {
+                                app.typographyState.textTransform = e.target.dataset.transform;
+                                app.renderMidPane(null, {}, false, false, false, false, true, false);
+                                app.renderRightPane(`Text transformation set to <strong>${e.target.dataset.transform}</strong>. Uppercase can be hard to read in blocks, while capitalize is common for titles.`);
+                            };
+                        });
+                        decorationButtons.forEach(button => {
+                            button.onclick = (e) => {
+                                app.typographyState.textDecoration = e.target.dataset.decoration;
+                                app.renderMidPane(null, {}, false, false, false, false, true, false);
+                                app.renderRightPane(`Text decoration set to <strong>${e.target.dataset.decoration}</strong>. Underlines are common for links, but can interfere with descenders.`);
+                            };
+                        });
+
+                        // Font Pairing Listeners
+                        if (headingFontSelect) {
+                            headingFontSelect.onchange = (e) => {
+                                app.typographyState.headingFontFamily = e.target.value;
+                            };
+                            headingFontSelect.value = app.typographyState.headingFontFamily; // Set initial value
+                        }
+                        if (bodyFontSelect) {
+                            bodyFontSelect.onchange = (e) => {
+                                app.typographyState.bodyFontFamily = e.target.value;
+                            };
+                            bodyFontSelect.value = app.typographyState.bodyFontFamily; // Set initial value
+                        }
+                        if (applyFontPairingButton) {
+                            applyFontPairingButton.onclick = () => {
+                                app.renderMidPane(null, {}, false, false, false, false, false, true);
+                                app.renderRightPane(`You've applied <strong>${app.typographyState.headingFontFamily.split(',')[0]}</strong> for headings and <strong>${app.typographyState.bodyFontFamily.split(',')[0]}</strong> for body. Evaluate their harmony and contrast.`);
+                            };
+                        }
+
+                    } else if (experienceType === 'emoji') {
+                        const emojiTextInput = document.getElementById('emoji-text-display-static'); // Changed ID
+                        const showSummaryEmojiButton = document.getElementById('show-summary-emoji-button');
+                        const emojiPalette = document.getElementById('emoji-palette');
+
+                        // Make the emoji text input readonly as per feedback
+                        if (emojiTextInput) {
+                            emojiTextInput.readOnly = true;
+                            emojiTextInput.style.backgroundColor = '#eee'; // Indicate it's not editable
+                        }
+
+                        if (showSummaryEmojiButton) {
+                            showSummaryEmojiButton.onclick = () => {
+                                app.typographyState.showSummaryEmoji = true; // Set flag to show emoji
+                                app.renderMidPane(null, {}, false, false, true, false, false, false); // Re-render to show emoji
+                                app.renderRightPane(`The pre-determined summary emoji for "<strong>${app.typographyState.customEmojiText}</strong>" is: <strong>${app.typographyState.summaryEmoji}</strong>. This helps convey the essence visually.`);
+                            };
+                        }
+                        if (emojiPalette) {
+                            emojiPalette.querySelectorAll('.draggable-emoji').forEach(emojiSpan => {
+                                emojiSpan.ondragstart = (e) => {
+                                    e.dataTransfer.setData('text/plain', e.target.textContent);
+                                    e.dataTransfer.effectAllowed = 'copyMove';
+                                };
+                            });
+                        }
+                    }
+                },
+
+                resetAllExperienceStates: function() {
+                    // Reset kerning demo specific states
+                    app.kerningDemoActive = false;
+                    clearInterval(kerningAnimationInterval);
+                    app.clearHighlights();
+                    Object.keys(app.typographyState.kerningAdjustments).forEach(pair => {
+                        app.typographyState.kerningAdjustments[pair] = 0;
+                    });
+                    // Reset emoji integration specific states
+                    app.typographyState.showSummaryEmoji = false; // Hide summary emoji by default
+                    // Reset Text Layout states
+                    app.typographyState.textAlign = 'left';
+                    app.typographyState.lineLength = 80;
+                    app.typographyState.paragraphSpacing = 1.0;
+                    // Reset Text Style states
+                    app.typographyState.textTransform = 'none';
+                    app.typographyState.textDecoration = 'none';
+                    // Reset Font Pairing states
+                    app.typographyState.headingFontFamily = 'Arial, sans-serif';
+                    app.typographyState.bodyFontFamily = 'Verdana, sans-serif';
+
+                    // Note: customText and customEmojiText are kept as user might want to re-use them
+                },
+
+                resetKerningDemoState: function() {
+                    // This function is specifically for resetting kerning when other controls are used
+                    // or when the user clicks 'Reset Kerning Demo' button
+                    app.kerningDemoActive = false;
+                    clearInterval(kerningAnimationInterval);
+                    app.clearHighlights();
+                    Object.keys(app.typographyState.kerningAdjustments).forEach(pair => {
+                        app.typographyState.kerningAdjustments[pair] = 0;
+                    });
+                    // Render the kerning demo in its default (non-animated, non-highlighted) state
+                    app.renderMidPane(app.sampleTexts.kerningExampleWords, {}, true, false, false, false, false, false); 
+                    app.renderRightPane("Kerning adjustments have been reset. You can click 'Show Kerning Demo' again to see the animation, or adjust spaces manually.");
+                },
+
+                // --- Kerning Animation & Draggable Logic ---
+                playKerningAnimationStep: function() {
+                    clearInterval(kerningAnimationInterval); // Clear any previous step's interval
+                    app.clearHighlights(); // Clear highlights from previous step
+
+                    // Loop animation
+                    if (kerningAnimationStepIndex >= app.kerningAnimationSequence.length) {
+                        kerningAnimationStepIndex = 0; 
+                    }
+
+                    const currentStep = app.kerningAnimationSequence[kerningAnimationStepIndex];
+
+                    // Update commentary
+                    app.renderRightPane(currentStep.commentary);
+
+                    // Apply kerning values for this step
+                    typographyPreview.querySelectorAll('.kerning-pair-space').forEach(gapSpan => {
+                        const pairKey = gapSpan.dataset.pair;
+                        if (currentStep.kerningValues && currentStep.kerningValues.hasOwnProperty(pairKey)) {
+                            gapSpan.style.setProperty('--kerning-space', `${currentStep.kerningValues[pairKey]}em`);
+                        } else {
+                            // Ensure non-animated pairs revert to their stored (user-defined) or default (0) values
+                            gapSpan.style.setProperty('--kerning-space', `${app.typographyState.kerningAdjustments[pairKey] || 0}em`);
+                        }
+                    });
+
+                    // Apply highlights for this step
+                    if (currentStep.highlights) {
+                        currentStep.highlights.forEach(highlight => {
+                            if (highlight.type === 'gap' && highlight.pair && highlight.wordIndex !== undefined) {
+                                const targetGap = typographyPreview.querySelector(`.kerning-pair-space[data-pair="${highlight.pair}"][data-word-index="${highlight.wordIndex}"]`);
+                                if (targetGap) targetGap.classList.add('highlight-gap');
+                            } else if (highlight.type === 'char' && highlight.chars && highlight.wordIndex !== undefined) {
+                                const targetWord = app.sampleTexts.kerningExampleWords[highlight.wordIndex];
+                                if (targetWord) {
+                                    let firstCharIndex = targetWord.indexOf(highlight.chars[0]); // Handles multi-char highlights like 'AV'
+                                    if (firstCharIndex !== -1) {
+                                        for (let i = 0; i < highlight.chars.length; i++) {
+                                            const charElem = typographyPreview.querySelector(`.kerning-char[data-word-index="${highlight.wordIndex}"][data-char-index="${firstCharIndex + i}"]`);
+                                            if (charElem) charElem.classList.add('highlight-char');
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }
+
+                    kerningAnimationStepIndex++;
+                    kerningAnimationInterval = setTimeout(() => {
+                        app.playKerningAnimationStep();
+                    }, animationStepDuration);
+                },
+
+                clearHighlights: function() {
+                    typographyPreview.querySelectorAll('.highlight-gap').forEach(el => el.classList.remove('highlight-gap'));
+                    typographyPreview.querySelectorAll('.highlight-char').forEach(el => el.classList.remove('highlight-char'));
+                },
+
+                setupKerningDraggable: function() {
+                    // Remove previous listeners to prevent duplicates (important when re-rendering)
+                    if (onMouseDownHandler) {
+                        typographyPreview.removeEventListener('mousedown', onMouseDownHandler);
+                        document.removeEventListener('mousemove', onMouseMoveHandler);
+                        document.removeEventListener('mouseup', onMouseUpHandler);
+                    }
+
+                    let activePairSpan = null;
+                    let initialX;
+                    let initialKerning;
+
+                    onMouseDownHandler = (e) => {
+                        // Check if the clicked element is a kerning-pair-space
+                        if (e.target.classList.contains('kerning-pair-space')) {
+                            activePairSpan = e.target;
+                            initialX = e.clientX;
+                            const currentKerningStyle = activePairSpan.style.getPropertyValue('--kerning-space');
+                            initialKerning = parseFloat(currentKerningStyle.replace('em', '')) || 0;
+
+                            // Stop animation immediately when user starts dragging
+                            clearInterval(kerningAnimationInterval);
+                            app.clearHighlights(); 
+
+                            e.preventDefault(); // Prevent text selection and default browser drag
+                            typographyPreview.style.cursor = 'ew-resize';
+                            document.addEventListener('mousemove', onMouseMoveHandler);
+                            document.addEventListener('mouseup', onMouseUpHandler);
+                        }
+                    };
+
+                    onMouseMoveHandler = (e) => {
+                        if (activePairSpan) {
+                            const deltaX = e.clientX - initialX;
+                            const fontSizePx = parseFloat(window.getComputedStyle(typographyPreview).fontSize);
+                            const emsPerPx = 1 / fontSizePx;
+                            const kerningChange = deltaX * emsPerPx * 0.1; // Reduced sensitivity
+
+                            let newKerning = initialKerning + kerningChange;
+                            newKerning = Math.max(-0.2, Math.min(0.2, newKerning)); // Clamp values to reasonable range (-0.2em to +0.2em)
+
+                            const pairKey = activePairSpan.dataset.pair;
+                            app.typographyState.kerningAdjustments[pairKey] = newKerning;
+                            activePairSpan.style.setProperty('--kerning-space', `${newKerning}em`);
+                            app.renderRightPane(`You are adjusting kerning for pair <strong>"${pairKey}"</strong>. Current adjustment: <strong>${newKerning.toFixed(3)}em</strong>. Try to make the spacing visually harmonious.`);
+                        }
+                    };
+
+                    onMouseUpHandler = () => {
+                        activePairSpan = null;
+                        typographyPreview.style.cursor = 'default';
+                        document.removeEventListener('mousemove', onMouseMoveHandler);
+                        document.removeEventListener('mouseup', onMouseUpHandler);
+                        app.renderRightPane("Kerning adjustment complete. You can continue to adjust the spaces, or click 'Show Kerning Demo' to restart the animation.");
+                    };
+
+                    // Attach the new listeners
+                    typographyPreview.addEventListener('mousedown', onMouseDownHandler);
+                },
+
+                // --- Modal Functions ---
+                showInfoModal: function(details) {
+                    document.getElementById('modal-font-family').textContent = details.fontFamily;
+                    document.getElementById('modal-font-size').textContent = details.fontSize;
+                    document.getElementById('modal-font-weight').textContent = details.fontWeight;
+                    document.getElementById('modal-font-color').textContent = details.fontColor;
+                    infoModalOverlay.style.display = 'flex'; // Show modal
+                },
+
+                hideInfoModal: function() {
+                    infoModalOverlay.style.display = 'none'; // Hide modal
+                },
+
+                // --- Emoji Drag and Drop & Click-to-Replace Handlers ---
+                handleClickToReplace: function(e) {
+                    if (e.target.classList.contains('emoji-word-link')) {
+                        const emoji = e.target.dataset.emoji;
+                        const originalWord = e.target.textContent;
+                        
+                        // Create a text node for the emoji
+                        const emojiTextNode = document.createTextNode(emoji);
+                        
+                        // Replace the span with the emoji text node
+                        e.target.replaceWith(emojiTextNode);
+                        
+                        // Update the underlying state based on the current content of the div
+                        const emojiTextDisplay = typographyPreview.querySelector('#emoji-text-display');
+                        if (emojiTextDisplay) {
+                            app.typographyState.customEmojiText = emojiTextDisplay.textContent;
+                        }
+                        
+                        app.renderRightPane(`Replaced "<strong>${originalWord}</strong>" with emoji "<strong>${emoji}</strong>". See how emojis can subtly change the tone or meaning of text.`);
+                    }
+                },
+
+                handleDropDragOver: function(e) {
+                    e.preventDefault(); // Necessary to allow a drop
+                    e.dataTransfer.dropEffect = 'copy'; // Visual feedback
+                },
+
+                handleDrop: function(e) {
+                    e.preventDefault();
+                    const emoji = e.dataTransfer.getData('text/plain');
+                    const editableDiv = typographyPreview.querySelector('#emoji-text-display');
+
+                    // Get the range at the drop point
+                    const range = document.caretRangeFromPoint(e.clientX, e.clientY);
+                    if (!range) return; // No valid range found
+
+                    // Save current selection to restore later
+                    const selection = window.getSelection();
+                    const originalRange = selection.rangeCount > 0 ? selection.getRangeAt(0) : null;
+
+                    // Collapse the range to the drop point and insert emoji
+                    range.collapse(true); // Collapse to start of range
+                    range.insertNode(document.createTextNode(emoji));
+
+                    // Move caret after the inserted emoji
+                    range.setStartAfter(range.endContainer);
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+
+                    // Update the underlying state
+                    app.typographyState.customEmojiText = editableDiv.textContent;
+                    
+                    app.renderRightPane(`Emoji "<strong>${emoji}</strong>" dropped! Observe how it integrates visually with the text. Drag another or click a highlighted word.`);
+                },
+
+                // --- Initial Render & Update Function ---
+                updateMidAndRightPanes: function() {
+                    // Ensures mid and right panes are correctly initialized/updated based on currentExperience
+                    app.resetAllExperienceStates(); // Reset all states when switching/initializing
+
+                    if (app.currentExperience === 'spacing') {
+                        app.renderMidPane(app.sampleTexts.general, {}, false, false, false, false, false, false); 
+                        app.renderRightPane("Welcome to the <strong>Typography Playground</strong>! This interactive tool helps you understand and apply principles of typography. Adjust sliders, explore font options, and experience how different settings impact text. Click 'Show Kerning Demo' to interactively adjust spacing between individual letter pairs.");
+                    } else if (app.currentExperience === 'text') {
+                        app.renderMidPane(app.sampleTexts.general, {}, false, false, false, false, false, false); // Start with general text for "Text" section
+                        app.renderRightPane("Explore <strong>Font Appearance</strong>, <strong>Text Layout</strong>, <strong>Text Style</strong>, <strong>Font Pairing</strong>, and <strong>Experience It All</strong>. Use the controls on the left to see their impact on text in the preview area.");
+                    } else if (app.currentExperience === 'emoji') {
+                        app.renderMidPane(null, {}, false, false, true, false, false, false); // Render emoji integration demo
+                        app.renderRightPane("Explore <strong>Emoji Integration</strong>. This demo does NOT use LLM. Drag emojis from the palette on the left into the text below to see their visual impact and how they affect text flow. Click underlined words to replace them with emojis!");
+                    }
+                    app.renderLeftPane(app.currentExperience); // Re-render left pane to ensure button states are correct
+                },
+
+                init: function() {
+                    app.updateMidAndRightPanes(); // Initial setup
+                    modalCloseButton.onclick = app.hideInfoModal; // Attach close listener to modal
+                    infoModalOverlay.onclick = (e) => { // Close modal if clicking outside content
+                        if (e.target === infoModalOverlay) {
+                            app.hideInfoModal();
+                        }
+                    };
+                }
+            };
+
+            app.init();
+        });
+    </script>
+</body>
+</html>
