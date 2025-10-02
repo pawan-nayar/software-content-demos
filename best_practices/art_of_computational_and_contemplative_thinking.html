@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>The Art of Computational and Contemplative Thinking</title>
+    <meta name="description" content="A master guide on how to merge computational thinking (problem-solving) with mindful awareness for a more intentional life.">
+    <meta name="keywords" content="computational thinking, contemplative thinking, mindfulness, problem-solving, emotional intelligence, life hacks, thought processes">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* ================= Base / Theme ================= */
+        :root {
+            --text: #212529; --bg: #fff; --muted: #f8f9fa; --border: #e9ecef;
+            --accent: #fd7e14; --accent-2: #e87312; --header-bg: #212529; --header-fg: #f8f9fa;
+            --ok: #198754; --ok-soft: #d1e7dd; --bad: #dc3545; --bad-soft: #f8d7da;
+            --myth-color: #6c757d; --myth-soft: #e9ecef;
+            --cream: #fff7ed; --light-orange: #ffd8a8;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html,body { font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+        .container { max-width: 800px; margin: auto; padding: 24px; background: #fff; }
+        a { color: var(--accent); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        
+        /* ================= Header / Footer / Breadcrumbs ================= */
+        .site-header, .site-footer { background: var(--header-bg); color: var(--header-fg); padding: 14px 24px; }
+        .site-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; position: sticky; top: 0; z-index: 100; }
+        .logo { font-weight: 700; font-size: 1.15rem; color: #fff; }
+        .site-header nav { display: flex; gap: 14px; }
+        .site-header nav a { color: #ced4da; }
+        .site-header nav a:hover { color: #fff; }
+        .site-footer { text-align: center; margin-top: 50px; padding: 40px; }
+        .breadcrumbs { margin-bottom: 24px; font-size: 0.9rem; color: #6c757d; }
+        .breadcrumbs a { color: var(--accent); }
+        
+        /* ================= Typography & Layout ================= */
+        h1 { font-size: clamp(2rem, 5vw, 2.6rem); text-align: left; margin-bottom: 8px; color: var(--text); line-height: 1.2; }
+        .byline { font-size: clamp(1rem, 3vw, 1.2rem); font-style: italic; color: #4a5568; margin-bottom: 24px; line-height: 1.4; }
+        h2 { font-size: clamp(1.5rem, 4vw, 2rem); color: var(--text); margin: 48px 0 16px; border-bottom: 2px solid var(--border); padding-bottom: 8px; }
+        h3 { font-size: clamp(1.2rem, 3vw, 1.5rem); color: var(--text); margin-top: 32px; margin-bottom: 12px; }
+        h4 { font-size: clamp(1rem, 2.5vw, 1.2rem); font-weight: bold; color: var(--accent-2); margin-bottom: 10px; }
+        p { margin-bottom: 16px; word-wrap: break-word; }
+        .intro { font-size: 1.1rem; line-height: 1.8; background: var(--muted); padding: 20px; border-radius: 12px; border-left: 4px solid var(--accent); margin: 24px 0; }
+        .article-meta { display: flex; align-items: center; gap: 12px; color: #6c757d; margin-bottom: 32px; font-size: 0.95rem; }
+        .author-emoji { font-size: 32px; line-height: 1; }
+        ul { list-style-type: none; margin-left: 0; padding-left: 0; }
+        li { margin-bottom: 12px; position: relative; padding-left: 35px; }
+        li::before {
+            position: absolute;
+            left: 0;
+            content: '🧠';
+            font-size: 1.2rem;
+            margin-right: 15px;
+        }
+        
+        /* ================= Interactive & Structural Elements ================= */
+        .table-wrap { position: relative; border: 1px solid var(--border); border-radius: 12px; background: #fff; margin: 24px 0; }
+        .table-scroll { position: relative; overflow-x: auto; }
+        table.data-table { width: 100%; border-collapse: collapse; }
+        table.data-table th, table.data-table td { padding: 12px 15px; border: 1px solid var(--border); text-align: left; vertical-align: top; }
+        table.data-table thead th { background: var(--muted); font-weight: 600; }
+        table.data-table tbody tr:nth-child(even) { background: #f8f9fa; }
+        
+        .accordion { display: grid; gap: 8px; }
+        .accordion-item { border: 1px solid var(--border); border-radius: 8px; }
+        .accordion-header { width: 100%; text-align: left; background: var(--muted); border: none; padding: 16px 20px; border-radius: 8px; cursor: pointer; font-size: 1.1rem; font-weight: bold; display: flex; align-items: center; }
+        .accordion-header .accordion-title { margin-right: auto; padding-right: 1rem; }
+        .accordion-header i { transition: transform 0.2s; }
+        .accordion-header[aria-expanded="true"] { background: #e9ecef; border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+        .accordion-header[aria-expanded="true"] i { transform: rotate(180deg); }
+        .accordion-content { padding: 20px; display: none; border: 1px solid var(--border); border-top: none; border-radius: 0 0 8px 8px; }
+
+        .best-practice-card { background: var(--ok-soft); border-left: 4px solid var(--ok); padding: 16px; border-radius: 8px; margin: 16px 0; }
+        .best-practice-card h5 { color: var(--ok); margin-top: 0; }
+        .what-not-to-do-card { background: var(--bad-soft); border-left: 4px solid var(--bad); padding: 16px; border-radius: 8px; margin: 16px 0; }
+        .what-not-to-do-card h5 { color: var(--bad); margin-top: 0; }
+        
+        .code-wrapper { margin: 16px 0; }
+        pre { margin: 0; }
+        .code-block { background: #2d2d2d; color: #f8f8f2; font-family: 'Courier New', Courier, monospace; padding: 1.2em; border-radius: 8px; overflow-x: auto; font-size: 0.95rem; }
+        .code-block .code-comment { color: #75715e; } .code-block .code-keyword { color: #f92672; } .code-block .code-string { color: #e6db74; } .code-block .code-function { color: #a6e22e; } .code-block .code-number { color: #ae81ff; } .code-block .code-variable { color: #66d9ef; } .code-block .code-builtin { color: #fd971f; }
+        .code-output { background: #f0f0f0; border: 1px solid #e0e0e0; padding: 1em; border-radius: 8px; margin-top: 8px; font-family: 'Courier New', Courier, monospace; color: #495057; white-space: pre-wrap; }
+        
+        .img-frame { position: relative; width: 100%; overflow: hidden; border-radius: 12px; margin: 16px 0 24px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); text-align: center; background: #f8f9fa; padding: 20px; }
+        .img-frame svg { max-width: 100%; height: auto; border-radius: 8px; }
+        
+        .glossary-cloud { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; justify-content: center; }
+        .glossary-chip { position: relative; display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 999px; background: #fff7ed; border: 1px solid #ffd8a8; color: #d9480f; font-weight: 600; cursor: pointer; box-shadow: 0 2px 6px rgba(253, 126, 20, .12); }
+        .glossary-chip:hover, .glossary-chip:focus { background: #ffecde; }
+        .svg-icon { margin-left: auto; width: 1.25em; height: 1.25em; }
+
+        .poll-container { display: grid; gap: 12px; margin: 24px 0; }
+        .poll-option { display: flex; justify-content: space-between; align-items: center; padding: 12px 18px; border-radius: 8px; border: 1px solid var(--border); cursor: pointer; background: #f8f9fa; transition: background-color 0.2s; }
+        .poll-option:hover { background: #e9ecef; }
+        .poll-bar { height: 10px; background: var(--accent); border-radius: 5px; }
+        .poll-results { margin-top: 10px; }
+        .poll-result-bar-container { background: var(--muted); border-radius: 5px; height: 10px; margin-top: 4px; overflow: hidden; }
+
+        /* --- Embedded App Styles --- */
+        #embedded-app-container {
+            max-width: 540px;
+            width: 100%;
+            background: var(--muted);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 28px;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            margin: 48px auto;
+        }
+        
+        .app-header {
+            font-size: 2.25rem;
+            text-align: center;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .app-byline {
+            text-align: center;
+            font-style: italic;
+            color: #6c757d;
+            margin-bottom: 24px;
+        }
+        
+        .step-container {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            min-height: 250px;
+        }
+        
+        .step-container.active {
+            display: block;
+            opacity: 1;
+        }
+        
+        .step-subheader {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 8px;
+        }
+        
+        .input-group {
+            margin-bottom: 16px;
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px; /* Adjusted padding for a more compact feel */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .input-group textarea {
+            width: 100%;
+            border: none;
+            outline: none;
+            resize: vertical;
+            min-height: 120px;
+            background-color: #fff;
+            color: var(--text);
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+        
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 24px;
+        }
+        
+        .btn {
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn:hover {
+            background-color: var(--accent-2);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        .btn:disabled {
+            background-color: #adb5bd;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .btn-secondary {
+            background: none;
+            color: var(--text);
+            border: 1px solid var(--border);
+            box-shadow: none;
+        }
+        
+        .btn-secondary:hover {
+            background-color: var(--border);
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .mindful-container {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .breathing-circle-container {
+            width: 150px;
+            height: 150px;
+            margin: 20px auto;
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .breathing-circle {
+            fill: var(--accent);
+            animation: breathe-out 4s infinite ease-in-out;
+            transform-origin: center;
+            transition: all 0.5s;
+        }
+        
+        @keyframes breathe-in {
+            from { transform: scale(0.8); }
+            to { transform: scale(1.1); }
+        }
+        
+        @keyframes breathe-out {
+            from { transform: scale(1.1); }
+            to { transform: scale(0.8); }
+        }
+
+        .breathing-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-weight: 700;
+            color: #fff;
+            font-size: 1.2rem;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+        
+        .final-summary {
+            background: var(--bg);
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .summary-item {
+            margin-bottom: 12px;
+        }
+        
+        .summary-item-label {
+            font-weight: 600;
+            color: var(--accent-2);
+        }
+        
+        .summary-item-content {
+            white-space: pre-wrap;
+            margin-top: 4px;
+        }
+
+        @media (max-width: 768px) {
+            .site-header { flex-direction: column; gap: 12px; }
+            .byline { text-align: left; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="site-header">
+        <a href="#" class="logo">Beyond Dictionary</a>
+        <nav><a href="#">What's New</a><a href="#">Learning</a><a href="#">Games & Quizzes</a><a href="#">Blog</a></nav>
+    </header>
+
+    <div class="container">
+        
+        <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="#">Wellbeing</a> > <a href="#">Programming</a> > Master Guide</nav>
+
+        <h1>The Art of Computational and Contemplative Thinking</h1>
+        <p class="byline">Learning to Think with Logic<br/>and Respond with Awareness</p>
+        <div class="article-meta"><span class="author-emoji">🧠</span><span>Expert Synthesis &nbsp; | &nbsp; A New Framework</span></div>
+        <p class="intro">On the surface, programming and mindfulness seem like worlds apart. One is a cold, hard logic problem; the other is a soft, gentle art of awareness. Yet, at their core, both disciplines require the same fundamental skill: the ability to <strong>deconstruct a complex problem into manageable pieces</strong> and <strong>respond to what arises with intentionality, not reactivity.</strong> This guide will show you how to merge the precision of a programmer with the presence of a mindful practitioner, creating a powerful framework for navigating both digital challenges and daily life. It’s a roadmap for living with both purpose and inner peace.</p>
+
+        <section id="part1">
+            <h2>Part 1: The Core Framework: The TOCR Loop</h2>
+            <p>We can combine the most powerful elements of computational thinking and mindfulness into a single, elegant framework: the <strong>Think-Observe-Code-Respond (TOCR) Loop</strong>. This is our operating system for life, a continuous cycle that turns chaos into clarity.</p>
+
+            <div class="img-frame">
+                <svg viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A flowchart of the TOCR Loop, a cycle of computational and contemplative thinking.">
+                    <defs>
+                        <marker id="arrowhead" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                            <path d="M 0 0 L 10 5 L 0 10 z" fill="#fd7e14"/>
+                        </marker>
+                        <filter id="shadow">
+                            <feDropShadow dx="2" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.2"/>
+                        </filter>
+                    </defs>
+                    <style>
+                        .node-box { fill: #fff; stroke: #212529; stroke-width: 2; rx: 12; filter: url(#shadow); }
+                        .node-text { font-family: 'Inter', sans-serif; font-size: 16px; text-anchor: middle; fill: #212529; font-weight: bold; }
+                        .node-subtext { font-family: 'Inter', sans-serif; font-size: 14px; text-anchor: middle; fill: #6c757d; }
+                        .arrow { stroke: #fd7e14; stroke-width: 2; marker-end: url(#arrowhead); fill: none; }
+                        .cycle-line { stroke: #adb5bd; stroke-width: 1; stroke-dasharray: 4; }
+                        .dual-icon { font-size: 24px; text-anchor: middle; }
+                    </style>
+
+                    <!-- THINK Node -->
+                    <rect x="50" y="150" width="120" height="80" class="node-box"/>
+                    <text x="110" y="175" class="node-text">THINK</text>
+                    <text x="110" y="195" class="node-subtext">Plan & Deconstruct</text>
+                    <text x="110" y="220" class="dual-icon">&#x1F9E0;</text>
+                    
+                    <!-- OBSERVE Node -->
+                    <rect x="220" y="150" width="120" height="80" class="node-box"/>
+                    <text x="280" y="175" class="node-text">OBSERVE</text>
+                    <text x="280" y="195" class="node-subtext">Awareness & Pause</text>
+                    <text x="280" y="220" class="dual-icon">&#x1F938;</text>
+                    
+                    <!-- CODE Node -->
+                    <rect x="390" y="150" width="120" height="80" class="node-box"/>
+                    <text x="450" y="175" class="node-text">CODE</text>
+                    <text x="450" y="195" class="node-subtext">Implement & Act</text>
+                    <text x="450" y="220" class="dual-icon">&#x1F4BB;</text>
+                    
+                    <!-- RESPOND Node -->
+                    <rect x="220" y="280" width="120" height="80" class="node-box"/>
+                    <text x="280" y="305" class="node-text">RESPOND</text>
+                    <text x="280" y="325" class="node-subtext">Test & Improve</text>
+                    <text x="280" y="350" class="dual-icon">&#x1F4A1;</text>
+
+                    <!-- Arrows -->
+                    <path d="M 170 190 H 220" class="arrow" />
+                    <path d="M 340 190 H 390" class="arrow" />
+                    <path d="M 450 230 V 280 H 340" class="arrow" />
+                    <path d="M 220 320 H 170 V 230 H 50" class="arrow" />
+                    
+                    <!-- Text for cycle line -->
+                    <text x="280" y="120" class="node-subtext">The TOCR Loop</text>
+                    
+                    <!-- Connecting lines -->
+                    <path d="M110 230 C 110 250, 200 250, 220 280" class="arrow"/>
+                    <path d="M450 230 C 450 250, 360 250, 340 280" class="arrow"/>
+                </svg>
+            </div>
+
+            <h3>1.1 The Computational Path: Think & Plan</h3>
+            <p>This is where we apply the logic of a programmer. When faced with any problem—a coding bug, a cluttered room, or a complex task—the first step is not to panic or react, but to analyze. This is the <strong>computational path</strong>.</p>
+            <ul>
+                <li><strong>ASK:</strong> What exactly is the problem? What is the desired outcome? What inputs do I have? This is the "problem statement" for life.</li>
+                <li><strong>DECONSTRUCT:</strong> Break the big, overwhelming problem into smaller, bite-sized pieces. A single bug can be deconstructed into a series of smaller function calls. A huge task can be broken into a to-do list.</li>
+                <li><strong>PLAN:</strong> Once deconstructed, you choose your "tools" and "algorithms." Do I need a simple <code>if-else</code> chain, or a more complex loop? Do I need a calm breathing exercise or a direct, honest conversation?</li>
+            </ul>
+
+            <h3>1.2 The Contemplative Path: Observe & Be</h3>
+            <p>This is where mindfulness comes in. As you execute your plan, or when an unexpected event occurs, your inner state will respond. The goal is to observe this inner state with the same non-judgmental clarity you would observe a line of code. This is the <strong>contemplative path</strong>.</p>
+            <ul>
+                <li><strong>OBSERVE:</strong> Notice the feeling. Are you feeling frustrated? Anxious? Overwhelmed? A racing heart? Just observe it, label it, and take a "mindful pause." This is your built-in <code>try-except</code> block for emotions.</li>
+                <li><strong>RESPOND:</strong> Instead of reacting automatically, you choose a skillful response. This isn't about suppressing feelings, but about creating a conscious space between the emotion and your action. This is where your plan meets reality.</li>
+            </ul>
+            
+            <div class="best-practice-card">
+                <h5>💡 Best Practice: The Human <code>try-except</code> Block</h5>
+                <p>A programmer uses <code>try-except</code> to handle unexpected errors and prevent a program crash. A mindful person uses <strong>acceptance</strong> to handle unexpected feelings (anxiety, pain) without crashing and without judgment. Instead of letting anger crash your day, you <code>try</code> to respond with patience. If that fails, you <code>except</code> the anger and let it be, observing it without judgment, thus preventing a full system shutdown.</p>
+            </div>
+        </section>
+
+        <section id="part2">
+            <h2>Part 2: Integrated Scenarios (Logic & Awareness)</h2>
+            <p>Let's apply our new TOCR framework to real-life situations. Each scenario shows how to approach a challenge with both computational logic and contemplative awareness.</p>
+
+            <h3>Scenario 1: The Looming Project Deadline</h3>
+            <p>You have a massive project due next week. You feel overwhelmed, and a sense of panic is starting to set in. Your mind is racing with all the things you have to do.</p>
+            
+            <div class="accordion">
+                <div class="accordion-item">
+                    <button class="accordion-header" aria-expanded="false">
+                        <span class="accordion-title">💻 The Computational Solution</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                    <div class="accordion-content">
+                        <h4>1. Ask & Deconstruct:</h4>
+                        <p>The problem is "Project Due Next Week." Break it down into smaller tasks. Create a simple to-do list with a due date and priority for each item.
+                        <div class="img-frame">
+                            <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+                                <style>
+                                    .task-box { fill: #f8f9fa; stroke: #e9ecef; stroke-width: 2; rx: 8; }
+                                    .task-text { font-family: 'Inter', sans-serif; font-size: 14px; fill: #212529; }
+                                    .check-box { fill: #fff; stroke: #198754; stroke-width: 2; rx: 4; }
+                                    .check-mark { fill: #198754; }
+                                </style>
+                                <rect x="20" y="20" width="360" height="160" class="task-box"/>
+                                <text x="40" y="50" class="task-text" font-weight="bold">Project To-Do List</text>
+                                <rect x="40" y="70" width="10" height="10" class="check-box"/>
+                                <path d="M42 75 L45 78 L52 72" stroke="#198754" stroke-width="2" fill="none"/>
+                                <text x="60" y="80" class="task-text">Write intro</text>
+                                <rect x="40" y="100" width="10" height="10" class="check-box"/>
+                                <text x="60" y="110" class="task-text">Research references</text>
+                                <rect x="40" y="130" width="10" height="10" class="check-box"/>
+                                <text x="60" y="140" class="task-text">Draft conclusion</text>
+                                <rect x="40" y="160" width="10" height="10" class="check-box"/>
+                                <text x="60" y="170" class="task-text">Review & edit</text>
+                            </svg>
+                        </div>
+                        <div class="code-wrapper">
+                            <pre class="code-block"><code class="language-python"># TO-DO LIST
+tasks = [
+    {'name': 'Write intro', 'priority': 'High', 'due': 'Wednesday'},
+    {'name': 'Research references', 'priority': 'High', 'due': 'Tuesday'},
+    {'name': 'Draft conclusion', 'priority': 'Medium', 'due': 'Friday'},
+    {'name': 'Review & edit', 'priority': 'High', 'due': 'Monday'}
+]</code></pre>
+                        </div>
+                        <h4>2. Plan & Code:</h4>
+                        <p>Create a logical plan of attack. You'll work on the highest priority items first. The plan is your "algorithm" for completing the task efficiently.
+                        <div class="code-wrapper">
+                            <pre class="code-block"><code class="language-python"><span class="code-keyword">for</span> task <span class="code-keyword">in</span> <span class="code-variable">tasks</span>:
+    <span class="code-keyword">if</span> task['priority'] == 'High':
+        <span class="code-function">print</span>(f<span class="code-string">"Working on: {task['name']}"</span>)
+    <span class="code-keyword">elif</span> task['priority'] == 'Medium':
+        <span class="code-function">print</span>(f<span class="code-string">"Will work on: {task['name']}"</span>)</code></pre>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <button class="accordion-header" aria-expanded="false">
+                        <span class="accordion-title">🧘‍♀️ The Contemplative Solution</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                    <div class="accordion-content">
+                        <h4>1. Observe & Be:</h4>
+                        <p>The moment you feel overwhelmed, stop. Just for a moment. Notice the physical sensations: a tight chest, a knot in your stomach, a mind racing with thoughts. Label this feeling: "Frustration," "Anxiety." Don't judge it, just observe it.
+                        <div class="img-frame" style="max-width: 200px; margin: 16px auto;">
+                            <svg viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: auto;">
+                                <style>
+                                    .mindful-icon { fill: #198754; stroke: #0f5132; stroke-width: 1.5; }
+                                    .mindful-text { font-family: 'Inter', sans-serif; font-size: 12px; text-anchor: middle; fill: #198754; font-weight: 600; }
+                                    .pause-symbol { fill: #198754; }
+                                </style>
+                                <!-- Simple mindful pause icon -->
+                                <rect x="20" y="25" width="8" height="30" class="pause-symbol" rx="2"/>
+                                <rect x="32" y="25" width="8" height="30" class="pause-symbol" rx="2"/>
+                                <circle cx="60" cy="40" r="15" class="mindful-icon" fill="none" stroke-width="2"/>
+                                <text x="60" y="45" class="mindful-text">Breathe</text>
+                                <text x="60" y="65" class="mindful-text" font-size="10">PAUSE</text>
+                            </svg>
+                        </div>
+                        <h4>2. Respond:</h4>
+                        <p>Instead of panicking, choose a skillful response. Take a conscious 3-minute mindful breathing break. Breathe in slowly, hold, and breathe out slowly. This is your "break" statement, a moment to reset the loop and prevent a mental crash. A small, intentional action to calm the system before you re-engage with the task at hand.</p>
+                        <div class="what-not-to-do-card">
+                            <h5>❌ The Mistake</h5>
+                            <p>Reacting to the feeling of being overwhelmed by jumping into a new, unrelated task, or panicking and doing nothing. This is like a program with a logic error that gets stuck in an infinite loop of stress.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Scenario 2: The Difficult Conversation</h3>
+            <p>You need to have a conversation with a colleague about a mistake. You feel uncomfortable and are anticipating a negative response.</p>
+            
+            <div class="accordion">
+                <div class="accordion-item">
+                    <button class="accordion-header" aria-expanded="false">
+                        <span class="accordion-title">💻 The Computational Solution</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                    <div class="accordion-content">
+                        <h4>1. Ask & Deconstruct:</h4>
+                        <p>What is the desired outcome? To communicate clearly and collaboratively. Deconstruct the conversation into a clear flow. What do I want to say? What is the expected response? What's the best-case scenario? What's the worst-case scenario?</p>
+                        <div class="code-wrapper">
+                            <pre class="code-block"><code class="language-python"><span class="code-variable">colleague_response</span> = "..." <span class="code-comment"># This is our variable!</span>
+<span class="code-keyword">if</span> <span class="code-variable">colleague_response</span> == <span class="code-string">"receptive"</span>:
+    <span class="code-function">print</span>(<span class="code-string">"Continue with solutions."</span>)
+<span class="code-keyword">elif</span> <span class="code-variable">colleague_response</span> == <span class="code-string">"defensive"</span>:
+    <span class="code-function">print</span>(<span class="code-string">"Pause, listen, and validate feelings."</span>)
+<span class="code-keyword">else</span>:
+    <span class="code-function">print</span>(<span class="code-string">"De-escalate and reschedule."</span>)
+</code></pre>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <button class="accordion-header" aria-expanded="false">
+                        <span class="accordion-title">🧘‍♀️ The Contemplative Solution</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                    <div class="accordion-content">
+                        <h4>1. Observe & Be:</h4>
+                        <p>Before the conversation, notice the feeling in your body—the <code>data</code> of your anxiety. During the conversation, when your colleague responds, don't fuse with your thoughts. Observe their words and your feelings as they happen. Just like a good programmer observes the <code>output</code> of their code, you observe the conversation without jumping to conclusions.</p>
+                        <h4>2. Respond:</h4>
+                        <p>This observation gives you a choice. If you sense a defensive reaction, you can consciously choose to follow your <code>elif</code> path: "Pause, listen, and validate feelings."
+                        <div class="img-frame" style="max-width: 150px; margin: 16px auto;">
+                            <svg viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: auto;">
+                                <style>
+                                    .listen-icon { fill: #198754; stroke: #0f5132; stroke-width: 1.5; }
+                                    .listen-text { font-family: 'Inter', sans-serif; font-size: 11px; text-anchor: middle; fill: #198754; font-weight: 600; }
+                                    .headphone { fill: none; stroke: #198754; stroke-width: 2; }
+                                </style>
+                                <!-- Simple listen icon with headphones -->
+                                <circle cx="50" cy="25" r="12" class="listen-icon" fill="none" stroke-width="2"/>
+                                <path d="M38 25 Q30 25, 30 35 Q30 45, 38 45" class="headphone"/>
+                                <path d="M62 25 Q70 25, 70 35 Q70 45, 62 45" class="headphone"/>
+                                <text x="50" y="55" class="listen-text">LISTEN</text>
+                            </svg>
+                        </div>
+                        This prevents you from running the wrong algorithm and turning a difficult conversation into a conflict.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="part3">
+            <h2>Part 3: Master the Combined Lexicon</h2>
+            <p>Here are some core concepts from both worlds and how they beautifully align.</p>
+            <div class="table-wrap">
+                <div class="table-scroll">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Programming Term</th>
+                                <th>Mindful Analogy</th>
+                                <th>Application</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Variable</strong></td>
+                                <td><strong>Thoughts & Emotions</strong></td>
+                                <td>A variable holds temporary data. Your thoughts are temporary data. You observe their value without letting them define your identity.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Function</strong></td>
+                                <td><strong>Conscious Ritual</strong></td>
+                                <td>A function is a reusable block of code. A mindful ritual (e.g., a 3-minute breath exercise) is a reusable mental function for centering yourself.</td>
+                            </tr>
+                            <tr>
+                                <td><strong><code>if-else</code> Logic</strong></td>
+                                <td><strong>Skilful Response</strong></td>
+                                <td>Conditional logic helps a program choose a path. Mindful awareness allows you to choose a path ("if I feel angry, I will pause") instead of reacting blindly.</td>
+                            </tr>
+                            <tr>
+                                <td><strong><code>try-except</code></strong></td>
+                                <td><strong>Radical Acceptance</strong></td>
+                                <td>A <code>try-except</code> block handles runtime errors. Acceptance allows you to handle unexpected feelings (anxiety, pain) without crashing and without judgment.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Debugging</strong></td>
+                                <td><strong>Self-Reflection</strong></td>
+                                <td>Debugging is finding flaws in your code. Self-reflection is identifying and understanding the patterns and habits in your own thinking.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Refactoring</strong></td>
+                                <td><strong>Inner Growth</strong></td>
+                                <td>Refactoring is improving existing code. Inner growth is changing old, unhelpful habits for new, healthier ones.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>Part 4: Try the TOCR Loop</h2>
+            <p>This is where you put the framework into practice. Use this simple tool to guide your own thinking and response.</p>
+            
+            <div id="embedded-app-container">
+                <h1 class="app-header">Logic & Awareness</h1>
+                <p class="app-byline">A Guided 3-Step Process</p>
+                
+                <!-- Step 1: FRAME -->
+                <div id="step-1" class="step-container active">
+                    <h3 class="step-subheader">Step 1: Frame the Problem</h3>
+                    <p>Before you act, define the situation. What is the challenge you are facing?</p>
+                    <div class="input-group">
+                        <textarea id="problem-input" placeholder="e.g.,
+1. I have a difficult conversation to start with a colleague.
+2. I feel overwhelmed by my to-do list.
+3. My friend gave me some constructive criticism that feels painful.
+4. I need to get through a long, boring task today.
+5. I'm feeling stressed and can't focus on work."></textarea>
+                    </div>
+                </div>
+
+                <!-- Step 2: PAUSE -->
+                <div id="step-2" class="step-container">
+                    <h3 class="step-subheader">Step 2: Pause & Observe</h3>
+                    <p>Before responding, take a moment to center yourself. Don't think about the problem. Just breathe and notice how you feel. The animation below represents your mindful pause.</p>
+                    <div class="mindful-container">
+                        <div class="breathing-circle-container">
+                            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="50" cy="50" r="45" class="breathing-circle"></circle>
+                            </svg>
+                            <span class="breathing-text" id="breathing-text">Breathe</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: RESPOND -->
+                <div id="step-3" class="step-container">
+                    <h3 class="step-subheader">Step 3: Plan Your Response</h3>
+                    <p>Now, with a clear mind, formulate a calm and skillful plan of action. What is your chosen path?</p>
+                    <div class="input-group">
+                        <textarea id="response-input" placeholder="e.g.,
+1. I will schedule a meeting to discuss the project, and I will lead with curiosity.
+2. I will take a 5-minute break and then prioritize my top 3 tasks.
+3. I will thank my friend for their feedback, and reflect on it later.
+4. I will break the task down into 20-minute chunks with a 5-minute break in between.
+5. I will go for a short walk and then try to tackle one small task."></textarea>
+                    </div>
+                </div>
+
+                <!-- Final Summary -->
+                <div id="final-summary" class="step-container">
+                    <h3 class="step-subheader">Session Complete</h3>
+                    <p>Here is your TOCR summary.</p>
+                    <div class="final-summary">
+                        <div class="summary-item">
+                            <div class="summary-item-label">Problem Framed:</div>
+                            <div id="summary-problem" class="summary-item-content"></div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-item-label">Response Planned:</div>
+                            <div id="summary-response" class="summary-item-content"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="navigation">
+                    <button id="back-btn" class="btn btn-secondary" style="display: none;">Back</button>
+                    <button id="next-btn" class="btn">Next</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="part5">
+            <h2>Your Thoughts on These Concepts</h2>
+            <p>Your perspective on these ideas is valuable. Let's see how you and others feel about them.</p>
+            <div id="polls-container">
+                <div class="poll-container">
+                    <h4>How important is it to combine logic and awareness in daily life?</h4>
+                    <div id="poll1-options">
+                        <div class="poll-option" data-option="1">Not Important</div>
+                        <div class="poll-option" data-option="2">Somewhat Important</div>
+                        <div class="poll-option" data-option="3">Very Important</div>
+                        <div class="poll-option" data-option="4">Extremely Important</div>
+                    </div>
+                    <div class="poll-results" id="poll1-results" style="display:none;"></div>
+                </div>
+
+                <div class="poll-container">
+                    <h4>Which concept resonates most with you?</h4>
+                    <div id="poll2-options">
+                        <div class="poll-option" data-option="1">Variables as Emotions</div>
+                        <div class="poll-option" data-option="2">Functions as Rituals</div>
+                        <div class="poll-option" data-option="3">Try/Except as Acceptance</div>
+                        <div class="poll-option" data-option="4">Debugging as Self-Reflection</div>
+                    </div>
+                    <div class="poll-results" id="poll2-results" style="display:none;"></div>
+                </div>
+
+                <div class="poll-container">
+                    <h4>After reading this, how likely are you to try a mindful practice?</h4>
+                    <div id="poll3-options">
+                        <div class="poll-option" data-option="1">Unlikely</div>
+                        <div class="poll-option" data-option="2">Maybe</div>
+                        <div class="poll-option" data-option="3">Likely</div>
+                        <div class="poll-option" data-option="4">Very Likely</div>
+                    </div>
+                    <div class="poll-results" id="poll3-results" style="display:none;"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="part6">
+            <h2>Frequently Asked Questions</h2>
+            <div id="faq-accordion-container" class="accordion"></div>
+        </section>
+        
+        <section id="part7">
+            <h2>Glossary: A Blended Lexicon</h2>
+            <div class="glossary-cloud" id="glossaryCloud"></div>
+        </section>
+
+    </div>
+
+    <footer class="site-footer">
+        <p class="footer-copy">© 2025 Beyond Dictionary. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- DATA ---
+            const faqs = {
+                "Combining Mindsets": [
+                    { q: "How can I apply computational thinking to my emotions?", a: "By seeing your emotions as data. Instead of saying, 'I am sad,' try saying, 'I am observing the data of sadness.' This creates a separation, allowing you to analyze and respond to the emotion, rather than being controlled by it." },
+                    { q: "Is this about controlling my emotions?", a: "No. This is about regulating your response to them. Think of it like a car: you can't stop the car from feeling a bump in the road (the emotion), but you can choose how you steer the wheel (the response) afterward. The goal is to choose your actions, not to eliminate your feelings." },
+                    { q: "What is the biggest difference between the two?", a: "Computational thinking is about problem-solving to an endpoint. Contemplative thinking is about the process itself, without a specific goal in mind. The synthesis is learning to use process-oriented awareness to improve goal-oriented action." }
+                ],
+                "Practical Application": [
+                    { q: "How do I start thinking like this?", a: "Begin with a small, concrete problem from your daily life. It could be a difficult email to write or a simple household chore. First, take a moment to observe your feelings about the task. Then, break it down into a simple, logical list of steps. Execute with awareness." },
+                    { q: "Can I use this for non-coding tasks?", a: "Yes, absolutely. The framework is designed for any situation. The 'code' part isn't literal; it represents any form of implementation, whether it's writing an email, having a conversation, or tackling a project." }
+                ],
+                "Deep Concepts": [
+                    { q: "What if I get stuck in an infinite loop of thought?", a: "This is a common issue! The mindful practice of noticing is the <code>break</code> statement. As soon as you realize your mind is stuck in a loop of worry, consciously and non-judgmentally redirect your attention to a physical anchor, like your feet on the ground. This breaks the loop and allows you to reset." },
+                    { q: "What's the relationship to a 'growth mindset'?", a: "A growth mindset is the belief that skills can be developed through dedication and hard work. This framework is the practical application of that mindset. It gives you the tools to break down 'hard work' into a logical process and to handle the inevitable frustrations and 'bugs' with grace and resilience." }
+                ]
+            };
+
+            const keywords = [
+                { term: "Algorithm", def: "A step-by-step procedure for solving a problem." },
+                { term: "Anchor", def: "A sensory object, such as the breath, used to ground attention in the present moment." },
+                { term: "Bug", def: "An error in a program's logic or code. In life, a flaw in your thinking or a bad habit." },
+                { term: "Conditional Logic", def: "Code that executes different actions based on whether specific conditions are true (<code>if/else</code>)." },
+                { term: "Debugging", def: "Finding and fixing errors in code. In life, reflecting on your actions to understand what went wrong." },
+                { term: "Emotional Regulation", def: "The ability to observe emotions without being overwhelmed by them, allowing for a chosen response." },
+                { term: "Function", def: "A reusable block of code. In life, a conscious ritual or habit." },
+                { term: "Iterative Loop", def: "A process that repeats until a condition is met. In life, the cycle of learning, practicing, and improving." },
+                { term: "Non-Judgmental Awareness", def: "The practice of observing without criticizing or evaluating." },
+                { term: "Pseudocode", def: "A plain-language description of programming logic. In life, the process of talking through a problem before acting." },
+                { term: "Refactoring", def: "Improving existing code without changing its functionality. In life, updating old habits with new, more efficient ones." },
+                { term: "Variable", def: "A named container that stores data. In life, a thought or emotion that holds temporary data about an experience." }
+            ];
+            
+            const pollsData = {
+                poll1: {
+                    options: {
+                        1: "Not Important", 2: "Somewhat Important", 3: "Very Important", 4: "Extremely Important"
+                    },
+                    votes: { 1: 0, 2: 0, 3: 0, 4: 0 }
+                },
+                poll2: {
+                    options: {
+                        1: "Variables as Emotions", 2: "Functions as Rituals", 3: "Try/Except as Acceptance", 4: "Debugging as Self-Reflection"
+                    },
+                    votes: { 1: 0, 2: 0, 3: 0, 4: 0 }
+                },
+                poll3: {
+                    options: {
+                        1: "Unlikely", 2: "Maybe", 3: "Likely", 4: "Very Likely"
+                    },
+                    votes: { 1: 0, 2: 0, 3: 0, 4: 0 }
+                }
+            };
+
+            /* --- Main Article Functions --- */
+            function setupFAQs() {
+                const faqContainer = document.getElementById('faq-accordion-container');
+                if (!faqContainer) return;
+                
+                let html = '';
+                for (const level in faqs) {
+                    html += `<h3>${level}</h3><div class="accordion">`;
+                    html += faqs[level].map((faq) => `
+                        <div class="accordion-item">
+                            <button class="accordion-header" aria-expanded="false">
+                                <span class="accordion-title"><strong>${faq.q}</strong></span>
+                                <i class="fa-solid fa-chevron-down"></i>
+                            </button>
+                            <div class="accordion-content">
+                                <p>${faq.a}</p>
+                            </div>
+                        </div>
+                    `).join('');
+                    html += `</div>`;
+                }
+                faqContainer.innerHTML = html;
+            }
+
+            function setupGlossary() {
+                const cloud = document.getElementById('glossaryCloud');
+                if (!cloud) return;
+                
+                cloud.innerHTML = keywords.map(kw => `
+                    <div class="glossary-chip" type="button">
+                        <span>${kw.term}</span>
+                    </div>
+                `).join('');
+            }
+
+            function setupAllAccordions() {
+                document.querySelectorAll('.accordion-header').forEach(h => {
+                    h.addEventListener('click', () => {
+                        const content = h.nextElementSibling;
+                        const isExpanded = h.getAttribute('aria-expanded') === 'true';
+                        h.setAttribute('aria-expanded', String(!isExpanded));
+                        content.style.display = isExpanded ? 'none' : 'block';
+                    });
+                });
+            }
+            
+            function setupPolls() {
+                const polls = document.querySelectorAll('.poll-container');
+                if (polls.length === 0) return;
+
+                polls.forEach(pollContainer => {
+                    const pollId = pollContainer.querySelector('div[id]').id.replace('-options', '');
+                    const options = pollContainer.querySelectorAll('.poll-option');
+                    const resultsContainer = document.getElementById(pollId + '-results');
+                    
+                    options.forEach(option => {
+                        option.addEventListener('click', () => {
+                            const optionId = option.dataset.option;
+                            
+                            if (option.classList.contains('voted')) return;
+                            
+                            pollsData[pollId].votes[optionId]++;
+                            
+                            options.forEach(o => {
+                                o.classList.add('voted');
+                                o.style.pointerEvents = 'none';
+                                o.style.cursor = 'default';
+                            });
+
+                            renderPollResults(pollId, resultsContainer);
+                            resultsContainer.style.display = 'block';
+                        });
+                    });
+                });
+            }
+            
+            function renderPollResults(pollId, container) {
+                const data = pollsData[pollId];
+                const totalVotes = Object.values(data.votes).reduce((sum, current) => sum + current, 0);
+                
+                let resultsHTML = '';
+                for (const optionId in data.options) {
+                    const voteCount = data.votes[optionId];
+                    const percentage = totalVotes > 0 ? (voteCount / totalVotes) * 100 : 0;
+                    resultsHTML += `
+                        <div style="margin-bottom: 15px;">
+                            <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 0.9em; color: var(--text);">
+                                <span>${data.options[optionId]}</span>
+                                <span>${percentage.toFixed(0)}% (${voteCount} votes)</span>
+                            </div>
+                            <div class="poll-result-bar-container">
+                                <div class="poll-bar" style="width: ${percentage}%;"></div>
+                            </div>
+                        </div>
+                    `;
+                }
+                container.innerHTML = resultsHTML;
+            }
+
+            /* --- Embedded App Functions --- */
+            const steps = ['step-1', 'step-2', 'step-3', 'final-summary'];
+            let currentStepIndex = 0;
+
+            const problemInput = document.getElementById('problem-input');
+            const responseInput = document.getElementById('response-input');
+            const summaryProblem = document.getElementById('summary-problem');
+            const summaryResponse = document.getElementById('summary-response');
+
+            const nextBtn = document.getElementById('next-btn');
+            const backBtn = document.getElementById('back-btn');
+            
+            const breathingCircle = document.querySelector('.breathing-circle');
+            const breathingText = document.getElementById('breathing-text');
+            
+            let breathingTimer = null;
+            let isBreathing = false;
+            
+            function showStep(index) {
+                steps.forEach((id, i) => {
+                    const stepElement = document.getElementById(id);
+                    if (i === index) {
+                        stepElement.classList.add('active');
+                    } else {
+                        stepElement.classList.remove('active');
+                    }
+                });
+
+                backBtn.style.display = index === 0 ? 'none' : 'block';
+                nextBtn.textContent = index === steps.length - 1 ? 'Start New' : 'Next';
+                if (index === steps.length - 1) {
+                    nextBtn.classList.add('btn-secondary');
+                } else {
+                    nextBtn.classList.remove('btn-secondary');
+                }
+            }
+
+            function toggleBreathingAnimation() {
+                if (isBreathing) return;
+                isBreathing = true;
+                breathingText.textContent = 'Breathe In';
+                breathingCircle.style.animationName = 'breathe-in';
+
+                breathingTimer = setInterval(() => {
+                    if (breathingText.textContent === 'Breathe In') {
+                        breathingText.textContent = 'Breathe Out';
+                        breathingCircle.style.animationName = 'breathe-out';
+                    } else {
+                        breathingText.textContent = 'Breathe In';
+                        breathingCircle.style.animationName = 'breathe-in';
+                    }
+                }, 4000);
+            }
+            
+            function stopBreathingAnimation() {
+                if (breathingTimer) {
+                    clearInterval(breathingTimer);
+                    isBreathing = false;
+                }
+                breathingText.textContent = 'Breathe';
+                breathingCircle.style.animation = 'none';
+            }
+            
+            function updateSummary() {
+                summaryProblem.textContent = problemInput.value || 'No problem framed.';
+                summaryResponse.textContent = responseInput.value || 'No response planned.';
+            }
+
+            nextBtn.addEventListener('click', () => {
+                if (currentStepIndex === steps.length - 1) {
+                    // Reset to start a new session
+                    currentStepIndex = 0;
+                    problemInput.value = '';
+                    responseInput.value = '';
+                    showStep(currentStepIndex);
+                    return;
+                }
+                
+                stopBreathingAnimation(); // Stop animation on leaving a step
+                
+                currentStepIndex++;
+                showStep(currentStepIndex);
+                
+                if (steps[currentStepIndex] === 'final-summary') {
+                    updateSummary();
+                } else if (steps[currentStepIndex] === 'step-2') {
+                    toggleBreathingAnimation();
+                }
+            });
+
+            backBtn.addEventListener('click', () => {
+                if (currentStepIndex > 0) {
+                    stopBreathingAnimation(); // Stop animation on leaving a step
+                    currentStepIndex--;
+                    showStep(currentStepIndex);
+                    if (steps[currentStepIndex] === 'step-2') {
+                        toggleBreathingAnimation();
+                    }
+                }
+            });
+
+            // Initialize all functionality on page load
+            setupFAQs();
+            setupGlossary();
+            setupAllAccordions();
+            setupPolls();
+            showStep(currentStepIndex);
+
+        });
+    </script>
+    
+</body>
+</html>
