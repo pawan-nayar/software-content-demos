@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Midjourney Parameter Deck: A Designer's Journey</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0;400;0;600;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+        --header-bg: #0f172a;
+        --accent: #ea7a27;
+        --accent-2: #d46a1e;
+        --text: #f8fafc;
+        --text-secondary: #cbd5e1;
+        --bg: #1e293b;
+        --card-bg: #334155;
+        --border: #475569;
+        --shadow: rgba(0, 0, 0, 0.2);
+        --error: #ef4444;
+        --radius-md: 0.75rem;
+        --spacing-md: 1rem;
+        --spacing-lg: 1.5rem;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      font: 16px/1.6 'Inter', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+    }
+    .main-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      flex-grow: 1;
+      padding: var(--spacing-md);
+      width: 100%;
+    }
+    header {
+      width: 100%;
+      max-width: 900px;
+      margin-bottom: var(--spacing-md);
+      text-align: center;
+    }
+    header h1 { 
+        font-family: 'Lora', serif;
+        font-size: clamp(1.5rem, 4vw, 2.2rem);
+        color: var(--text);
+    }
+    header h1 .icon { color: var(--accent); }
+
+    .deck-container {
+      width: 100%;
+      max-width: 900px;
+      background: var(--card-bg);
+      border-radius: var(--radius-md);
+      box-shadow: 0 8px 30px var(--shadow);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 70vh;
+    }
+    
+    .card-content-wrapper {
+      flex-grow: 1;
+      overflow-y: auto;
+      padding: var(--spacing-lg);
+    }
+    
+    .card-viewer {
+        display: none;
+    }
+    .card-viewer.active {
+        display: block;
+        animation: fadeIn 0.5s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .param-card h2 { font-family: 'Lora', serif; font-size: 1.8rem; font-weight: 700; color: var(--accent); margin-bottom: var(--spacing-md); border-bottom: 1px solid var(--border); padding-bottom: var(--spacing-md); }
+    .param-card h2 code { font-family: 'Courier New', Courier, monospace; color: var(--text-secondary); font-size: 1.5rem; }
+    .param-card h3 { font-size: 1.1rem; font-weight: 600; color: var(--text-secondary); margin: 1.5rem 0 0.75rem 0; }
+    .param-card p { color: var(--text-secondary); margin-bottom: var(--spacing-md); }
+    .param-card .example {
+        background: var(--bg);
+        padding: var(--spacing-md);
+        border-radius: var(--radius-md);
+        border-left: 4px solid var(--accent-2);
+        margin-top: 0.5rem;
+        position: relative;
+    }
+    .param-card .example strong { color: var(--accent); }
+    .param-card .example code { display: block; white-space: pre-wrap; word-wrap: break-word; font-family: 'Courier New', Courier, monospace; font-size: 0.95rem; }
+    .copy-btn { position: absolute; top: 10px; right: 10px; background: transparent; border: none; cursor: pointer; color: #94a3b8; transition: color 0.2s; }
+    .copy-btn:hover { color: var(--text); }
+    .what-not-to-do { border-left-color: var(--error); }
+    
+    .pagination-footer {
+        padding: var(--spacing-md);
+        background: var(--header-bg);
+        border-top: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .pagination-footer .btn {
+        background-color: var(--accent);
+        color: var(--header-bg);
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: 600;
+        transition: background-color 0.2s ease, transform 0.2s ease;
+    }
+    .pagination-footer .btn:hover { background-color: var(--accent-2); transform: translateY(-2px); }
+    .pagination-footer .btn:disabled { background-color: #94a3b8; cursor: not-allowed; transform: none; }
+    .progress-text { font-weight: 600; color: var(--text-secondary); }
+    .copy-notification { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background-color: var(--header-bg); color: var(--text); padding: 10px 20px; border-radius: 8px; z-index: 1001; opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s; }
+    .copy-notification.show { opacity: 1; visibility: visible; }
+    
+    .story-intro {
+      text-align: center;
+    }
+     .story-intro p {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      max-width: 80ch;
+      margin: 0 auto var(--spacing-lg) auto;
+    }
+    .story-intro .btn {
+        background-color: var(--accent);
+        color: var(--header-bg);
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1.1rem;
+        font-weight: 600;
+        transition: background-color 0.2s ease, transform 0.2s ease;
+    }
+    .story-intro .btn:hover {
+        background-color: var(--accent-2);
+        transform: translateY(-2px);
+    }
+    #deck-view {
+        display: none;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="main-container">
+    <header>
+      <h1><span class="icon">🎮</span>Midjourney Parameter Deck</h1>
+    </header>
+
+    <div id="intro-view" class="story-intro">
+        <p class="byline" style="font-family: 'Lora', serif; color: var(--text-secondary); font-size: 1.2rem;">
+            Welcome, Game Designer. Your quest is to forge worlds from words. But a tool is only as sharp as its wielder. This deck is your whetstone. It holds the 40 fundamental incantations—the parameters—that will elevate your craft from mere generation to true art direction. Your journey begins now.
+        </p>
+        <button id="start-btn" class="btn">Begin the Journey</button>
+    </div>
+
+    <div id="deck-view" class="deck-container">
+        <div class="card-content-wrapper" id="card-content">
+            <!-- Parameter cards will be injected here -->
+        </div>
+        <div class="pagination-footer">
+            <button id="prev-btn" class="btn">Previous</button>
+            <span id="progress-text" class="progress-text">1 / 40</span>
+            <button id="next-btn" class="btn">Next</button>
+        </div>
+    </div>
+  </div>
+  
+  <div id="copy-notification" class="copy-notification">Prompt copied to clipboard!</div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      
+      const parameterData = [
+         // MODULE 1: Foundations
+        {
+            module: 'The Foundations 🧱',
+            id: 'imagine',
+            title: '/imagine & Prompting Basics',
+            param: '/imagine',
+            concept: 'The fundamental command that initiates the image generation process.',
+            why: 'This is your canvas. Mastering the art of describing a scene, character, or asset within the \'/imagine\' prompt is the most critical skill in Midjourney. Clear, descriptive language is key to getting the results you want.',
+            examples: [
+                {
+                    level: 'Simple',
+                    prompt: `a sci-fi rifle`
+                },
+                {
+                    level: 'More Detailed',
+                    prompt: `concept art of a bulky sci-fi plasma rifle, glowing blue energy coils, weathered metal texture`
+                },
+                {
+                    level: 'Complex',
+                    prompt: `high-resolution concept art of a futuristic plasma rifle for a AAA game, ergonomic design, glowing blue energy coils, carbon fiber body with scratches and wear, detailed sight, displayed on a neutral grey background`
+                }
+            ],
+            pitfalls: 'Avoid being too vague. "A cool weapon" is subjective and gives the AI too much room for interpretation. Be specific about the type, style, and key features. Also, avoid contradictory terms like "a minimalist ornate sword".'
+        },
+        {
+            module: 'The Foundations 🧱',
+            id: 'grid-upscale',
+            title: 'The 4-Grid & Upscaling',
+            param: 'U1-U4',
+            concept: 'Midjourney initially provides four image variations in a grid. The U buttons (U1, U2, U3, U4) allow you to select one of these images to generate a larger, more detailed version.',
+            why: 'This is your primary workflow for refining ideas. You generate a batch of concepts, identify the strongest one, and upscale it to see its full potential. This is essential for evaluating concept art and creating high-resolution assets.',
+            examples: [
+                { level: 'Simple', prompt: `After generating a grid for "a health potion", click U2 to upscale the top-right image.` },
+                { level: 'More Detailed', prompt: `Generate a grid for "a treasure chest". If the bottom-left image (U3) has the best details, upscale it to check the lock mechanism and wood grain.` },
+                { level: 'Complex', prompt: `For a character concept grid of "a goblin merchant", upscale the one with the most interesting facial expression and silhouette to use as a base for further design sheets.` }
+            ],
+            pitfalls: 'Don\'t upscale an image with fundamental flaws. If the anatomy or composition is wrong in the small grid, upscaling will just give you a larger version of the same problem. Reroll or vary first.'
+        },
+        {
+            module: 'The Foundations 🧱',
+            id: 'variations',
+            title: 'Variations & Rerolls',
+            param: 'V1-V4 & 🔄',
+            concept: 'The V buttons create four new variations based on the style and composition of a selected image from the grid. The Reroll (🔄) button runs the same prompt again for a completely new set of images.',
+            why: 'This is how you iterate and explore. Use V buttons when you like the general direction of an image but want to see slight changes (e.g., a different pose or lighting). Use Reroll when the entire grid misses the mark and you need a fresh start.',
+            examples: [
+                { level: 'Simple', prompt: `If you like the top-left image (V1) of "a shield icon", click V1 to see four similar shield designs.` },
+                { level: 'More Detailed', prompt: `For a grid of "a fantasy castle", if one image has a great silhouette but weak details, use its V button to see variations that might improve the architecture.` },
+                { level: 'Complex', prompt: `You generated an "orc warrior" but the style feels too cartoonish. Hit the Reroll button (🔄) to get a completely new set of interpretations, hopefully closer to your desired gritty aesthetic.` }
+            ],
+            pitfalls: 'Don\'t overuse the Reroll button if your prompt is the problem. If you reroll 5 times and still get bad results, the issue is likely your prompt, not the AI\'s luck. Refine your prompt first.'
+        },
+        {
+            module: 'The Foundations 🧱',
+            id: 'no',
+            title: 'Negative Prompts',
+            param: '--no',
+            concept: 'The \'--no\' parameter tells Midjourney what to avoid in an image.',
+            why: 'This is your tool for subtraction and refinement. Essential for game art to remove unwanted elements like text, UI artifacts, extra limbs on characters, or specific colors that clash with your game\'s palette. It helps clean up your concepts.',
+            examples: [
+                { level: 'Simple', prompt: `a beautiful red rose --no green` },
+                { level: 'More Detailed', prompt: `photograph of a modern city street --no cars` },
+                { level: 'Complex', prompt: `concept art of a powerful female sorceress, flowing robes, casting a spell --no text, --no signature, --no watermark` }
+            ],
+            pitfalls: 'Don\'t be too aggressive. Using \'--no\' for a core concept of the image (e.g., "a forest --no trees") will confuse the AI. It works best for removing secondary elements, not primary subjects. Also, it\'s not perfect; some elements might still appear.'
+        },
+        {
+            module: 'The Foundations 🧱',
+            id: 'ar',
+            title: 'Aspect Ratio',
+            param: '--ar',
+            concept: 'Dictates the width-to-height dimensions of your final image.',
+            why: 'This is your digital canvas size. Use \'--ar 1:1\' for UI icons, \'--ar 2:3\' for character portraits, and \'--ar 16:9\' for cinematic keyframes or main menu backgrounds.',
+            examples: [
+                { level: 'Simple', prompt: `a magical sword icon, flat design, glowing edges --ar 1:1` },
+                { level: 'More Detailed', prompt: `concept art for a stealthy rogue character, full body, dynamic pose, leather armor, holding daggers --ar 2:3` },
+                { level: 'Complex', prompt: `epic loading screen for a dark fantasy RPG, a lone knight on a cliff overlooking a storm-ravaged castle, cinematic lighting, ultra-detailed --ar 16:9 --no text` }
+            ],
+            pitfalls: 'Don\'t force a subject into the wrong frame. Prompting for a "vast panoramic landscape" with \'--ar 2:3\' will lead to cramped, awkward compositions. Match the aspect ratio to your subject.'
+        },
+        {
+            module: 'The Foundations 🧱',
+            id: 'chaos',
+            title: 'Chaos',
+            param: '--chaos',
+            concept: 'Controls how varied and unexpected the initial 4-grid of images will be. Ranges from 0 (standard) to 100 (highly chaotic).',
+            why: 'This is your "break the mold" tool. When you\'re in the early stages of ideation and need a wide range of unexpected concepts from a single prompt, increasing the chaos can lead to happy accidents and unique designs you hadn\'t considered.',
+            examples: [
+                { level: 'Simple', prompt: `a mythical creature --chaos 50` },
+                { level: 'More Detailed', prompt: `an alien spaceship design, organic and strange --ar 16:9 --chaos 25` },
+                { level: 'Complex', prompt: `concept art for a magical forest, filled with glowing plants and bizarre trees --ar 16:9 --chaos 75 --no animals` }
+            ],
+            pitfalls: 'Don\'t use high chaos when you need consistency. If you have a very specific character or object in mind, chaos will work against you by making the results less predictable and harder to refine.'
+        },
+        {
+            module: 'The Foundations 🧱',
+            id: 'quality',
+            title: 'Quality',
+            param: '--quality',
+            concept: 'Adjusts the time and GPU resources spent generating an image. Lower values are faster and less detailed; the default is 1.',
+            why: 'This is your speed vs. detail control. For rapid prototyping and creating dozens of rough \'thumbnail\' sketches, use \'--quality .25\' or \'--quality .5\' to generate images faster. Use the default (\'--quality 1\') for your final, detailed concept pieces.',
+            examples: [
+                { level: 'Simple', prompt: `a simple rock --quality .25` },
+                { level: 'More Detailed', prompt: `thumbnail sketches of 10 different dagger designs --ar 16:9 --quality .5` },
+                { level: 'Complex', prompt: `final keyframe illustration of a queen on her throne, intricate details, hyper-detailed --ar 16:9 --quality 1` }
+            ],
+            pitfalls: 'Higher quality is not always better and does not exist above 1, as higher values are no longer supported. It does not mean a more "artistic" image. It simply means more processing time is spent on details. Using it for simple icons or abstract textures is often a waste of time.'
+        },
+        {
+            module: 'The Foundations 🧱',
+            id: 'tile',
+            title: 'Tile',
+            param: '--tile',
+            concept: 'Generates images that can be used as repeating patterns, perfect for creating seamless textures.',
+            why: 'A game designer\'s dream parameter. Use this to create textures for environments (stone walls, grass, metal floors), fabrics for character clothing, or patterns for UI backgrounds. It saves a massive amount of time in texture creation.',
+            examples: [
+                { level: 'Simple', prompt: `cobblestone texture --tile` },
+                { level: 'More Detailed', prompt: `ornate medieval damask fabric pattern, gold and red --tile` },
+                { level: 'Complex', prompt: `sci-fi hexagonal metal floor panel, grime and scratches, industrial look --ar 1:1 --tile --no gaps` }
+            ],
+            pitfalls: 'Don\'t use it for non-textural subjects. Prompting for "a character portrait --tile" will result in a bizarre, repeating image of that character that is rarely useful. Stick to patterns and surfaces.'
+        },
+        {
+            module: 'The Foundations 🧱',
+            id: 'seed',
+            title: 'Seed',
+            param: '--seed',
+            concept: 'The \'--seed\' parameter allows you to use a specific starting noise pattern for a generation. Using the same seed with the same prompt will produce very similar images.',
+            why: 'This is a key tool for consistency before \'--cref\' and \'--sref\' existed. You can use it to generate a character or object and then make minor tweaks to the prompt (like changing colors or background) while keeping the core subject highly consistent.',
+            examples: [
+                { level: 'Simple', prompt: `a robot --seed 123` },
+                { level: 'More Detailed', prompt: `a robot, red armor --seed 123` },
+                { level: 'Complex', prompt: `a robot, red armor, standing in a desert --ar 2:3 --seed 123 --no people` }
+            ],
+            pitfalls: 'Don\'t expect identical results. Even with the same seed, small variations can occur, especially with complex prompts. It provides strong similarity, not a perfect copy. You must get the seed number from a previous generation.'
+        },
+        {
+            module: 'The Foundations 🧱',
+            id: 'stop',
+            title: 'Stop',
+            param: '--stop',
+            concept: 'Stops the generation process at an earlier stage. Ranges from 10 to 100 (100 is the full generation).',
+            why: 'This is your "less is more" parameter. Stopping a generation early can create softer, less-defined, and more impressionistic images. This is fantastic for creating dreamy backgrounds, abstract textures, or early-stage "mood board" concepts where you want color and form without sharp detail.',
+            examples: [
+                { level: 'Simple', prompt: `a watercolor splash of blue --stop 50` },
+                { level: 'More Detailed', prompt: `a dreamy, out-of-focus forest background --ar 16:9 --stop 70` },
+                { level: 'Complex', prompt: `abstract concept art for a magical aura, swirling colors, ethereal energy --ar 1:1 --chaos 20 --stop 60` }
+            ],
+            pitfalls: 'Don\'t use it when you need clear, defined subjects. A \'--stop 50\' on "a detailed character portrait" will result in a blurry, unfinished mess. It is a tool for abstraction, not for detailed work.'
+        },
+        // MODULE 2: Creative & Stylistic Control
+        {
+            module: 'Creative & Stylistic Control 🎨',
+            id: 'stylize',
+            title: 'Stylize',
+            param: '--stylize',
+            concept: 'Controls the strength of Midjourney\'s default artistic style. Lower values (e.g., \'--stylize 50\') stick closer to your prompt, while higher values (e.g., \'--stylize 750\') are more "opinionated" and artistic. Default is 100.',
+            why: 'This is your art direction dial. Need a photorealistic prop? Use a low value. Need expressive, painterly concept art? Crank it up. It defines how much of the "Midjourney look" your game\'s art will have.',
+            examples: [
+                { level: 'Simple', prompt: `a chaotic magical spell explosion --stylize 800` },
+                { level: 'More Detailed', prompt: `pixel art of a mana potion, 16-bit style --ar 1:1 --stylize 50` },
+                { level: 'Complex', prompt: `character portrait of a wise alien botanist, surrounded by glowing plants, painterly style, intricate details --ar 4:5 --stylize 600 --no humans` }
+            ],
+            pitfalls: 'Don\'t use high \'--stylize\' when your prompt is very technical ("technical blueprint of a spaceship engine"). It will add unwanted artistic flourishes. If Midjourney is ignoring key parts of your prompt, try lowering the stylize value.'
+        },
+        {
+            module: 'Creative & Stylistic Control 🎨',
+            id: 'weird',
+            title: 'Weird',
+            param: '--weird',
+            concept: 'Introduces surreal and unconventional elements into your generations. It\'s an experimental parameter that pushes the boundaries of creativity. Ranges from 0 to 3000.',
+            why: 'This is your brainstorming partner for creating truly unique and memorable game elements. Use it to design bizarre aliens, surreal dreamscapes for a horror game, or magical items that defy conventional physics. It\'s for when "normal" isn\'t enough.',
+            examples: [
+                { level: 'Simple', prompt: `a teacup --weird 1000` },
+                { level: 'More Detailed', prompt: `a common forest animal, but make it strange --weird 750` },
+                { level: 'Complex', prompt: `the architecture of a city from another dimension, non-euclidean geometry, impossible shapes --ar 16:9 --weird 1500 --chaos 50` }
+            ],
+            pitfalls: 'Don\'t use \'--weird\' when you need predictable, grounded designs. It is explicitly for creating strange results and will actively work against prompts for realistic items. Use with caution and an open mind.'
+        },
+        {
+            module: 'Creative & Stylistic Control 🎨',
+            id: 'v',
+            title: 'Model Versions',
+            param: '--v',
+            concept: 'Allows you to switch between different major versions of the Midjourney model (e.g., \'--v 5.2\', \'--v 6.0\').',
+            why: 'Each model version has a different aesthetic and interprets prompts differently. Version 6 is generally better at photorealism and understanding natural language. Older versions might be better for more painterly or abstract styles. Knowing how to switch models gives you a broader artistic toolkit.',
+            examples: [
+                { level: 'Simple', prompt: `a knight --v 5.2` },
+                { level: 'More Detailed', prompt: `photograph of a delicious cheeseburger and fries --v 6.0` },
+                { level: 'Complex', prompt: `a vibrant, abstract painting of a city at night, energetic brushstrokes, expressionist style --ar 1:1 --stylize 500 --v 5.2` }
+            ],
+            pitfalls: 'Don\'t use parameters with the wrong version. Advanced parameters like \'--sref\' and \'--cref\' only work with newer models (\'--v 6.0\'). Using them with older versions will result in an error.'
+        },
+        {
+            module: 'Creative & Stylistic Control 🎨',
+            id: 'niji',
+            title: 'Niji Model',
+            param: '--niji',
+            concept: 'A separate model tuned specifically for anime and illustrative styles.',
+            why: 'If you are making any game with an anime, manga, or stylized illustrative aesthetic, Niji is your primary tool. It excels at creating expressive characters, dynamic action scenes, and beautifully rendered backgrounds in that specific style.',
+            examples: [
+                { level: 'Simple', prompt: `a magical girl with pink hair --niji 6` },
+                { level: 'More Detailed', prompt: `a dynamic anime action scene, two samurais clashing swords, motion lines, speed effects --ar 16:9 --niji 6` },
+                { level: 'Complex', prompt: `game splash screen art of a group of anime adventurers standing on a cliff overlooking a fantasy city, style of Genshin Impact --ar 16:9 --stylize 300 --niji 6` }
+            ],
+            pitfalls: 'Don\'t use Niji if you\'re aiming for photorealism. It is a specialized tool. While it can produce beautiful images, its strength is in illustration, not realism.'
+        },
+        {
+            module: 'Creative & Stylistic Control 🎨',
+            id: 'style-raw',
+            title: 'Style Raw',
+            param: '--style raw',
+            concept: 'Reduces the "Midjourney house style" or aesthetic, leading to images that follow your prompt more literally, especially when aiming for photorealism.',
+            why: 'When you need a specific, un-embellished image, \'--style raw\' is essential. It gives you more direct control and is particularly powerful when used with \'--sref\', as it allows the referenced style to dominate without interference.',
+            examples: [
+                { level: 'Simple', prompt: `a photograph of a brick wall --style raw` },
+                { level: 'More Detailed', prompt: `product shot of a sleek modern laptop on a wooden desk --ar 16:9 --style raw` },
+                { level: 'Complex', prompt: `cinematic still from a 1970s sci-fi film, an astronaut inside a spaceship cockpit, retro aesthetic, film grain --ar 3:2 --v 6.0 --style raw` }
+            ],
+            pitfalls: 'Don\'t use it if you want the artistic flair that Midjourney is known for. Using \'--style raw\' can sometimes result in "flatter" or less dramatic images if your prompt isn\'t detailed enough to compensate.'
+        },
+        {
+            module: 'Creative & Stylistic Control 🎨',
+            id: 'image-prompt',
+            title: 'Image Prompting',
+            param: 'URL',
+            concept: 'You can include one or more image URLs at the start of your prompt to influence the style, composition, and color of your generation.',
+            why: 'This is the original method for style and character transfer. It\'s a versatile way to guide the AI. You can use an image of a character as inspiration, an art piece to influence style, or a photo to dictate composition.',
+            examples: [
+                { level: 'Simple', prompt: `https://url.com/image.jpg a portrait of a woman` },
+                { level: 'More Detailed', prompt: `https://url.com/character.jpg a full-body portrait of the character in a fighting stance --ar 2:3` },
+                { level: 'Complex', prompt: `https://url.com/style.jpg https://url.com/composition.jpg a futuristic city street at night, neon lights --ar 16:9 --v 6.0` }
+            ],
+            pitfalls: 'Don\'t expect a perfect copy. Image prompts are for influence, not duplication. The AI will blend the concepts from the image and the text. For more direct style or character copying, \'--sref\' and \'--cref\' are now superior.'
+        },
+        {
+            module: 'Creative & Stylistic Control 🎨',
+            id: 'iw',
+            title: 'Image Weight',
+            param: '--iw',
+            concept: 'When using an image prompt, \'--iw\' controls how much importance is given to the image versus the text prompt. The default is 1, and the range is 0-2.',
+            why: 'This allows you to fine-tune the balance of power between your image and text prompts. A low image weight (\'--iw 0.5\') will use the image for loose inspiration, while a high weight (\'--iw 2\') will make the final result look much more like the source image.',
+            examples: [
+                { level: 'Simple', prompt: `https://url.com/image.jpg a dog --iw 2` },
+                { level: 'More Detailed', prompt: `https://url.com/character_face.jpg a cybernetic soldier wearing a helmet --iw 0.5` },
+                { level: 'Complex', prompt: `https://url.com/van_gogh.jpg a sprawling sci-fi megacity --ar 16:9 --v 6.0 --iw 1.5` }
+            ],
+            pitfalls: 'Don\'t set \'--iw\' too high if your text prompt is very different from the image prompt. An \'--iw 2\' on a picture of a cat with the prompt "a spaceship" will likely result in a cat-shaped spaceship. It forces the image\'s subject heavily.'
+        },
+        {
+            module: 'Creative & Stylistic Control 🎨',
+            id: 'multi-prompt',
+            title: 'Multi-Prompting',
+            param: '::',
+            concept: 'Using a double colon `::` separates concepts in a prompt. You can also add a number after the `::` to assign weight to that concept (e.g., `hot::2 dog`).',
+            why: 'This is a powerful tool for controlling complex scenes and preventing "concept bleed." If you prompt for "a spaceman holding a banana," you might get a banana-shaped spaceman. Prompting \'a spaceman:: holding a banana::\' helps the AI understand them as distinct entities.',
+            examples: [
+                { level: 'Simple', prompt: `space:: ship` },
+                { level: 'More Detailed', prompt: `a king::5 on a throne::1` },
+                { level: 'Complex', prompt: `a massive dragon::3 attacking a tiny village::1 at night --ar 16:9 --chaos 10` }
+            ],
+            pitfalls: 'Don\'t over-complicate it. Using too many weights can make the AI\'s behavior unpredictable. It\'s most effective for separating 2-3 key concepts or emphasizing one primary subject over its environment.'
+        },
+        {
+            module: 'Creative & Stylistic Control 🎨',
+            id: 'permutations',
+            title: 'Permutation Prompts',
+            param: '{}',
+            concept: 'Allows you to generate multiple variations of a prompt at once by providing a comma-separated list of options within curly braces `{}`.',
+            why: 'This is the ultimate tool for rapid A/B testing and iteration. You can test multiple art styles, character classes, or color palettes in a single command, saving a massive amount of time during the ideation phase.',
+            examples: [
+                { level: 'Simple', prompt: `a warrior holding a {sword, axe, spear}` },
+                { level: 'More Detailed', prompt: `a cute chibi {cat, dog, dragon} character --niji 6` },
+                { level: 'Complex', prompt: `concept art of a fantasy landscape, {day, night, sunset}, style of {Studio Ghibli, an oil painting, a watercolor sketch} --ar 16:9` }
+            ],
+            pitfalls: 'Be mindful of your subscription plan. A prompt like \'a {red, green, blue} {car, boat, plane}\' will generate 3x3=9 jobs, quickly using up your fast hours. Use it strategically.'
+        },
+        {
+            module: 'Creative & Stylistic Control 🎨',
+            id: 'blend',
+            title: '/blend',
+            param: '/blend',
+            concept: 'A simplified command that allows you to upload 2-5 images and blends their concepts and aesthetics into a new, unique image.',
+            why: 'This is a fast and intuitive alternative to using multiple image prompts. It\'s fantastic for mood boarding and discovering unexpected stylistic fusions. Blend a character portrait with an environment to see how they might look, or blend two art styles to create a new one for your game.',
+            examples: [
+                { level: 'Simple', prompt: `Use /blend and upload an image of a cat and an image of a strawberry.` },
+                { level: 'More Detailed', prompt: `Blend an image of a futuristic soldier with an image of medieval knight armor.` },
+                { level: 'Complex', prompt: `Blend a detailed character portrait, a mechanical texture, and a picture of a nebula to create a concept for a cosmic android.` }
+            ],
+            pitfalls: 'You have less control with \'/blend\' than with a standard image prompt. You cannot add text prompts or parameters like \'--ar\'. It is a tool for creative discovery, not for precise, art-directed output.'
+        },
+        // MODULE 3: Advanced Features & Reference
+        {
+            module: 'Advanced Features & Reference 🧠',
+            id: 'sref',
+            title: 'Style Reference',
+            param: '--sref',
+            concept: 'The most powerful way to achieve stylistic consistency. It references the aesthetic of one or more images and applies it to your prompt.',
+            why: 'This is the key to creating a consistent art style guide for your game. Use a single piece of approved key art as an \'--sref\' for generating props, environments, and characters, ensuring they all belong in the same world.',
+            examples: [
+                { level: 'Simple', prompt: `a castle in the clouds --sref <URL_of_a_Ghibli_painting>` },
+                { level: 'More Detailed', prompt: `isometric view of a blacksmith's forge --ar 1:1 --sref <URL_of_Diablo_4_concept_art>` },
+                { level: 'Complex', prompt: `keyframe art for a cyberpunk RPG, a food vendor's stall on a rain-slicked street in Greater Noida, glowing Hindi neon signs, late evening --ar 16:9 --stylize 250 --sref <URL_of_Blade_Runner_art>` }
+            ],
+            pitfalls: 'Don\'t use an \'--sref\' where the subject matter clashes with your prompt. The reference should be for style. Using a photo of a cat as a style reference for a "cartoon dog" will confuse the AI. '
+        },
+        {
+            module: 'Advanced Features & Reference 🧠',
+            id: 'sref-multi',
+            title: 'Multiple Style References',
+            param: '--sref',
+            concept: 'You can provide multiple image URLs to the \'--sref\' parameter, and Midjourney will blend their aesthetic qualities.',
+            why: 'This allows you to become a digital art director, mixing and matching styles to create something entirely new. You can blend the color palette of one artist with the textural quality of another, giving you incredible creative control over your game\'s look.',
+            examples: [
+                { level: 'Simple', prompt: `a forest --sref <URL1> <URL2>` },
+                { level: 'More Detailed', prompt: `a portrait of a queen --sref <URL_of_oil_painting> <URL_of_gold_texture>` },
+                { level: 'Complex', prompt: `concept art for a starship bridge, holographic displays, clean aesthetic --ar 16:9 --sref <URL_of_Star_Trek_art> <URL_of_Apple_product_photo>` }
+            ],
+            pitfalls: 'Don\'t use too many references. Blending more than 2-3 styles can lead to a chaotic, "muddy" aesthetic where no single style is dominant. It works best when the styles are complementary.'
+        },
+        {
+            module: 'Advanced Features & Reference 🧠',
+            id: 'sw',
+            title: 'Style Weight',
+            param: '--sw',
+            concept: 'Controls the strength of the \'--sref\' parameter, ranging from 0 (off) to 1000 (maximum effect). The default is 100.',
+            why: 'This lets you fine-tune how heavily the reference style is applied. You can apply a style subtly (\'--sw 50\') as a gentle nudge, or go all-in (\'--sw 1000\') to make your generation look almost identical in style to the reference.',
+            examples: [
+                { level: 'Simple', prompt: `a teacup --sref <URL> --sw 1000` },
+                { level: 'More Detailed', prompt: `a landscape painting --sref <URL_of_Van_Gogh> --sw 200` },
+                { level: 'Complex', prompt: `a futuristic soldier --ar 2:3 --sref <URL_of_gritty_art> --sw 750` }
+            ],
+            pitfalls: 'Don\'t set style weight to 0 unless you want to turn off the \'--sref\' completely. A very low style weight might have almost no visible effect, so be prepared to experiment to find the sweet spot.'
+        },
+        {
+            module: 'Advanced Features & Reference 🧠',
+            id: 'cref',
+            title: 'Character Reference',
+            param: '--cref',
+            concept: 'The key to character consistency. It uses a URL to an existing image to generate the same character in new scenes and poses.',
+            why: 'Essential for game design. Create character sheets showing your hero in different outfits, expressions, or action poses. Use it for storyboarding cutscenes or creating consistent NPC portraits.',
+            examples: [
+                { level: 'Simple', prompt: `a sci-fi soldier in power armor --cref <URL_of_character_face>` },
+                { level: 'More Detailed', prompt: `character design sheet, a young female wizard in various poses (studying, casting, combat) --ar 16:9 --cref <URL_of_wizard_face>` },
+                { level: 'Complex', prompt: `cinematic action shot of a young male wizard running through a ruined city, casting a fire spell --ar 16:9 --sref <URL_of_game_art> --cref <URL_of_wizard_face> --cw 100` }
+            ],
+            pitfalls: 'Don\'t use a poor-quality reference image. A blurry, poorly lit, or oddly angled face will give you poor results. Use a clear, front-facing headshot for the best effect.'
+        },
+        {
+            module: 'Advanced Features & Reference 🧠',
+            id: 'cw',
+            title: 'Character Weight',
+            param: '--cw',
+            concept: 'Controls how strongly the character reference is applied, from 0 (face only) to 100 (face, hair, and clothing).',
+            why: 'This gives you nuanced control over your character generation. Use \'--cw 0\' when you want to put your character\'s face on a completely different outfit (like a new armor set). Use \'--cw 100\' when you want to generate the exact same character in a new pose or setting.',
+            examples: [
+                { level: 'Simple', prompt: `a man wearing a hat --cref <URL> --cw 0` },
+                { level: 'More Detailed', prompt: `our hero character wearing the official royal uniform --ar 2:3 --cref <URL_of_hero_in_rags> --cw 0` },
+                { level: 'Complex', prompt: `side view of our main character walking down a city street --ar 3:2 --cref <URL_of_character_headshot> --cw 100 --sref <URL_of_city_art>` }
+            ],
+            pitfalls: 'Don\'t expect \'--cw 100\' to be a magic wand for complex clothing. It tries its best to copy the outfit, but intricate patterns or logos may get distorted. It works best with distinct clothing shapes and colors.'
+        },
+        {
+            module: 'Advanced Features & Reference 🧠',
+            id: 'cref-understanding',
+            title: 'Understanding --cref',
+            param: '--cref',
+            concept: 'The \'--cref\' parameter is best at capturing facial features. It is not designed for copying specific details like dimples, freckles, or t-shirt logos.',
+            why: 'Knowing the limitations of the tool is as important as knowing its strengths. Understand that \'--cref\' is for generating "the same person," not for making a perfect digital clone. This manages expectations and helps you plan your asset cleanup pipeline.',
+            examples: [
+                { level: 'Simple', prompt: `(Using a --cref of a person with a scar) a portrait of a person, happy expression --cref <URL>` },
+                { level: 'More Detailed', prompt: `(Note that the scar may or may not transfer perfectly) a character sheet showing various emotions: joy, anger, sadness --ar 16:9 --cref <URL>` },
+                { level: 'Complex', prompt: `(Focus on the overall identity, not tiny details) our hero character in a dramatic cinematic pose, looking up at the sky --ar 2:3 --sref <URL_of_style> --cref <URL>` }
+            ],
+            pitfalls: 'Don\'t rely on \'--cref\' for copying fine details or clothing logos. It will often fail. Use it to get the character\'s core identity right, then plan to add specific small details later in an image editor if they are critical.'
+        },
+        {
+            module: 'Advanced Features & Reference 🧠',
+            id: 'describe',
+            title: '/describe',
+            param: '/describe',
+            concept: 'Upload an image and Midjourney will provide four different text prompts that it thinks would generate that image.',
+            why: 'This is your "reverse engineering" tool. If you see a piece of AI art with a style you love but you don\'t know how it was made, use \'/describe\' to get a powerful starting point for the prompt. It\'s an incredible learning and inspiration tool.',
+            examples: [
+                { level: 'Simple', prompt: `Use /describe on a photo of a sunset.` },
+                { level: 'More Detailed', prompt: `Use /describe on a piece of fantasy concept art to learn how to phrase stylistic elements.` },
+                { level: 'Complex', prompt: `Take a screenshot from your favorite game, use /describe to get prompt ideas, then use those prompts with an --sref of the original screenshot to perfectly capture its style.` }
+            ],
+            pitfalls: 'Don\'t assume the described prompts are perfect. They are often very verbose and can include strange terms. Use them as a starting point and edit them down to the most important keywords.'
+        },
+        {
+            module: 'Advanced Features & Reference 🧠',
+            id: 'remix',
+            title: 'Remix Mode',
+            param: '/settings',
+            concept: 'Activate Remix Mode in your \'/settings\'. Now, when you click a V button, a dialog box will appear, letting you edit the prompt before generating the variations.',
+            why: 'This provides an incredible level of iterative control. You can generate a character, then use Remix to put them in a new setting, change their armor from "leather" to "steel", or add a "rainy" atmosphere, all while keeping the core composition intact.',
+            examples: [
+                { level: 'Simple', prompt: `(With Remix on) Generate "a red car". Click V1 and change the prompt to "a blue car".` },
+                { level: 'More Detailed', prompt: `Generate "a knight in a forest". Use Remix on a variation to change it to "a knight in a cave".` },
+                { level: 'Complex', prompt: `Generate a character concept. Use Remix to change the aspect ratio from 2:3 to 16:9 and add "cinematic lighting, action pose" to turn a portrait into a keyframe.` }
+            ],
+            pitfalls: 'Don\'t forget to turn it off. If you want the standard V button behavior (generating variations without a popup), you need to deactivate Remix Mode in \'/settings\'.'
+        },
+        {
+            module: 'Advanced Features & Reference 🧠',
+            id: 'pan-zoom',
+            title: 'Pan & Zoom',
+            param: 'Pan/Zoom buttons',
+            concept: 'After upscaling an image, buttons appear that allow you to extend the canvas in any direction (Pan) or zoom out, adding more detail around the original image.',
+            why: 'This is a game-changer for creating large-scale environments. You can start with a single interesting feature, like a castle, and then pan left, right, up, or down to reveal the entire kingdom around it. Zoom Out is great for turning a portrait into a full-body shot.',
+            examples: [
+                { level: 'Simple', prompt: `Upscale an image of a mountain peak, then use Pan Down to reveal the rest of the mountain.` },
+                { level: 'More Detailed', prompt: `Generate a character portrait (\'--ar 2:3\'), upscale it, then use Zoom Out 2x to create a full-body image.` },
+                { level: 'Complex', prompt: `Create an image of "a single sci-fi building". Upscale it, then use the Pan buttons repeatedly in all directions to build an entire futuristic city block by block.` }
+            ],
+            pitfalls: 'Panning can sometimes lead to inconsistencies in lighting or perspective. Be prepared to do some light editing or use the Vary (Region) tool to fix awkward transitions between pans.'
+        },
+        {
+            module: 'Advanced Features & Reference 🧠',
+            id: 'vary-region',
+            title: 'Vary (Region)',
+            param: 'Vary (Region) button',
+            concept: 'After upscaling, this tool lets you select a specific area of your image and regenerate only that part with a modified prompt.',
+            why: 'This is your in-painting and detail-fixing tool. Is the character\'s hand weird? Select it and regenerate it. Want to change a sword into an axe without changing the character? Select the sword and change the prompt. It is essential for correcting errors and making precise changes.',
+            examples: [
+                { level: 'Simple', prompt: `Generate a face. Use Vary (Region) to select the eyes and prompt for "blue eyes".` },
+                { level: 'More Detailed', prompt: `Generate a soldier holding a rifle. Use Vary (Region) to select the rifle and change the prompt to "plasma gun".` },
+                { level: 'Complex', prompt: `Generate a full fantasy scene. Use Vary (Region) to select an empty patch of sky and add "a majestic dragon flying".` }
+            ],
+            pitfalls: 'Don\'t select too small of an area. The AI needs context to work effectively. If you select only a few pixels of a character\'s finger, it might not know what to do. Select the whole hand for better results.'
+        },
+        // MODULE 4: Utility & Mastery
+        {
+            module: 'Utility & Mastery 🛠️',
+            id: 'tune',
+            title: '/tune',
+            param: '/tune',
+            concept: 'The \'/tune\' command lets you create a personal style code. You give it a base prompt, and it generates a Style Tuner page where you can choose your favorite aesthetics from a range of options.',
+            why: 'This is how you build your game\'s unique, proprietary art style. By creating a Style Tuner based on your key art, you can generate a code that perfectly encapsulates your game\'s look. Anyone on your team can then use this code to generate assets that are perfectly on-brand.',
+            examples: [
+                { level: 'Simple', prompt: `Use /tune with the prompt "a flower".` },
+                { level: 'More Detailed', prompt: `Use /tune with "concept art of a warrior" to create a style for your game's characters.` },
+                { level: 'Complex', prompt: `Use /tune with a highly detailed prompt describing your main city, like "cyberpunk city street, neon signs, rainy night, Blade Runner aesthetic", to create the definitive style code for all your environmental art.` }
+            ],
+            pitfalls: 'Style tuning can use a lot of fast hours, as it generates many grids at once. Use it deliberately when you are ready to codify a style, not just for casual exploration.'
+        },
+        {
+            module: 'Utility & Mastery 🛠️',
+            id: 'style-code',
+            title: 'Using Style Tuner Codes',
+            param: '--style <code>',
+            concept: 'After creating a Style Tuner, you are given a short code. You can use this code with the \'--style\' parameter to apply your custom-tuned aesthetic to any new prompt.',
+            why: 'This is the endpoint of the \'/tune\' workflow. It allows for perfect stylistic consistency across your entire team and all your assets. It\'s more consistent and easier to share than a complex \'--sref\' workflow.',
+            examples: [
+                { level: 'Simple', prompt: `a tree --style <your_code>` },
+                { level: 'More Detailed', prompt: `a goblin merchant --ar 2:3 --style <your_code>` },
+                { level: 'Complex', prompt: `a boss battle arena, lava pits, obsidian pillars --ar 16:9 --style <your_code> --no people` }
+            ],
+            pitfalls: 'Don\'t confuse \'--style <code>\' with \'--stylize <value>\'. They are different commands. \'--style\' applies your custom-tuned aesthetic, while \'--stylize\' controls the intensity of the default Midjourney aesthetic.'
+        },
+        {
+            module: 'Utility & Mastery 🛠️',
+            id: 'settings',
+            title: '/settings',
+            param: '/settings',
+            concept: 'A command that brings up a user-friendly interface to set your default parameters, such as model version, stylize value, and Remix Mode.',
+            why: 'This is a massive time-saver. If you are consistently working on a project that uses the Niji model with a high stylize value, you can set these as your defaults in \'/settings\'. Now you don\'t have to type \'--niji 6 --stylize 500\' on every single prompt.',
+            examples: [
+                { level: 'Simple', prompt: `Type /settings and select "Niji Model V6" as your default.` },
+                { level: 'More Detailed', prompt: `In /settings, turn on "Remix Mode" to enable prompt editing on variations.` },
+                { level: 'Complex', prompt: `Set your defaults to MJ Version 6, Style Raw, Stylize Low, and Public mode off for a consistent, controlled workflow.` }
+            ],
+            pitfalls: 'Don\'t forget your defaults are on. If your images suddenly start looking like anime, you may have forgotten that you set Niji as your default. Check your \'/settings\' if you get unexpected results.'
+        },
+        {
+            module: 'Utility & Mastery 🛠️',
+            id: 'shorten',
+            title: '/shorten',
+            param: '/shorten',
+            concept: 'This command analyzes your prompt and shows you which words (tokens) are most important to the AI, and suggests shorter, more effective prompts.',
+            why: 'This is your prompt debugger. If a complex prompt isn\'t working, \'/shorten\' can reveal that Midjourney is ignoring what you think are key words. It teaches you how to be more concise and effective in your prompting, which is a core skill.',
+            examples: [
+                { level: 'Simple', prompt: `Use /shorten on the prompt "a big red shiny car".` },
+                { level: 'More Detailed', prompt: `Use /shorten on "a very beautiful and majestic castle from a fantasy world with big towers".` },
+                { level: 'Complex', prompt: `If your prompt for a character isn't working, use /shorten to see if the AI is even paying attention to important details like "cybernetic eye" or "leather jacket".` }
+            ],
+            pitfalls: 'Don\'t always accept the shortest suggestion. The tool is aggressive and might remove important stylistic words. Use its analysis to understand token importance, but make the final editing decision yourself.'
+        },
+        {
+            module: 'Utility & Mastery 🛠️',
+            id: 'prefer',
+            title: '/prefer',
+            param: '/prefer',
+            concept: 'The \'/prefer\' suite of commands lets you create custom shortcuts for frequently used parameters or parts of prompts.',
+            why: 'This is the ultimate workflow accelerator. You can create a shortcut like \'/prefer option set mygame --style <your_code> --ar 16:9\'. Then, you can just add \'--mygame\' to the end of any prompt to apply those parameters instantly.',
+            examples: [
+                { level: 'Simple', prompt: `Use "/prefer option set wide --ar 16:9"` },
+                { level: 'More Detailed', prompt: `(After setting) "a futuristic city --wide"` },
+                { level: 'Complex', prompt: `Use "/prefer option set ghibli --sref <url1> <url2> --niji 6". Then generate "a forest path --ghibli".` }
+            ],
+            pitfalls: 'Don\'t forget what you named your options. It\'s a good idea to keep a personal list of your custom preferred options so you can remember and use them effectively.'
+        },
+        {
+            module: 'Utility & Mastery 🛠️',
+            id: 'text',
+            title: 'Prompting for Text',
+            param: 'V6 Feature',
+            concept: 'With Model Version 6, you can generate legible text by putting the desired words in "quotation marks" within your prompt.',
+            why: 'Crucial for game assets like logos, signs, book covers, or UI elements. While not perfect, the ability to generate stylized text directly in an image is a powerful feature for asset creation.',
+            examples: [
+                { level: 'Simple', prompt: `a sign that says "DANGER"` },
+                { level: 'More Detailed', prompt: `an inn sign with the words "The Prancing Pony" written on it, fantasy style` },
+                { level: 'Complex', prompt: `a video game logo that says "CYBERPUNK 2099", neon letters, glitch effect --ar 16:9 --v 6.0` }
+            ],
+            pitfalls: 'Don\'t expect perfect spelling on complex words or long sentences. It works best with 1-3 simple words. It can also struggle with certain art styles. Be prepared to regenerate or use Vary (Region) to fix text errors.'
+        },
+        {
+            module: 'Utility & Mastery 🛠️',
+            id: 'stealth',
+            title: 'Public vs. Stealth Mode',
+            param: '/public, /stealth',
+            concept: 'By default, your images are public. With a Pro subscription, you can use \'/stealth\' to hide your generations from the public Midjourney gallery.',
+            why: 'This is a critical feature for professional game development. It allows you to work on proprietary concepts and unannounced projects without your art leaking to the public. It protects your intellectual property.',
+            examples: [
+                { level: 'Simple', prompt: `Type /stealth to enter stealth mode.` },
+                { level: 'More Detailed', prompt: `Type /public to make your generations public again.` },
+                { level: 'Complex', prompt: `Before starting a work session on a secret new game, always type /stealth to ensure all subsequent generations are private.` }
+            ],
+            pitfalls: 'Don\'t assume you are in stealth mode. Always check your settings. Accidentally generating concepts for an unannounced game in public mode could be a major issue.'
+        },
+        {
+            module: 'Utility & Mastery 🛠️',
+            id: 'organizing',
+            title: 'Organizing Your Work',
+            param: 'Web UI',
+            concept: 'The Midjourney website offers powerful tools to organize your generations, including creating collections, bookmarking, and filtering jobs.',
+            why: 'A professional workflow requires organization. You can create collections for "Characters," "Environments," and "UI Icons" for your game. This allows you to easily find past generations, reuse seeds, and maintain a clean, searchable archive of all your concept art.',
+            examples: [
+                { level: 'Simple', prompt: `On the Midjourney website, click the bookmark icon on your favorite images.` },
+                { level: 'More Detailed', prompt: `Create a new collection called "Player Characters" and add all your relevant character art to it.` },
+                { level: 'Complex', prompt: `Use the search filters to find all your past jobs that used "--ar 16:9" and batch-add them to an "Environments" collection.` }
+            ],
+            pitfalls: 'Don\'t neglect organization. Waiting until you have thousands of images to start organizing is a nightmare. Get into the habit of sorting and collecting your best work at the end of each session.'
+        },
+        {
+            module: 'Utility & Mastery 🛠️',
+            id: 'prompt-strategy',
+            title: 'Prompting Strategy',
+            param: 'Methodology',
+            concept: 'There are two main approaches: simple, natural language prompts (e.g., "photo of an old wizard") and complex, keyword-driven prompts (e.g., "cinematic portrait, old wizard, intricate white beard, detailed wrinkles, Rembrandt lighting, 8k").',
+            why: 'Knowing when to use which strategy is key. Use simple prompts for quick exploration and letting the AI surprise you. Use complex, keyword-driven prompts when you have a very specific vision and need to act as an art director, controlling light, composition, and detail.',
+            examples: [
+                { level: 'Simple', prompt: `a happy dog` },
+                { level: 'More Detailed', prompt: `a photograph of a golden retriever puppy playing in a field of flowers` },
+                { level: 'Complex', prompt: `cinematic photo, golden retriever puppy, shallow depth of field, golden hour lighting, backlit, lens flare, professional dog photography, 8k, hyperdetailed` }
+            ],
+            pitfalls: 'Don\'t just copy-paste long, complex prompts without understanding what each keyword does. This is "cargo cult" prompting. The best results come from understanding each parameter and keyword and building your prompt with intention.'
+        },
+        {
+            module: 'Utility & Mastery 🛠️',
+            id: 'capstone',
+            title: 'Capstone: Combining Parameters',
+            param: 'Workflow',
+            concept: 'The true power of Midjourney comes from combining multiple parameters into a single, art-directed prompt to achieve a precise vision.',
+            why: 'This is the culmination of your training. A professional game concept artist doesn\'t use one parameter at a time; they build a toolkit. This final example shows how to layer these tools to create a masterpiece.',
+            examples: [
+                { level: 'Simple', prompt: `a robot --ar 2:3 --v 6.0` },
+                { level: 'More Detailed', prompt: `a silhouette of a lone warrior standing on a hill at sunset --ar 16:9 --stylize 250` },
+                { level: 'Complex', prompt: `cinematic wide shot of our main character, backside walking away through a neon-lit alley in a cyberpunk Greater Noida, puddles reflecting the glowing signs, Friday evening, style of a gritty anime film --ar 21:9 --v 6.0 --sref <URL_of_Akira> --cref <URL_of_character> --cw 100 --stylize 300 --no cars` }
+            ],
+            pitfalls: 'Don\'t add parameters just for the sake of it. Every parameter should have a purpose. Ask yourself: "What is this \'--chaos 20\' doing for my image?" If you don\'t have an answer, remove it. Simplicity is often key.'
+        },
+      ];
+
+      const contentEl = document.getElementById('card-content');
+      const prevBtn = document.getElementById('prev-btn');
+      const nextBtn = document.getElementById('next-btn');
+      const progressTextEl = document.getElementById('progress-text');
+      const startBtn = document.getElementById('start-btn');
+      const introView = document.getElementById('intro-view');
+      const deckView = document.getElementById('deck-view');
+      
+      let currentCardIndex = 0;
+
+      function renderCard(index) {
+          const param = parameterData[index];
+          contentEl.innerHTML = ''; // Clear previous card
+          
+          const card = document.createElement('div');
+          card.className = 'card-viewer active';
+          card.id = `param-${param.id}`;
+          
+          let examplesHTML = '<h3>Examples</h3>';
+          param.examples.forEach(ex => {
+            const promptContent = ex.prompt.startsWith('After generating') || ex.prompt.startsWith('Use /blend') || ex.prompt.startsWith('Upscale an image') || ex.prompt.startsWith('Generate a') || ex.prompt.startsWith('Type /settings') || ex.prompt.startsWith('Use /describe') || ex.prompt.startsWith('(With Remix on)') ? `<p>${ex.prompt}</p>` : `<code>${ex.prompt}</code>`;
+            examplesHTML += `
+              <div class="example">
+                <strong>${ex.level}:</strong>
+                ${promptContent}
+                ${!promptContent.includes('<p>') ? `<button class="copy-btn" title="Copy Prompt">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
+                    <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zM9 2H7v.5a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5V2z"/>
+                  </svg>
+                </button>` : ''}
+              </div>`;
+          });
+
+          card.innerHTML = `
+            <div class="param-card">
+                <h2>${param.title} <code>${param.param}</code></h2>
+                <h3>Core Concept</h3>
+                <p>${param.concept}</p>
+                <h3>Why It Matters for Game Design</h3>
+                <p>${param.why}</p>
+                ${examplesHTML}
+                <h3>What Not To Do</h3>
+                <div class="example what-not-to-do">
+                <p>${param.pitfalls}</p>
+                </div>
+            </div>`;
+          
+          contentEl.appendChild(card);
+          contentEl.scrollTop = 0; // Scroll to top of content area on card change
+          updatePagination();
+      }
+
+      function updatePagination() {
+        progressTextEl.textContent = `${currentCardIndex + 1} / ${parameterData.length}`;
+        prevBtn.disabled = currentCardIndex === 0;
+        nextBtn.disabled = currentCardIndex === parameterData.length - 1;
+      }
+
+      function setupInteractivity() {
+        prevBtn.addEventListener('click', () => {
+          if (currentCardIndex > 0) {
+            currentCardIndex--;
+            renderCard(currentCardIndex);
+          }
+        });
+
+        nextBtn.addEventListener('click', () => {
+          if (currentCardIndex < parameterData.length - 1) {
+            currentCardIndex++;
+            renderCard(currentCardIndex);
+          }
+        });
+
+        startBtn.addEventListener('click', () => {
+            introView.style.display = 'none';
+            deckView.style.display = 'flex';
+            renderCard(currentCardIndex);
+        });
+
+        // Copy buttons (event delegation)
+        contentEl.addEventListener('click', e => {
+            const copyBtn = e.target.closest('.copy-btn');
+            if (!copyBtn) return;
+            
+            const codeEl = copyBtn.closest('.example').querySelector('code');
+            if (!codeEl) return;
+
+            const textToCopy = codeEl.innerText;
+            const copyNotification = document.getElementById('copy-notification');
+
+            const textArea = document.createElement('textarea');
+            textArea.value = textToCopy;
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+              document.execCommand('copy');
+              copyNotification.classList.add('show');
+              setTimeout(() => copyNotification.classList.remove('show'), 2000);
+            } catch (err) {
+              console.error('Fallback: Unable to copy', err);
+            }
+            document.body.removeChild(textArea);
+        });
+      }
+
+      // --- INITIALIZATION ---
+      setupInteractivity();
+    });
+  </script>
+</body>
+</html>
