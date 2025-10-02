@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Generative Artist's Workflow: A Firefly Masterclass</title>
+    <meta name="description" content="A complete, interactive tutorial for game designers on how to master Adobe Firefly. Learn the C-P-R method (Conceptualize, Prompt, Refine) through deep-dive scenarios, interactive recipes, quizzes, and more.">
+    <meta name="keywords" content="Adobe Firefly, AI Art, Game Design, Generative AI, Prompt Engineering, Tutorial, Asset Creation, Concept Art">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* ================= Base / Theme (Inspired by Reference) ================= */
+        :root {
+            --text:#212529; --bg:#ffffff; --muted:#f8f9fa; --border:#e9ecef;
+            --accent:#fd7e14; --accent-2:#e87312; --header-bg:#212529; --header-fg:#f8f9fa;
+            --ok:#198754; --ok-soft:#d1e7dd; --bad:#dc3545; --bad-soft:#f8d7da;
+            --myth-color: #6c757d; --myth-soft: #e9ecef;
+        }
+        *{box-sizing:border-box;margin:0;padding:0}
+        html{scroll-behavior: smooth;}
+        body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;}
+        .container{max-width:850px;margin:auto;padding:24px;background:var(--bg)}
+        a{color:var(--accent);text-decoration:none; font-weight: 500;}
+        a:hover{text-decoration:underline}
+
+        /* ================= Header / Footer ================= */
+        .site-header{background:var(--header-bg);color:var(--header-fg);padding:14px 24px;border-bottom: 1px solid var(--border);position:sticky;top:0;z-index:100;}
+        .logo{font-weight:700;font-size:1.15rem;color:#fff}
+        .site-footer{text-align:center;margin-top:50px;padding:40px; background: var(--muted); border-top: 1px solid var(--border);}
+        
+        /* ================= Typography & Layout ================= */
+        h1{font-size:clamp(2.2rem,5vw,2.8rem);text-align:left;margin-bottom:8px;color:var(--text);line-height:1.2; font-weight: 700;}
+        .byline{font-size:clamp(1rem,3vw,1.2rem);font-style:italic;color:#495057;margin-bottom:24px}
+        h2{font-size:clamp(1.6rem,4vw,2.2rem);color:var(--text);margin:64px 0 16px;border-bottom:2px solid var(--border);padding-bottom:8px; font-weight: 700;}
+        h3{font-size:clamp(1.2rem,3vw,1.6rem);color:var(--text);margin-top:32px;margin-bottom:12px; font-weight: 600;}
+        h4{font-size:clamp(1rem,2.5vw,1.2rem);font-weight:bold;color:var(--accent-2);margin-bottom:10px}
+        p{margin-bottom:16px;word-wrap:break-word; color: #343a40;}
+        ul{margin-left:24px;margin-bottom:24px;list-style-type:'🎨';padding-left:1em}
+        li{margin-bottom:12px;padding-left:0.5em}
+        .intro{font-size:1.1rem;line-height:1.8;background:var(--muted);padding:24px;border-radius:12px;border-left:4px solid var(--accent);margin:24px 0; color: #495057;}
+        .img-frame{position:relative;width:100%;overflow:hidden;border-radius:12px;margin:16px 0 24px;box-shadow:0 4px 15px rgba(0,0,0,0.05); text-align: center; background: var(--muted); padding: 20px;}
+        .img-frame img, .img-frame svg{max-width:100%;height:auto;border-radius:8px;}
+        .btn{background:var(--accent);color:#fff;border:none;padding:10px 14px;border-radius:10px;font-weight:700;cursor:pointer; transition: background-color 0.2s ease;}
+        .btn:hover { background-color: var(--accent-2); }
+        .btn:disabled { background-color: #adb5bd; cursor: not-allowed; }
+        
+        /* ================= Accordions & Cards ================= */
+        .accordion{display:grid;gap:8px}
+        .accordion-header{width:100%;text-align:left;background:var(--muted);border:1px solid var(--border);padding:16px 20px;border-radius:8px;cursor:pointer;font-size:1.1rem;font-weight:600;display:flex;align-items:center; transition: background-color 0.2s ease;}
+        .accordion-header:hover { background-color: #e9ecef; }
+        .accordion-header .accordion-title { margin-right: auto; padding-right: 1rem; }
+        .accordion-header::after{content:'+';color:#6c757d; transition: transform 0.2s ease;}
+        .accordion-header[aria-expanded="true"]{background:#e9ecef;border-bottom-left-radius:0;border-bottom-right-radius:0}
+        .accordion-header[aria-expanded="true"]::after{transform: rotate(45deg);}
+        .accordion-content{padding:24px;display:none;border:1px solid var(--border);border-top:none;border-radius:0 0 8px 8px; background: #fff;}
+        .code-block { background: #2d2d2d; color: #f8f8f2; font-family: 'Courier New', Courier, monospace; padding: 1.2em; border-radius: 8px; overflow-x: auto; font-size: 0.95rem; }
+        .best-practice-card { background: var(--ok-soft); border-left: 4px solid var(--ok); padding: 16px; border-radius: 8px; margin: 16px 0; }
+        .best-practice-card h5 { color: var(--ok); margin-top: 0; }
+        .what-not-to-do-card { background: var(--bad-soft); border-left: 4px solid var(--bad); padding: 16px; border-radius: 8px; margin: 16px 0; }
+        .what-not-to-do-card h5 { color: var(--bad); margin-top: 0; }
+        .myth-card { background: var(--myth-soft); border-left: 4px solid var(--myth-color); padding: 16px; border-radius: 8px; margin: 16px 0; }
+        .myth-card h5 { color: var(--myth-color); margin-top: 0; }
+
+        /* ================= QUIZ & GLOSSARY ================= */
+        .quiz-container{padding:20px;border:2px solid var(--border);border-radius:12px;background:var(--bg)}
+        .quiz-navigation{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border)}
+        .quiz-body{display:none;} .quiz-body.active{display:block}
+        .quiz-options{display:grid; gap:12px;}
+        .quiz-option label{display:flex; align-items:center; gap:12px; padding:14px;border:2px solid var(--border);border-radius:8px;cursor:pointer;background:var(--muted); transition: all 0.2s ease;}
+        .quiz-option label:hover { border-color: var(--accent-2); }
+        .quiz-option input[type="radio"]{flex-shrink:0;}
+        .quiz-option .explanation{display:none;margin-top:10px;padding:15px;border-radius:6px;border-left:4px solid #a0aec0; font-size: 0.95rem;}
+        .quiz-option.selected.correct label{background:var(--ok-soft);border-color:var(--ok)}
+        .quiz-option.selected.wrong label{background:var(--bad-soft);border-color:var(--bad)}
+        .quiz-option.correct .explanation{border-left-color:var(--ok);background:#d1e7dd}
+        .quiz-option.wrong .explanation{border-left-color:var(--bad);background:#f8d7da}
+        .glossary-cloud{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px;justify-content:center}
+        .glossary-chip{position:relative;display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:999px;background:#fff7ed;border:1px solid #ffd8a8;color:#d9480f;font-weight:600;cursor:pointer;box-shadow:0 2px 6px rgba(253,126,20,.12); transition: all 0.2s ease;}
+        .glossary-chip:hover, .glossary-chip:focus{background:#ffecde;}
+        .glossary-chip .icon { font-size: 1.1em; line-height: 1; }
+        .chip-tip{position:fixed;z-index:9999;min-width:240px;max-width:min(92vw,420px);background:var(--accent);color:#fff;padding:12px 14px;border-radius:12px;box-shadow:0 12px 28px rgba(253,126,20,.35);opacity:0;visibility:hidden;transition:.15s;line-height:1.45}
+        .chip-tip.show{opacity:1;visibility:visible}
+        .chip-tip .arrow{position:absolute;width:12px;height:12px;background:var(--accent);transform:rotate(45deg)}
+        
+        /* Mobile tooltip styles */
+        @media (max-width: 768px) {
+            #code-tooltip { 
+                max-width: calc(100vw - 30px); 
+                font-size: 12px; 
+                padding: 10px; 
+            }
+        }
+
+        /* ================= SCENARIO & PROGRESS ================= */
+        .scenario-container{margin-bottom: 32px; padding:24px;border:1px solid var(--border);border-radius:12px;background:var(--bg)}
+        .scenario-header{display:flex;align-items:center;gap:16px;margin-bottom:20px}
+        .scenario-number{background:var(--accent);color:#fff;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.1rem; flex-shrink: 0;}
+        .hover-term{display:inline;padding:2px 4px;border-radius:3px;background:rgba(253,126,20,0.1);cursor:help;transition:background 0.2s; border-bottom: 1px dashed var(--accent-2);}
+        .hover-term:hover{background:rgba(253,126,20,0.2)}
+        .progress-tracker{display:flex;align-items:center;gap:8px;margin:24px 0;padding:16px;background:var(--muted);border-radius:8px;position:sticky; top: 61px; z-index: 99;}
+        .progress-step{width:24px;height:24px;border-radius:50%;background:var(--border);color:#6c757d;display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:600;transition: all 0.3s ease;}
+        .progress-step.completed{background:var(--ok);color:#fff}
+        .progress-step.current{background:var(--accent);color:#fff; transform: scale(1.2);}
+        .progress-line{flex:1;height:2px;background:var(--border); transition: background-color 0.3s ease;}
+        .progress-line.completed{background:var(--ok)}
+        
+        /* ================= FLIP CARDS for Recipes ================= */
+        .recipe-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .flip-card { background-color: transparent; width: 100%; height: 200px; perspective: 1000px; cursor: pointer; }
+        .flip-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s; transform-style: preserve-3d; }
+        .flip-card:hover .flip-card-inner, .flip-card.flipped .flip-card-inner { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; border-radius: 12px; border: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+        .flip-card-front { background-color: var(--muted); color: var(--text); font-weight: bold; font-size: 1.2rem; }
+        .flip-card-back { background-color: var(--accent); color: white; transform: rotateY(180deg); font-size: 0.9rem; }
+        .flip-card-back strong { color: #ffecde; }
+
+        /* ================= TABLE with STICKY COLUMN ================= */
+        .table-wrap{position:relative;border:1px solid var(--border);border-radius:12px;background:#fff;margin:24px 0}
+        .table-scroll{position:relative;overflow-x:auto}
+        table.data-table{width:100%;border-collapse:collapse;}
+        table.data-table th, table.data-table td{padding:12px 15px;border:1px solid var(--border);text-align:left;vertical-align:top;}
+        table.data-table thead th{background:var(--muted);font-weight:600;}
+        table.data-table tbody tr:nth-child(even){background:#f8f9fa;}
+        table.data-table th:first-child, table.data-table td:first-child { position: -webkit-sticky; position: sticky; left: 0; z-index: 1; border-right: 1px solid var(--border); }
+        table.data-table thead th:first-child { z-index: 2; background-color: var(--muted); }
+        table.data-table tbody td:first-child { background-color: #fff; }
+        table.data-table tbody tr:nth-child(even) td:first-child { background-color: #f8f9fa; }
+
+        /* ================= MISC ================= */
+        .image-comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+        .image-comparison img { width: 100%; border-radius: 8px; border: 1px solid var(--border); }
+        .image-comparison figcaption { font-size: 0.9rem; text-align: center; color: #6c757d; margin-top: 8px; }
+        #code-tooltip {
+           position: fixed !important; 
+           background: #2a2a2a !important; 
+           color: white !important; 
+           padding: 12px !important; 
+           border-radius: 8px !important;
+           font-size: 0.9rem !important; 
+           max-width: 350px !important; 
+           z-index: 9999 !important; 
+           box-shadow: 0 4px 12px rgba(0,0,0,0.5) !important;
+           display: none !important; 
+           pointer-events: none !important;
+           opacity: 0 !important;
+           transition: opacity 0.2s ease !important;
+           white-space: normal !important;
+           line-height: 1.5 !important;
+           border: 1px solid rgba(255,255,255,0.2) !important;
+           left: 50px !important;
+           top: 50px !important;
+        }
+        .poll-container { background: var(--muted); padding: 20px; border-radius: 12px; margin-top: 24px; border: 1px solid var(--border); }
+        .poll-option { background: #fff; padding: 10px; border-radius: 8px; margin-bottom: 8px; cursor: pointer; position: relative; overflow: hidden; border: 1px solid var(--border); }
+        .poll-option:hover { border-color: var(--accent-2); }
+        .poll-bar { position: absolute; left: 0; top: 0; height: 100%; background: var(--accent-2); opacity: 0.2; transition: width 0.5s ease; }
+        .poll-text { position: relative; z-index: 1; }
+        .poll-percent { position: relative; z-index: 1; font-weight: bold; }
+        .challenge-solution { margin-top: 16px; padding-top: 16px; border-top: 1px dashed var(--border); }
+    </style>
+</head>
+<body>
+
+    <header class="site-header">
+        <a href="#" class="logo">🎨 Firefly Masterclass</a>
+    </header>
+
+    <div class="container">
+        <h1>The Generative Artist's Workflow</h1>
+        <p class="byline">A Firefly Masterclass for Game Designers</p>
+        <p class="intro">Welcome! This guide isn't just about writing prompts—it's about learning a complete creative framework. Inspired by the best pedagogical practices, we'll teach you the <strong>C-P-R Method</strong>: a systematic process to <strong>Conceptualize</strong>, <strong>Prompt</strong>, and <strong>Refine</strong> your ideas into professional-grade game assets using Adobe Firefly.</p>
+        
+        <div class="img-frame">
+            <svg viewBox="0 0 600 200" xmlns="http://www.w3.org/2000/svg">
+                <title>The C-P-R Method</title>
+                <defs><marker id="arrowhead" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent)"/></marker></defs>
+                <style>.cpr-box{fill:var(--muted);stroke:var(--accent);stroke-width:2;rx:8} .cpr-text{font-family:Inter;font-size:16px;text-anchor:middle;fill:var(--text)} .cpr-arrow{stroke:var(--accent);stroke-width:2;marker-end:url(#arrowhead)} .cpr-title{font-weight:700;font-size:20px; fill: var(--text);}</style>
+                <rect x="50" y="70" width="120" height="60" class="cpr-box"/><text x="110" y="105" class="cpr-text cpr-title">CONCEPT</text>
+                <line x1="170" y1="100" x2="230" y2="100" class="cpr-arrow"/>
+                <rect x="240" y="70" width="120" height="60" class="cpr-box"/><text x="300" y="105" class="cpr-text cpr-title">PROMPT</text>
+                <line x1="360" y1="100" x2="420" y2="100" class="cpr-arrow"/>
+                <rect x="430" y="70" width="120" height="60" class="cpr-box"/><text x="490" y="105" class="cpr-text cpr-title">REFINE</text>
+                <path d="M 490 130 C 550 170, 300 190, 110 130" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="5,5" marker-end="url(#arrowhead)"/>
+            </svg>
+        </div>
+
+        <!-- Progress Tracker -->
+        <div class="progress-tracker">
+            <div class="progress-step" data-step="0">1</div><div class="progress-line" data-line="0"></div>
+            <div class="progress-step" data-step="1">2</div><div class="progress-line" data-line="1"></div>
+            <div class="progress-step" data-step="2">3</div><div class="progress-line" data-line="2"></div>
+            <div class="progress-step" data-step="3">4</div><div class="progress-line" data-line="3"></div>
+            <div class="progress-step" data-step="4">5</div><div class="progress-line" data-line="4"></div>
+            <div class="progress-step" data-step="5">6</div><div class="progress-line" data-line="5"></div>
+            <div class="progress-step" data-step="6">7</div>
+        </div>
+        
+        <section id="workspace-tour">
+            <h2>Section 1: Your Creative Cockpit</h2>
+            <p>Before we create, let's get familiar with the workspace. Click on the labeled areas below to learn their function.</p>
+             <div class="img-frame">
+                <svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg" style="background: var(--muted); border-radius: 8px;">
+                    <title>Firefly UI Tour</title>
+                    <style>.tour-label{font-family:Inter;font-size:14px;fill:var(--text);font-weight:600; cursor:pointer; transition: fill 0.2s; pointer-events: bounding-box;}.tour-label:hover{fill:var(--accent);}.tour-area{fill:rgba(253, 126, 20, 0.1);stroke:var(--accent);stroke-width:2;stroke-dasharray:5,5;cursor:pointer;transition:fill 0.2s; pointer-events: all;} .tour-area:hover{fill:rgba(253, 126, 20, 0.3);}</style>
+                    <rect id="tour-canvas" class="tour-area" x="220" y="20" width="560" height="315" rx="8" pointer-events="all" fill="rgba(253, 126, 20, 0.1)"/><text x="500" y="180" class="tour-label" text-anchor="middle">🖼️ Your Canvas</text>
+                    <g id="tour-controls" class="tour-area">
+                        <rect x="20" y="20" width="180" height="410" rx="8" fill="rgba(253, 126, 20, 0.1)" pointer-events="all"/>
+                        <text x="110" y="50" class="tour-label" text-anchor="middle">Controls Panel</text>
+                    </g>
+                    <rect id="tour-style" class="tour-area" x="30" y="70" width="160" height="70" rx="4" pointer-events="all" fill="rgba(253, 126, 20, 0.1)"/><text x="110" y="110" class="tour-label" text-anchor="middle">Style Reference</text>
+                    <rect id="tour-composition" class="tour-area" x="30" y="150" width="160" height="70" rx="4" pointer-events="all" fill="rgba(253, 126, 20, 0.1)"/><text x="110" y="190" class="tour-label" text-anchor="middle">Composition</text>
+                    <rect id="tour-effects" class="tour-area" x="30" y="230" width="160" height="100" rx="4" pointer-events="all" fill="rgba(253, 126, 20, 0.1)"/><text x="110" y="280" class="tour-label" text-anchor="middle">Effects & Styles</text>
+                    <rect id="tour-settings" class="tour-area" x="30" y="340" width="160" height="70" rx="4" pointer-events="all" fill="rgba(253, 126, 20, 0.1)"/><text x="110" y="380" class="tour-label" text-anchor="middle">General Settings</text>
+                    <rect id="tour-prompt" class="tour-area" x="220" y="355" width="450" height="75" rx="4" pointer-events="all" fill="rgba(253, 126, 20, 0.1)"/><text x="445" y="395" class="tour-label" text-anchor="middle">✍️ The Prompt Box</text>
+                    <rect id="tour-generate" class="tour-area" x="680" y="355" width="100" height="75" rx="4" fill="var(--accent)" pointer-events="all"/><text x="730" y="395" class="tour-label" text-anchor="middle" style="fill:#000;">Generate</text>
+                </svg>
+            </div>
+        </section>
+
+        <section id="deep-dive-scenarios">
+            <h2>Section 2: Deep Dive Scenarios</h2>
+            <p>These 5 scenarios take you step-by-step through the C-P-R Method. You'll see exactly how a designer's mind works, from the first vague idea to the final, polished asset.</p>
+            <div id="deep-dive-accordion" class="accordion"></div>
+        </section>
+        
+        <section id="cheatsheet">
+             <h2>Section 3: Firefly Feature Cheatsheet</h2>
+             <p>A structured reference table for Firefly's key features and controls. Use this as a quick guide to remember the purpose of each tool.</p>
+             <div class="table-wrap">
+                <div class="table-scroll">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Feature / Control</th>
+                                <th>Option / Parameter Name</th>
+                                <th>Range / Choices / Defaults</th>
+                                <th>Purpose / Notes / Behavior</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Model / Engine</strong></td>
+                                <td>Firefly Image models</td>
+                                <td>e.g. Image Model 4, Image Model 4 Ultra</td>
+                                <td>Different models yield different fidelity, style, and detail. Use higher models for photorealism.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>General Settings</strong></td>
+                                <td>Aspect Ratio</td>
+                                <td>Square, Landscape, Portrait, Widescreen</td>
+                                <td>Controls the framing shape of generated images. Changing this shifts layout.</td>
+                            </tr>
+                             <tr>
+                                <td><strong>General Settings</strong></td>
+                                <td>Content Type</td>
+                                <td>Auto, Photo, Art/Illustration</td>
+                                <td>Determines photorealism vs stylized looks. "Auto" allows Firefly to choose intelligently.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Structure</strong></td>
+                                <td>Composition Reference</td>
+                                <td>Upload any image as structure guide</td>
+                                <td>Used to guide composition: position, layout, shape, pose.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Structure</strong></td>
+                                <td>Strength (Structure)</td>
+                                <td>Low, Medium (default), High</td>
+                                <td>Controls how strictly the generated image matches the structure reference.</td>
+                            </tr>
+                             <tr>
+                                <td><strong>Style</strong></td>
+                                <td>Style Reference</td>
+                                <td>Upload any image for style matching</td>
+                                <td>Guides colors, textures, mood, lighting from reference.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Style</strong></td>
+                                <td>Visual Intensity</td>
+                                <td>Slider (0–100, default ~50)</td>
+                                <td>Controls how "bold / detailed" the base image is before applying style reference.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Style</strong></td>
+                                <td>Strength (Style)</td>
+                                <td>Slider (Low → High)</td>
+                                <td>Controls how closely the output should follow the style reference. Higher = tighter match.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Effects</strong></td>
+                                <td>Preset / Effect Options</td>
+                                <td>Anime, Minimalism, Vector, etc.</td>
+                                <td>Shifts the genre / rendering style of the image.</td>
+                            </tr>
+                             <tr>
+                                <td><strong>Effects</strong></td>
+                                <td>Lighting Options</td>
+                                <td>Golden Hour, Dramatic, Low Light, Studio</td>
+                                <td>Controls the mood and direction of lighting in the generated image.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Effects</strong></td>
+                                <td>Camera Settings</td>
+                                <td>Close-up, Wide Angle, Shot from Above</td>
+                                <td>Defines perspective and relationship between viewer and subject.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Advanced</strong></td>
+                                <td>API Presets</td>
+                                <td>bw, fantasy, dramatic_light, etc.</td>
+                                <td>Can be passed in API calls with a "strength" parameter to influence output.</td>
+                            </tr>
+                             <tr>
+                                <td><strong>Advanced</strong></td>
+                                <td>Custom Models</td>
+                                <td>Supports enterprise fine-tuning</td>
+                                <td>Enterprises can train Firefly to match brand identity and style.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+             </div>
+        </section>
+
+        <section id="recipes">
+            <h2>Section 4: Rapid-Fire Recipes</h2>
+            <p>15 quick, common tasks for game designers presented as interactive flip cards. Hover over (or tap on mobile) any card to reveal the "how-to" prompt and technique.</p>
+            <div id="recipes-grid" class="recipe-grid"></div>
+        </section>
+
+        <section id="glitch-gallery">
+            <h2>Section 5: The Glitch Gallery - Learning from Mistakes</h2>
+            <p>Seeing what goes wrong is as important as seeing what goes right. Here are common issues and how to fix them.</p>
+            <div id="glitch-gallery-accordion" class="accordion"></div>
+        </section>
+
+        <section id="challenges">
+            <h2>Section 6: The Designer's Gauntlet</h2>
+            <p>Test your knowledge and practice your new skills. Start with the quiz, then move on to the creative challenges.</p>
+            <h3>Part A: The Tool Quiz (15 Questions)</h3>
+            <div id="quiz-container" class="quiz-container"></div>
+            <h3>Part B: What's Your Favorite Tool? (Poll)</h3>
+            <div id="poll-container" class="poll-container"></div>
+            <h3>Part C: Creative Challenges</h3>
+            <div id="challenges-accordion" class="accordion"></div>
+        </section>
+
+        <section id="resources">
+            <h2>Section 7: Glossary & FAQ</h2>
+            <p>Your reference guide for 15 key terms and 15 common questions.</p>
+            <h3>Glossary</h3>
+            <div id="glossary-cloud" class="glossary-cloud"></div>
+            <h3>Frequently Asked Questions</h3>
+            <div id="faq-accordion" class="accordion"></div>
+        </section>
+
+    </div>
+
+    <footer class="site-footer">
+        <p>© Beyond Dictionary, 2025. All rights reserved.</p>
+    </footer>
+
+    <div id="code-tooltip"></div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        
+        // ==================================
+        // DATA OBJECTS (Full & Detailed)
+        // ==================================
+
+        const tourData = {
+            'tour-style': '<strong>Style Reference:</strong> Upload any image to make Firefly copy its colors, lighting, textures, and mood. Essential for creating consistent game assets that look like they belong in the same world. Perfect for maintaining visual coherence across your project.',
+            'tour-composition': '<strong>Composition Reference:</strong> Upload a simple wireframe or sketch to control layout and structure. Tells Firefly exactly where to place elements and where to leave space. Critical for creating functional backgrounds with proper UI spacing.',
+            'tour-effects': '<strong>Effects & Styles:</strong> Your creative shortcut library with dozens of one-click styles, materials, and techniques. Perfect for rapid experimentation and discovering new artistic directions without complex prompting or advanced knowledge.',
+            'tour-settings': '<strong>General Settings:</strong> Your technical control panel for image dimensions, output type (Photo vs Art), and model-specific options. Always check these before generating to ensure your results match your intended use case and requirements.',
+            'tour-prompt': '<strong>The Prompt Box:</strong> Your direct communication channel with the AI. Describe your desired image with specific details about materials, lighting, and context. The more descriptive and precise you are, the better your generation results will be.',
+            'tour-generate': '<strong>Generate Button:</strong> The engine start key that begins the image creation process. After writing your prompt and configuring settings, click here to generate. Most models produce four unique options for you to review and select from.',
+            'tour-canvas': '<strong>Your Canvas:</strong> The digital workspace where your four generated image options appear. Review, compare, and select your favorite creation here. Access options to download, edit, or share your images directly from this interface.',
+            'tour-controls': '<strong>Controls Panel:</strong> The left sidebar containing all your creative tools and settings. This is where you configure Style Reference, Composition Reference, Effects, and General Settings to fine-tune your image generation process.'
+        };
+
+        const hoverTermData = {
+            'material': { 
+                title: 'Material Specification', 
+                definition: 'Be extremely specific about materials to avoid generic results. Instead of "metal," use "obsidian iron," "weathered bronze," or "polished steel." This tells the AI exactly what texture, color, and finish you want, creating more realistic and detailed assets.' 
+            },
+            'detail': { 
+                title: 'Visual Detail Enhancement', 
+                definition: 'Describe distinctive visual features that make your asset unique. "Embossed dragon head emblem" is far better than "dragon symbol." Include specific details like "intricate Celtic knots," "weathered battle scars," or "ornate filigree patterns" to guide the AI toward professional-quality results.' 
+            },
+            'lighting': { 
+                title: 'Lighting Direction & Source', 
+                definition: 'Specify both the light source and its visual effect. "Glowing cracks with molten lava inside" tells the AI the light comes from within the object. Use terms like "dramatic backlighting," "soft ambient glow," or "harsh directional shadows" to control mood and atmosphere in your generated images.' 
+            },
+            'style': { 
+                title: 'Artistic Style Reference', 
+                definition: 'Define the artistic approach to ensure consistent results. Use terms like "photorealistic," "cel-shaded anime style," "watercolor painting," or "vector illustration." This prevents the AI from mixing different artistic approaches and ensures your assets match your game\'s visual style perfectly.' 
+            },
+            'composition': { 
+                title: 'Composition & Framing', 
+                definition: 'Control how elements are arranged and what\'s visible. Use photographic terms like "close-up shot," "wide-angle view," "bird\'s eye perspective," or "macro photography." This ensures your generated assets have the right framing and composition for their intended use in your game.' 
+            },
+            'mood': { 
+                title: 'Mood & Atmosphere', 
+                definition: 'Set the emotional tone through descriptive adjectives. Words like "eerie," "majestic," "whimsical," "ominous," or "serene" guide the AI\'s color choices, lighting, and overall feel. Combine with specific lighting terms like "golden hour" or "dramatic shadows" for maximum impact.' 
+            }
+        };
+
+        const deepDiveData = [
+            {
+                title: 'Creating a High-Impact "Wild" Symbol',
+                content: `<h4>🎨 CONCEPT</h4>
+                <p>The goal is to create a "Wild" symbol for a fantasy slot game called "Dragon's Forge." It needs to feel powerful, valuable, and fit a theme of dark metal and fire.</p>
+                <h4>✍️ PROMPT (Iterative Process)</h4>
+                <p><strong>Attempt 1 (Vague):</strong> <code>dragon coin</code></p>
+                <div class="what-not-to-do-card"><h5>Critique</h5><p>Too simple. Results are generic and stylistically inconsistent. Lacks impact.</p></div>
+                <p><strong>Attempt 2 (Better):</strong> <code>Metal dragon coin, fire, dramatic lighting</code></p>
+                <div class="myth-card"><h5>Critique</h5><p>Better, but "Metal" is generic. Style is still undefined.</p></div>
+                <p><strong>Attempt 3 (Polished):</strong></p>
+                <p>Click on the highlighted terms to see the context-specific definitions.</p>
+                <div class="code-block"><span class="hover-term" data-term="material">Obsidian iron coin</span>, <span class="hover-term" data-term="detail">embossed dragon head emblem</span>, <span class="hover-term" data-term="lighting">glowing cracks with molten lava inside</span></div>
+                <h4>✨ REFINE</h4>
+                <p>The final prompt uses specific keywords and is supported by Control Panel settings (Content Type: Photo, Effects: Hyperrealistic) to achieve a professional result.</p>
+                <div class="image-comparison">
+                    <figure><img src="https://placehold.co/400x400/f8f9fa/6c757d?text=Vague+Prompt" alt="Vague prompt result"><figcaption>Result of "dragon coin"</figcaption></figure>
+                    <figure><img src="https://placehold.co/400x400/fd7e14/ffffff?text=Polished+Prompt" alt="Polished prompt result"><figcaption>Result of Polished Prompt</figcaption></figure>
+                </div>`
+            },
+            {
+                title: 'Designing a Stylized Character Portrait',
+                content: `<h4>🎨 CONCEPT</h4><p>Create a main character portrait for a whimsical RPG. The style should be painterly and soft, not photorealistic.</p>
+                <h4>✍️ PROMPT</h4>
+                <p><strong>Attempt 1:</strong> <code>elf girl</code></p>
+                <div class="what-not-to-do-card"><h5>Critique</h5><p>Extremely generic. Will produce a mix of photorealistic and 3D renders with no consistent artistic vision.</p></div>
+                <p><strong>Attempt 2 (Polished):</strong></p>
+                <div class="code-block">Portrait of a young elf princess, <span class="hover-term" data-term="mood">mischievous smile</span>, long <span class="hover-term" data-term="material">silver hair with glowing flowers</span>, <span class="hover-term" data-term="style">digital painting</span>, beautiful character design, <span class="hover-term" data-term="style">style of a storybook illustration</span></div>
+                <h4>✨ REFINE</h4><p>Adding "digital painting" and "style of a storybook illustration" are crucial for guiding the AI away from realism. Use <strong>Content Type: Art</strong> and browse the <strong>Effects > Themes</strong> panel for styles like "Fantasy" or "Concept Art" to further enhance the look.</p>`
+            },
+            {
+                title: 'Building a Functional Background Scene',
+                content: `<h4>🎨 CONCEPT</h4><p>Create a background for a game menu. It needs a clear area on the left side for buttons.</p>
+                <h4>✍️ PROMPT</h4>
+                <p><strong>The Problem:</strong> A prompt like <code>fantasy throne room</code> will create a beautiful image, but the throne might be right where your menu needs to go.</p>
+                <p><strong>The Solution:</strong> Use <strong>Composition Reference</strong>. Upload a simple black and white image with a black rectangle on the left.</p>
+                <div class="code-block">A grand, empty fantasy throne room, <span class="hover-term" data-term="lighting">cinematic lighting</span>, <span class="hover-term" data-term="lighting">sunbeams coming through a large window</span></div>
+                <h4>✨ REFINE</h4><p>The AI will now generate the throne room but keep the most interesting details (the throne, the window) away from the black rectangle, leaving you a perfectly framed space for your UI. This is planning before prompting.</p>`
+            },
+             {
+                title: 'Crafting a UI Button Set',
+                content: `<h4>🎨 CONCEPT</h4><p>Design a set of UI buttons (Play, Options, Quit) with a "steampunk" theme of polished wood and brass.</p>
+                <h4>✍️ PROMPT</h4>
+                <p><strong>Step 1 (The "Style Bible"):</strong> First, perfect one button.</p>
+                <div class="code-block">Round steampunk UI button, <span class="hover-term" data-term="material">polished mahogany wood</span>, <span class="hover-term" data-term="detail">intricate brass border with gears</span>, "Play" text, <span class="hover-term" data-term="style">game asset</span>, on a dark background</div>
+                <p>Select the best result.</p>
+                <p><strong>Step 2 (The Family):</strong> Upload your perfect "Play" button to <strong>Style Reference</strong> and set intensity to high (80%+).</p>
+                <p><strong>New Prompts:</strong> <code>... "Options" text ...</code> and <code>... "Quit" text ...</code></p>
+                <h4>✨ REFINE</h4><p>The Style Reference will force the new buttons to adopt the same wood texture, brass color, and lighting as your original, ensuring a perfectly consistent UI kit. If the text is garbled, generate the button without text and add it later in Photoshop.</p>`
+            },
+            {
+                title: 'Generating an Animated Effect',
+                content: `<h4>🎨 CONCEPT</h4><p>Create a short, looping video of a "magic shield" effect for a power-up.</p>
+                <h4>✍️ PROMPT (in Text to Video)</h4>
+                <p><strong>Attempt 1:</strong> <code>magic shield</code></p>
+                <div class="what-not-to-do-card"><h5>Critique</h5><p>This might show someone holding a shield. It's not the effect itself.</p></div>
+                <p><strong>Attempt 2 (Polished):</strong> <code>A shimmering, hexagonal, blue energy shield materializing, magical particles swirling, looping animation, on a transparent background</code></p>
+                <h4>✨ REFINE</h4><p>Key phrases like "materializing," "swirling," and "looping animation" are crucial for guiding the video generation. Asking for a "transparent background" (if the model supports it) makes it a game-ready asset that can be overlaid on characters.</p>`
+            }
+        ];
+
+        const recipeData = [
+            { front: "Seamless Texture", back: "<strong>Prompt:</strong> <code>photorealistic cobblestone texture, mossy --style seamless tile</code><br><strong>Use Case:</strong> Creating tiling backgrounds and materials for 3D models." },
+            { front: "Match a Movie's Style", back: "Upload a screenshot from a movie (e.g., 'Dune') to <strong>Style Reference</strong>.<br><strong>Prompt:</strong> <code>A lone wanderer in a desert</code>" },
+            { front: "Consistent Icons", back: "Perfect one icon, then use it as a <strong>Style Reference</strong> with high intensity for all other icons." },
+            { front: "Isolated Asset", back: "Add <code>game asset, on a plain background</code> or <code>... on a black background</code> to your prompt to get clean, isolated objects." },
+            { front: "Vector Logo", back: "Use the <strong>Text to Vector</strong> model. <strong>Prompt:</strong> <code>Minimalist wolf head logo, geometric, clean lines</code>" },
+            { front: "Specific Camera Angle", back: "Use photographic terms like <code>low-angle shot</code>, <code>top-down view</code>, or <code>macro photography</code> in your prompt." },
+            { front: "Change a Color", back: "Use the <strong>Generative Fill</strong> tool in Photoshop/Express or prompt: <code>A red sports car</code> and use a Style Reference of a blue object." },
+            { front: "Animated Icon", back: "In <strong>Text to Video</strong>, prompt: <code>A golden star icon, gently rotating and sparkling, looping animation</code>" },
+            { front: "Sound Effect", back: "In <strong>Generate Sound Effects</strong>, be descriptive: <code>Sound of a heavy stone door grinding open, deep echo</code>" },
+            { front: "Pixel Art", back: "Add <code>pixel art</code>, <code>16-bit video game style</code> to your prompt and use the <strong>Pixel Art</strong> effect from the Effects panel." },
+            { front: "Watercolor Style", back: "Add <code>watercolor painting, soft edges, paper texture</code> to your prompt and use the <strong>Watercolor</strong> effect." },
+            { front: "Clean UI Element", back: "Prompt: <code>A clean, minimalist health bar, green to red gradient, UI element for a sci-fi game</code>" },
+            { front: "Force a Mood", back: "Use lighting keywords: <code>eerie backlighting</code> for horror, <code>golden hour</code> for warmth, <code>neon lighting</code> for cyberpunk." },
+            { front: "Blueprint Schematic", back: "Prompt: <code>Blueprint schematic of a futuristic spaceship, white lines on a blue background, technical drawing</code>" },
+            { front: "Get a Specific Pose", back: "Describe the action: <code>A knight, seen from behind, looking out over a vast valley at sunrise, silhouette</code>" },
+        ];
+        
+        const glitchGalleryData = [
+            {
+                title: 'The "Too Literal" Problem',
+                content: `<div class="what-not-to-do-card"><h5>❌ Problematic Prompt</h5><p><code>A slot machine symbol of a flaming seven</code></p><p><strong>Result:</strong> Often generates a literal photograph of a slot machine screen showing a seven on fire, not a clean, usable game asset.</p></div>
+                <div class="best-practice-card"><h5>✅ The Fix: Add Artistic Context</h5><p><code>"Lucky number 7" as a stylized game asset, engulfed in magical flames, icon design, vibrant colors, on a dark background</code></p><p><strong>Why it works:</strong> We changed the context from a "slot machine symbol" (which prompts for photos of machines) to a "stylized game asset" and "icon design."</p></div>`
+            },
+            {
+                title: 'The Mangled Hands & Limbs Issue',
+                content: `<div class="what-not-to-do-card"><h5>❌ Problematic Prompt</h5><p><code>A beautiful queen waving to a crowd</code></p><p><strong>Result:</strong> The character might have six fingers, a distorted arm, or other anatomical oddities.</p></div>
+                <div class="best-practice-card"><h5>✅ The Fix: Prompt Defensively & Refine</h5><p><strong>Prompt Fix:</strong> Add keywords like <code>anatomically correct</code>, <code>detailed hands</code>. Sometimes prompting for a pose that hides the hands (e.g., <code>...hands behind her back</code>) is a practical workaround.</p><p><strong>Refine Step:</strong> This is a classic case for the "Refine" step. Open the generated image in Photoshop and use the <strong>Generative Fill</strong> tool to select the malformed hand and regenerate just that small area.</p></div>`
+            },
+            {
+                title: 'The Garbled Text Nightmare',
+                content: `<div class="what-not-to-do-card"><h5>❌ Problematic Prompt</h5><p><code>A shop sign that says "The Rusty Flagon"</code></p><p><strong>Result:</strong> The sign will have unreadable, gibberish text that vaguely resembles the words you asked for.</p></div>
+                <div class="best-practice-card"><h5>✅ The Fix: Generate Visually, Add Text Manually</h5><p>Image generation models are not good at rendering text. The professional workflow is to generate the visual element and add the text in an editor.</p><p><strong>Correct Prompt:</strong> <code>A rustic, weathered wooden tavern sign, hanging from wrought iron chains, no text</code>. Then, open the result in Photoshop or Express and add your desired text with the Text Tool.</p></div>`
+            }
+        ];
+        
+        const quizData = [
+            { q: "For creating a consistent set of icons, which tool is most important?", correct: 1, options: ["Composition Reference", "Style Reference", "Effects Browser"], explanation: "Correct! Style Reference is the key to professional consistency. It analyzes the colors, lighting, textures, and overall mood of your uploaded image and applies that aesthetic to new generations. This ensures that every asset, from a character to a UI button, feels like it belongs in the same cohesive game world." },
+            { q: "To control the layout of a scene, what should you upload?", correct: 0, options: ["A wireframe to Composition Reference", "A finished image to Style Reference", "A color palette to Effects"], explanation: "Correct! Composition Reference is like giving the AI a blueprint. By uploading a simple, high-contrast wireframe, you tell the AI exactly where your UI elements will go, forcing it to generate the interesting parts of the scene in the visible areas. This is a crucial step for creating functional, well-designed backgrounds." },
+            { q: "A prompt for a 'fire sword' generates a photo of a man holding a sword. How do you get just the sword?", correct: 2, options: ["Add 'photorealistic' to the prompt", "Use the 'Low lighting' effect", "Add 'game asset, icon design, on a black background'"], explanation: "Correct! You need to change the context of the prompt. By specifying 'game asset' and 'icon design,' you tell the AI you're not looking for a realistic photo, but a clean object. Adding 'on a black background' helps ensure the asset is isolated and easy to use in a game engine." },
+            { q: "What does adding '--style seamless tile' do?", correct: 0, options: ["Creates an image that can be tiled perfectly", "Adds a tile texture to the image", "Makes the image look like a ceramic tile"], explanation: "Correct! This is a powerful but specific command used for creating textures. It instructs the AI to ensure the right edge of the image perfectly matches the left edge, and the top matches the bottom. This allows you to repeat the image seamlessly to cover large areas without visible borders." },
+            { q: "Your AI-generated text is unreadable. What should you do?", correct: 1, options: ["Keep trying different prompts to fix the text", "Generate the image without text and add it in an editor", "Increase the Visual Intensity"], explanation: "Correct. This is a fundamental limitation of current image models. The professional workflow is to never fight the AI on text. Generate the beautiful visual element (like a sign or banner) with a prompt like '...no text,' then open that image in Photoshop or Express to add your crisp, perfectly legible text manually." },
+            { q: "What's the best way to get a specific camera angle?", correct: 2, options: ["Hope the AI guesses correctly", "Describe the scene from that angle", "Use photographic terms like 'low-angle shot' or 'top-down view'"], explanation: "Correct! The AI models are trained on vast datasets of photographs and understand the language of photography. Using specific terms like 'low-angle shot,' 'macro photo,' 'fisheye lens,' or 'top-down view' gives you much more precise control over the final composition than just describing the scene." },
+            { q: "The 'Mangled Hands' problem is best solved by...", correct: 0, options: ["A combination of defensive prompting and post-editing", "Only prompting for characters with fists", "Always using a low Visual Intensity"], explanation: "Correct. This is a well-known AI weakness. You can reduce the chances of errors by prompting for 'detailed, anatomically correct hands,' but the most reliable and professional solution is the Refine step: take your best generation into Photoshop and use the Generative Fill tool to select and fix just the hands." },
+            { q: "To make an asset look like a cartoon, you should...", correct: 1, options: ["Use Content Type: Photo", "Use Content Type: Art and add 'cel-shaded, anime style'", "Use the 'Photorealistic' effect"], explanation: "Correct. The 'Content Type: Art' toggle is your starting point. It tells the AI to move away from realism. You can then refine the specific look by adding style keywords like 'anime style,' 'cel-shaded,' 'children's book illustration,' or 'flat design' to your prompt to achieve your desired cartoon aesthetic." },
+            { q: "What is a 'Seed' number used for?", correct: 2, options: ["To make the image grow like a plant", "To select a color palette", "To reproduce a similar result from the same prompt"], explanation: "Correct. The seed is the starting number for the generation process. If you find an image you like but want to tweak the prompt slightly, reusing the same seed number ensures the new generation will have a very similar composition and feel. It's a key tool for iterative design and refinement." },
+            { q: "When would you use a high 'Visual Intensity' for a Style Reference?", correct: 0, options: ["When you want the new image to VERY closely match the reference style", "When you want more creative freedom", "When you are generating a landscape"], explanation: "Correct. A high intensity slider (e.g., 80-100%) forces the AI to be extremely faithful to the colors, lighting, and textures of your reference image. This is essential when creating a set of matching UI icons or characters where visual consistency is the top priority." },
+            { q: "What's the main purpose of the C-P-R Method?", correct: 1, options: ["A way to bill clients", "A structured process for thinking, creating, and improving", "A specific type of prompt"], explanation: "Correct. Conceptualize, Prompt, Refine (C-P-R) is a mental framework designed to make your creative process more deliberate and professional. It encourages you to think and plan before you generate (Conceptualize), master the tools of creation (Prompt), and always include a final step for polish and quality control (Refine)." },
+            { q: "To create a clean vector logo, which tool is best?", correct: 2, options: ["Text to Image with 'logo' in the prompt", "Generate Sound Effects", "The dedicated 'Text to Vector' model"], explanation: "Correct. While you can generate logo-like images with Text to Image, the 'Text to Vector' model is specifically designed to create SVG (Scalable Vector Graphic) files. These files are made of lines and curves, not pixels, meaning they can be scaled to any size without losing quality, which is essential for professional logo design." },
+            { q: "A 'Negative Prompt' allows you to...", correct: 0, options: ["Specify what you DON'T want in the image", "Make the image look sad", "Invert the colors of the image"], explanation: "Correct. A negative prompt is a powerful tool for cleaning up your results. If your images keep including unwanted elements (like text, people, or a specific color), you can add a negative prompt like '--no text, ugly, watermark' to tell the AI to actively avoid those concepts during generation." },
+            { q: "The 'Glitch Gallery' section is designed to...", correct: 1, options: ["Show off cool-looking mistakes", "Teach you how to fix common errors", "Discourage you from using AI"], explanation: "Correct. Understanding why a generation failed is just as educational as understanding why one succeeded. The Glitch Gallery helps you diagnose common problems like literal interpretations or mangled anatomy, and teaches you the specific prompting techniques or workflow adjustments needed to fix them and improve your work." },
+            { q: "The most professional workflow involves...", correct: 2, options: ["Getting a perfect image from a single prompt", "Only using Firefly and no other software", "Using Firefly for rapid generation and an editor for the final polish"], explanation: "Correct. This is the 'Refine' step of the C-P-R method. Professionals use AI for what it does best: incredible speed and creative exploration. They then use dedicated editors like Photoshop for what they do best: precise control, text rendering, and final quality assurance. The combination is faster and produces better results." },
+        ];
+        
+        const challengeData = [
+             { level: "Beginner", title: "Re-skin a Symbol", desc: "Generate an image for 'a lucky golden horseshoe'. Then, using Effects and Color tools, transform it into a 'cursed, ghostly horseshoe'.", solution: `<h4>Solution Steps:</h4><ol><li><strong>CONCEPT:</strong> Start with a basic golden horseshoe, then plan a thematic shift to a spooky, ethereal version.</li><li><strong>PROMPT (Step 1):</strong> Use a simple prompt like <code>a lucky golden horseshoe, game icon, on a black background</code> to get your base asset.</li><li><strong>PROMPT (Step 2):</strong> Keep the same prompt but add modifiers. Go to <strong>Effects > Themes</strong> and select "Ethereal". Go to <strong>Color and Tone</strong> and select "Muted Color". Change the prompt to <code>a cursed, ghostly horseshoe...</code>.</li><li><strong>REFINE:</strong> Compare the outputs. The re-skinned version should now look spooky and desaturated. You could take it into Photoshop to add a subtle glow or mist effect for a final touch.</li></ol>` },
+             { level: "Beginner", title: "Object Fusion", desc: "Create a 'clockwork orange' - a literal orange made of gears and brass.", solution: `<h4>Solution Steps:</h4><ol><li><strong>CONCEPT:</strong> The goal is to merge two distinct objects: an organic orange and mechanical clockwork parts. The final look should be cohesive.</li><li><strong>PROMPT:</strong> Combine descriptive keywords for both objects. A good prompt would be: <code>A photorealistic orange, made entirely of intricate brass gears and clockwork mechanisms, polished metal, detailed</code>.</li><li><strong>PROMPT (Refinement):</strong> If the result looks too much like a plain orange, add more mechanical terms like <code>segmented orange slices made of copper plates</code>. If it looks too mechanical, add more organic terms like <code>natural orange peel texture on the metal</code>.</li><li><strong>REFINE:</strong> In Photoshop, you could enhance the image by adding a metallic gleam with a soft white brush or adjusting the color balance to make the brass look warmer and more realistic.</li></ol>` },
+             { level: "Intermediate", title: "Create a UI Kit", desc: "Generate a 'Play' button, an 'Options' button, and a 'Quit' button that all share a consistent 'polished wood and brass' steampunk style.", solution: `<h4>Solution Steps:</h4><ol><li><strong>CONCEPT:</strong> The core goal is absolute visual consistency across three separate UI elements. The "steampunk" theme dictates the materials.</li><li><strong>PROMPT (The Style Bible):</strong> First, perfect one button. Prompt: <code>Round steampunk UI button, polished mahogany wood, intricate brass border, game asset, on a plain background, no text</code>. Generate until you have a perfect blank button.</li><li><strong>PROMPT (The Family):</strong> Upload your perfect blank button to <strong>Style Reference</strong> and set the intensity to high (80%+). Now, generate the other buttons using the same prompt. The style will be automatically applied.</li><li><strong>REFINE:</strong> Since AI text is unreliable, open all three blank buttons in Photoshop. Use the Text Tool with a thematic font (e.g., a serif or slab-serif font) to add "PLAY", "OPTIONS", and "QUIT". This ensures the text is crisp and consistent.</li></ol>` },
+             { level: "Advanced", title: "Full Asset Package", desc: "Create the assets for a 'Heal' spell: 1) The icon (a glowing green cross), 2) The video (a gentle green light animation), and 3) The sound effect (a soft, magical chime).", solution: `<h4>Solution Steps:</h4><ol><li><strong>CONCEPT:</strong> All three assets must share a "gentle, magical, healing" theme, primarily communicated through green light and soft sounds.</li><li><strong>PROMPT (Icon):</strong> In Text to Image, use: <code>A glowing green cross, magical swirling particles, simple fantasy game icon, on a black background</code>.</li><li><strong>PROMPT (Video):</strong> In Text to Video, use: <code>A gentle pulse of soft green magical light, swirling particles, looping animation, transparent background</code>. The keyword is "pulse," suggesting a healing rhythm.</li><li><strong>PROMPT (Audio):</strong> In Generate Sound Effects, use: <code>Sound of a soft, gentle, magical chime with a warm, rising hum and sparkling sound</code>. Describing the emotion ("warm," "gentle") is key.</li><li><strong>REFINE:</strong> Assemble all three assets in a video editor or game engine to ensure they look and sound good together. You might need to adjust the timing of the sound to match the pulse of the video animation.</li></ol>` },
+             { level: "Advanced", title: "Consistent Character, Different Emotion", desc: "Generate a portrait of a 'happy, smiling cartoon raccoon'. Then, using the first image as a Style Reference, generate a 'sad, crying cartoon raccoon'.", solution: `<h4>Solution Steps:</h4><ol><li><strong>CONCEPT:</strong> The challenge is to maintain character consistency (fur color, face shape, art style) while only changing the emotional expression.</li><li><strong>PROMPT (Base Character):</strong> First, lock in the character's look. Prompt: <code>Headshot portrait of a cute cartoon raccoon, big expressive eyes, happy and smiling, clean digital art style, simple background</code>. Select your favorite result.</li><li><strong>PROMPT (New Emotion):</strong> Upload your "happy raccoon" to <strong>Style Reference</strong> and set the intensity to very high (90%+). This is crucial for consistency. Now, change only the emotional keywords in the prompt: <code>Headshot portrait of a cute cartoon raccoon, big expressive eyes, <strong>sad and crying, tears streaming down face</strong>, clean digital art style, simple background</code>.</li><li><strong>REFINE:</strong> The Style Reference should keep the character design very similar. If minor details are off (e.g., an ear shape), take both images into Photoshop. You can copy the ear from the happy version and blend it onto the sad version to create a perfect match.</li></ol>` }
+        ];
+        
+        const faqData = [
+            { title: "Why do my generated people have weird hands or faces?", content: "This is a classic AI issue. Prompt defensively ('detailed hands'), use poses that hide hands, or use Generative Fill in Photoshop for the final fix." },
+            { title: "How do I get the same character in different poses?", content: "It's tough! Use your best character portrait as a Style Reference with high intensity, then describe the new pose. Using the same Seed number also helps." },
+            { title: "What's the difference between 'Photo' and 'Art' content types?", content: "'Photo' aims for realism. 'Art' is for illustrations, paintings, and stylized looks. For most game assets, start with 'Art'." },
+            { title: "Why is the text in my image unreadable?", content: "Image models are bad at text. The professional workflow is to generate the image with no text, then add it manually in an editor like Photoshop or Express." },
+            { title: "Where can I find my generation history?", content: "Most AI platforms have a 'History' or 'Creations' tab where all your past generations are saved, often along with the prompts and settings you used." },
+            { title: "How can I make my images more unique?", content: "Combine unexpected concepts! Instead of 'knight', try 'bioluminescent mushroom knight'. Mix artistic styles: 'a cyberpunk city in the style of Vincent van Gogh'." },
+            { title: "What does 'CFG Scale' mean?", content: "It stands for Classifier-Free Guidance. It's a setting that controls how strictly the AI follows your prompt. Higher values mean more adherence, lower values mean more creativity." },
+            { title: "How do I create a repeating background?", content: "Use the 'Seamless Tile' effect or add '--style seamless tile' to your prompt. It's specifically designed for creating textures." },
+            { title: "My image is good but a bit blurry. How can I improve it?", content: "Add keywords like 'hyperdetailed', '4K', 'sharp focus' to your prompt. Also, look for an 'Upscale' option after generation, which increases the resolution and often enhances detail." },
+            { title: "What's the difference between Style and Composition Reference?", content: "Style Reference copies the <strong>look and feel</strong> (colors, textures, lighting). Composition Reference copies the <strong>layout and structure</strong>. Use Style for artistic consistency, and Composition for framing your scenes." },
+            { title: "How does a 'Negative Prompt' work?", content: "A negative prompt tells the AI what to AVOID. For example, if you're getting ugly results, you might add '--no ugly, deformed'. If you're getting photos, you could add '--no photograph'." },
+            { title: "What is 'Inpainting' and 'Outpainting'?", content: "Inpainting means selecting a part of an image and regenerating just that area (e.g., fixing a weird hand). Outpainting means extending the image beyond its original borders, letting the AI imagine what comes next." },
+            { title: "Can I train the AI on my own art style?", content: "Yes, this is possible through techniques like LoRA (Low-Rank Adaptation). It involves training a small, specialized 'mini-model' on a set of your own images, which you can then use to influence the main model." },
+            { title: "How does the 'Seed' number work?", content: "The seed is the starting point for the random noise that gets turned into an image. If you use the same prompt, same settings, and same seed, you will get a nearly identical result. This is crucial for iterating on an idea." },
+            { title: "Why are my prompts for complex scenes not working well?", content: "The AI can get confused by too many subjects. Try to simplify. Instead of 'a knight fighting a dragon in a castle', first generate 'a dramatic castle background'. Then, in an editor, generate 'a knight' and 'a dragon' separately on transparent backgrounds and composite them together." }
+        ];
+        
+        const glossaryData = [
+            { term: "Prompt Engineering", emoji: "✍️", def: "The art and science of crafting effective text prompts to guide a generative AI model toward a desired output. It involves choosing specific keywords, structuring phrases, and understanding the model's biases." },
+            { term: "Style Reference", emoji: "🎨", def: "A core Firefly feature where you upload an image to make the AI copy its aesthetic (colors, lighting, texture, mood). It's the primary tool for creating visually consistent assets." },
+            { term: "Composition Reference", emoji: "📐", def: "A Firefly feature where you upload a simple image (like a wireframe) to control the layout and structure of the output. Essential for creating backgrounds with space for UI elements." },
+            { term: "Negative Prompt", emoji: "🚫", def: "A part of a prompt where you specify what you want the AI to AVOID. For example, adding '--no text, watermark' helps clean up images by excluding common unwanted elements." },
+            { term: "Seed", emoji: "🎲", def: "A number that initializes the generation. Using the same prompt and the same seed number will produce nearly identical results, which is crucial for making small tweaks to an image you like." },
+            { term: "Aspect Ratio", emoji: "🖼️", def: "The proportional relationship between the width and height of an image (e.g., 16:9 for widescreen, 1:1 for square). This is a fundamental setting that defines the shape of your canvas." },
+            { term: "Content Type", emoji: "🎭", def: "A primary toggle in Firefly (usually 'Photo' or 'Art') that tells the model whether to aim for photorealism or a more stylized, illustrative look. It's the first step in defining your asset's style." },
+            { term: "Strength", emoji: "🎛️", def: "A slider that controls how strictly Firefly adheres to a Style or Composition Reference. A higher Strength value results in a closer match to the reference image." },
+            { term: "Generative Fill", emoji: "✨", def: "A feature (often in Photoshop) that allows you to select an area of an image and use a text prompt to fill that area with new, context-aware content. Perfect for adding objects or fixing mistakes." },
+            { term: "Diffusion Model", emoji: "🌀", def: "The underlying AI technology used by Firefly. It works by starting with random noise and gradually refining it, step-by-step, into a coherent image that matches the user's prompt." },
+            { term: "Upscaling", emoji: "🔍", def: "The process of increasing the resolution (pixel dimensions) of a generated image. Modern AI upscalers can often add new detail during this process, making the final image sharper and clearer." },
+            { term: "Hallucination", emoji: "👻", def: "A term for when an AI generates something nonsensical or anatomically incorrect, like a person with six fingers. This happens because the model is guessing based on patterns, not true understanding." },
+            { term: "Model Version", emoji: "⚙️", def: "Refers to the specific iteration of the Firefly AI (e.g., Firefly Image 4). Newer models are generally more capable, better at understanding prompts, and produce higher-quality results." },
+            { term: "Seamless Tile", emoji: "🔁", def: "An effect or prompt command that ensures the generated image can be repeated perfectly without visible seams. This is essential for creating textures and repeating backgrounds in games." },
+            { term: "Inpainting / Outpainting", emoji: "🖌️", def: "Inpainting is regenerating a small part of an image (like with Generative Fill). Outpainting is extending an image beyond its original borders, letting the AI imagine and create what's just out of frame." }
+        ];
+        
+        const pollData = {
+            question: "Which Firefly feature is most valuable to your workflow?",
+            options: ["Style Reference", "Composition Reference", "Effects Browser", "Generative Fill (in Photoshop)"],
+            votes: [58, 22, 15, 35] // Starting votes for demonstration
+        };
+        
+        // ==================================
+        // INITIALIZATION
+        // ==================================
+        
+        function initializeAll() {
+            setupUITour();
+            setupAccordions('deep-dive-accordion', deepDiveData, true); // Expand first
+            setupAccordions('glitch-gallery-accordion', glitchGalleryData, true); // Expand first
+            setupAccordions('challenges-accordion', challengeData);
+            setupAccordions('faq-accordion', faqData, true); // Expand first
+            setupRecipes();
+            setupQuiz();
+            setupPoll();
+            setupGlossary();
+            setupHoverTerms();
+            setupProgressTracker();
+        }
+
+
+        // ==================================
+        // COMPONENT SETUP FUNCTIONS
+        // ==================================
+
+        function setupUITour() {
+            const tooltip = document.getElementById('code-tooltip');
+            console.log('Setting up UI tour, tooltip element:', tooltip);
+            
+            // Add click-anywhere-to-close functionality
+            document.addEventListener('click', (e) => {
+                // If clicking outside of tooltip and not on interactive elements, hide tooltip
+                if (!e.target.closest('.tour-area, .tour-label, .hover-term') && !e.target.closest('#code-tooltip')) {
+                    if (tooltip && tooltip.style.display === 'block') {
+                        tooltip.style.setProperty('opacity', '0', 'important');
+                        setTimeout(() => {
+                            tooltip.style.setProperty('display', 'none', 'important');
+                        }, 300);
+                    }
+                }
+            });
+            
+            // Wait for SVG to be ready
+            setTimeout(() => {
+                const elements = document.querySelectorAll('.tour-area, .tour-label');
+                console.log('Found tour elements:', elements.length, elements);
+                
+                elements.forEach(element => {
+                    console.log('Processing element:', element, 'ID:', element.id, 'Classes:', element.className);
+                    let termKey;
+                    
+                    // Determine the key based on element type
+                    if (element.classList.contains('tour-area')) {
+                        termKey = element.id;
+                    } else if (element.classList.contains('tour-label')) {
+                        // Find the associated area for this label
+                        const parentArea = element.closest('g') || element.previousElementSibling;
+                        if (parentArea && parentArea.id) {
+                            termKey = parentArea.id;
+                        } else if (element.textContent.includes('Controls Panel')) {
+                            termKey = 'tour-controls';
+                        } else if (element.textContent.includes('Your Canvas')) {
+                            termKey = 'tour-canvas';
+                        } else if (element.textContent.includes('Style Reference')) {
+                            termKey = 'tour-style';
+                        } else if (element.textContent.includes('Composition')) {
+                            termKey = 'tour-composition';
+                        } else if (element.textContent.includes('Effects & Styles')) {
+                            termKey = 'tour-effects';
+                        } else if (element.textContent.includes('General Settings')) {
+                            termKey = 'tour-settings';
+                        } else if (element.textContent.includes('Prompt Box')) {
+                            termKey = 'tour-prompt';
+                        } else if (element.textContent.includes('Generate')) {
+                            termKey = 'tour-generate';
+                        }
+                    }
+                    
+                    const content = tourData[termKey];
+                    console.log('Element:', element, 'TermKey:', termKey, 'Content:', content);
+                    if (!content) {
+                        console.log('No content found for termKey:', termKey);
+                        return;
+                    }
+
+                    let tooltipTimer;
+                    let hideTimer;
+                    let currentTooltip = null;
+
+                    const updateTooltipPosition = (e) => {
+                        if (window.innerWidth <= 768) {
+                            tooltip.style.setProperty('left', '50%', 'important');
+                            tooltip.style.setProperty('top', '20px', 'important');
+                            tooltip.style.setProperty('transform', 'translateX(-50%)', 'important');
+                            tooltip.style.setProperty('bottom', 'auto', 'important');
+                            return;
+                        }
+                        
+                        tooltip.style.setProperty('bottom', 'auto', 'important');
+                        tooltip.style.setProperty('transform', 'none', 'important');
+
+                        const isTouchEvent = e.type.startsWith('touch');
+                        const eventX = isTouchEvent ? e.touches[0].pageX : e.pageX;
+                        const eventY = isTouchEvent ? e.touches[0].pageY : e.pageY;
+                        
+                        // Get element bounds for better positioning
+                        const elementRect = element.getBoundingClientRect();
+                        const svgRect = element.closest('svg').getBoundingClientRect();
+                        
+                        // Position relative to the element, not just mouse
+                        let x = elementRect.left + (elementRect.width / 2);
+                        let y = elementRect.top - 10; // Above the element
+                        
+                        // Adjust if too close to edges
+                        const clientWidth = document.documentElement.clientWidth;
+                        const clientHeight = document.documentElement.clientHeight;
+                        const tooltipWidth = 350; // Max width
+                        const tooltipHeight = 100; // Estimated height
+                        
+                        // Horizontal positioning
+                        if (x + tooltipWidth > clientWidth) {
+                            x = elementRect.right - tooltipWidth - 10; // Left of element
+                        }
+                        if (x < 10) {
+                            x = 10; // Minimum left margin
+                        }
+                        
+                        // Vertical positioning
+                        if (y - tooltipHeight < 10) {
+                            y = elementRect.bottom + 10; // Below element
+                        }
+                        if (y + tooltipHeight > clientHeight) {
+                            y = clientHeight - tooltipHeight - 10; // Above viewport
+                        }
+
+                        tooltip.style.setProperty('left', `${x}px`, 'important');
+                        tooltip.style.setProperty('top', `${y}px`, 'important');
+                    };
+
+                    const showTooltip = (e) => {
+                        // Clear any existing timers
+                        clearTimeout(tooltipTimer);
+                        clearTimeout(hideTimer);
+                        
+                        // If switching to a different tooltip, close current one first
+                        if (currentTooltip && currentTooltip !== termKey) {
+                            hideTooltip();
+                            // Wait 0.5s before showing new tooltip
+                            tooltipTimer = setTimeout(() => {
+                                showTooltipContent(e);
+                            }, 500);
+                        } else {
+                            // Same tooltip or first tooltip - show immediately
+                            showTooltipContent(e);
+                        }
+                    };
+                    
+                    const showTooltipContent = (e) => {
+                        console.log('Showing tooltip for:', termKey, 'Event:', e.type);
+                        currentTooltip = termKey;
+                        tooltip.innerHTML = content;
+                        
+                        // Set initial opacity to 0 for smooth transition
+                        tooltip.style.setProperty('opacity', '0', 'important');
+                        tooltip.style.setProperty('display', 'block', 'important');
+                        tooltip.style.setProperty('z-index', '9999', 'important');
+                        
+                        // Position the tooltip
+                        if (e) {
+                            updateTooltipPosition(e);
+                        }
+                        
+                        // Make tooltip responsive
+                        const isMobile = window.innerWidth <= 768;
+                        if (isMobile) {
+                            tooltip.style.setProperty('max-width', '90vw', 'important');
+                            tooltip.style.setProperty('font-size', '14px', 'important');
+                        } else {
+                            tooltip.style.setProperty('max-width', '350px', 'important');
+                            tooltip.style.setProperty('font-size', '0.9rem', 'important');
+                        }
+                        
+                        // Fade in over 0.5s
+                        setTimeout(() => {
+                            tooltip.style.setProperty('opacity', '1', 'important');
+                        }, 50);
+                        
+                        console.log('Tooltip should now be visible at:', tooltip.style.left, tooltip.style.top);
+                    };
+
+                    const hideTooltip = () => {
+                        clearTimeout(tooltipTimer);
+                        clearTimeout(hideTimer);
+                        
+                        // Start hide timer - only hide after 0.5s of being out of context
+                        hideTimer = setTimeout(() => {
+                            tooltip.style.setProperty('opacity', '0', 'important');
+                            setTimeout(() => {
+                                tooltip.style.setProperty('display', 'none', 'important');
+                                currentTooltip = null;
+                            }, 300); // 0.3s fade out
+                        }, 500); // 0.5s delay before starting to hide
+                    };
+
+                    console.log('Adding event listeners to element:', element);
+                    
+                    // Click event - show tooltip immediately
+                    element.addEventListener('click', (e) => {
+                        console.log('Click event on:', termKey);
+                        e.preventDefault();
+                        clearTimeout(tooltipTimer);
+                        clearTimeout(hideTimer);
+                        showTooltip(e);
+                    });
+
+                    // Touch event - show tooltip immediately on tap
+                    element.addEventListener('touchstart', e => {
+                        console.log('Touch event on:', termKey);
+                        e.preventDefault();
+                        clearTimeout(tooltipTimer);
+                        clearTimeout(hideTimer);
+                        showTooltip(e);
+                    }, { passive: false });
+                });
+            }, 100);
+        }
+        
+        function setupAccordions(containerId, data, expandFirst = false) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            
+            container.innerHTML = data.map((item, index) => {
+                const title = item.title;
+                let content;
+                if(containerId === 'challenges-accordion') {
+                    content = `<p>${item.desc}</p><div class="challenge-solution">${item.solution || ''}</div>`;
+                } else {
+                    content = item.content;
+                }
+                
+                return `
+                <div class="accordion-item">
+                    <button class="accordion-header" aria-expanded="${index === 0 && expandFirst}">
+                        <span class="accordion-title">${title}</span>
+                    </button>
+                    <div class="accordion-content" ${index === 0 && expandFirst ? 'style="display:block;"' : ''}>${content}</div>
+                </div>`;
+            }).join('');
+
+            container.querySelectorAll('.accordion-header').forEach(h => {
+                h.addEventListener('click', () => {
+                    const content = h.nextElementSibling;
+                    const isExpanded = h.getAttribute('aria-expanded') === 'true';
+                    h.setAttribute('aria-expanded', String(!isExpanded));
+                    content.style.display = isExpanded ? 'none' : 'block';
+                });
+            });
+        }
+
+        function setupRecipes() {
+            const grid = document.getElementById('recipes-grid');
+            if (!grid) return;
+            grid.innerHTML = recipeData.map(item => `
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">${item.front}</div>
+                        <div class="flip-card-back">${item.back}</div>
+                    </div>
+                </div>
+            `).join('');
+            grid.querySelectorAll('.flip-card').forEach(card => {
+                card.addEventListener('click', () => card.classList.toggle('flipped'));
+            });
+        }
+
+        function setupQuiz() {
+            const container = document.getElementById('quiz-container');
+            if (!container) return;
+            let currentQuestionIndex = 0;
+            
+            function renderQuestion() {
+                const qData = quizData[currentQuestionIndex];
+                let optionsHTML = qData.options.map((opt, index) => `
+                    <div class="quiz-option" data-option-index="${index}">
+                        <label>
+                            <input type="radio" name="q${currentQuestionIndex}" value="${index}">
+                            <span>${opt}</span>
+                        </label>
+                        <div class="explanation">${qData.explanation}</div>
+                    </div>`).join('');
+                
+                container.innerHTML = `
+                    <div class="quiz-navigation">
+                        <button class="btn" id="prevBtn">⮜</button>
+                        <span>${currentQuestionIndex + 1} of ${quizData.length}</span>
+                        <button class="btn" id="nextBtn">⮞</button>
+                    </div>
+                    <div class="quiz-body active">
+                        <p><strong>Q:</strong> ${qData.q}</p>
+                        <div class="quiz-options">${optionsHTML}</div>
+                    </div>`;
+
+                document.getElementById('prevBtn').disabled = currentQuestionIndex === 0;
+                document.getElementById('nextBtn').disabled = currentQuestionIndex === quizData.length - 1;
+
+                document.getElementById('prevBtn').addEventListener('click', () => { if(currentQuestionIndex > 0) { currentQuestionIndex--; renderQuestion(); } });
+                document.getElementById('nextBtn').addEventListener('click', () => { if(currentQuestionIndex < quizData.length - 1) { currentQuestionIndex++; renderQuestion(); } });
+                
+                container.querySelectorAll('.quiz-option input').forEach(radio => radio.addEventListener('change', handleOptionSelect));
+            }
+
+            function handleOptionSelect(e) {
+                const selectedOptionIndex = parseInt(e.target.value);
+                const qData = quizData[currentQuestionIndex];
+                const parentQuestionDiv = e.target.closest('.quiz-body');
+
+                parentQuestionDiv.querySelectorAll('input[type="radio"]').forEach(r => r.disabled = true);
+
+                parentQuestionDiv.querySelectorAll('.quiz-option').forEach(optDiv => {
+                    optDiv.classList.remove('selected', 'correct', 'wrong');
+                    optDiv.querySelector('.explanation').style.display = 'none';
+                });
+
+                const selectedOptionDiv = e.target.closest('.quiz-option');
+                selectedOptionDiv.classList.add('selected');
+                
+                if (selectedOptionIndex === qData.correct) {
+                    selectedOptionDiv.classList.add('correct');
+                    selectedOptionDiv.querySelector('.explanation').style.display = 'block';
+                } else {
+                    selectedOptionDiv.classList.add('wrong');
+                    selectedOptionDiv.querySelector('.explanation').style.display = 'block';
+                    const correctDiv = parentQuestionDiv.querySelector(`.quiz-option[data-option-index="${qData.correct}"]`);
+                    correctDiv.classList.add('correct');
+                    correctDiv.querySelector('.explanation').style.display = 'block';
+                }
+            }
+            renderQuestion();
+        }
+
+        function setupPoll() {
+            const container = document.getElementById('poll-container');
+            if(!container) return;
+
+            function renderPoll(showResults = false) {
+                const totalVotes = pollData.votes.reduce((sum, v) => sum + v, 0);
+                const optionsHTML = pollData.options.map((opt, index) => {
+                    const percent = totalVotes > 0 ? (pollData.votes[index] / totalVotes * 100).toFixed(1) : 0;
+                    return `
+                    <div class="poll-option" data-index="${index}" ${showResults ? 'style="cursor:default;"' : ''}>
+                        <div class="poll-bar" style="width: ${showResults ? percent : 0}%;"></div>
+                        <span class="poll-text">${opt}</span>
+                        ${showResults ? `<span class="poll-percent" style="float:right;">${percent}%</span>` : ''}
+                    </div>
+                    `;
+                }).join('');
+                container.innerHTML = `<h3>${pollData.question}</h3>${optionsHTML}`;
+
+                if (!showResults) {
+                    container.querySelectorAll('.poll-option').forEach(opt => {
+                        opt.addEventListener('click', handlePollVote);
+                    });
+                }
+            }
+
+            function handlePollVote(e) {
+                const votedIndex = parseInt(e.currentTarget.getAttribute('data-index'));
+                pollData.votes[votedIndex]++;
+                renderPoll(true);
+            }
+            renderPoll();
+        }
+
+        function setupGlossary() {
+            const cloud = document.getElementById('glossary-cloud');
+            if (!cloud) return;
+            cloud.innerHTML = glossaryData.map(item => `<button class="glossary-chip"><span class="icon">${item.emoji}</span>${item.term}</button>`).join('');
+            
+            const tip = document.createElement('div');
+            tip.className = 'chip-tip';
+            tip.innerHTML = '<div class="arrow"></div><div class="tip-content"></div>';
+            document.body.appendChild(tip);
+            
+            cloud.querySelectorAll('.glossary-chip').forEach((btn, i) => {
+                const def = glossaryData[i].def;
+                btn.addEventListener('mouseenter', () => openTip(btn, def));
+                btn.addEventListener('mouseleave', () => tip.classList.remove('show'));
+                
+                // Add touch support for mobile
+                btn.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    openTip(btn, def);
+                });
+                
+                btn.addEventListener('touchend', (e) => {
+                    setTimeout(() => {
+                        tip.classList.remove('show');
+                    }, 3000); // Hide after 3 seconds on mobile
+                });
+            });
+        }
+        
+        function openTip(btn, text) {
+            const tip = document.querySelector('.chip-tip');
+            tip.querySelector('.tip-content').innerHTML = text;
+            tip.classList.add('show');
+            const rect = btn.getBoundingClientRect();
+            const tipRect = tip.getBoundingClientRect();
+            const isMobile = window.innerWidth <= 768;
+            
+            if (isMobile) {
+                // Mobile: Center at top of screen
+                tip.style.left = '50%';
+                tip.style.top = '20px';
+                tip.style.transform = 'translateX(-50%)';
+                tip.style.maxWidth = '90vw';
+                tip.style.fontSize = '14px';
+            } else {
+                // Desktop: Position relative to button
+            let top = rect.top - tipRect.height - 10;
+            if (top < 10) { 
+                top = rect.bottom + 10;
+            }
+            tip.style.left = `${rect.left + rect.width / 2 - tip.offsetWidth / 2}px`;
+            tip.style.top = `${top}px`;
+                tip.style.transform = 'none';
+                tip.style.maxWidth = 'min(92vw,420px)';
+                tip.style.fontSize = 'inherit';
+            }
+        }
+
+        function setupHoverTerms() {
+            const tooltip = document.getElementById('code-tooltip');
+            let currentHoverTerm = null;
+            let tooltipTimer;
+            let hideTimer;
+            
+            document.querySelectorAll('.hover-term').forEach(term => {
+                const termKey = term.getAttribute('data-term');
+                const termData = hoverTermData[termKey];
+                if (termData) {
+                    const showTooltip = (e) => {
+                        // Clear any existing timers
+                        clearTimeout(tooltipTimer);
+                        clearTimeout(hideTimer);
+                        
+                        // If switching to a different tooltip, close current one first
+                        if (currentHoverTerm && currentHoverTerm !== termKey) {
+                            hideTooltip();
+                            // Wait 0.5s before showing new tooltip
+                            tooltipTimer = setTimeout(() => {
+                                showTooltipContent(e);
+                            }, 500);
+                        } else {
+                            // Same tooltip or first tooltip - show immediately
+                            showTooltipContent(e);
+                        }
+                    };
+                    
+                    const showTooltipContent = (e) => {
+                        console.log('Showing hover term tooltip for:', termKey);
+                        currentHoverTerm = termKey;
+                        tooltip.innerHTML = `<strong>${termData.title}:</strong> ${termData.definition}`;
+                        
+                        // Set initial opacity to 0 for smooth transition
+                        tooltip.style.setProperty('opacity', '0', 'important');
+                        tooltip.style.setProperty('display', 'block', 'important');
+                        tooltip.style.setProperty('z-index', '9999', 'important');
+                        
+                        // Position the tooltip
+                        updateTooltipPosition(e, term);
+                        
+                        // Make tooltip responsive
+                        const isMobile = window.innerWidth <= 768;
+                        if (isMobile) {
+                            tooltip.style.setProperty('max-width', '90vw', 'important');
+                            tooltip.style.setProperty('font-size', '14px', 'important');
+                        } else {
+                            tooltip.style.setProperty('max-width', '350px', 'important');
+                            tooltip.style.setProperty('font-size', '0.9rem', 'important');
+                        }
+                        
+                        // Fade in over 0.5s
+                        setTimeout(() => {
+                            tooltip.style.setProperty('opacity', '1', 'important');
+                        }, 50);
+                    };
+                    
+                    const updateTooltipPosition = (e, element) => {
+                        if (window.innerWidth <= 768) {
+                            tooltip.style.setProperty('left', '50%', 'important');
+                            tooltip.style.setProperty('top', '20px', 'important');
+                            tooltip.style.setProperty('transform', 'translateX(-50%)', 'important');
+                            tooltip.style.setProperty('bottom', 'auto', 'important');
+                            return;
+                        }
+                        
+                        tooltip.style.setProperty('bottom', 'auto', 'important');
+                        tooltip.style.setProperty('transform', 'none', 'important');
+
+                        // Get element bounds for better positioning
+                        const elementRect = element.getBoundingClientRect();
+                        
+                        // Position relative to the element
+                        let x = elementRect.left + (elementRect.width / 2);
+                        let y = elementRect.top - 10; // Above the element
+                        
+                        // Adjust if too close to edges
+                        const clientWidth = document.documentElement.clientWidth;
+                        const clientHeight = document.documentElement.clientHeight;
+                        const tooltipWidth = 350; // Max width
+                        const tooltipHeight = 100; // Estimated height
+                        
+                        // Horizontal positioning
+                        if (x + tooltipWidth > clientWidth) {
+                            x = elementRect.right - tooltipWidth - 10; // Left of element
+                        }
+                        if (x < 10) {
+                            x = 10; // Minimum left margin
+                        }
+                        
+                        // Vertical positioning
+                        if (y - tooltipHeight < 10) {
+                            y = elementRect.bottom + 10; // Below element
+                        }
+                        if (y + tooltipHeight > clientHeight) {
+                            y = clientHeight - tooltipHeight - 10; // Above viewport
+                        }
+
+                        tooltip.style.setProperty('left', `${x}px`, 'important');
+                        tooltip.style.setProperty('top', `${y}px`, 'important');
+                    };
+                    
+                    const hideTooltip = () => {
+                        clearTimeout(tooltipTimer);
+                        clearTimeout(hideTimer);
+                        
+                        // Start hide timer - only hide after 0.5s of being out of context
+                        hideTimer = setTimeout(() => {
+                            tooltip.style.setProperty('opacity', '0', 'important');
+                            setTimeout(() => {
+                                tooltip.style.setProperty('display', 'none', 'important');
+                                currentHoverTerm = null;
+                            }, 300); // 0.3s fade out
+                        }, 500); // 0.5s delay before starting to hide
+                    };
+                    
+                    // Click event - show tooltip immediately
+                    term.addEventListener('click', (e) => {
+                        console.log('Click event on hover term:', termKey);
+                        e.preventDefault();
+                        clearTimeout(tooltipTimer);
+                        clearTimeout(hideTimer);
+                        showTooltip(e);
+                    });
+                    
+                    // Touch event - show tooltip immediately on tap
+                    term.addEventListener('touchstart', e => {
+                        console.log('Touch event on hover term:', termKey);
+                        e.preventDefault();
+                        clearTimeout(tooltipTimer);
+                        clearTimeout(hideTimer);
+                        showTooltip(e);
+                    }, { passive: false });
+                }
+            });
+        }
+
+        function setupProgressTracker() {
+            const sections = ['workspace-tour', 'deep-dive-scenarios', 'cheatsheet', 'recipes', 'glitch-gallery', 'challenges', 'resources'];
+            const steps = document.querySelectorAll('.progress-step');
+            const lines = document.querySelectorAll('.progress-line');
+
+            window.addEventListener('scroll', () => {
+                let currentSectionIndex = -1;
+                
+                sections.forEach((id, index) => {
+                    const section = document.getElementById(id);
+                    if (section) {
+                        const rect = section.getBoundingClientRect();
+                        if (rect.top < window.innerHeight / 2 && rect.bottom > window.innerHeight / 3) {
+                            currentSectionIndex = index;
+                        }
+                    }
+                });
+
+                steps.forEach((step, i) => {
+                    const stepIndex = parseInt(step.getAttribute('data-step'));
+                    step.classList.toggle('completed', stepIndex < currentSectionIndex);
+                    step.classList.toggle('current', stepIndex === currentSectionIndex);
+                });
+                lines.forEach((line, i) => {
+                    const lineIndex = parseInt(line.getAttribute('data-line'));
+                    line.classList.toggle('completed', lineIndex < currentSectionIndex);
+                });
+            }, { passive: true });
+        }
+        
+        initializeAll();
+    });
+    </script>
+</body>
+</html>
+
