@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confusion Pair: Pan vs. Zoom in AI Art Tools</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        /* --- Base Styles & Variables --- */
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #212529;
+            --muted-bg: #f8f9fa;
+            --border-color: #e9ecef;
+            --accent-color: #ea7a27;
+            --accent-hover: #d96d1a;
+            --header-bg: #212529;
+            --header-fg: #f8f9fa;
+            --neutral-gradient: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            --success-color: #16a34a;
+            --success-bg: #dcfce7;
+            --error-color: #dc2626;
+            --error-bg: #fee2e2;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+        
+        /* --- Header & Footer --- */
+        .site-header {
+            background: var(--header-bg);
+            color: var(--header-fg);
+            padding: 14px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            position: sticky;
+            top: 0;
+            z-index: 60;
+        }
+        .logo {
+            font-weight: 700;
+            font-size: 1.15rem;
+            color: #fff;
+            text-decoration: none;
+        }
+        .site-header nav {
+            display: flex;
+            gap: 14px;
+        }
+        .site-header nav a {
+            color: #ced4da;
+            text-decoration: none;
+        }
+        .site-header nav a:hover {
+            color: #fff;
+            text-decoration: underline;
+        }
+        .site-footer {
+            background: var(--header-bg);
+            color: var(--header-fg);
+            padding: 14px 18px;
+            text-align: center;
+            margin-top: 2rem;
+        }
+        
+        /* --- Breadcrumbs & Intro --- */
+        .breadcrumbs {
+            margin: 1.5rem 0 1rem;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        .breadcrumbs a {
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+        .breadcrumbs a:hover {
+            text-decoration: underline;
+        }
+        .intro {
+            font-size: 1.05rem;
+            color: #495057;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+
+        h1, h2, h3 {
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+        
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        h2 {
+            font-size: 1.75rem;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+            margin-top: 2.5rem;
+        }
+        
+        section {
+            margin-bottom: 2rem;
+        }
+
+        /* --- Confusion Pair Card --- */
+        .confusion-pair-card {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            background: var(--muted-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .pair-item h3 {
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+
+        .formula {
+            font-family: monospace;
+            background: #e9ecef;
+            padding: 0.5rem;
+            border-radius: 6px;
+            display: inline-block;
+            margin-top: 0.5rem;
+        }
+
+        .confusion-trigger {
+            grid-column: 1 / -1;
+            margin-top: 1rem;
+            padding: 1rem;
+            background: var(--error-bg);
+            color: var(--error-color);
+            border-radius: 8px;
+            border: 1px solid var(--error-color);
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        /* --- Comparison Table --- */
+        .table-container {
+            overflow-x: auto;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        thead th {
+            background-color: var(--text-color);
+            color: var(--bg-color);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        thead .helper-text {
+            font-weight: 400;
+            font-size: 0.8rem;
+            color: #ced4da;
+            display: block;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: var(--muted-bg);
+        }
+
+        /* --- Mnemonics --- */
+        .mnemonics-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .mnemonic-card {
+            background: var(--neutral-gradient);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+        
+        .mnemonic-card .analogy {
+            font-size: 1.5rem;
+            font-weight: 800;
+        }
+        
+        .mnemonic-card .explanation {
+            margin-top: 0.5rem;
+            color: #495057;
+        }
+
+        /* --- Glossary Cloud --- */
+        .glossary-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            justify-content: center;
+        }
+
+        .glossary-chip {
+            position: relative;
+            background-color: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 50px;
+            padding: 0.75rem 1.25rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            transition: all 0.2s ease;
+            min-height: 44px;
+        }
+
+        .glossary-chip:hover, .glossary-chip:focus {
+            background-color: var(--accent-color);
+            color: white;
+            border-color: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .tooltip {
+            position: fixed;
+            background-color: var(--text-color);
+            color: white;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            z-index: 100;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 0.2s, visibility 0.2s;
+            max-width: 300px;
+            font-size: 0.9rem;
+        }
+        
+        .tooltip.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* --- Quick Quiz --- */
+        .quiz-container {
+            background: var(--muted-bg);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .quiz-question {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+
+        .quiz-options {
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .quiz-option {
+            display: block;
+            width: 100%;
+            text-align: left;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 2px solid var(--border-color);
+            background-color: #fff;
+            cursor: pointer;
+            font-weight: 600;
+            min-height: 44px;
+            transition: border-color 0.2s;
+        }
+        
+        .quiz-option:hover:not([disabled]) {
+             border-color: var(--accent-color);
+        }
+
+        .quiz-option[data-correct="true"] {
+            background-color: var(--success-bg);
+            border-color: var(--success-color);
+            color: var(--success-color);
+        }
+
+        .quiz-option[data-correct="false"].selected {
+            background-color: var(--error-bg);
+            border-color: var(--error-color);
+            color: var(--error-color);
+        }
+        
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .quiz-feedback.correct {
+            background-color: var(--success-bg);
+            border: 1px solid var(--success-color);
+            display: block;
+        }
+
+        .quiz-feedback.incorrect {
+            background-color: var(--error-bg);
+            border: 1px solid var(--error-color);
+            display: block;
+        }
+        
+        /* --- FAQ Accordion --- */
+        .faq-accordion {
+            display: grid;
+            gap: 0.5rem;
+        }
+        .faq-question {
+            width: 100%;
+            background-color: var(--muted-bg);
+            border: 1px solid var(--border-color);
+            padding: 1rem 1.25rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-align: left;
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+        }
+        .faq-question::after {
+            content: '+';
+            font-size: 1.5rem;
+            color: var(--accent-color);
+            transition: transform 0.2s;
+        }
+        .faq-question[aria-expanded="true"]::after {
+            transform: rotate(45deg);
+        }
+        .faq-answer {
+            padding: 1.25rem;
+            border: 1px solid var(--border-color);
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            background-color: #fff;
+        }
+
+
+        /* --- Takeaway --- */
+        .takeaway {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 800;
+            padding: 2rem;
+            background: var(--text-color);
+            color: var(--bg-color);
+            border-radius: 12px;
+        }
+
+        /* --- Responsive Breakpoints --- */
+        @media (min-width: 640px) {
+            .confusion-pair-card {
+                grid-template-columns: 1fr 1fr;
+            }
+            .mnemonics-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .glossary-cloud {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (min-width: 960px) {
+            .mnemonics-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+             .glossary-cloud {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <a class="logo" href="#">Beyond Dictionary</a>
+        <nav>
+            <a href="#">Learning</a>
+            <a href="#">Games</a>
+            <a href="#">Blog</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <main>
+            <nav class="breadcrumbs" aria-label="Breadcrumb">
+                <a href="#">AI Art</a> › <a href="#">Confusion Pairs</a> › <span>Pan vs. Zoom</span>
+            </nav>
+            <h1>Pan vs. Zoom</h1>
+            <p class="intro">
+                Understanding the difference between expanding your canvas and changing scale is essential for AI artists. This guide clarifies the common confusion between Pan (in Midjourney) and Zoom (in Photoshop Generative Fill).
+            </p>
+
+            <!-- 1. Confusion Pair Card -->
+            <section aria-labelledby="confusion-pair-title">
+                <h2 id="confusion-pair-title">At a Glance</h2>
+                <div class="confusion-pair-card">
+                    <div class="pair-item">
+                        <h3>Pan (Midjourney)</h3>
+                        <p>Extends the canvas in a specific direction while keeping the original image at its current size and position. Generates new content beyond the existing borders, like sliding a camera frame sideways.</p>
+                        <div class="formula">--pan up | down | left | right</div>
+                    </div>
+                    <div class="pair-item">
+                        <h3>Zoom Out (Photoshop)</h3>
+                        <p>Shrinks the original image and generates content around all sides simultaneously. Creates a "step back" effect where your original becomes smaller within a larger canvas, revealing context in every direction.</p>
+                        <div class="formula">Generative Expand Tool</div>
+                    </div>
+                    <div class="confusion-trigger">
+                        <strong>Common Misconception:</strong> Thinking that Pan adds content in all directions like Zoom Out, or that Zoom Out only extends in one direction.
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. Comparison Table -->
+            <section aria-labelledby="comparison-title">
+                <h2 id="comparison-title">Side-by-Side Comparison</h2>
+                 <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Aspect <span class="helper-text">What we're comparing</span></th>
+                                <th>Pan (Midjourney)</th>
+                                <th>Zoom Out (Photoshop)</th>
+                                <th>Why It's Confused</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Definition</strong></td>
+                                <td>Directional canvas extension in one specific direction at a time.</td>
+                                <td>Omnidirectional canvas expansion with image scaling.</td>
+                                <td>Both involve adding content beyond original borders.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Direction Control</strong></td>
+                                <td>Choose one direction: up, down, left, or right per operation.</td>
+                                <td>Expands equally in all directions simultaneously.</td>
+                                <td>The term "pan" is used differently across software.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Original Image</strong></td>
+                                <td>Stays the same size, remains in place on canvas.</td>
+                                <td>Becomes proportionally smaller within the new canvas.</td>
+                                <td>Both operations change the final composition.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Use Case</strong></td>
+                                <td>Add headroom, extend backgrounds, or reveal more scene detail in one direction.</td>
+                                <td>Create environmental context, add breathing room, or show the "bigger picture".</td>
+                                <td>Both solve composition problems.</td>
+                            </tr>
+                             <tr>
+                                <td><strong>Analogy</strong></td>
+                                <td>Sliding a window frame left or right to see what's next to the current view.</td>
+                                <td>Flying a drone backward to reveal what surrounds the entire scene.</td>
+                                <td>Both reveal "hidden" content around the original.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Typical Workflow</strong></td>
+                                <td>Sequential: Pan left, then pan up if needed (requires multiple steps).</td>
+                                <td>One-step: All sides expand at once with single action.</td>
+                                <td>Both can be iteratively applied for more expansion.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- 3. Mnemonics -->
+            <section aria-labelledby="mnemonics-title">
+                <h2 id="mnemonics-title">Memory Aids</h2>
+                <div class="mnemonics-grid">
+                    <div class="mnemonic-card">
+                        <div class="analogy">Pan = Panorama</div>
+                        <p class="explanation"><strong>Pan</strong> creates a panoramic sweep in one direction. <strong>Zoom Out</strong> creates a bird's-eye reveal.</p>
+                    </div>
+                    <div class="mnemonic-card">
+                        <div class="analogy">Arrow vs. Circle</div>
+                         <p class="explanation"><strong>Pan</strong> is an arrow pointing one way (directional). <strong>Zoom Out</strong> is a circle expanding (omnidirectional).</p>
+                    </div>
+                    <div class="mnemonic-card">
+                        <div class="analogy">Camera Slide vs. Drone Rise</div>
+                        <p class="explanation"><strong>Pan</strong> slides the camera horizontally. <strong>Zoom Out</strong> lifts the drone straight up to show everything.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 4. Glossary Cloud -->
+            <section aria-labelledby="glossary-title">
+                <h2 id="glossary-title">Glossary Cloud</h2>
+                <div class="glossary-cloud" id="glossaryCloud">
+                    <!-- Chips will be inserted by JS -->
+                </div>
+                <div class="tooltip" id="tooltip"></div>
+            </section>
+
+            <!-- 5. Quick Quiz -->
+            <section aria-labelledby="quiz-title">
+                <h2 id="quiz-title">Quick Quiz</h2>
+                <div class="quiz-container" id="quizContainer">
+                    <p class="quiz-question">You have a portrait that's too tightly cropped. You want to add sky above, ground below, and environment on both sides. Which tool accomplishes this in one action?</p>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-correct="false">Midjourney Pan (you'd need 4 separate pan operations)</button>
+                        <button class="quiz-option" data-correct="true">Photoshop Zoom Out / Generative Expand (adds to all sides at once)</button>
+                        <button class="quiz-option" data-correct="false">They both do it equally well</button>
+                    </div>
+                    <div class="quiz-feedback" id="quizFeedback" aria-live="polite"></div>
+                </div>
+            </section>
+            
+            <!-- 6. FAQ Section -->
+            <section aria-labelledby="faq-title">
+                <h2 id="faq-title">Frequently Asked Questions</h2>
+                <div class="faq-accordion" id="faqAccordion">
+                    <!-- FAQs will be inserted by JS -->
+                </div>
+            </section>
+
+            <!-- 7. Takeaway -->
+            <section aria-labelledby="takeaway-title">
+                 <h2 id="takeaway-title" class="sr-only" style="display:none;">Takeaway</h2>
+                <div class="takeaway">
+                    Pan extends one direction at a time; Zoom Out expands everywhere at once while shrinking the original.
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <footer class="site-footer">
+        <small>© 2025 Beyond Dictionary</small>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- 4. Glossary Cloud ---
+            const glossaryData = [
+                { term: 'Pan', definition: 'In Midjourney, a feature that extends your image in one specific direction (up, down, left, right) while maintaining the original image size and position.' },
+                { term: 'Zoom Out', definition: 'In Photoshop and other tools, a feature that shrinks your original image and generates content around all sides, creating a "step back" effect.' },
+                { term: 'Generative Fill', definition: 'AI-powered content generation that fills selected areas with contextually appropriate imagery based on the surrounding scene.' },
+                { term: 'Generative Expand', definition: 'Photoshop\'s tool for extending canvas boundaries while generating new content, essentially a "zoom out" function.' },
+                { term: 'Canvas Extension', definition: 'The process of adding space to your image workspace, either empty or filled with generated content.' },
+                { term: 'Aspect Ratio', definition: 'The proportional relationship between width and height of an image, which can change when panning but often stays similar when zooming out.' },
+                { term: 'Outpainting', definition: 'The general AI technique of generating content beyond the original image boundaries, used by both pan and zoom features.' },
+                { term: 'Inpainting', definition: 'AI generation within existing image boundaries, as opposed to outpainting which extends beyond borders.' },
+                { term: 'Upscale', definition: 'Increasing image resolution and detail, different from zoom out which changes composition, not just size.' },
+                { term: 'Crop', definition: 'The opposite of expansion - removing outer portions of an image to focus on a specific area.' },
+                { term: 'Composition', definition: 'The arrangement of visual elements in an image, which both pan and zoom operations fundamentally alter.' },
+                { term: 'Prompt Consistency', definition: 'How well AI-generated extensions match the style, lighting, and content of the original image.' }
+            ];
+
+            const glossaryCloud = document.getElementById('glossaryCloud');
+            const tooltip = document.getElementById('tooltip');
+
+            glossaryData.forEach(item => {
+                const chip = document.createElement('button');
+                chip.className = 'glossary-chip';
+                chip.textContent = item.term;
+                chip.dataset.definition = item.definition;
+                glossaryCloud.appendChild(chip);
+            });
+            
+            let activeChip = null;
+
+            glossaryCloud.addEventListener('click', function(e) {
+                if (e.target.classList.contains('glossary-chip')) {
+                    const chip = e.target;
+                    
+                    if (activeChip === chip) {
+                        hideTooltip();
+                        return;
+                    }
+                    
+                    activeChip = chip;
+                    tooltip.textContent = chip.dataset.definition;
+                    positionAndShowTooltip(chip);
+                }
+            });
+            
+            function positionAndShowTooltip(chip) {
+                const chipRect = chip.getBoundingClientRect();
+                tooltip.classList.add('visible');
+                const tooltipRect = tooltip.getBoundingClientRect();
+                
+                let top = chipRect.bottom + 8;
+                let left = chipRect.left + (chipRect.width / 2) - (tooltipRect.width / 2);
+
+                // Adjust if it goes off-screen
+                if (left < 10) left = 10;
+                if (left + tooltipRect.width > window.innerWidth - 10) {
+                    left = window.innerWidth - tooltipRect.width - 10;
+                }
+                if (top + tooltipRect.height > window.innerHeight - 10) {
+                    top = chipRect.top - tooltipRect.height - 8;
+                }
+
+                tooltip.style.top = `${top}px`;
+                tooltip.style.left = `${left}px`;
+            }
+
+            function hideTooltip() {
+                tooltip.classList.remove('visible');
+                activeChip = null;
+            }
+
+            // Hide tooltip on scroll or click outside
+            window.addEventListener('scroll', hideTooltip);
+            document.addEventListener('click', function(e) {
+                if (activeChip && !activeChip.contains(e.target)) {
+                    hideTooltip();
+                }
+            });
+
+
+            // --- 5. Quick Quiz ---
+            const quizContainer = document.getElementById('quizContainer');
+            const options = quizContainer.querySelectorAll('.quiz-option');
+            const feedbackEl = document.getElementById('quizFeedback');
+            let quizAnswered = false;
+
+            options.forEach(option => {
+                option.addEventListener('click', function() {
+                    if (quizAnswered) return;
+                    quizAnswered = true;
+
+                    const isCorrect = this.dataset.correct === 'true';
+                    this.classList.add('selected');
+
+                    if (isCorrect) {
+                        feedbackEl.textContent = 'Correct! Photoshop\'s Zoom Out / Generative Expand adds content to all four sides simultaneously in a single operation, while Midjourney\'s Pan would require four separate directional commands to achieve the same result.';
+                        feedbackEl.className = 'quiz-feedback correct';
+                    } else {
+                        feedbackEl.textContent = 'Not quite. While Midjourney\'s Pan is powerful, it extends in only one direction per operation. To add content on all four sides, you\'d need to pan up, down, left, and right separately. Photoshop\'s Zoom Out does this all at once.';
+                        feedbackEl.className = 'quiz-feedback incorrect';
+                    }
+                    
+                    options.forEach(opt => {
+                        opt.disabled = true;
+                    });
+                });
+            });
+
+            // --- 6. FAQ Section ---
+            const faqData = [
+                { q: 'Can I pan multiple times in Midjourney to create a zoom-out effect?', a: 'Yes! You can sequentially pan in multiple directions to expand your canvas, but it requires multiple operations and credits. The result will be similar to a zoom out, though each direction is handled separately. The advantage is more control over each side\'s generation.' },
+                { q: 'Does Photoshop\'s Zoom Out keep my subject the same size on screen?', a: 'No. When you Zoom Out in Photoshop, your original image becomes proportionally smaller within the expanded canvas. The actual pixel dimensions of your original remain unchanged, but it occupies less of the total canvas area. This is fundamentally different from Pan, which keeps the original at its full size.' },
+                { q: 'Which is better for creating social media posts with different aspect ratios?', a: 'It depends on your workflow. <strong>Midjourney Pan</strong> is excellent when you know exactly which direction needs extension (e.g., adding vertical space for Stories). <strong>Photoshop Zoom Out</strong> is better when you want to generate one expanded version and then crop different aspect ratios from it, giving you more compositional options.' },
+                { q: 'Can I control how much Midjourney pans in one direction?', a: 'Yes, Midjourney allows you to specify pan amounts. The default pan extends the canvas by 50%, but you can use custom zoom parameters to control exactly how much new content is generated. However, you still only extend in one direction per operation.' },
+                { q: 'Will panning or zooming out maintain style consistency?', a: 'Both tools use AI to match the original style, but results vary. <strong>Midjourney\'s Pan</strong> generally maintains excellent consistency because it uses the same model that created the original. <strong>Photoshop\'s Generative Expand</strong> uses Adobe Firefly and works best with clear, well-defined subjects. Both may require multiple attempts or manual touch-ups for perfect consistency.' },
+                { q: 'Can I pan diagonally in Midjourney?', a: 'Not in a single operation. To extend diagonally (e.g., upper-right), you\'d need to pan right first, then pan up (or vice versa). This is one area where Zoom Out has an advantage, as it extends all directions including corners simultaneously.' },
+                { q: 'Does zooming out affect image resolution or quality?', a: 'The original image pixels remain unchanged, but since they now occupy a smaller portion of the canvas, they appear smaller. The newly generated surrounding content is created at the same resolution as your canvas settings. For best results, start with high-resolution originals before zooming out.' },
+                { q: 'Which technique is better for architectural or landscape photography extensions?', a: '<strong>Pan</strong> works exceptionally well for landscapes where you want to extend the horizon or add more sky/foreground in a specific direction. <strong>Zoom Out</strong> is better for architectural shots where you want to reveal the building\'s surroundings and context on all sides. Choose based on whether your composition needs directional extension or environmental context.' }
+            ];
+            
+            const faqAccordion = document.getElementById('faqAccordion');
+
+            faqData.forEach(item => {
+                const faqItem = document.createElement('div');
+                faqItem.className = 'faq-item';
+                
+                const question = document.createElement('button');
+                question.className = 'faq-question';
+                question.setAttribute('aria-expanded', 'false');
+                question.innerHTML = item.q;
+
+                const answer = document.createElement('div');
+                answer.className = 'faq-answer';
+                answer.hidden = true;
+                answer.innerHTML = `<p>${item.a}</p>`;
+                
+                faqItem.appendChild(question);
+                faqItem.appendChild(answer);
+                faqAccordion.appendChild(faqItem);
+            });
+
+            faqAccordion.addEventListener('click', e => {
+                const question = e.target.closest('.faq-question');
+                if (!question) return;
+
+                const isExpanded = question.getAttribute('aria-expanded') === 'true';
+                const answer = question.nextElementSibling;
+                
+                question.setAttribute('aria-expanded', !isExpanded);
+                answer.hidden = isExpanded;
+            });
+        });
+    </script>
+</body>
+</html>
