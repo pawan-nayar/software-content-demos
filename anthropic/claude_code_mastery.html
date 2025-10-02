@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code Mastery System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --text: #212529; --bg: #fff; --muted: #f8f9fa; --border: #e9ecef;
+            --accent: #fd7e14; --accent-2: #e87312; --accent-soft: #fef3e7; --header-bg: #212529; --header-fg: #f8f9fa;
+            --ok: #16a34a; --ok-soft: #dcfce7; --bad: #dc2626; --bad-soft: #fee2e2;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); line-height: 1.8; scroll-behavior: smooth; }
+        .container { max-width: 900px; margin: auto; padding: 24px; background: #fff; }
+        .hero-section { text-align: center; padding: 0.75rem 0; background: linear-gradient(135deg, var(--muted) 0%, #fff 100%); border-radius: 12px; margin-bottom: 0.5rem; position: relative; overflow: hidden; }
+        .hero-section::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+        h1 { font-size: clamp(2rem, 5vw, 2.8rem); margin-bottom: 8px; color: var(--text); line-height: 1.2; font-weight: 700; }
+        .byline { font-size: clamp(1rem, 3vw, 1.25rem); font-style: italic; color: #6b7280; margin-bottom: 8px; max-width: 600px; margin-left: auto; margin-right: auto; }
+        h2 { font-size: clamp(1.5rem, 4vw, 2.2rem); color: var(--text); margin: 12px 0 8px; border-bottom: 2px solid var(--border); padding-bottom: 8px; }
+        h3 { font-size: 1.4rem; color: var(--text); margin-bottom: 1rem; margin-top: 1.5rem; }
+        h4 { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; }
+        p { font-size: 1.1rem; max-width: 75ch; margin-bottom: 20px; word-wrap: break-word; line-height: 1.9; }
+        ul, ol { padding-left: 20px; }
+        li { margin-bottom: 10px; }
+        .intro { font-size: 1.2rem; line-height: 1.8; background: var(--muted); padding: 24px; border-radius: 12px; border-left: 4px solid var(--accent); margin: 24px 0; }
+        .btn { background: var(--accent); color: #fff; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: background-color 0.2s ease; font-size: 1.1rem; text-decoration: none; display: inline-block; }
+        .btn:hover { background-color: var(--accent-2); text-decoration: none; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; margin-top: 0.5rem; }
+        .card { background: #fff; border: 2px solid var(--border); border-radius: 12px; padding: 16px; transition: all 0.3s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.05); position: relative; overflow: hidden; }
+        .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: var(--accent); transform: scaleX(0); transition: transform 0.3s ease; }
+        .card:hover { transform: translateY(-8px); box-shadow: 0 12px 24px rgba(0,0,0,0.15); border-color: var(--accent); }
+        .card:hover::before { transform: scaleX(1); }
+        
+        /* Carousel & Flip Card Base Styles */
+        .carousel-nav { position: absolute; top: 50%; transform: translateY(-50%); background-color: var(--accent); color: white; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 24px; cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.2); transition: all 0.3s ease; }
+        .carousel-nav:hover { background-color: var(--accent-2); transform: translateY(-50%) scale(1.1); box-shadow: 0 6px 16px rgba(0,0,0,0.3); }
+        .carousel-prev { left: 0; }
+        .carousel-next { right: 0; }
+        
+        /* Accordion Styles */
+        .accordion{display:grid;gap:8px}
+        .accordion-header{width:100%;text-align:left;background:var(--muted);border:1px solid var(--border);padding:16px 20px;border-radius:8px;cursor:pointer;font-size:1.1rem;font-weight:bold;display:flex;align-items:center}
+        .accordion-header .accordion-title { margin-right: auto; padding-right: 1rem; }
+        .accordion-header::after{content:'+';color:#6c757d; font-size: 1.5rem; transition: transform 0.2s;}
+        .accordion-header[aria-expanded="true"]{background:#e9ecef;}
+        .accordion-header[aria-expanded="true"]::after{transform: rotate(45deg);}
+        .accordion-content{padding:0 20px; max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out, padding 0.3s ease-out;}
+        .accordion-content p { color: #343a40; font-size: 1rem; margin-bottom: 0; padding: 10px 0 20px 0;}
+
+        /* Learning Extensions */
+        .track-objectives { list-style: none; padding-left: 0; }
+        .track-objectives li { padding: 4px 0; font-size: 0.9rem; }
+        .track-objectives li:before { content: '→'; color: var(--accent); margin-right: 8px; font-weight: bold; }
+        .progress-section { margin: 30px 0; padding: 24px; border: 2px solid var(--border); border-radius: 16px; background: linear-gradient(135deg, var(--muted) 0%, #fff 100%); box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .progress-bar { background: var(--border); height: 8px; border-radius: 4px; overflow: hidden; margin: 10px 0; }
+        .progress-fill { background: linear-gradient(90deg, var(--accent), var(--accent-2)); height: 100%; transition: width 0.5s ease; }
+        .competency-map { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+        .competency-tag { background: var(--accent-soft); color: var(--accent); border: 1px solid var(--accent); padding: 6px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; display: inline-block; transition: all 0.3s ease; }
+        
+        /* Learning Scenarios Carousel Styles */
+        .carousel-container { position: relative; padding: 0 40px; overflow: hidden; margin-bottom: 16px; }
+        .carousel-deck { position: relative; height: 260px; }
+        .flip-card { background-color: transparent; height: 250px; perspective: 1000px; cursor: pointer; position: absolute; width: 100%; top:0; left:0; opacity: 0; transition: opacity 0.5s, transform 0.5s; transform: scale(0.95); }
+        .flip-card.active { opacity: 1; transform: scale(1); z-index: 10; }
+        .flip-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s; transform-style: preserve-3d; }
+        .flip-card.flipped .flip-card-inner { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
+        .flip-card-front { background: #fff; border: 1px solid var(--border); }
+        .flip-card-front-icon { font-size: 2.5rem; margin-bottom: 1rem; color: var(--accent); }
+        .flip-card-front p { font-size: 1.2rem; font-weight: 600; margin: 0; }
+        .flip-card-front span { font-size: 0.9rem; color: #6c757d; margin-top: 10px; }
+        .flip-card-back { background-color: var(--header-bg); color: white; transform: rotateY(180deg); text-align: left; align-items: flex-start; }
+        .flip-card-back h4 { margin: 0 0 10px 0; color: var(--accent); font-family: 'Roboto Mono', monospace; font-size: 1rem; border-bottom: 1px solid #495057; padding-bottom: 8px; width: 100%; }
+        .flip-card-back ul { font-size: 0.95rem; margin: 0; font-family: 'Roboto Mono', monospace; color: #ced4da; width: 100%; list-style: none; padding-left: 0; }
+        .carousel-nav { position: absolute; top: 50%; transform: translateY(-50%); background-color: var(--accent); color: white; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 24px; cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center; }
+        .carousel-nav:hover { background-color: var(--accent-2); }
+        .carousel-prev { left: 0; }
+        .carousel-next { right: 0; }
+        .carousel-counter { text-align: center; margin-top: 1rem; font-weight: 600; color: #6c757d; }
+        
+        /* RTC Quiz Styles */
+        .rtc-quiz-container { padding: 2rem; border: 1px solid var(--border); border-radius: 12px; margin-top: 2rem; background: var(--muted); }
+        .rtc-passage { background: #fff; padding: 20px; margin-bottom: 25px; border-left: 5px solid var(--accent); border-radius: 8px; line-height: 1.6; font-size: 1.05em; }
+        .rtc-quiz-question { margin-bottom: 20px; }
+        .quiz-option label { display: flex; align-items: flex-start; text-align: left; padding: 14px; border: 2px solid var(--border); border-radius: 8px; cursor: pointer; background: #fff; margin-bottom: 10px; transition: background-color 0.2s, border-color 0.2s; }
+        .quiz-option label:hover { background-color: #f1f3f5; }
+        .quiz-option input[type="radio"] { margin-right: 16px; flex-shrink: 0; margin-top: 5px; }
+        .quiz-option.selected.correct label { background: var(--ok-soft); border-color: var(--ok); }
+        .quiz-option.selected.wrong label { background: var(--bad-soft); border-color: var(--bad); }
+        .explanation { display: none; margin-top: 8px; padding: 15px; font-size: 1rem; border-radius: 6px; border-left: 4px solid var(--accent-2); background: #fff7ed; color: #592b00; }
+        .explanation p { font-size: 1rem; margin-bottom: 0; }
+        .quiz-option.selected.wrong .explanation { display: block; }
+        
+        /* Story Flow Styles */
+        .story-intro { background: linear-gradient(135deg, var(--muted) 0%, #fff 100%); padding: 24px; border-radius: 16px; margin-bottom: 24px; border-left: 4px solid var(--accent); }
+        .story-text { font-size: 1.1rem; line-height: 1.7; color: var(--text); margin-bottom: 20px; }
+        .section-description { font-size: 1rem; color: #6b7280; margin-bottom: 20px; line-height: 1.6; }
+        .progress-indicator { display: flex; align-items: center; gap: 16px; margin-top: 16px; }
+        .step-number { font-weight: 600; color: var(--accent); font-size: 0.9rem; }
+        .step-progress { display: flex; gap: 8px; }
+        .step-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--border); transition: all 0.3s ease; }
+        .step-dot.active { background: var(--accent); transform: scale(1.2); }
+        .step-dot.completed { background: var(--ok); }
+        
+        /* Completion Summary Styles */
+        .completion-summary { background: linear-gradient(135deg, var(--ok-soft) 0%, #fff 100%); padding: 32px; border-radius: 16px; margin-top: 32px; border: 2px solid var(--ok); }
+        .completion-summary h3 { color: var(--ok); margin-bottom: 16px; font-size: 1.5rem; }
+        .achievement-list { list-style: none; padding: 0; margin: 20px 0; }
+        .achievement-list li { padding: 8px 0; font-size: 1.1rem; }
+        .explore-invitation { margin-top: 32px; padding-top: 24px; border-top: 2px solid var(--border); }
+        .explore-invitation h4 { color: var(--accent); margin-bottom: 16px; }
+        .track-suggestions { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 20px; }
+        .suggestion-card { background: #fff; border: 2px solid var(--border); border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.3s ease; text-align: center; position: relative; }
+        .suggestion-card:hover { border-color: var(--accent); transform: translateY(-4px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
+        .suggestion-card.current-track { border-color: var(--ok); background: var(--ok-soft); }
+        .suggestion-card.current-track::before { content: "You are here"; position: absolute; top: -8px; right: -8px; background: var(--ok); color: white; padding: 4px 8px; border-radius: 12px; font-size: 0.7rem; font-weight: 600; }
+        .suggestion-card h5 { color: var(--accent); margin-bottom: 8px; font-size: 1.1rem; }
+        .suggestion-card p { color: #6b7280; font-size: 0.9rem; margin: 0; }
+        .competency-tag.mastered { background: var(--ok-soft); color: var(--ok); border-color: var(--ok); }
+        
+        /* Horizontal Flip Card Carousel Styles */
+        .h-carousel-container { perspective: 1200px; position: relative; padding: 0 50px 24px 50px; }
+        .h-carousel-deck { min-height: 420px; display: flex; align-items: center; justify-content: center; }
+        .h-flip-card { width: 100%; height: 420px; background-color: transparent; display: none; }
+        #faq-section { position: relative; z-index: 2; }
+        .h-flip-card.active { display: block; }
+        .h-flip-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.7s, box-shadow 0.3s; transform-style: preserve-3d; cursor: pointer; border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .h-flip-card-inner:hover { box-shadow: 0 8px 25px rgba(0,0,0,0.15); border-color: var(--accent); }
+        .h-flip-card.flipped .h-flip-card-inner { transform: rotateY(180deg); }
+        .h-flip-card-front, .h-flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; flex-direction: column; justify-content: center; padding: 24px; border-radius: 12px; overflow: auto; word-wrap: break-word; white-space: normal; }
+        .h-flip-card-front { background-color: #fff; color: var(--text); }
+        .h-flip-card-front::after { content: 'Click to flip for details'; position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); background: var(--accent); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 500; opacity: 0.9; }
+        .h-flip-card-back { background-color: #2d2d2d; color: white; transform: rotateY(180deg); text-align: left; }
+        .h-flip-card-front h4 { border-bottom: 2px solid var(--accent); padding-bottom: 10px; margin: 0 auto 15px auto; font-size: 1.2rem; }
+        .h-flip-card-front p, .h-flip-card-back p { font-size: 0.95rem; word-wrap: break-word; white-space: normal; line-height: 1.5; }
+        .h-carousel-footer { text-align: center; margin-top: 15px; }
+        .h-carousel-counter { font-weight: 600; color: #6c757d; margin-bottom: 10px; }
+        pre.code-block { background: #1e1e1e; color: #f8f8f2; font-family: 'Roboto Mono', monospace; padding: 1em; border-radius: 8px; overflow-x: auto; font-size: 0.9rem; text-align: left; margin: 5px 0; white-space: pre-wrap; word-wrap: break-word; }
+        .reflection-note { background: #343a40; padding: 12px; border-radius: 6px; border-left: 3px solid var(--accent); margin-top: 15px; font-style: italic; font-size: 0.9rem !important; }
+        .prompt-option { border: 1px solid #495057; padding: 8px; border-radius: 4px; margin-bottom: 8px; }
+        .prompt-option strong { color: var(--accent); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="back-to-main-top" style="display: none; margin-bottom: 20px;">
+            <button onclick="showMainPage()" style="background: var(--accent); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 0.9rem;">← Back to Main</button>
+        </div>
+        <div class="hero-section">
+            <h1>🚀 Claude Code Mastery System</h1>
+            <p class="byline">Learn through real projects, master through practice, grow through collaboration</p>
+        </div>
+
+        <section id="track-selection">
+            <h2>🎯 Choose Your Learning Track</h2>
+            <div class="grid">
+                <div class="card" data-track="beginner" style="cursor: pointer; transition: all 0.3s;" onmouseover="this.style.borderColor='var(--accent)';" onmouseout="this.style.borderColor='var(--border)';">
+                    <div style="font-size: 2rem; margin-bottom: 0.25rem;">🌱</div>
+                    <h3 style="color: var(--accent); margin-bottom: 0.25rem; font-size: 1.2rem;">Beginner Explorer</h3>
+                    <p style="font-size: 0.9rem; color: #6c757d; margin-bottom: 8px; line-height: 1.4;">Start from zero. Build confidence through small, successful projects.</p>
+                    <div style="display: flex; flex-wrap: wrap; gap: 4px; margin-top: 0.25rem;">
+                        <span style="background: var(--accent-soft); color: var(--accent); padding: 2px 6px; border-radius: 8px; font-size: 0.75rem; font-weight: 500;">Basic Prompting</span>
+                        <span style="background: var(--accent-soft); color: var(--accent); padding: 2px 6px; border-radius: 8px; font-size: 0.75rem; font-weight: 500;">Simple Debugging</span>
+                    </div>
+                </div>
+                <div class="card" data-track="practitioner" style="cursor: pointer; transition: all 0.3s;" onmouseover="this.style.borderColor='var(--accent)';" onmouseout="this.style.borderColor='var(--border)';">
+                    <div style="font-size: 2rem; margin-bottom: 0.25rem;">⚡</div>
+                    <h3 style="color: var(--accent); margin-bottom: 0.25rem; font-size: 1.2rem;">Skilled Practitioner</h3>
+                    <p style="font-size: 0.9rem; color: #6c757d; margin-bottom: 8px; line-height: 1.4;">Build real solutions. Connect tools to solve actual problems.</p>
+                    <div style="display: flex; flex-wrap: wrap; gap: 4px; margin-top: 0.25rem;">
+                        <span style="background: var(--accent-soft); color: var(--accent); padding: 2px 6px; border-radius: 8px; font-size: 0.75rem; font-weight: 500;">API Integration</span>
+                        <span style="background: var(--accent-soft); color: var(--accent); padding: 2px 6px; border-radius: 8px; font-size: 0.75rem; font-weight: 500;">Project Architecture</span>
+                    </div>
+                </div>
+                <div class="card" data-track="collaborator" style="cursor: pointer; transition: all 0.3s;" onmouseover="this.style.borderColor='var(--accent)';" onmouseout="this.style.borderColor='var(--border)';">
+                    <div style="font-size: 2rem; margin-bottom: 0.25rem;">🚀</div>
+                    <h3 style="color: var(--accent); margin-bottom: 0.25rem; font-size: 1.2rem;">Team Collaborator</h3>
+                    <p style="font-size: 0.9rem; color: #6c757d; margin-bottom: 8px; line-height: 1.4;">Lead projects. Teach others. Build systems that scale.</p>
+                    <div style="display: flex; flex-wrap: wrap; gap: 4px; margin-top: 0.25rem;">
+                        <span style="background: var(--accent-soft); color: var(--accent); padding: 2px 6px; border-radius: 8px; font-size: 0.75rem; font-weight: 500;">Code Review</span>
+                        <span style="background: var(--accent-soft); color: var(--accent); padding: 2px 6px; border-radius: 8px; font-size: 0.75rem; font-weight: 500;">System Design</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="progress-section" class="progress-section" style="display: none;">
+            <h3 id="current-track">Select a track to begin</h3>
+            <p id="current-track-subtitle" class="section-description" style="margin-top: 4px;">Choose a learning path to see its overview and content.</p>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+            </div>
+            <p id="progress-text" style="text-align: center; margin: 0;">0% Complete</p>
+            <div id="competency-map" class="competency-map" style="margin-top: 16px;"></div>
+        </section>
+
+        <section id="learning-scenarios" style="display: none;">
+            <div class="story-intro">
+                <h2>🎯 Chapter 1: Your Hands-On Learning Journey</h2>
+                <p class="story-text">Welcome to your personalized learning adventure! You've chosen your path, and now it's time to dive into real-world scenarios that will build your confidence and skills. Each scenario is designed to teach you specific techniques while working on actual projects you can be proud of.</p>
+                <div class="progress-indicator">
+                    <span class="step-number">Step 1 of 6</span>
+                    <div class="step-progress">
+                        <div class="step-dot active"></div>
+                        <div class="step-dot"></div>
+                        <div class="step-dot"></div>
+                        <div class="step-dot"></div>
+                        <div class="step-dot"></div>
+                        <div class="step-dot"></div>
+                    </div>
+                </div>
+            </div>
+            <p class="section-description">These interactive scenarios guide you through real coding challenges. Click on each card to see the step-by-step commands you'll give to Claude. Each scenario builds on the previous one, creating a comprehensive learning experience.</p>
+            <div class="carousel-container">
+                <button class="carousel-nav carousel-prev">‹</button>
+                <div class="carousel-deck" id="scenarios-deck"></div>
+                <button class="carousel-nav carousel-next">›</button>
+            </div>
+            <div class="carousel-counter" id="scenarios-counter"></div>
+        </section>
+
+        <section id="rtc-assessments" style="display: none;">
+            <div class="story-intro">
+                <h2>📝 Chapter 2: Test Your Understanding</h2>
+                <p class="story-text">Great job completing your first scenarios! Now it's time to validate your learning with contextual assessments. These aren't just tests—they're reflection tools that help you understand the "why" behind each technique. You'll see real situations and make decisions, just like you would in actual coding projects.</p>
+                <div class="progress-indicator">
+                    <span class="step-number">Step 2 of 6</span>
+                    <div class="step-progress">
+                        <div class="step-dot completed"></div>
+                        <div class="step-dot active"></div>
+                        <div class="step-dot"></div>
+                        <div class="step-dot"></div>
+                        <div class="step-dot"></div>
+                        <div class="step-dot"></div>
+                    </div>
+                </div>
+            </div>
+            <p class="section-description">Each assessment presents a realistic scenario with multiple-choice questions. Don't worry about getting answers wrong—the explanations will deepen your understanding and prepare you for the next phase of your learning journey.</p>
+            <div id="rtc-container"></div>
+        </section>
+
+        <section id="inference-archetypes" style="display: none;">
+            <div class="story-intro">
+                <h2>🔍 Chapter 3: Master the Debugging Mindset</h2>
+                <p class="story-text">Now that you've practiced and tested your understanding, it's time to develop the critical thinking skills that separate good developers from great ones. Here you'll see how different approaches to the same problem can lead to vastly different outcomes. This is where you learn to think like a debugging expert.</p>
+                <div class="progress-indicator">
+                    <span class="step-number">Step 3 of 6</span>
+                    <div class="step-progress">
+                        <div class="step-dot completed"></div>
+                        <div class="step-dot completed"></div>
+                        <div class="step-dot active"></div>
+                        <div class="step-dot"></div>
+                        <div class="step-dot"></div>
+                        <div class="step-dot"></div>
+                    </div>
+                </div>
+            </div>
+            <p class="section-description">Each card shows a common coding problem with two approaches: a beginner's attempt and an expert's solution. Flip the cards to see detailed explanations of why one approach works better than the other. This builds your "Trust but Verify" mindset.</p>
+            <div style="background: var(--accent-soft); padding: 12px; border-radius: 8px; margin: 16px 0; text-align: center; font-size: 0.9rem; color: var(--accent); font-weight: 500;">
+                💡 <strong>How to use this:</strong> Click on any card to flip it and see the detailed explanation. Use the arrow buttons (‹ ›) to see more examples. Each card shows a common coding problem and how to fix it properly!
+            </div>
+            <div class="card">
+                <div class="h-carousel-container">
+                    <button class="carousel-nav carousel-prev">‹</button>
+                    <div id="inference-deck" class="h-carousel-deck"></div>
+                    <button class="carousel-nav carousel-next">›</button>
+                </div>
+                <div class="h-carousel-footer">
+                    <div id="inference-counter" class="h-carousel-counter"></div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="prompt-gallery" style="display: none;">
+            <div class="story-intro">
+                <h2>💬 Chapter 4: Perfect Your AI Communication</h2>
+                <p class="story-text">You've mastered the debugging mindset—excellent! Now it's time to become a prompt engineering expert. The way you communicate with AI can make the difference between getting mediocre results and getting exactly what you need. This is where you learn to speak AI's language fluently.</p>
+                <div class="progress-indicator">
+                    <span class="step-number">Step 4 of 6</span>
+                    <div class="step-progress">
+                        <div class="step-dot completed"></div>
+                        <div class="step-dot completed"></div>
+                        <div class="step-dot completed"></div>
+                        <div class="step-dot active"></div>
+                        <div class="step-dot"></div>
+                        <div class="step-dot"></div>
+                    </div>
+                </div>
+            </div>
+            <p class="section-description">Each card shows different ways to ask for the same thing. Predict which approach will work best, then flip to see the actual results. This trains your "prompt literacy" and helps you communicate more effectively with AI tools.</p>
+            <div style="background: var(--accent-soft); padding: 12px; border-radius: 8px; margin: 16px 0; text-align: center; font-size: 0.9rem; color: var(--accent); font-weight: 500;">
+                💡 <strong>How to use this:</strong> Click on any card to flip it and see the detailed explanation. Use the arrow buttons (‹ ›) to see more examples. Each card shows a common coding problem and how to fix it properly!
+            </div>
+            <div class="card">
+                <div class="h-carousel-container">
+                    <button class="carousel-nav carousel-prev">‹</button>
+                    <div id="gallery-deck" class="h-carousel-deck"></div>
+                    <button class="carousel-nav carousel-next">›</button>
+                </div>
+                <div class="h-carousel-footer">
+                    <div id="gallery-counter" class="h-carousel-counter"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="tone-tuning" style="display: none;">
+            <div class="story-intro">
+                <h2>🎭 Chapter 5: Master Team Collaboration</h2>
+                <p class="story-text">You're becoming an AI communication expert—fantastic progress! Now let's focus on the human side of development. Great developers don't just write code; they build teams, mentor others, and create positive work environments. This is where you learn to be a leader, not just a coder.</p>
+                <div class="progress-indicator">
+                    <span class="step-number">Step 5 of 6</span>
+                    <div class="step-progress">
+                        <div class="step-dot completed"></div>
+                        <div class="step-dot completed"></div>
+                        <div class="step-dot completed"></div>
+                        <div class="step-dot completed"></div>
+                        <div class="step-dot active"></div>
+                        <div class="step-dot"></div>
+                    </div>
+                </div>
+            </div>
+            <p class="section-description">Each card shows different ways to give feedback or communicate in team settings. See how tone, word choice, and approach can dramatically impact team morale and productivity. This builds your emotional intelligence and leadership skills.</p>
+            <div style="background: var(--accent-soft); padding: 12px; border-radius: 8px; margin: 16px 0; text-align: center; font-size: 0.9rem; color: var(--accent); font-weight: 500;">
+                💡 <strong>How to use this:</strong> Click on any card to flip it and see the detailed explanation. Use the arrow buttons (‹ ›) to see more examples. Each card shows a common coding problem and how to fix it properly!
+            </div>
+            <div class="card">
+                <div class="h-carousel-container">
+                    <button class="carousel-nav carousel-prev">‹</button>
+                    <div id="tone-deck" class="h-carousel-deck"></div>
+                    <button class="carousel-nav carousel-next">›</button>
+                </div>
+                <div class="h-carousel-footer">
+                    <div id="tone-counter" class="h-carousel-counter"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="faq-section" style="display: none;">
+            <div class="story-intro">
+                <h2>❓ Chapter 6: Your Learning Support Center</h2>
+                <p class="story-text">Congratulations! You've completed your learning journey and developed essential skills for AI-assisted development. This final chapter provides you with ongoing support, answers to common questions, and resources to continue growing. You're now equipped to tackle real-world projects with confidence.</p>
+                <div class="progress-indicator">
+                    <span class="step-number">Step 6 of 6</span>
+                    <div class="step-progress">
+                        <div class="step-dot completed"></div>
+                        <div class="step-dot completed"></div>
+                        <div class="step-dot completed"></div>
+                        <div class="step-dot completed"></div>
+                        <div class="step-dot completed"></div>
+                        <div class="step-dot active"></div>
+                    </div>
+                </div>
+            </div>
+            <p class="section-description">Find answers to common questions, troubleshooting tips, and best practices. This is your go-to resource when you encounter challenges in your coding journey. Bookmark this section for future reference.</p>
+             <div id="faq-container"></div>
+             
+             <div class="completion-summary">
+                <h3>🎉 Congratulations! You've Completed Your Learning Journey</h3>
+                <p>You've successfully worked through all six chapters of the Claude Code Mastery System. You now have:</p>
+                <ul class="achievement-list">
+                    <li>✅ <strong>Hands-on experience</strong> with real coding scenarios</li>
+                    <li>✅ <strong>Critical thinking skills</strong> for debugging and problem-solving</li>
+                    <li>✅ <strong>AI communication mastery</strong> for effective prompting</li>
+                    <li>✅ <strong>Team collaboration skills</strong> for professional development</li>
+                    <li>✅ <strong>Ongoing support resources</strong> for continued growth</li>
+                </ul>
+                <div class="explore-invitation">
+                    <h4>🚀 Ready for More Learning?</h4>
+                    <p>You've mastered your chosen track, but there's always more to explore! Consider trying a different learning track to expand your skills even further:</p>
+                    <div class="track-suggestions">
+                        <div class="suggestion-card" onclick="selectTrack('beginner')">
+                            <h5>🌱 Beginner Explorer</h5>
+                            <p>Perfect for building confidence with small, successful projects</p>
+                        </div>
+                        <div class="suggestion-card" onclick="selectTrack('practitioner')">
+                            <h5>🏗️ Skilled Practitioner</h5>
+                            <p>Build real solutions and connect tools to solve actual problems</p>
+                        </div>
+                        <div class="suggestion-card" onclick="selectTrack('collaborator')">
+                            <h5>👥 Team Collaborator</h5>
+                            <p>Lead projects, teach others, and build systems that scale</p>
+                        </div>
+                    </div>
+                </div>
+             </div>
+        </section>
+        
+        <div id="back-to-main-bottom" style="display: none; margin-top: 40px; text-align: center;">
+            <button onclick="showMainPage()" style="background: var(--accent); color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: 600;">← Back to Main Page</button>
+        </div>
+        
+    </div>
+
+    <script>
+        // Global data and variables
+        let currentTrack = null;
+            const learningTracks = {
+                beginner: {
+                    title: "Beginner Explorer",
+                    competencies: ["Basic Prompting", "Conversation Flow", "Simple Debugging", "File Management"],
+                    scenarios: [
+                        { id: "b1", icon: "🌐", title: "First Webpage Builder", commands: ["Create a webpage that says 'Hello, I am [your name]'", "Add a favorite color as the background", "Add a photo placeholder with alt text", "Save the file and tell me how to open it"], rtc: { context: "You've successfully created your first webpage with a blue background. Now, you want to change the background to green and add a subtitle under your name.", questions: [ { q: "What is the clearest and most effective prompt to change the background color?", options: ["Fix the color.", "I want green instead.", "Please change the background color of the webpage from blue to green.", "Why is it blue?"], correct: 2, exp: "This is the best prompt because it's specific, polite, and states both the desired outcome (green background) and the current state (blue background). This clarity helps the AI understand the request perfectly without guessing. Vague prompts often lead to unexpected results." }, { q: "To add a subtitle, which prompt is most likely to give you the best result?", options: ["Add 'My First AI Project' under my name.", "Put more text on the page.", "Subtitle: My First AI Project.", "I need a second heading."], correct: 0, exp: "This is a great prompt because it gives the exact text and the exact location ('under my name'). The more specific you are with content and placement, the less back-and-forth you'll have with the AI, leading to faster and more accurate results." }, { q: "After Claude makes the changes, it shows you the updated code. What is the best next step?", options: ["Immediately ask for another change.", "Tell Claude 'thank you' and close the program.", "Ask Claude to confirm it saved the file and then test the webpage in your browser.", "Assume it worked perfectly and move on."], correct: 2, exp: "Always verify the AI's work. Asking it to save and then testing the result yourself is a crucial habit. This 'Trust but Verify' approach ensures that what you think happened actually happened, preventing confusion and errors from building up over time." } ] } },
+                        { id: "b2", icon: "🔧", title: "Error Recovery Master", commands: ["Intentionally create a broken request to see an error", "Ask Claude to explain what went wrong in simple terms", "Request a corrected version", "Confirm the fixed version works"] },
+                        { id: "b3", icon: "⚡", title: "Interactive Elements", commands: ["Start with your previous webpage", "Ask Claude to add a button", "Make the button show a pop-up message when clicked", "Test the button's functionality"] }
+                    ]
+                },
+                practitioner: {
+                    title: "Skilled Practitioner",
+                    competencies: ["Advanced Prompting", "Project Architecture", "API Integration", "Version Control"],
+                    scenarios: [
+                        { id: "p1", icon: "🏗️", title: "Complete Task Manager", commands: ["Plan the application structure with Claude", "Create the main interface with task input and display", "Implement task addition, editing, and deletion", "Add local storage to persist tasks between sessions"], rtc: { context: "You've built a task manager with Claude and it's working well. Now you want to add a feature to mark tasks as 'completed' and filter them. You're considering different approaches for the data structure.", questions: [ { q: "What's the best way to add a 'completed' status to your tasks?", options: ["Add a 'completed: false' property to each task object", "Create a separate array for completed tasks", "Use a boolean field and update the existing task object", "Store completed tasks in a different file"], correct: 2, exp: "Adding a boolean field to the existing task object is the most efficient approach. It keeps all task data together, makes filtering easy, and doesn't require complex array management or file operations." }, { q: "For filtering tasks, which approach is most maintainable?", options: ["Create separate functions for each filter type", "Use a single filter function with a parameter", "Hard-code the filter logic in the display function", "Use CSS to hide/show tasks"], correct: 1, exp: "A single parameterized filter function is more maintainable because it centralizes the filtering logic, makes it easy to add new filter types, and keeps the code DRY (Don't Repeat Yourself)." }, { q: "When implementing the filter, what's the most user-friendly approach?", options: ["Only show completed tasks", "Show all tasks with completed ones at the bottom", "Provide buttons to switch between 'All', 'Active', and 'Completed'", "Use a dropdown menu with many options"], correct: 2, exp: "Providing clear filter buttons gives users control while keeping the interface simple. This approach is intuitive and doesn't overwhelm users with too many options." } ] } },
+                        { id: "p2", icon: "🛰️", title: "API Integration", commands: ["Find a free public API for weather data", "Ask Claude to build a webpage that fetches data from it", "Display the current temperature for a city", "Handle potential API errors gracefully"], rtc: { context: "Your weather app is working, but you've noticed it sometimes fails when the API is slow or returns unexpected data. You need to implement proper error handling and user feedback.", questions: [ { q: "What's the best way to handle API failures?", options: ["Show an error message and stop the app", "Retry the request automatically", "Show a loading state, then display a user-friendly error message", "Hide the error and show default data"], correct: 2, exp: "Showing a loading state gives users feedback that something is happening, and a user-friendly error message helps them understand what went wrong without technical jargon." }, { q: "How should you handle unexpected API response formats?", options: ["Assume the API will always work correctly", "Add validation to check if the response has the expected structure", "Use try-catch blocks around all API calls", "Test with different API endpoints"], correct: 1, exp: "Validating the response structure prevents crashes when APIs change or return unexpected data. This defensive programming approach makes your app more robust." }, { q: "What's the best way to provide user feedback during API calls?", options: ["Show nothing until the data loads", "Display a simple 'Loading...' text", "Show a spinner with 'Fetching weather data...' and disable the search button", "Use console.log to show progress"], correct: 2, exp: "A spinner with descriptive text and disabled controls provides clear feedback and prevents users from making multiple requests while one is in progress." } ] } }
+                    ]
+                },
+                collaborator: {
+                    title: "Team Collaborator",
+                    competencies: ["Code Review", "Documentation", "Mentoring", "System Design"],
+                    scenarios: [
+                        { id: "c1", icon: "👥", title: "AI-Powered Code Review", commands: ["Take a piece of buggy or inefficient code", "Ask Claude to perform a code review on it", "Request suggestions on readability, performance, and best practices", "Ask Claude to apply one of the suggested fixes"], rtc: { context: "You're leading a code review session with your team. A junior developer has submitted code that works but has several issues. You need to provide constructive feedback that helps them learn while maintaining team morale.", questions: [ { q: "What's the best way to start a code review with a junior developer?", options: ["Point out all the problems immediately", "Start with what they did well, then suggest improvements", "Let them figure out the issues themselves", "Rewrite their code without explanation"], correct: 1, exp: "Starting with positive feedback builds confidence and creates a learning environment. It shows you value their effort while still providing constructive guidance for improvement." }, { q: "When suggesting code improvements, which approach is most helpful?", options: ["Just say 'this is wrong'", "Explain the problem and suggest a better approach", "Provide the corrected code without explanation", "Ask them to research the solution online"], correct: 1, exp: "Explaining both the problem and the solution helps developers understand the 'why' behind the improvement, leading to better learning and future code quality." }, { q: "How should you handle multiple issues in the same code?", options: ["Address all issues at once", "Focus on the most critical issue first", "Let them fix one issue before moving to the next", "Create a prioritized list and tackle them systematically"], correct: 3, exp: "A prioritized list helps developers focus on the most important issues first and prevents overwhelm. It also provides a clear roadmap for improvement." } ] } }
+                    ]
+                }
+            };
+            
+            // --- DATA FOR NEW SECTIONS ---
+            const allInferenceData = [
+                {
+                    front: { title: "Dividing by Zero Problem", problem: "Your code tries to divide a number by zero: <code>10 / 0</code>. This crashes your program with an error.", studentFix: "<strong>Beginner's Approach:</strong> Just ignore zero values and hope it doesn't happen." },
+                    back: { aiFix: "if (n === 0) {\n  alert(\"Cannot divide by zero\");\n} else {\n  return 10 / n;\n}", reflection: "The beginner's idea to 'ignore zero' shows good thinking, but it's not actually implemented in code. The AI solution is much better because it:<br><br>1. <strong>Checks first</strong> - Before doing the math, it asks 'Is this zero?'<br>2. <strong>Handles the problem</strong> - If it's zero, it shows a helpful message to the user<br>3. <strong>Does the math safely</strong> - Only divides when it's safe to do so<br><br>This is the kind of code that works reliably in real applications!" }
+                },
+                {
+                    front: { title: "Loop Not Running Enough Times", problem: "You want your code to repeat 5 times, but you wrote: <code>for (let i = 0; i < 4; i++)</code>. This only runs 4 times, not 5!", studentFix: "<strong>Beginner's Approach:</strong> Add one more step manually after the loop finishes." },
+                    back: { aiFix: "for (let i = 0; i < 5; i++) {\n  // ...\n}", reflection: "The beginner's idea of adding one more step works, but it's like putting a band-aid on the problem. The AI solution is much cleaner because it:<br><br>1. <strong>Fixes the root cause</strong> - Changes the loop condition from 4 to 5<br>2. <strong>Makes it obvious</strong> - Anyone reading the code can see it will run exactly 5 times<br>3. <strong>Prevents future mistakes</strong> - No need to remember to add extra steps<br><br>This is how professional developers write code - simple, clear, and correct!" }
+                },
+                {
+                    front: { title: "Numbers Being Treated as Text", problem: "When users type numbers into a form, your code treats them as text. So '10' + '5' becomes '105' (text stuck together) instead of 15 (math).", studentFix: "<strong>Beginner's Approach:</strong> Just tell users to only type numbers and hope they listen." },
+                    back: { aiFix: "const sum = parseInt(num1) + parseInt(num2);", reflection: "The beginner's idea of asking users to be careful is nice, but people make mistakes! The AI solution is much smarter because it:<br><br>1. <strong>Converts text to numbers</strong> - Uses parseInt() to turn '10' into the number 10<br>2. <strong>Does real math</strong> - Now 10 + 5 = 15, not '105'<br>3. <strong>Works even when users make mistakes</strong> - The code handles the problem automatically<br><br>This is called 'defensive programming' - making your code work even when things don't go perfectly!" }
+                },
+                {
+                    front: { title: "Getting the Last Item in a List", problem: "You want to get the last item from a list, but <code>arr[arr.length]</code> gives you 'undefined' (nothing). This is a very common beginner mistake!", studentFix: "<strong>Beginner's Approach:</strong> Just remember that it's always 'length minus one' and hope you don't forget." },
+                    back: { aiFix: "const lastItem = arr[arr.length - 1];", reflection: "The beginner's mental note is correct, but it's easy to forget! The AI solution is much better because it:<br><br>1. <strong>Actually writes the code</strong> - Not just a mental note, but real working code<br>2. <strong>Makes it clear</strong> - Anyone can see it's getting the last item (length - 1)<br>3. <strong>Prevents mistakes</strong> - No need to remember the rule, the code does it for you<br><br>This is called 'explicit code' - it's obvious what it does just by reading it!" }
+                },
+                {
+                    front: { title: "Asynchronous Data Fetching", problem: "Problem: Trying to use data from an API call before it has arrived.", studentFix: "<strong>Student Fix:</strong> Add a `setTimeout` with a guess of 1 second." },
+                    back: { aiFix: "fetchData().then(data => {\n  // use data here\n});\n\n// Or with async/await:\nasync function main() {\n  const data = await fetchData();\n  // use data here\n}", reflection: "Guessing with `setTimeout` is unreliable. The AI uses proper asynchronous patterns (Promises or async/await) to guarantee the code waits for the data to be ready." }
+                },
+                {
+                    front: { title: "Mutating State Directly", problem: "In React: <code>props.user.name = 'New'</code> doesn't update the UI.", studentFix: "<strong>Student Fix:</strong> Force the component to re-render somehow." },
+                    back: { aiFix: "setUser({ ...user, name: 'New' });", reflection: "The student's approach fights the framework. The AI uses the correct state update pattern, which allows React to manage UI updates predictably and efficiently." }
+                },
+                {
+                    front: { title: "CSS Specificity Issue", problem: "A CSS rule isn't being applied.", studentFix: "<strong>Student Fix:</strong> Add <code>!important</code> to the rule." },
+                    back: { aiFix: "/* Analyze specificity of conflicting rules */\n.parent .child-component a {\n  /* More specific selector */\n}", reflection: "Using `!important` is a code smell that makes CSS hard to maintain. The AI archetype investigates and creates a more specific selector, which is the correct and scalable solution." }
+                },
+                {
+                    front: { title: "Unsafe Database Query", problem: "Code: <code>query = 'SELECT * FROM users WHERE id = ' + userId;</code> is vulnerable to SQL injection.", studentFix: "<strong>Student Fix:</strong> Try to clean the `userId` string for bad characters." },
+                    back: { aiFix: "// Use parameterized queries\nquery('SELECT * FROM users WHERE id = ?', [userId]);", reflection: "Manually cleaning input is error-prone. The AI uses parameterized queries (prepared statements), which is the industry standard for preventing SQL injection vulnerabilities." }
+                },
+                {
+                    front: { title: "Hardcoded Secret Keys", problem: "Code: <code>const API_KEY = 'abc123_secret_key';</code> is checked into Git.", studentFix: "<strong>Student Fix:</strong> Put the key in a different file and add that file to `.gitignore`." },
+                    back: { aiFix: "// Use environment variables\nconst API_KEY = process.env.API_KEY;", reflection: "The student's idea is a good first step, but environment variables are the standard. They separate configuration from code, making the application more secure and portable across different environments (development, staging, production)." }
+                },
+                {
+                    front: { title: "Inefficient Data Search", problem: "A slow nested loop is used to find an item in a large list.", studentFix: "<strong>Student Fix:</strong> Hope the list doesn't get too big." },
+                    back: { aiFix: "// Convert array to a Map or Set for fast lookups\nconst dataMap = new Map(data.map(i => [i.id, i]));\nconst item = dataMap.get(itemId);", reflection: "Ignoring performance issues leads to technical debt. The AI refactors the data structure to a Map, providing near-instantaneous (O(1)) lookups, which is crucial for scalable applications." }
+                }
+            ];
+
+            const allGalleryData = [
+                {
+                    front: { prompts: ["Fix the color.", "I want green instead.", "Please change the background color of the webpage from blue to green."] },
+                    back: { outputs: ["Applies a random color, no relation to green.", "Changes the text color to green, background is unchanged.", "Correct: background changes from blue to green."], reflection: "Specificity reduces wasted turns. The best prompt clearly names both the starting state and the target state." }
+                },
+                {
+                    front: { prompts: ["Add a button.", "Make a button that says 'Click Me'.", "Create a `<button>` element with the text 'Click Me' and add the CSS classes 'btn' and 'btn-primary'."] },
+                    back: { outputs: ["Creates a plain, unstyled button with no text.", "Creates a button with the correct text but no styling.", "Correct: Creates a fully styled button with the right text."], reflection: "The AI can handle both content and styling instructions. Combining them in one prompt is more efficient." }
+                },
+                {
+                    front: { prompts: ["It's broken.", "The login button doesn't work.", "When I click the '.login-btn', the expected JavaScript function `handleLogin` is not being called. The console is silent."] },
+                    back: { outputs: ["Asks for more information: 'What is broken?'.", "Suggests generic fixes: 'Check your JavaScript file'.", "Correct: Identifies the likely issue: 'It sounds like the event listener isn't attached correctly. Let me check the code.'"], reflection: "Effective debugging prompts describe the *symptom* (what you see) and the *expectation* (what should happen)." }
+                },
+                {
+                    front: { prompts: ["Make the text bigger.", "Increase the font size of the main title.", "Set the `font-size` of the `h1` element to `3rem`."] },
+                    back: { outputs: ["Increases all font sizes on the page slightly.", "Correctly targets the `h1` but uses a relative unit like `1.2em`.", "Correct: Applies the exact style to the exact element."], reflection: "You can move from descriptive goals to prescriptive commands as you become more confident with the code." }
+                },
+                {
+                    front: { prompts: ["Save this.", "Commit my work.", "Commit all staged changes with the message 'feat: Add user authentication endpoint'."] },
+                    back: { outputs: ["Asks for a commit message.", "Uses a generic message like 'Update files'.", "Correct: Performs the commit with a clear, conventional commit message."], reflection: "Providing all necessary information upfront (like the commit message) makes the AI a faster and more useful collaborator." }
+                },
+                {
+                    front: { prompts: ["Add a test.", "Write a test for the login function.", "Write a unit test for the `login(user, pass)` function using Jest. Include test cases for a valid login, an invalid password, and a non-existent user."] },
+                    back: { outputs: ["Creates an empty test file.", "Writes a single 'happy path' test for a successful login.", "Correct: Generates a complete test suite covering the specified edge cases."], reflection: "Guide the AI's creativity. By specifying the edge cases you want covered, you get a much more robust and useful result." }
+                },
+                {
+                    front: { prompts: ["Make this code better.", "Refactor this function.", "Please refactor this function to use `async/await` instead of Promise chains, and extract the API call into a separate helper function."] },
+                    back: { outputs: ["Performs minor changes like adding comments.", "Rewrites the function but keeps the same structure.", "Correct: Performs the specific refactoring requested, improving both readability and structure."], reflection: "The term 'better' is subjective. Define what 'better' means (e.g., 'more readable', 'more performant', 'better structured')." }
+                },
+                {
+                    front: { prompts: ["Add an image.", "Add a user profile picture.", "Add an `<img>` tag. Set the `src` to 'profile.jpg', `alt` to 'User profile picture', and give it a CSS class of 'avatar'."] },
+                    back: { outputs: ["Asks for the image source URL.", "Creates an `<img>` tag with a placeholder `src`.", "Correct: Creates the complete, accessible, and styleable HTML element as requested."], reflection: "Think in terms of the final code. A complete request includes content (src), accessibility (alt), and styling hooks (class)." }
+                },
+                {
+                    front: { prompts: ["How does this work?", "Explain this function.", "Explain this recursive function to me like I'm a beginner. Go step-by-step through one call with an example input."] },
+                    back: { outputs: ["Gives a highly technical, brief summary.", "Adds comments to the code.", "Correct: Provides a pedagogical explanation tailored to the specified audience, including a concrete example trace."], reflection: "Set the persona. Asking the AI to explain 'like I'm a beginner' completely changes the tone, length, and style of the output." }
+                },
+                {
+                    front: { prompts: ["Make a new component.", "Create a React UserCard component.", "Create a new functional React component named `UserCard`. It should accept `name` and `email` as props and display them in a `div`."] },
+                    back: { outputs: ["Creates a generic JavaScript file.", "Creates a class-based React component with placeholder content.", "Correct: Creates the exact functional component with props as specified."], reflection: "Specify the technology stack and pattern. Naming the framework (React) and component type (functional) leads to a precise and modern output." }
+                }
+            ];
+
+            const allToneData = [
+                {
+                    front: { pr: "Junior's PR: 'Added login function, but it repeats code from register().'" },
+                    back: {
+                        blunt: { tone: "This is bad, fix it.", reaction: "Junior feels defensive, productivity drops." },
+                        vague: { tone: "Needs improvement.", reaction: "Junior is confused, unclear what to fix." },
+                        constructive: { tone: "Good start! To avoid repetition, try extracting the shared validation logic into a helper function. I can show you an example.", reaction: "Junior feels supported, learns refactoring." },
+                        reflection: "Constructive feedback identifies the problem, proposes a specific solution, and offers help, fostering learning and collaboration."
+                    }
+                },
+                {
+                    front: { pr: "Junior's PR: 'The CSS for the new button looks a bit off on mobile.'" },
+                    back: {
+                        blunt: { tone: "This is broken on mobile.", reaction: "Junior feels incompetent." },
+                        vague: { tone: "Check the responsiveness.", reaction: "Junior wastes time trying to find the specific issue." },
+                        constructive: { tone: "The functionality is great! On mobile viewports under 480px, the button's padding seems a bit large. Could we try reducing it for smaller screens?", reaction: "Junior knows exactly what to fix and feels their work is valued." },
+                        reflection: "Specific, actionable feedback is key. Mentioning what works well first ('The functionality is great!') softens the critique."
+                    }
+                },
+                {
+                    front: { pr: "Junior's PR: 'I added comments to my code as requested.'" },
+                    back: {
+                        blunt: { tone: "These comments are useless.", reaction: "Junior stops trying to write helpful comments." },
+                        vague: { tone: "The comments could be better.", reaction: "Junior doesn't understand what makes a 'good' comment." },
+                        constructive: { tone: "Thanks for adding these! A great next step is to make them explain *why* the code is doing something, not just *what* it's doing. For example, instead of `// increment i`, try `// move to the next item in the list`.", reaction: "Junior learns the purpose of comments and improves their documentation skills." },
+                        reflection: "Mentoring is about teaching the underlying principles, not just correcting the syntax. Providing a clear example is powerful."
+                    }
+                },
+                {
+                    front: { pr: "Junior's PR: 'This change fixes the bug but adds a new library to our project.'" },
+                    back: {
+                        blunt: { tone: "We can't add a new dependency for this.", reaction: "Junior feels their solution is rejected without explanation." },
+                        vague: { tone: "I'm not sure about this approach.", reaction: "Junior is left guessing about the real concern." },
+                        constructive: { tone: "Nice find on the fix! Adding a new dependency is a significant change. Could we explore if there's a way to achieve this with our existing libraries first to keep our bundle size small?", reaction: "Junior learns about a new constraint (bundle size) and is invited to problem-solve collaboratively." },
+                        reflection: "Explain the 'why' behind decisions. This turns a simple code review into a lesson on system architecture and constraints."
+                    }
+                },
+                {
+                    front: { pr: "Junior's PR: 'My code works, but I'm not sure if it's the most efficient way.'" },
+                    back: {
+                        blunt: { tone: "This is slow, rewrite it.", reaction: "Junior feels anxious about performance and may not know how to improve it." },
+                        vague: { tone: "Think about performance.", reaction: "This isn't actionable advice for a learner." },
+                        constructive: { tone: "Great work getting it functional! You're right to think about efficiency. This part here with the nested loop could be slow with large data. Have you considered using a Map for faster lookups? Happy to pair on it.", reaction: "Junior's curiosity is rewarded, and they learn a new, more performant pattern." },
+                        reflection: "Validate the developer's instinct ('You're right to think about...'). This encourages proactive thinking and psychological safety."
+                    }
+                },
+                {
+                    front: { pr: "Junior's PR: 'I had to copy-paste the `UserInfo` component to make a small change for the admin page.'" },
+                    back: {
+                        blunt: { tone: "Don't copy-paste code.", reaction: "A rule is stated, but no solution is offered." },
+                        vague: { tone: "This isn't very DRY.", reaction: "Junior may not understand the acronym ('Don't Repeat Yourself')." },
+                        constructive: { tone: "This is a common challenge. Instead of copy-pasting, we can add a new `isAdmin` prop to the original `UserInfo` component to handle the variation. This keeps our code DRY.", reaction: "Junior learns a key design principle (DRY) and a practical technique (props) to implement it." },
+                        reflection: "Define jargon (like DRY) or avoid it. The goal is clear communication, not showing off your vocabulary."
+                    }
+                },
+                {
+                    front: { pr: "Junior's PR: 'I couldn't figure out how to write a test for this part.'" },
+                    back: {
+                        blunt: { tone: "All code needs tests.", reaction: "This adds pressure but doesn't solve the problem." },
+                        vague: { tone: "Just add a test case.", reaction: "This is unhelpful as the developer is already stuck." },
+                        constructive: { tone: "No problem, this part is tricky to test because it involves a live API call. We can use 'mocking' to simulate the API response. Let me point you to our testing guide on mocking.", reaction: "Junior feels understood, learns a new testing technique, and is given a resource to learn more." },
+                        reflection: "Empathize with the struggle ('this part is tricky'). It shows you understand the problem's complexity and are a supportive teammate."
+                    }
+                },
+                {
+                    front: { pr: "Junior's PR: 'I used a global variable to share state between components.'" },
+                    back: {
+                        blunt: { tone: "Never use global variables.", reaction: "The developer is told what not to do, but not what to do instead." },
+                        vague: { tone: "This could have side effects.", reaction: "The warning is too abstract to be helpful." },
+                        constructive: { tone: "I see what you're trying to do. While global variables can work, they can make the app unpredictable. A better pattern for sharing state is using React's Context API or a state management library. Let's refactor this to use Context.", reaction: "Junior learns about the dangers of global state and is taught the standard, more robust pattern." },
+                        reflection: "Frame feedback around patterns and best practices. This elevates the conversation from a single mistake to a general principle."
+                    }
+                },
+                {
+                    front: { pr: "Junior's PR: 'The code is done but I haven't added any error handling yet.'" },
+                    back: {
+                        blunt: { tone: "This is not 'done' then.", reaction: "This comment is dismissive and demoralizing." },
+                        vague: { tone: "Remember to handle errors.", reaction: "The developer may not know *what* errors to handle." },
+                        constructive: { tone: "The happy path looks solid! Let's think about the edge cases. What should happen if the API call fails or returns empty data? We should add a `try...catch` block here to handle those cases gracefully.", reaction: "Junior is guided to think about robustness and is given specific points to add error handling." },
+                        reflection: "Positive reinforcement ('The happy path looks solid!') is a great way to start feedback. It makes the critique feel like an improvement, not a failure."
+                    }
+                },
+                {
+                    front: { pr: "Junior's PR: 'I named the function `getData`.'" },
+                    back: {
+                        blunt: { tone: "This name is too generic.", reaction: "The developer doesn't understand why it's generic." },
+                        vague: { tone: "Could the name be more descriptive?", reaction: "This is a question, not feedback." },
+                        constructive: { tone: "The code works well. To make it even clearer for the next person who reads it, let's rename `getData` to something more specific, like `fetchUserProfileById`. Clear names are a superpower for maintainability.", reaction: "Junior learns the importance of descriptive naming and its impact on team collaboration." },
+                        reflection: "Connect the feedback to a higher-level team value, like 'maintainability' or 'clarity'. This gives the suggestion more weight."
+                    }
+                }
+            ];
+
+            const allModuleData = {
+                beginner: {
+                    inference: allInferenceData.slice(0, 4),
+                    gallery: allGalleryData.slice(0, 4),
+                    tone: allToneData.slice(0, 4)
+                },
+                practitioner: {
+                    inference: allInferenceData.slice(0, 7),
+                    gallery: allGalleryData.slice(0, 7),
+                    tone: allToneData.slice(0, 7)
+                },
+                collaborator: {
+                    inference: allInferenceData,
+                    gallery: allGalleryData,
+                    tone: allToneData
+                }
+            };
+
+            const faqData = [
+                { q: "Why are my carousels not loading?", a: "Carousels fail to load when there's a mismatch between HTML structure and JavaScript selectors, or when the data array is empty. Check the browser's developer console for errors like 'TypeError: Cannot set property 'innerHTML' of null' and verify your data arrays are properly populated." },
+                { q: "Why does my code show up as weirdly formatted HTML?", a: "Code displays as HTML when special characters like `<` or `>` are injected directly into the DOM using `innerHTML`. The browser tries to render them as HTML tags. Fix this by escaping these characters (replace `<` with `&lt;` and `>` with `&gt;`) before injection." },
+                { q: "How do I make a feature like an accordion work?", a: "An accordion requires three components: HTML structure (header and content panel), CSS for open/closed states, and JavaScript to handle click events that toggle between states. Start with the HTML, add CSS transitions, then implement the toggle logic." },
+                { q: "What's the difference between beginner and practitioner tracks?", a: "Beginner tracks focus on basic concepts like simple prompting and file management. Practitioner tracks cover advanced topics like API integration and project architecture. Choose based on your current coding experience and learning goals." },
+                { q: "How do I fix a 'Cannot read property of undefined' error?", a: "This error occurs when trying to access properties of variables that don't exist. Always check if variables are defined before using them. Use optional chaining (`?.`) or conditional checks to prevent these errors." },
+                { q: "Why won't my JavaScript functions work?", a: "JavaScript functions fail for several reasons: syntax errors, missing parentheses, incorrect variable names, or trying to call functions before they're defined. Check the browser console for specific error messages and verify your function syntax." },
+                { q: "How do I make my website responsive?", a: "Use CSS media queries to adjust layouts for different screen sizes. Start with mobile-first design, use flexible units (%, vw, vh), and test on various devices. CSS Grid and Flexbox are excellent tools for responsive layouts." },
+                { q: "What's the best way to debug JavaScript?", a: "Use browser developer tools: set breakpoints, inspect variables, and use console.log() for debugging. Chrome DevTools and Firefox Developer Tools provide excellent debugging features. Start with console.log() to trace your code execution." },
+                { q: "How do I handle user input safely?", a: "Always validate and sanitize user input before processing. Use proper form validation, escape HTML characters, and never trust user data. Implement both client-side and server-side validation for security." },
+                { q: "Why is my CSS not applying?", a: "CSS fails to apply due to specificity conflicts, missing selectors, or incorrect syntax. Check for typos, verify your selectors match your HTML, and use browser developer tools to inspect which styles are being applied." },
+                { q: "How do I optimize website performance?", a: "Optimize images, minimize HTTP requests, use CDNs, enable compression, and optimize your code. Remove unused CSS/JavaScript, use lazy loading for images, and consider using a build tool like Webpack or Vite for bundling." },
+                { q: "What's the difference between let, const, and var?", a: "Use `const` for values that won't change, `let` for variables that might change, and avoid `var` due to its function-scoping issues. `const` and `let` are block-scoped and provide better error prevention than `var`." }
+            ];
+            
+
+            function escapeHTML(str) {
+                return str.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            }
+
+            function setupTrackSelection() {
+                document.querySelectorAll('[data-track]').forEach(card => {
+                    card.addEventListener('click', () => window.selectTrack(card.dataset.track));
+                });
+            }
+
+
+
+            function updateCurrentTrackIndicator() {
+                if (!currentTrack) return;
+                
+                // Remove current-track class from all cards
+                document.querySelectorAll('.suggestion-card').forEach(card => {
+                    card.classList.remove('current-track');
+                });
+                
+                // Add current-track class to the active track
+                const activeCard = document.querySelector(`[onclick="selectTrack('${currentTrack}')"]`);
+                if (activeCard) {
+                    activeCard.classList.add('current-track');
+                }
+            }
+
+            function selectTrack(trackId) { window.selectTrack(trackId); }
+
+            function loadCompetencyMap(competencies) {
+                const map = document.getElementById('competency-map');
+                map.innerHTML = competencies.map(comp => `<span class="competency-tag" data-comp="${comp}">${comp}</span>`).join('');
+            }
+
+            function loadScenariosCarousel(scenarios) {
+                const deck = document.getElementById('scenarios-deck');
+                const counter = document.getElementById('scenarios-counter');
+                const prevBtn = document.querySelector('#learning-scenarios .carousel-prev');
+                const nextBtn = document.querySelector('#learning-scenarios .carousel-next');
+
+                // Remove existing event listeners by cloning the deck
+                const newDeck = deck.cloneNode(false);
+                deck.parentNode.replaceChild(newDeck, deck);
+
+                newDeck.innerHTML = scenarios.map((scenario, i) => `
+                    <div class="flip-card" data-index="${i}">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front">
+                                <div class="flip-card-front-icon">${scenario.icon}</div>
+                                <p>${scenario.title}</p>
+                                <span>Learning Scenario</span>
+                            </div>
+                            <div class="flip-card-back">
+                                <h4>Steps to Complete:</h4>
+                                <ul>${scenario.commands.map(cmd => `<li>- "${cmd}"</li>`).join('')}</ul>
+                            </div>
+                        </div>
+                    </div>`).join('');
+
+                const cards = newDeck.querySelectorAll('.flip-card');
+                
+                function showCard(index) {
+                    cards.forEach((card, i) => card.classList.toggle('active', i === index));
+                    if (counter) counter.textContent = `Scenario ${index + 1} of ${cards.length}`;
+                }
+
+                newDeck.addEventListener('click', e => {
+                    const card = e.target.closest('.flip-card.active');
+                    if (card) card.classList.toggle('flipped');
+                });
+
+                if (prevBtn) {
+                    const newPrevBtn = prevBtn.cloneNode(true);
+                    prevBtn.parentNode.replaceChild(newPrevBtn, prevBtn);
+                    newPrevBtn.addEventListener('click', () => {
+                        const currentIndex = Array.from(cards).findIndex(card => card.classList.contains('active'));
+                        const newIndex = (currentIndex - 1 + cards.length) % cards.length;
+                        showCard(newIndex);
+                    });
+                }
+                
+                if (nextBtn) {
+                    const newNextBtn = nextBtn.cloneNode(true);
+                    nextBtn.parentNode.replaceChild(newNextBtn, nextBtn);
+                    newNextBtn.addEventListener('click', () => {
+                        const currentIndex = Array.from(cards).findIndex(card => card.classList.contains('active'));
+                        const newIndex = (currentIndex + 1) % cards.length;
+                        showCard(newIndex);
+                    });
+                }
+                
+                showCard(0);
+            }
+
+            function loadRtcQuizzes(scenarios) {
+                const container = document.getElementById('rtc-container');
+                container.innerHTML = '';
+                
+                scenarios.forEach(scenario => {
+                    const rtc = scenario.rtc;
+                    if (!rtc) return;
+                    
+                    const questionsHtml = rtc.questions.map((q, qIndex) => {
+                         const optionsHtml = q.options.map((opt, oIndex) => `
+                            <div class="quiz-option">
+                                <label>
+                                    <input type="radio" name="rtc-${scenario.id}-q-${qIndex}" value="${oIndex}">
+                                    <span>${opt}</span>
+                                </label>
+                                <div class="explanation"><p>${q.exp}</p></div>
+                            </div>`).join('');
+
+                        return `<div class="rtc-quiz-question" data-q-index="${qIndex}">
+                                    <p><strong>Question ${qIndex + 1}:</strong> ${q.q}</p>
+                                    <div class="quiz-options">${optionsHtml}</div>
+                               </div>`;
+                    }).join('');
+
+                    container.innerHTML += `
+                        <div class="rtc-quiz-container" id="rtc-${scenario.id}">
+                            <h3>Assessment: ${scenario.title}</h3>
+                            <div class="rtc-passage"><p>${rtc.context}</p></div>
+                            ${questionsHtml}
+                        </div>`;
+                });
+
+                container.addEventListener('change', e => {
+                    if (e.target.type === 'radio') {
+                        const optionDiv = e.target.closest('.quiz-option');
+                        const questionDiv = e.target.closest('.rtc-quiz-question');
+                        const rtcDiv = e.target.closest('.rtc-quiz-container');
+                        const scenarioId = rtcDiv.id.replace('rtc-', '');
+                        
+                        const qIndex = parseInt(questionDiv.dataset.qIndex);
+                        const selectedOIndex = parseInt(e.target.value);
+                        
+                        const scenario = learningTracks[currentTrack].scenarios.find(s => s.id === scenarioId);
+                        const question = scenario.rtc.questions[qIndex];
+
+                        questionDiv.querySelectorAll('.quiz-option').forEach(opt => opt.classList.remove('selected', 'correct', 'wrong'));
+                        
+                        optionDiv.classList.add('selected');
+                        if (selectedOIndex === question.correct) {
+                            optionDiv.classList.add('correct');
+                        } else {
+                            optionDiv.classList.add('wrong');
+                        }
+                    }
+                });
+            }
+
+            function setupAccordion() {
+                const container = document.getElementById('faq-container');
+                if (!container) return;
+
+                // Remove any existing event listeners by cloning the container
+                const newContainer = container.cloneNode(false);
+                container.parentNode.replaceChild(newContainer, container);
+
+                newContainer.innerHTML = `<div class="accordion">` + faqData.map(faq => `
+                    <div class="accordion-item">
+                        <button class="accordion-header" aria-expanded="false">
+                            <span class="accordion-title">${faq.q}</span>
+                        </button>
+                        <div class="accordion-content"><p>${faq.a}</p></div>
+                    </div>
+                `).join('') + `</div>`;
+
+                newContainer.addEventListener('click', e => {
+                    const header = e.target.closest('.accordion-header');
+                    if (!header) return;
+                    const content = header.nextElementSibling;
+                    const isExpanded = header.getAttribute('aria-expanded') === 'true';
+                    
+                    header.setAttribute('aria-expanded', !isExpanded);
+                    if (!isExpanded) {
+                        content.style.maxHeight = content.scrollHeight + "px";
+                        content.style.paddingTop = "10px";
+                        content.style.paddingBottom = "20px";
+                    } else {
+                        content.style.maxHeight = "0";
+                        content.style.paddingTop = "0";
+                        content.style.paddingBottom = "0";
+                    }
+                });
+            }
+            
+            function setupHorizontalCarousel(containerId, data) {
+                const section = document.getElementById(containerId);
+                if (!section) return;
+
+                const deck = section.querySelector('.h-carousel-deck');
+                const prevBtn = section.querySelector('.carousel-prev');
+                const nextBtn = section.querySelector('.carousel-next');
+                const counter = section.querySelector('.h-carousel-counter');
+
+                if (!deck || !data || data.length === 0) {
+                    if(deck) deck.innerHTML = "<p>No examples to display for this track.</p>";
+                    if(counter) counter.textContent = "";
+                    if(prevBtn) prevBtn.style.display = 'none';
+                    if(nextBtn) nextBtn.style.display = 'none';
+                    return;
+                }
+                
+                if(prevBtn) prevBtn.style.display = 'flex';
+                if(nextBtn) nextBtn.style.display = 'flex';
+
+                deck.innerHTML = data.map((card, index) => {
+                    let frontHTML = '', backHTML = '';
+                    
+                    if (containerId === 'inference-archetypes') {
+                        frontHTML = `<h4>${escapeHTML(card.front.title)}</h4><pre class="code-block">${card.front.problem}</pre><p>${card.front.studentFix}</p>`;
+                        backHTML = `<h4>AI Archetype Fix</h4><pre class="code-block">${escapeHTML(card.back.aiFix)}</pre><p class="reflection-note">${escapeHTML(card.back.reflection)}</p>`;
+                    } else if (containerId === 'prompt-gallery') {
+                        frontHTML = `<h4>Prompt Styles</h4>` + card.front.prompts.map((p, i) => `<div class="prompt-option"><strong>Prompt ${i+1}:</strong><p>${escapeHTML(p)}</p></div>`).join('');
+                        backHTML = `<h4>Simulated Outputs</h4>` + card.back.outputs.map((o, i) => `<div class="prompt-option"><strong>Output ${i+1}:</strong><p>${escapeHTML(o)}</p></div>`).join('') + `<p class="reflection-note">${escapeHTML(card.back.reflection)}</p>`;
+                    } else if (containerId === 'tone-tuning') {
+                        frontHTML = `<h4>Pull Request Context</h4><p>${escapeHTML(card.front.pr)}</p>`;
+                        backHTML = `<h4>Feedback Tones & Reactions</h4>
+                            <div class="prompt-option"><strong>Blunt:</strong> "${escapeHTML(card.back.blunt.tone)}"<br><em>Reaction: ${escapeHTML(card.back.blunt.reaction)}</em></div>
+                            <div class="prompt-option"><strong>Vague:</strong> "${escapeHTML(card.back.vague.tone)}"<br><em>Reaction: ${escapeHTML(card.back.vague.reaction)}</em></div>
+                            <div class="prompt-option"><strong>Constructive:</strong> "${escapeHTML(card.back.constructive.tone)}"<br><em>Reaction: ${escapeHTML(card.back.constructive.reaction)}</em></div>
+                            <p class="reflection-note">${escapeHTML(card.back.reflection)}</p>`;
+                    }
+
+                    return `<div class="h-flip-card" data-index="${index}">
+                        <div class="h-flip-card-inner">
+                            <div class="h-flip-card-front">${frontHTML}</div>
+                            <div class="h-flip-card-back">${backHTML}</div>
+                        </div>
+                    </div>`;
+                }).join('');
+                
+                const cards = deck.querySelectorAll('.h-flip-card');
+                let currentIndex = 0;
+
+                function showCard(index) {
+                    cards.forEach((card, i) => {
+                        card.classList.toggle('active', i === index);
+                        if (i !== index) card.classList.remove('flipped');
+                    });
+                    counter.textContent = `Example ${index + 1} of ${cards.length}`;
+                }
+
+                // Remove existing event listeners by cloning the deck
+                const newDeck = deck.cloneNode(false);
+                deck.parentNode.replaceChild(newDeck, deck);
+                newDeck.innerHTML = deck.innerHTML;
+                
+                // Update reference to the new deck
+                const updatedCards = newDeck.querySelectorAll('.h-flip-card');
+                
+                function showCard(index) {
+                    updatedCards.forEach((card, i) => {
+                        card.classList.toggle('active', i === index);
+                        if (i !== index) card.classList.remove('flipped');
+                    });
+                    if (counter) counter.textContent = `Example ${index + 1} of ${updatedCards.length}`;
+                }
+                
+                newDeck.addEventListener('click', (e) => {
+                    const card = e.target.closest('.h-flip-card.active');
+                    if (card) card.classList.toggle('flipped');
+                });
+
+                if (prevBtn) {
+                    // Remove existing listeners by cloning buttons
+                    const newPrevBtn = prevBtn.cloneNode(true);
+                    prevBtn.parentNode.replaceChild(newPrevBtn, prevBtn);
+                    newPrevBtn.addEventListener('click', () => {
+                        currentIndex = (currentIndex - 1 + updatedCards.length) % updatedCards.length;
+                        showCard(currentIndex);
+                    });
+                }
+
+                if (nextBtn) {
+                    const newNextBtn = nextBtn.cloneNode(true);
+                    nextBtn.parentNode.replaceChild(newNextBtn, nextBtn);
+                    newNextBtn.addEventListener('click', () => {
+                        currentIndex = (currentIndex + 1) % updatedCards.length;
+                        showCard(currentIndex);
+                    });
+                }
+
+                showCard(0);
+            }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- INITIALIZATION ---
+            setupTrackSelection();
+            setupAccordion();
+        });
+
+        // Global functions (outside DOMContentLoaded)
+        function showMainPage() {
+            // Hide all sections
+            document.getElementById('progress-section').style.display = 'none';
+            document.getElementById('learning-scenarios').style.display = 'none';
+            document.getElementById('rtc-assessments').style.display = 'none';
+            document.getElementById('inference-archetypes').style.display = 'none';
+            document.getElementById('prompt-gallery').style.display = 'none';
+            document.getElementById('tone-tuning').style.display = 'none';
+            document.getElementById('faq-section').style.display = 'none';
+            
+            // Hide back buttons
+            document.getElementById('back-to-main-top').style.display = 'none';
+            document.getElementById('back-to-main-bottom').style.display = 'none';
+            
+            // Show main page
+            document.getElementById('track-selection').style.display = 'block';
+        }
+
+
+        function loadInferenceArchetypes() {
+            const container = document.getElementById('inference-archetypes');
+            const deck = container.querySelector('.carousel-deck');
+            if (!deck) return;
+            
+            deck.innerHTML = allInferenceData.map((item, index) => `
+                <div class="h-flip-card" data-index="${index}">
+                    <div class="h-flip-card-inner">
+                        <div class="h-flip-card-front">
+                            <h4>${item.front.title}</h4>
+                            <p>${item.front.problem}</p>
+                            <p>${item.front.studentFix}</p>
+                        </div>
+                        <div class="h-flip-card-back">
+                            <h4>AI Solution:</h4>
+                            <pre class="code-block">${item.back.aiFix}</pre>
+                            <p>${item.back.reflection}</p>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            setupHorizontalCarousel('inference-archetypes', allInferenceData);
+        }
+
+        function loadPromptGallery() {
+            const container = document.getElementById('prompt-gallery');
+            const deck = container.querySelector('.carousel-deck');
+            if (!deck) return;
+            
+            deck.innerHTML = allGalleryData.map((item, index) => `
+                <div class="h-flip-card" data-index="${index}">
+                    <div class="h-flip-card-inner">
+                        <div class="h-flip-card-front">
+                            <h4>${item.front.title}</h4>
+                            <p>${item.front.description}</p>
+                        </div>
+                        <div class="h-flip-card-back">
+                            <h4>${item.back.title}</h4>
+                            <pre class="code-block">${item.back.code}</pre>
+                            <p>${item.back.explanation}</p>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            setupHorizontalCarousel('prompt-gallery', allGalleryData);
+        }
+
+        function loadToneTuning() {
+            const container = document.getElementById('tone-tuning');
+            const deck = container.querySelector('.carousel-deck');
+            if (!deck) return;
+            
+            deck.innerHTML = allToneData.map((item, index) => `
+                <div class="h-flip-card" data-index="${index}">
+                    <div class="h-flip-card-inner">
+                        <div class="h-flip-card-front">
+                            <h4>${item.front.title}</h4>
+                            <p>${item.front.description}</p>
+                        </div>
+                        <div class="h-flip-card-back">
+                            <h4>${item.back.title}</h4>
+                            <p>${item.back.approach}</p>
+                            <p>${item.back.outcome}</p>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            setupHorizontalCarousel('tone-tuning', allToneData);
+        }
+
+        function loadFAQs(trackId) {
+            // Delegate to accordion builder for consistent UI
+            setupAccordion();
+        }
+
+        function updateCurrentTrackIndicator() {
+            if (!currentTrack) return;
+            
+            // Remove current-track class from all cards
+            document.querySelectorAll('.suggestion-card').forEach(card => {
+                card.classList.remove('current-track');
+            });
+            
+            // Add current-track class to the current track card
+            const currentCard = document.querySelector(`[onclick="selectTrack('${currentTrack}')"]`);
+            if (currentCard) {
+                currentCard.classList.add('current-track');
+            }
+        }
+
+        // No longer needed when using accordion pattern; keep stub to avoid errors
+        function toggleFAQ() {}
+
+        function selectTrack(trackId) {
+            const track = learningTracks[trackId];
+            if (!track) return;
+            
+            currentTrack = trackId;
+            const trackData = (typeof allModuleData !== 'undefined') ? allModuleData[trackId] : null;
+            
+            // Hide main page
+            document.getElementById('track-selection').style.display = 'none';
+            
+            // Show back buttons
+            document.getElementById('back-to-main-top').style.display = 'block';
+            document.getElementById('back-to-main-bottom').style.display = 'block';
+            
+            // Show sections
+            document.getElementById('progress-section').style.display = 'block';
+            document.getElementById('learning-scenarios').style.display = 'block';
+            document.getElementById('rtc-assessments').style.display = 'block';
+            document.getElementById('inference-archetypes').style.display = 'block';
+            document.getElementById('prompt-gallery').style.display = 'block';
+            document.getElementById('tone-tuning').style.display = 'block';
+            document.getElementById('faq-section').style.display = 'block';
+            
+            // Load content
+            loadScenariosCarousel(track.scenarios);
+            loadRtcQuizzes(track.scenarios);
+            if (trackData) {
+                setupHorizontalCarousel('inference-archetypes', trackData.inference);
+                setupHorizontalCarousel('prompt-gallery', trackData.gallery);
+                setupHorizontalCarousel('tone-tuning', trackData.tone);
+            }
+            // Build FAQs using accordion implementation
+            setupAccordion();
+            
+            // Update current track indicator and header
+            updateCurrentTrackIndicator();
+            const trackHeader = document.getElementById('current-track');
+            const trackSubtitle = document.getElementById('current-track-subtitle');
+            if (trackHeader) trackHeader.textContent = track.title;
+            if (trackSubtitle) {
+                const subtitles = {
+                    beginner: "Perfect for building confidence with small, successful projects.",
+                    practitioner: "Build real solutions and connect tools to solve actual problems.",
+                    collaborator: "Lead projects, teach others, and build systems that scale."
+                };
+                trackSubtitle.textContent = subtitles[trackId] || '';
+            }
+            
+            // Scroll to the start of the new track content (top of Chapter 1)
+            const firstSection = document.getElementById('progress-section');
+            if (firstSection && typeof firstSection.scrollIntoView === 'function') {
+                firstSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        // Make functions globally accessible
+        window.showMainPage = showMainPage;
+        window.selectTrack = selectTrack;
+        window.toggleFAQ = toggleFAQ;
+    </script>
+</body>
+</html>
+
