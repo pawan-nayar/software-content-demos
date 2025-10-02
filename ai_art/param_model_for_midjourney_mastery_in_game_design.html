@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hitting the Jackpot: The PARAM Model for Midjourney Mastery in Game Design</title>
+    <meta name="description" content="A masterclass guide for game designers on using the 5-phase PARAM model in Midjourney. Features detailed case studies, 50+ prompt examples, quizzes, and FAQs for creating hit casino games.">
+    <meta name="keywords" content="Midjourney, Game Design, PARAM Model, AI Art, Casino Games, Slot Design, Concept Art, Prompt Engineering, Interactive Design">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0;400;0;600;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+
+    <style>
+        /* ================= Base / Theme (Inspired by Computer Science HTML) ================= */
+        :root {
+          --text:#212529; --bg:#fff; --muted:#f8f9fa; --border:#e9ecef;
+          --accent:#fd7e14; --accent-2:#e87312; --header-bg:#212529; --header-fg:#f8f9fa;
+          --ok:#16a34a; --ok-soft:#dcfce7; --bad:#dc2626; --bad-soft:#fee2e2;
+          --code-bg: #2d2d2d;
+          --code-fg: #f8f8f2;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body {
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            scroll-behavior: smooth;
+        }
+        .container { max-width: 900px; margin: auto; padding: 24px; background: var(--bg); }
+        a { color: var(--accent); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+
+        /* ================= Header / Footer / Breadcrumbs ================= */
+        .site-header { background: var(--header-bg); color: var(--header-fg); padding: 14px 24px; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .breadcrumbs { margin-bottom: 24px; font-size: 0.9rem; color: #6c757d; }
+
+        /* ================= Typography & Layout ================= */
+        h1 { font-family: 'Lora', serif; font-size: clamp(2.2rem, 5vw, 3rem); text-align: left; margin-bottom: 8px; color: var(--header-bg); line-height: 1.2; }
+        .byline { font-family: 'Lora', serif; font-size: clamp(1.1rem, 3vw, 1.4rem); font-style: italic; color: #6c757d; margin-bottom: 24px; }
+        h2 { font-family: 'Lora', serif; font-size: clamp(1.6rem, 4vw, 2.2rem); color: var(--text); margin: 56px 0 20px; border-bottom: 2px solid var(--accent); padding-bottom: 10px; }
+        h3 { font-family: 'Lora', serif; font-size: clamp(1.3rem, 3vw, 1.6rem); color: var(--text); margin-top: 32px; margin-bottom: 12px; }
+        p { margin-bottom: 16px; word-wrap: break-word; }
+        ul { margin-left: 24px; margin-bottom: 24px; list-style-type: '🎰'; padding-left: 1em; }
+        li { margin-bottom: 12px; padding-left: 0.5em; }
+        .intro { font-size: 1.15rem; line-height: 1.8; background: #fff; padding: 24px; border-radius: 4px; border-left: 4px solid var(--accent); margin: 24px 0; border: 1px solid var(--border); }
+        .img-frame { width: 100%; border-radius: 12px; margin: 24px 0; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; background: var(--header-bg); padding: 20px; }
+        .img-frame img { max-width: 100%; height: auto; border-radius: 8px; }
+        .btn { background: var(--accent); color: #fff; border: none; padding: 10px 14px; border-radius: 10px; font-weight: 700; cursor: pointer; transition: background-color 0.2s ease; }
+        .btn:hover { background-color: var(--accent-2); }
+        .btn:disabled { background-color: #95a5a6; cursor: not-allowed; }
+        
+        /* ================= Card & Tip Styles ================= */
+        .highlight-card, .critique-card, .tips-card {
+            background: var(--muted);
+            border-left: 4px solid var(--accent);
+            padding: 20px 24px;
+            border-radius: 4px;
+            margin: 24px 0;
+            border: 1px solid var(--border);
+        }
+        .tips-card {
+            border-left-color: var(--ok);
+        }
+        .tips-card h4 {
+            color: var(--ok);
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-family: 'Inter', sans-serif;
+            font-size: 1.2rem;
+        }
+        .tips-card ul {
+            list-style-type: '💡';
+            margin-bottom: 0;
+        }
+
+
+        /* ================= Interactive & Structural Elements ================= */
+        .accordion { display: grid; gap: 8px; }
+        .accordion-item { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+        .accordion-header { width: 100%; text-align: left; background: var(--muted); border: none; padding: 16px 20px; cursor: pointer; font-size: 1.1rem; font-weight: bold; display: flex; align-items: center; justify-content: space-between; color: var(--text); }
+        .accordion-header i { transition: transform 0.3s ease; }
+        .accordion-header[aria-expanded="true"] { background: #f1f3f5; }
+        .accordion-header[aria-expanded="true"] i { transform: rotate(180deg); }
+        .accordion-content { padding: 0 20px; background: #fff; max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out, padding 0.3s ease-out; }
+
+        .quiz-container { padding: 20px; border: 1px solid var(--border); border-radius: 12px; background: #fff; margin-top: 24px; }
+        .quiz-navigation { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+        .quiz-body { display: none; } .quiz-body.active { display: block; }
+        .quiz-options { display: grid; gap: 12px; }
+        .quiz-option label { display: block; padding: 14px; border: 2px solid var(--border); border-radius: 8px; cursor: pointer; background: var(--muted); }
+        .quiz-option .explanation { display: none; margin-top: 10px; padding: 15px; border-radius: 6px; }
+        .quiz-option.selected.correct label { background: var(--ok-soft); border-color: var(--ok); }
+        .quiz-option.selected.wrong label { background: var(--bad-soft); border-color: var(--bad); }
+        .quiz-option.correct .explanation { border-left: 4px solid var(--ok); background: var(--ok-soft); }
+        .quiz-option.wrong .explanation { border-left: 4px solid var(--bad); background: var(--bad-soft); }
+        .final-score { text-align: center; font-size: 1.5rem; font-weight: bold; padding: 30px; }
+
+        .flip-card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 24px; margin: 32px 0; }
+        .flip-card { background-color: transparent; width: 100%; height: 180px; perspective: 1000px; cursor: pointer; }
+        .flip-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s; transform-style: preserve-3d; }
+        .flip-card.flipped .flip-card-inner { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .flip-card-front { background: var(--header-bg); color: var(--header-fg); }
+        .flip-card-back { background: var(--muted); color: var(--text); transform: rotateY(180deg); font-family: 'Courier New', monospace; font-size: 0.9rem; padding: 10px; text-align: left; }
+        .original-script { font-size: 3rem; margin-bottom: 10px; font-weight: bold; font-family: 'Lora', serif; }
+        .lang-name { font-weight: bold; font-style: italic; color: var(--accent); }
+
+        .progress-tracker { display: flex; align-items: center; gap: 6px; margin: 24px 0; padding: 12px; background: var(--muted); border-radius: 8px; flex-wrap: wrap; border: 1px solid var(--border); }
+        .progress-step { width: 20px; height: 20px; border-radius: 50%; background: var(--border); color: #6c757d; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 600; transition: background-color 0.3s; }
+        .progress-step.completed { background: var(--ok); color: #fff; }
+        .progress-step.current { background: var(--accent); color: #fff; }
+        .progress-line { flex: 1; height: 2px; background: var(--border); min-width: 20px; transition: background-color 0.3s; }
+        .progress-line.completed { background: var(--ok); }
+        
+        .iteration-carousel {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: #fff;
+            margin: 24px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            padding: 20px;
+        }
+        .iteration-carousel h4 {
+            font-family: 'Inter', sans-serif;
+            margin-top: 0;
+            color: var(--accent);
+            text-align: center;
+        }
+        .carousel-slide {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            text-align: center;
+        }
+        .carousel-slide.active {
+            display: flex;
+        }
+        .carousel-slide img {
+            max-width: 80%;
+            height: auto;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            margin-top: 10px;
+        }
+        .prompt-text-display {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9em;
+            background-color: var(--code-bg);
+            color: var(--code-fg);
+            padding: 12px 15px;
+            border-radius: 5px;
+            width: 100%;
+            word-wrap: break-word;
+            text-align: left;
+        }
+        .carousel-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .step-counter {
+            font-weight: 600;
+            color: #6c757d;
+        }
+
+        .glossary-cloud { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; justify-content: center; }
+        .glossary-chip { position: relative; display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 999px; background: #fff7ed; border: 1px solid #ffd8a8; color: var(--accent-2); font-weight: 600; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
+        .glossary-chip:hover, .glossary-chip:focus { background: #ffecde; }
+        .chip-tip { position: fixed; z-index: 1001; min-width: 240px; max-width: min(92vw, 420px); background: var(--header-bg); color: #fff; padding: 12px 14px; border-radius: 12px; box-shadow: 0 12px 28px rgba(0,0,0, .2); opacity: 0; visibility: hidden; transition: opacity 0.15s, visibility 0.15s; line-height: 1.45; }
+        .chip-tip.show { opacity: 1; visibility: visible; }
+        .chip-tip .arrow { position: absolute; width: 12px; height: 12px; background: var(--header-bg); transform: rotate(45deg); }
+
+    </style>
+</head>
+<body>
+
+<header class="site-header">
+    <div style="font-weight: 700; font-size: 1.2rem;">AI Game Design Academy</div>
+</header>
+
+<div class="container">
+
+    <nav class="breadcrumbs">Game Design > AI Concept Art > The PARAM Model</nav>
+
+    <h1>Hitting the Jackpot</h1>
+    <p class="byline">The PARAM Model for Midjourney Mastery in Interactive Game Design</p>
+
+    <p class="intro">
+        In the hyper-competitive world of casino game design, visual impact is everything. This masterclass guide introduces the <strong>PARAM model</strong>, a battle-tested, 5-phase framework for transforming your game concepts into polished, market-ready masterpieces using the power of Midjourney.
+    </p>
+
+    <div class="progress-tracker">
+        <div class="progress-step current">1</div><div class="progress-line"></div>
+        <div class="progress-step">2</div><div class="progress-line"></div>
+        <div class="progress-step">3</div><div class="progress-line"></div>
+        <div class="progress-step">4</div><div class="progress-line"></div>
+        <div class="progress-step">5</div><div class="progress-line"></div>
+        <div class="progress-step">6</div>
+        <span style="font-size:0.9rem; color:#6c757d; width: 100%; text-align: center; padding-top: 5px;">
+            Intro → Case Studies → Iteration → Quizzes → FAQs → Glossary
+        </span>
+    </div>
+
+    <section id="part1">
+        <h2>Part 1: Deconstructing the PARAM Model for Game Designers</h2>
+        <p>The PARAM model is a systematic workflow that structures the creative chaos of game design. It turns the often-unpredictable process of AI art generation into a reliable pipeline for producing high-quality, on-brand assets.</p>
+
+        <h3>P - Preparation: The Blueprint Phase 🎯</h3>
+        <p>Before a single pixel is generated, the Preparation phase lays the strategic foundation for your game's visual identity. Think of this as your digital Game Design Document (GDD). It’s where you define the unwavering core of your project.</p>
+        <p>This stage isn’t about art; it’s about asking the hard questions. Who is the target player? What is the core emotional loop you want them to experience—thrill, mystery, opulence? What hardware will this live on? A towering portrait cabinet demands a different compositional approach than a dual-screen landscape setup.</p>
+        <p>By establishing these non-negotiable elements first, you create a clear roadmap. Your initial Midjourney prompts will be simple, designed not to create final art, but to validate that the foundational concepts translate visually. This phase ensures your creative journey starts with a clear destination, preventing costly detours later.</p>
+        <div class="tips-card">
+            <h4>Key Tips for Preparation</h4>
+            <ul>
+                <li><strong>Define Your Core Loop:</strong> Clearly articulate the primary emotion. Is it the thrill of the chase? The allure of ancient treasure? Let this feeling guide your initial keywords.</li>
+                <li><strong>Know Your Hardware:</strong> Specify the target aspect ratio from the start (e.g., `--ar 9:16` for portrait cabinets). This avoids major compositional rework later.</li>
+                <li><strong>Identify Thematic Pillars:</strong> List 3-5 non-negotiable keywords that define your theme (e.g., Aztec, Jungle, Gold, Temple). These are your anchors.</li>
+                <li><strong>Start Simple:</strong> Your first prompt should be basic. For example, `Aztec temple in a jungle`. The goal is to get a baseline, not a masterpiece.</li>
+                <li><strong>Gather Visual References:</strong> Collect 2-3 images that capture the mood or style you're aiming for. You won't use them yet, but they will inform your next steps.</li>
+            </ul>
+        </div>
+
+        <h3>A - Analysis: The Creative Sandbox 🧪</h3>
+        <p>The Analysis phase is where you unleash creative chaos to discover your game's soul. This is the "blue sky" concepting stage, where no idea is too wild. Here, you actively experiment with Midjourney’s more exploratory parameters.</p>
+        <p>Use high <code>--chaos</code> values to generate four wildly different art directions from a single prompt. Test a broad range of styles by referencing artists or other games with <code>--sref</code>. How does Anubis's Golden Gamble look in a gritty, realistic style versus a vibrant, stylized one?</p>
+        <p>The goal isn't to create final assets, but to generate a wide spectrum of possibilities. This phase is about divergence—pushing the boundaries of your initial concept to find unexpected visual hooks that are engaging, exciting, and, most importantly, fun. It provides the raw creative material from which you'll later chisel your masterpiece.</p>
+        <div class="tips-card">
+            <h4>Key Tips for Analysis</h4>
+            <ul>
+                <li><strong>Embrace Chaos:</strong> Use `--chaos 50` or higher to force Midjourney to think outside the box. This is your fastest route to unexpected and innovative concepts.</li>
+                <li><strong>Test Different Styles:</strong> Use `--sref` with URLs of existing game art or famous paintings to see your theme in various aesthetics. Does it work better as painterly or as a graphic novel?</li>
+                <li><strong>Play with Adjectives:</strong> Generate variations where you only change the mood words. Compare mysterious Aztec temple with vibrant Aztec temple and ruined Aztec temple.</li>
+                <li><strong>Explore Composition:</strong> Prompt for different camera angles like cinematic wide shot, low-angle shot, or top-down view to see how perspective changes the feeling.</li>
+                <li><strong>Don't Judge, Just Generate:</strong> The goal here is quantity and variety. Don't discard ideas too quickly. Generate a large pool of concepts to choose from in the next phase.</li>
+            </ul>
+        </div>
+        
+        <h3>R - Reflection: The Art Director's Cut 🤔</h3>
+        <p>After the creative explosion of the Analysis phase, Reflection is the crucial moment of pause and critical evaluation. This is your internal art review. Spread out all your generated concepts and assess them with a cold, objective eye.</p>
+        <p>Which of these visuals truly serves the game's core theme defined in Preparation? Which character design has the most personality and player appeal? Does that moody lighting actually make the reel symbols harder to read on a small screen?</p>
+        <p>This is where you filter the signal from the noise. You're not just looking for what's pretty; you're looking for what <em>works</em>. This phase is about making tough decisions and identifying the strongest visual direction. It's where you separate the interesting-but-flawed ideas from the concepts that have true potential.</p>
+        <div class="tips-card">
+            <h4>Key Tips for Reflection</h4>
+            <ul>
+                <li><strong>Compare Against Your GDD:</strong> Always refer back to your goals from the Preparation phase. Does the art match the intended emotion and player experience?</li>
+                <li><strong>Check for Clarity:</strong> Is the focal point clear? Can players instantly understand what a symbol or character represents? Visual clarity is king in game design.</li>
+                <li><strong>Get a Second Opinion:</strong> Show your top 3-5 concepts to a colleague. A fresh pair of eyes can spot issues or strengths you might have missed.</li>
+                <li><strong>Think About Scalability:</strong> Can this art style be consistently replicated for all the required assets (symbols, backgrounds, UI)? If it's too complex, it might not be practical.</li>
+                <li><strong>Trust Your Gut:</strong> Sometimes, a design just *feels* right. Don't ignore your own creative intuition. It's often the most valuable tool you have.</li>
+            </ul>
+        </div>
+        
+        <h3>A - Adjustment: The Refinement Workshop 🔧</h3>
+        <p>Once you’ve identified the winning direction, Adjustment is where you bring that vision into sharp focus. This is the asset refinement stage, where you shift from broad exploration to meticulous execution. Here, you master Midjourney’s precision tools.</p>
+        <p>Use weighted multi-prompts (<code>::</code>) to give more prominence to key thematic elements. Employ negative prompts (<code>--no</code>) to eliminate distracting details. Most importantly, this is where you lock in consistency.</p>
+        <p>Use <code>--oref</code> and <code>--cw</code> to create a definitive model sheet for your main character, ensuring your mascot looks identical across key art and bonus screens. This phase is about convergence—taking the chosen concept and polishing it with technical skill until it perfectly aligns with your art bible.</p>
+        <div class="tips-card">
+            <h4>Key Tips for Adjustment</h4>
+            <ul>
+                <li><strong>Use Weighted Prompts:</strong> To emphasize a key element, give it more weight. Example: `golden Aztec temple::2, jungle vines::1`.</li>
+                <li><strong>Be a Sculptor with `--no`:</strong> Clean up your composition by removing unwanted elements. Is the AI adding distracting text? Use `--no text, words`.</li>
+                <li><strong>Lock Down Your Character:</strong> Once you have a character design you love, use its image URL with `--oref` in all future prompts to ensure 100% consistency.</li>
+                <li><strong>Vary (Region) is Your Scalpel:</strong> If only one part of an image is wrong (like a character's hand), use the "Vary (Region)" tool after upscaling to fix just that area.</li>
+                <li><strong>Iterate on Lighting:</strong> Refine the mood by making small adjustments to the lighting. Try adding "volumetric light rays" or "soft ambient glow" to see the effect.</li>
+            </ul>
+        </div>
+
+        <h3>M - Mastery: The Gold Master Production 🏆</h3>
+        <p>The Mastery phase is the final push to create production-ready, "gold master" assets. Every visual element generated here is intended for the final game build or marketing campaign. This means technical perfection is paramount.</p>
+        <p>Your prompts become highly detailed and cinematic, incorporating everything you've learned. You will always use high-quality parameters like <code>--q 2</code> to ensure maximum detail and resolution for upscaling.</p>
+        <p>This is where you generate the final polished key art for the cabinet, the perfectly balanced reel symbols, and the dynamic splash screens. The output from this phase should be ready for integration into the game engine or handover to the marketing team. It’s the culmination of your strategic process.</p>
+        <div class="tips-card">
+            <h4>Key Tips for Mastery</h4>
+            <ul>
+                <li><strong>Always Use `--q 2`:</strong> For your final renders, ensure you're using the highest quality setting to capture all the detail.</li>
+                <li><strong>Think in Cinematic Terms:</strong> Use keywords like cinematic, hyper-detailed, 8k, and Unreal Engine render to push the AI to produce its most polished output.</li>
+                <li><strong>Upscale and Review:</strong> After generating the grid, choose the best image and use the Upscale buttons. Zoom in on the upscaled image to check for any flaws or artifacts before finalizing.</li>
+                <li><strong>Create a Cohesive Set:</strong> Generate all your final symbols (A, K, Q, J, themed symbols) using the same core style prompts and `--sref` to ensure they look like they belong in the same game.</li>
+                <li><strong>Document Your Winning Prompt:</strong> Save the final, perfect prompt for each key asset in your GDD. This becomes part of your game's official art bible.</li>
+            </ul>
+        </div>
+    </section>
+
+    <section id="part2">
+        <h2>Part 2: Detailed Case Studies</h2>
+        <h3>Case Study 1: Creating Key Character Art for "Anubis's Golden Gamble"</h3>
+        <p>This case study walks through the creation of a mascot for a slot game blending ancient Egypt with a modern casino theme.</p>
+        <div class="highlight-card">
+            <h5>Phase P: Preparation</h5>
+            <p><strong>Goal:</strong> Establish a dignified yet powerful Anubis mascot for a modern portrait slot cabinet.</p>
+            <p class="prompt-text-display">imagine Anubis, the Egyptian god, slot machine art --v 7</p>
+        </div>
+        <div class="highlight-card">
+            <h5>Phase A: Analysis</h5>
+            <p><strong>Goal:</strong> Experiment with styles to find a premium, exciting look. We introduce casino elements and specify the portrait aspect ratio.</p>
+            <p class="prompt-text-display">imagine the Egyptian god Anubis as a casino high roller, wearing a golden headdress and a sharp suit, holding a glowing scepter, dramatic lighting, high detail --ar 9:16 --stylize 750 --chaos 20</p>
+        </div>
+        <div class="critique-card">
+            <h5>Phase R: Reflection</h5>
+            <p><strong>Goal:</strong> The "high roller" concept works, but the suit/headdress blend is disjointed. We need to integrate the ancient and modern elements more seamlessly.</p>
+            <p class="prompt-text-display">imagine the god Anubis as a casino VIP, wearing ornate Egyptian armor fused with modern black and gold fabric::1.5, holding a scepter that ends in a glowing poker chip, standing in a lavish pharaoh's tomb reimagined as a casino vault --ar 9:16 --stylize 600 --no cartoon</p>
+        </div>
+        <div class="highlight-card">
+            <h5>Phase A: Adjustment</h5>
+            <p><strong>Goal:</strong> Refine the winning concept and lock in the character's appearance for brand consistency using `--oref`.</p>
+            <p class="prompt-text-display">imagine Anubis the casino VIP celebrating a jackpot, raising his glowing scepter in triumph as gold coins and scarab beetles erupt around him, dynamic energy --ar 9:16 --oref [URL_of_Anubis_Design_from_Phase_3] --cw 100</p>
+        </div>
+        <div class="highlight-card">
+            <h5>Phase M: Mastery</h5>
+            <p><strong>Goal:</strong> Create the final, production-ready key art for the game cabinet, optimized for maximum player attraction.</p>
+            <p class="prompt-text-display">imagine cinematic key art for Anubis's Golden Gamble, the god Anubis in futuristic Egyptian armor, standing confidently in a pharaoh's vault overflowing with gold, a glowing jackpot symbol reflected in his eyes, volumetric light rays, 8k --ar 9:16 --stylize 700 --q 2</p>
+        </div>
+        
+        <h3>Case Study 2: Designing a "Dragon's Hoard Hold & Spin" Environment</h3>
+        <p>This study focuses on creating a seamless, repeating background texture for a bonus round.</p>
+        <div class="highlight-card">
+            <h5>Phase P: Preparation</h5>
+            <p><strong>Goal:</strong> Create a rich, treasure-filled dragon's lair that can serve as a repeating background.</p>
+            <p class="prompt-text-display">imagine a cave full of gold coins --v 7</p>
+        </div>
+        <div class="highlight-card">
+            <h5>Phase A: Analysis</h5>
+            <p><strong>Goal:</strong> Introduce key thematic elements (dragon, Asian art style) and use the `--tile` parameter for seamlessness.</p>
+            <p class="prompt-text-display">imagine seamless pattern of a dragon's hoard, piles of gold coins, shimmering jewels, ancient Chinese jade artifacts, glowing magical items, intricate details --ar 1:1 --tile --stylize 600</p>
+        </div>
+        <div class="critique-card">
+            <h5>Phase R: Reflection</h5>
+            <p><strong>Goal:</strong> The texture is good but feels static. Add a sense of the dragon's presence and more dynamic lighting.</p>
+            <p class="prompt-text-display">imagine seamless texture of an ancient dragon's treasure, gold coins glimmering from a hidden light source, emeralds and rubies glowing faintly, subtle wisps of magical smoke, hints of dragon scales visible beneath the gold --ar 1:1 --tile --stylize 750</p>
+        </div>
+        <div class="highlight-card">
+            <h5>Phase A: Adjustment</h5>
+            <p><strong>Goal:</strong> Refine the aesthetic using `--sref` to match the look of successful "Dragon Link" style games.</p>
+            <p class="prompt-text-display">imagine a seamless background for a dragon-themed slot game, piles of gold and glowing gems, magical atmosphere --ar 1:1 --tile --sref [URL_of_Dragon_Link_Game_Art] --stylize 500</p>
+        </div>
+        <div class="highlight-card">
+            <h5>Phase M: Mastery</h5>
+            <p><strong>Goal:</strong> Create the final background, ensuring it's rich but doesn't distract from the main symbols. We'll use `--stop` to soften details.</p>
+            <p class="prompt-text-display">imagine seamless, atmospheric background of a dragon's hoard, soft glimmer on gold coins, out-of-focus glowing gems, deep shadows, rich textures, painterly --ar 1:1 --tile --sref [URL_of_Dragon_Link_Game_Art] --stylize 600 --stop 85 --q 2</p>
+        </div>
+    </section>
+
+    <section id="part3">
+        <h2>Part 3: The Art of Iteration: Maturing 5 Game Assets 10x</h2>
+        <p>True design mastery comes from iteration. The following interactive carousels demonstrate how a simple concept can evolve into a polished, production-ready game asset through 10 steps of progressive refinement. Click the arrows to see the prompt change at each step.</p>
+        
+        <div id="iteration-carousels-container"></div>
+    </section>
+    
+    <section id="part4">
+        <h2>Part 4: Quizzes</h2>
+        <div id="quiz-container"></div>
+    </section>
+
+    <section id="part5">
+        <h2>Part 5: Frequently Asked Questions for Game Designers</h2>
+        <div id="faq-accordion-container"></div>
+    </section>
+
+    <section id="part6">
+        <h2>Part 6: Glossary of Key Game Design Terms</h2>
+        <p>Click on the terms below to explore their meanings and relevance in AI-assisted game design.</p>
+        <div class="glossary-cloud" id="glossaryCloud"></div>
+    </section>
+
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- DATA ---
+        const iterationData = [
+            {
+                title: 'A "WILD" Symbol (Aztec Theme)',
+                prompts: [
+                    'WILD symbol',
+                    'WILD symbol, gold, block letters',
+                    'WILD symbol for an Aztec jungle game, gold block letters, stone texture',
+                    'WILD symbol, 3D gold letters with carved Aztec patterns, cracked stone texture',
+                    'WILD symbol, 3D gold letters with glowing Aztec carvings, jungle vines wrapping around the letters',
+                    'WILD symbol, 3D gold letters, glowing Aztec carvings, dramatic cinematic lighting from above, deep shadows',
+                    'WILD symbol, polished gold with intricate Aztec engravings that pulse with light, mossy stone texture',
+                    'WILD symbol, polished gold, on a mossy temple stone, sunlight filtering through jungle canopy above',
+                    'WILD symbol, ancient polished gold, glowing with mysterious energy, moody, atmospheric, ancient temple background',
+                    'cinematic game asset, WILD symbol, hyper-detailed polished gold, Aztec engravings pulsating with magical light, on a crumbling temple altar, volumetric light rays, 8k --ar 1:1 --q 2'
+                ],
+                images: [
+                    'https://placehold.co/400x400/7a2a2a/ffffff?text=WILD', 'https://placehold.co/400x400/b58a3f/ffffff?text=WILD',
+                    'https://placehold.co/400x400/6b4f3a/ffffff?text=WILD', 'https://placehold.co/400x400/D4AF37/000000?text=WILD',
+                    'https://placehold.co/400x400/228B22/FFD700?text=WILD', 'https://placehold.co/400x400/000000/FFD700?text=WILD',
+                    'https://placehold.co/400x400/556B2F/E0AA3E?text=WILD', 'https://placehold.co/400x400/3A5F0B/FFD700?text=WILD',
+                    'https://placehold.co/400x400/4B3621/F0E68C?text=WILD', 'https://placehold.co/400x400/1a1a1a/FFD700?text=WILD+MASTER'
+                ]
+            },
+            {
+                title: 'A "K" Royal Symbol (Fantasy Theme)',
+                prompts: [
+                    'the letter K', 'the letter K, in a royal font, gold', 'the letter K for a fantasy game, ornate gold font, medieval style',
+                    'the letter K, forged from hammered gold, inlaid with a small ruby', 'the letter K, forged from ornate hammered gold, with intricate medieval filigree, a glowing ruby at its center',
+                    'the letter K symbol, hammered gold with glowing ruby, lit by torchlight, casting long shadows', 'the letter K symbol, weathered hammered gold, cracked texture, glowing ruby, on a dark wood background',
+                    'the letter K symbol, ornate gold, ruby at its center pulsing with a soft red light, magical particle effects', 'low-value game symbol K, epic fantasy style, weathered gold, ruby pulsing with faint light, dark, moody',
+                    'cinematic low-tier reel symbol, the letter K, forged from ancient gold with dwarven filigree, a single ruby heart that glows faintly, hyper-detailed, on a stone background --ar 1:1 --q 2 --stylize 400'
+                ]
+            },
+             {
+                title: 'A Sci-Fi Background Texture (UI)',
+                prompts: [
+                    'sci-fi pattern', 'sci-fi pattern of hexagons --tile', 'seamless pattern of metallic sci-fi hexagons --tile',
+                    'seamless pattern of metallic sci-fi hexagons with glowing blue circuit lines --tile', 'seamless pattern of 3D metallic sci-fi hexagons, glowing blue circuits, carbon fiber texture',
+                    'seamless pattern, 3D carbon fiber hexagons, glowing blue circuits, subtle internal lighting, dark background', 'seamless background, 3D carbon fiber hexagons, energy pulsing through blue circuit lines, faint digital haze',
+                    'seamless background, detailed 3D carbon fiber hexagons, micro-circuits glowing blue, clean, high-tech', 'dark sci-fi background texture, subtle glow from hexagonal pattern, minimalist, high-tech, moody',
+                    'seamless sci-fi background for a game UI, hyper-detailed carbon fiber hexagonal tiles with pulsating blue energy streams, clean, minimalist, 4k texture --ar 1:1 --tile --q 2 --stylize 300'
+                ]
+            },
+            {
+                title: 'A "Mr. Gold" Mascot (Cartoon Theme)',
+                prompts: [
+                    'a rich gentleman mascot', 'a rich gentleman mascot, cartoon style, top hat and monocle', 'a cheerful, friendly rich gentleman mascot, 1930s cartoon style, top hat, monocle, smiling',
+                    'a cheerful rich gentleman mascot, 1930s cartoon style, tipping his top hat, holding a bag of money', 'a cheerful rich gentleman mascot named Mr. Gold, wearing a tuxedo, top hat, monocle, tipping his hat, vector art',
+                    'character design sheet for Mr. Gold, a cheerful rich gentleman mascot, different poses: waving, pointing, laughing --oref [URL] --cw 100', 'Mr. Gold mascot standing in front of a giant gold coin, celebrating a win --oref [URL] --cw 100',
+                    'Mr. Gold mascot jumping for joy as coins rain down around him, dynamic, energetic --oref [URL] --cw 100', 'portrait of Mr. Gold mascot, winking at the camera, friendly and inviting, bright casino background --oref [URL] --cw 100',
+                    'high-quality game asset, Mr. Gold mascot, clean vector illustration, celebrating a jackpot win, vibrant colors, ready for animation --ar 1:1 --q 2 --niji 6 --oref [URL] --cw 100'
+                ]
+            },
+            {
+                title: 'A Marketing Splash Screen (Anubis Game)',
+                prompts: [
+                    'slot game advertisement', 'advertisement for "Anubis\'s Golden Gamble" slot game', 'splash screen for "Anubis\'s Golden Gamble" featuring the god Anubis',
+                    'splash screen, Anubis holding a golden jackpot symbol, looking powerful', 'marketing art for "Anubis\'s Golden Gamble", Anubis in the center, golden reels on the side, game logo at the top',
+                    'marketing splash screen, Anubis in the center, dramatic lighting from the jackpot symbol, gold coins in the foreground', 'cinematic splash screen for "Anubis\'s Golden Gamble", moody, epic, Anubis looking mysterious, glowing eyes',
+                    'cinematic splash screen, Anubis in hyper-detailed armor, giant glowing jackpot symbol, gold coins and magical energy swirling', 'marketing splash screen with a "Play Now" button area at the bottom',
+                    'epic marketing splash screen for "Anubis\'s Golden Gamble", Anubis holding a massive glowing jackpot, gold coins exploding outwards, prominent game logo, space for call to action, 8k, cinematic --ar 16:9 --q 2 --stylize 700'
+                ]
+            }
+        ];
+
+        const quizData = [
+             { q: "You need to design key art for a tall, portrait slot cabinet. Which parameter is non-negotiable?", options: ["--ar 16:9", "--tile", "--ar 9:16", "--chaos 100"], answer: 2, explanation: "`--ar 9:16` sets the aspect ratio to a tall vertical format, perfect for modern portrait cabinets." },
+            { q: "To ensure your 'Diamond Buffalo' character looks identical in every image, you should use:", options: ["--sref", "--seed", "--oref", "--chaos 100"], answer: 2, explanation: "`--oref` (Omni Reference) is the V7 parameter specifically for maintaining character consistency across different generations." },
+            { q: "What does the 'Reflection' phase of PARAM emphasize for a game designer?", options: ["Finalizing the prompt", "Critically evaluating if the art is fun and on-brand", "Increasing resolution", "Using low stylize"], answer: 1, explanation: "The Reflection phase is about stepping back to evaluate if the art meets the game's core objectives and player appeal." },
+            { q: "You want to brainstorm four radically different art directions for a new game theme. Which parameter helps the most?", options: ["--stylize 0", "--repeat 4", "--chaos 90", "--ar 1:1"], answer: 2, explanation: "A high `--chaos` value maximizes the variation in the initial grid, providing four distinct artistic interpretations." },
+            { q: "The 'Mastery' phase of the PARAM model is best described as:", options: ["The first step in creation", "Experimenting with styles", "Polishing key art for production quality and player impact", "Adding text to the image"], answer: 2, explanation: "Mastery is the final stage focused on creating high-resolution, production-ready assets that are highly polished." },
+            { q: "Which parameter is essential for creating a seamless, repeating background texture?", options: ["--repeat", "--tile", "--ar 1:1", "--stop 80"], answer: 1, explanation: "The `--tile` parameter is specifically designed to generate images that can be seamlessly repeated." },
+            { q: "To create a hyper-realistic, non-artistic texture for a game asset, you should use:", options: ["--style raw and low --stylize", "--niji 6", "high --chaos", "high --stylize"], answer: 0, explanation: "`--style raw` reduces Midjourney's default artistic opinion, and a low `--stylize` value ensures it sticks closely to the prompt." },
+            { q: "A weighted multi-prompt like `Anubis::1.5` is most useful in which PARAM phase?", options: ["Preparation", "Analysis", "Adjustment", "Mastery"], answer: 2, explanation: "Adjustment is where you fine-tune the composition, and weighted prompts give you precise control over the emphasis of different elements." },
+            { q: "What is the best workflow for adding a clean, readable game logo to your art?", options: ["Prompting for the text directly in Midjourney", "Using `--style raw --no letters`", "Generating the background in Midjourney and adding the text in Photoshop/Adobe Express", "Using the /describe command"], answer: 2, explanation: "AI struggles with precise text. The professional workflow is to create the visual in Midjourney and add text using dedicated design software." },
+            { q: "The `--stop` parameter is useful in the Mastery phase for what purpose?", options: ["To make the image generate faster", "To add more detail to the image", "To create a softer, less detailed image that doesn't distract from foreground elements", "To increase the chaos of the final image"], answer: 2, explanation: "Stopping the generation process early (e.g., `--stop 85`) can result in a softer, more atmospheric background that allows key foreground elements like reels to stand out." }
+        ];
+
+        const faqs = [
+             { q: "How do I get Midjourney to create a clean, readable game logo?", a: "AI struggles with precise text. The best workflow is to prompt for 'a logo for [Game Title], stylized icon, space for text' and then add the polished text in Photoshop or Adobe Express. Use prompts like 'clean vector logo' and `--no text` to get a clean graphic you can work with." },
+            { q: "My character art is inconsistent between prompts. How do I fix it?", a: "This is the exact problem the `--oref` (Omni Reference) parameter solves. Generate a base character design you like, save the image, and use its URL with `--oref [URL]` in all subsequent prompts. Adjust the character weight with `--cw` (0-100) to control how closely it adheres to the reference." },
+            { q: "How can I quickly generate multiple symbol variations (e.g., Cherry, Lemon, Bell)?", a: "Use a permutation prompt. For example: `/imagine prompt: a vibrant, glossy slot machine symbol of a {cherry, lemon, bell}, 3D, isolated on black --ar 1:1`. This will automatically run three separate jobs, one for each symbol." },
+            { q: "What's the best way to create art that matches an existing game's style, like 'Dragon Link'?", a: "Use the `--sref` (Style Reference) parameter. Find a high-quality image of the game art you want to emulate and use its URL in your prompt. This will make Midjourney adopt the color palette, lighting, and rendering style of the reference image." },
+            { q: "How can I make my game art feel more dynamic and energetic?", a: "Use action words in your prompt (e.g., 'exploding', 'pulsating', 'swirling', 'charging'). Also, add descriptive lighting terms like 'volumetric light rays', 'lens flares', and 'glowing particle effects'. A slight increase in the `--stylize` parameter can also add more artistic energy." },
+            { q: "My prompts are too long and complex. How can I simplify them?", a: "Use the `/shorten` command. Paste your long prompt, and Midjourney will analyze it and suggest more concise, powerful keywords that achieve a similar result. It's a great way to learn more effective prompting." },
+            { q: "Can I use Midjourney to prototype animations for win celebrations?", a: "Yes. Use the v7 video feature. Start with an image of your game screen, then write a prompt describing the action, like `[Image URL] gold coins and diamonds explode from the center of the screen, bright lens flares --motion high`. It's perfect for creating quick motion studies." },
+            { q: "Is it possible to edit just one small part of an image I've generated?", a: "Yes. After you upscale an image, use the 'Vary (Region)' button. This will open an editor where you can select a specific area (like a character's eyes or a symbol on a reel) and write a new prompt just for that section, leaving the rest of the image unchanged." },
+            { q: "How do I ensure my art is high-resolution enough for a 4K game cabinet?", a: "Always end your final 'Mastery' phase prompt with `--q 2` for the highest detail. After generating the grid, use the Upscale buttons (U1-U4). From there, you can use further upscaling options (like 'Upscale (2x)' or 'Upscale (4x)') to generate a very large, high-resolution file suitable for production." },
+            { q: "What's the difference between `--cref` and `--oref`?", a: "`--cref` is the older version for character reference. `--oref` (Omni Reference) is the newer, more powerful V7 parameter. It provides a much stronger likeness and consistency for game characters, mascots, and is the recommended tool for maintaining IP." }
+        ];
+        
+        const glossaryData = [
+             { term: "PARAM Model", def: "A 5-phase workflow (Preparation, Analysis, Reflection, Adjustment, Mastery) for structured AI art creation." },
+             { term: "Aspect Ratio (--ar)", def: "The width-to-height ratio of an image. Crucial for matching hardware, like a 9:16 portrait cabinet." },
+             { term: "Style Reference (--sref)", def: "Uses an image URL to influence the aesthetic style (color, lighting) of a new generation." },
+             { term: "Omni Reference (--oref)", def: "A V7 parameter that uses an image URL to maintain strong character and object consistency." },
+             { term: "Character Weight (--cw)", def: "Used with --oref (0-100) to adjust how strongly the reference character's features are applied." },
+             { term: "Stylize (--s)", def: "Controls how artistic the output is (0-1000). Low values are more literal, high values are more creative." },
+             { term: "Chaos (--c)", def: "Controls the variation (0-100) in the initial image grid. High values are great for brainstorming." },
+             { term: "Tile (--tile)", def: "Generates a seamless, repeating image, perfect for creating background textures and patterns." },
+             { term: "Permutation Prompt {}", def: "Generates multiple jobs from one prompt by including options in curly braces, e.g., `{cherry, lemon, bell}`." },
+             { term: "Negative Prompt (--no)", def: "Excludes specific elements from an image, helping to clean up and focus the composition." },
+             { term: "Key Art", def: "The primary promotional image for a game, often used on the cabinet and in marketing materials." },
+             { term: "Hold & Spin", def: "A popular slot machine bonus feature where special symbols lock in place for multiple respins." },
+             { term: "Game Design Doc (GDD)", def: "A detailed document outlining the concept, mechanics, and design of a game. The 'Preparation' phase of PARAM." },
+             { term: "Reel Symbol", def: "The icons that appear on the spinning reels of a slot machine, including royals (A, K, Q, J), and thematic pictures." },
+             { term: "Volumetric Light", def: "A lighting effect that makes light rays visible, like sunbeams through mist, adding depth and atmosphere to a scene." }
+        ];
+
+
+        // --- SETUP FUNCTIONS ---
+        
+        function setupIterationCarousels() {
+            const container = document.getElementById('iteration-carousels-container');
+            iterationData.forEach((data, index) => {
+                const carouselId = `carousel-${index}`;
+                let slidesHTML = data.prompts.map((prompt, i) => `
+                    <div class="carousel-slide" data-index="${i}">
+                        ${data.images && data.images[i] ? `<img src="${data.images[i]}" alt="Visual for step ${i+1}" onerror="this.src='https://placehold.co/400x400/2c0000/ffffff?text=Image+${i+1}';">` : `<img src="https://placehold.co/400x400/2c0000/ffffff?text=Image+${i+1}" alt="Placeholder for step ${i+1}">`}
+                        <div class="prompt-text-display">${prompt}</div>
+                    </div>
+                `).join('');
+
+                container.innerHTML += `
+                    <div class="iteration-carousel" id="${carouselId}">
+                        <h4>${data.title}</h4>
+                        <div class="carousel-slides">${slidesHTML}</div>
+                        <div class="carousel-navigation">
+                            <button class="btn prev-btn">⮜ Prev</button>
+                            <span class="step-counter">Step 1 / 10</span>
+                            <button class="btn next-btn">Next ⮞</button>
+                        </div>
+                    </div>`;
+            });
+
+            document.querySelectorAll('.iteration-carousel').forEach(carousel => {
+                let currentIndex = 0;
+                const slides = carousel.querySelectorAll('.carousel-slide');
+                const totalSlides = slides.length;
+                const prevBtn = carousel.querySelector('.prev-btn');
+                const nextBtn = carousel.querySelector('.next-btn');
+                const counter = carousel.querySelector('.step-counter');
+
+                function showSlide(index) {
+                    slides.forEach(slide => slide.classList.remove('active'));
+                    slides[index].classList.add('active');
+                    counter.textContent = `Step ${index + 1} / ${totalSlides}`;
+                    prevBtn.disabled = index === 0;
+                    nextBtn.disabled = index === totalSlides - 1;
+                }
+
+                prevBtn.addEventListener('click', () => {
+                    if (currentIndex > 0) {
+                        currentIndex--;
+                        showSlide(currentIndex);
+                    }
+                });
+                nextBtn.addEventListener('click', () => {
+                    if (currentIndex < totalSlides - 1) {
+                        currentIndex++;
+                        showSlide(currentIndex);
+                    }
+                });
+                showSlide(0);
+            });
+        }
+        
+        function setupQuiz() {
+            const quizContainer = document.getElementById('quiz-container');
+            let userAnswers = new Array(quizData.length).fill(null);
+            let currentQuestionIndex = 0;
+
+            function renderQuiz() {
+                const q = quizData[currentQuestionIndex];
+                let optionsHTML = q.options.map((opt, i) => {
+                    let classes = "quiz-option";
+                    let explanationHTML = '';
+                    if (userAnswers[currentQuestionIndex] !== null) {
+                        const isSelected = userAnswers[currentQuestionIndex].selectedIndex === i;
+                        const isCorrect = i === q.answer;
+                        if (isSelected) {
+                            classes += " selected " + (userAnswers[currentQuestionIndex].isCorrect ? 'correct' : 'wrong');
+                        } else if (isCorrect) {
+                           classes += " correct";
+                        }
+                        
+                        if(isSelected) {
+                            explanationHTML = `<div class="explanation" style="display:block;">${userAnswers[currentQuestionIndex].isCorrect ? '✅ Correct! ' : '❌ Incorrect. '} ${q.explanation}</div>`;
+                        }
+                    }
+
+                    return `<div class="${classes}" data-index="${i}"><label><input type="radio" name="q${currentQuestionIndex}" value="${i}" ${userAnswers[currentQuestionIndex] !== null ? 'disabled' : ''}> ${opt}</label>${explanationHTML}</div>`;
+                }).join('');
+
+                quizContainer.innerHTML = `
+                    <div class="quiz-navigation">
+                        <button class="btn" id="prevBtn" ${currentQuestionIndex === 0 ? 'disabled' : ''}>⮜ Prev</button>
+                        <span>Question ${currentQuestionIndex + 1} of ${quizData.length}</span>
+                        <button class="btn" id="nextBtn" ${userAnswers[currentQuestionIndex] === null ? 'disabled' : ''}>${currentQuestionIndex === quizData.length - 1 ? 'Finish' : 'Next ⮞'}</button>
+                    </div>
+                    <div class="quiz-body active">
+                        <h3>Quiz: Test Your Design Chops</h3>
+                        <p><strong>Q${currentQuestionIndex + 1}:</strong> ${q.q}</p>
+                        <div class="quiz-options">${optionsHTML}</div>
+                    </div>`;
+
+                quizContainer.querySelector('#prevBtn').addEventListener('click', () => { currentQuestionIndex--; renderQuiz(); });
+                quizContainer.querySelector('#nextBtn').addEventListener('click', () => {
+                     if (currentQuestionIndex < quizData.length - 1) {
+                        currentQuestionIndex++;
+                        renderQuiz();
+                    } else {
+                        showFinalScore();
+                    }
+                });
+                
+                quizContainer.querySelectorAll('.quiz-option input').forEach(radio => {
+                    radio.addEventListener('change', (e) => {
+                        const selectedIndex = parseInt(e.target.value);
+                        const isCorrect = selectedIndex === q.answer;
+                        userAnswers[currentQuestionIndex] = { selectedIndex, isCorrect };
+                        renderQuiz();
+                    });
+                });
+            }
+            
+            function showFinalScore(){
+                const correctCount = userAnswers.filter(a => a && a.isCorrect).length;
+                quizContainer.innerHTML = `<div class="final-score">You scored ${correctCount} out of ${quizData.length}! <br><button class="btn" id="restartBtn" style="margin-top:20px;">Try Again</button></div>`;
+                quizContainer.querySelector('#restartBtn').addEventListener('click', () => {
+                    userAnswers.fill(null);
+                    currentQuestionIndex = 0;
+                    renderQuiz();
+                });
+            }
+
+            renderQuiz();
+        }
+
+        function setupFAQs() {
+            const faqContainer = document.getElementById('faq-accordion-container');
+            faqContainer.innerHTML = `<div class="accordion">${faqs.map(faq => `
+                <div class="accordion-item">
+                    <button class="accordion-header" aria-expanded="false">
+                        <span>${faq.q}</span><i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                    <div class="accordion-content"><p>${faq.a}</p></div>
+                </div>`).join('')}</div>`;
+        }
+
+        function setupAccordions() {
+             document.querySelector('.container').addEventListener('click', function(event) {
+                const header = event.target.closest('.accordion-header');
+                if (!header) return;
+
+                const content = header.nextElementSibling;
+                const isExpanded = header.getAttribute('aria-expanded') === 'true';
+                
+                // Close all other accordions in the same group
+                header.closest('.accordion').querySelectorAll('.accordion-header').forEach(otherHeader => {
+                    if (otherHeader !== header) {
+                        otherHeader.setAttribute('aria-expanded', 'false');
+                        otherHeader.nextElementSibling.style.maxHeight = null;
+                        otherHeader.nextElementSibling.style.padding = "0 20px";
+                    }
+                });
+
+                header.setAttribute('aria-expanded', String(!isExpanded));
+                content.style.maxHeight = isExpanded ? null : content.scrollHeight + 40 + "px";
+                content.style.padding = isExpanded ? "0 20px" : "20px";
+            });
+        }
+        
+        function setupGlossary() {
+            const cloud = document.getElementById('glossaryCloud');
+            if (!cloud) return;
+            cloud.innerHTML = glossaryData.map(kw => `<button class="glossary-chip" type="button" data-term="${kw.term}" data-def="${kw.def}">${kw.term}</button>`).join('');
+
+            if (!document.querySelector('.chip-tip')) {
+                const tip = document.createElement('div');
+                tip.className = 'chip-tip';
+                tip.innerHTML = '<div class="arrow"></div><div class="tip-content"></div>';
+                document.body.appendChild(tip);
+            }
+            const tip = document.querySelector('.chip-tip');
+            const tipContent = tip.querySelector('.tip-content');
+            let openBtn = null;
+
+            function positionTipFor(btn) {
+                const rect = btn.getBoundingClientRect();
+                tip.style.display = 'block'; // Make it visible to get its dimensions
+                const tipRect = tip.getBoundingClientRect();
+                
+                let top = rect.bottom + 12;
+                let arrowTop = -6;
+
+                if (top + tipRect.height > window.innerHeight) {
+                    top = rect.top - tipRect.height - 12;
+                    arrowTop = tipRect.height - 6;
+                }
+
+                let left = rect.left + rect.width / 2 - tipRect.width / 2;
+                left = Math.max(8, Math.min(left, window.innerWidth - tipRect.width - 8));
+                
+                tip.style.top = `${top + window.scrollY}px`;
+                tip.style.left = `${left + window.scrollX}px`;
+                tip.querySelector('.arrow').style.top = `${arrowTop}px`;
+                tip.querySelector('.arrow').style.left = `${rect.left + rect.width / 2 - left - 6}px`;
+            }
+            
+            function showTip(event) {
+                const btn = event.currentTarget;
+                tipContent.innerHTML = `<strong>${btn.dataset.term}</strong>: ${btn.dataset.def}`;
+                tip.classList.add('show');
+                openBtn = btn;
+                positionTipFor(btn);
+            }
+            
+            function hideTip() {
+                tip.classList.remove('show');
+                openBtn = null;
+            }
+
+            cloud.querySelectorAll('.glossary-chip').forEach(btn => {
+                btn.addEventListener('mouseenter', showTip);
+                btn.addEventListener('mouseleave', hideTip);
+                btn.addEventListener('focus', showTip);
+                btn.addEventListener('blur', hideTip);
+            });
+            window.addEventListener('scroll', () => { if (openBtn) positionTipFor(openBtn); }, true);
+            window.addEventListener('resize', () => { if (openBtn) hideTip(); }, true);
+        }
+
+        // --- INITIALIZE ALL COMPONENTS ---
+        setupIterationCarousels();
+        setupQuiz();
+        setupFAQs();
+        setupAccordions();
+        setupGlossary();
+
+    });
+</script>
+
+</body>
+</html>
+
