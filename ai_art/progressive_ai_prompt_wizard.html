@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prompt Evolution Game</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --header-bg: #0f172a;
+            --accent: #ea7a27;
+            --accent-2: #d46a1e;
+            --text: #f8fafc;
+            --bg: #1e293b;
+            --card-bg: #334155;
+            --border: #475569;
+            --shadow: rgba(0, 0, 0, 0.2);
+            --tooltip-bg: #0f172a;
+            --tooltip-text: #f1f5f9;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .main-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header, footer {
+            background-color: var(--header-bg);
+            padding: 15px 20px;
+            text-align: center;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px var(--shadow);
+            position: relative;
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+            color: var(--text);
+            font-weight: 700;
+        }
+         header h1 .icon {
+            display: inline-block;
+            margin-right: 10px;
+            transform: translateY(4px);
+        }
+
+        footer {
+            margin-top: auto;
+            font-size: 0.9rem;
+            color: #94a3b8;
+        }
+
+        .game-area {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 25px;
+            margin: 20px 0;
+            border: 1px solid var(--border);
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .prompt-wrapper {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .prompt-display {
+            background: var(--bg);
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid var(--accent);
+            min-height: 150px;
+            padding-right: 50px; /* Space for copy button */
+        }
+
+        .prompt-display p {
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .controls, .info-panel {
+            margin-bottom: 20px;
+        }
+        
+        .info-panel {
+             border-bottom: 1px solid var(--border);
+             padding-bottom: 20px;
+        }
+
+        .info-panel strong {
+            color: var(--accent);
+            font-weight: 600;
+        }
+        
+        .copy-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            color: #94a3b8;
+            transition: color 0.2s;
+        }
+
+        .copy-btn:hover {
+            color: var(--text);
+        }
+
+        .copy-notification {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--header-bg);
+            color: var(--text);
+            padding: 10px 20px;
+            border-radius: 8px;
+            z-index: 10001; /* High z-index */
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+
+        .copy-notification.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Tooltip styles */
+        .tooltip-container {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+            border-bottom: 2px dotted var(--accent);
+            font-weight: 600;
+            color: var(--accent);
+        }
+        
+        .tooltip-text {
+            visibility: hidden;
+            width: 220px;
+            background-color: var(--tooltip-bg);
+            color: var(--tooltip-text);
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px;
+            position: absolute;
+            z-index: 100;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.9rem;
+            font-weight: 400;
+            box-shadow: 0 2px 10px var(--shadow);
+        }
+
+        .tooltip-container:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Responsive tooltip alignment classes */
+        .tooltip-text.align-right {
+            left: auto;
+            right: 0;
+            transform: translateX(0);
+        }
+
+        .tooltip-text.align-left {
+            left: 0;
+            right: auto;
+            transform: translateX(0);
+        }
+
+        .controls h3, .sliders-area h3 {
+            margin-bottom: 10px;
+            color: #cbd5e1;
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .btn {
+            background-color: var(--accent);
+            color: var(--header-bg);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+
+        .btn:hover {
+            background-color: var(--accent-2);
+            transform: translateY(-2px);
+        }
+        
+        .btn:disabled {
+            background-color: #94a3b8;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .sliders-area select {
+            width: 100%;
+            padding: 10px;
+            background-color: var(--bg);
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+        .sliders-area select:focus {
+            outline: 2px solid var(--accent);
+        }
+
+        .progress-bar {
+            width: 100%;
+            background-color: var(--bg);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-top: 10px;
+            height: 10px;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background-color: var(--accent);
+            border-radius: 8px;
+            transition: width 0.3s ease-in-out;
+        }
+
+        /* Help Modal Styles */
+        #help-btn {
+            position: absolute;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            background-color: var(--card-bg);
+            color: var(--text);
+            border: 1px solid var(--border);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.2s;
+        }
+        #help-btn:hover {
+            background-color: var(--bg);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed;
+            z-index: 10000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.6);
+            align-items: center;
+            justify-content: center;
+        }
+        .modal.show {
+            display: flex;
+        }
+        .modal-content {
+            background-color: var(--card-bg);
+            margin: auto;
+            padding: 30px;
+            border: 1px solid var(--border);
+            width: 90%;
+            max-width: 600px;
+            border-radius: 12px;
+            box-shadow: 0 5px 25px var(--shadow);
+            position: relative;
+        }
+        .modal-close-btn {
+            color: #aaa;
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .modal-close-btn:hover,
+        .modal-close-btn:focus {
+            color: var(--text);
+            text-decoration: none;
+        }
+        .modal-content h2 {
+            color: var(--accent);
+            margin-bottom: 15px;
+        }
+        .modal-content p {
+            margin-bottom: 10px;
+        }
+        .modal-content ul {
+            list-style-position: inside;
+            padding-left: 10px;
+        }
+         .modal-content li {
+            margin-bottom: 8px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="main-container">
+        <header>
+            <h1><span class="icon">🌱</span>Prompt Evolution Game</h1>
+            <button id="help-btn" title="Help">?</button>
+        </header>
+
+        <main class="game-area">
+            <div class="info-panel">
+                 <p><strong>Lesson <span id="lesson-number">1</span>:</strong> 
+                    <span id="lesson-title">Start small</span>
+                </p>
+            </div>
+            
+            <div class="prompt-wrapper">
+                <div class="prompt-display">
+                    <p id="prompt-text">Loading prompt...</p>
+                </div>
+                <button class="copy-btn" id="copy-prompt-btn" title="Copy Prompt">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
+                        <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zM9 2H7v.5a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5V2z"/>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="sliders-area" id="sliders-container">
+                 <h3><span class="icon">🔄</span>Mutation Sliders</h3>
+                 <!-- Sliders will be dynamically generated here -->
+            </div>
+
+            <div class="controls">
+                <h3><span class="icon">🗺️</span>Navigation</h3>
+                <div class="nav-buttons">
+                    <button id="prev-btn" class="btn">Previous</button>
+                    <button id="next-btn" class="btn">Next</button>
+                </div>
+                <div class="progress-bar">
+                    <div id="progress-fill" class="progress-bar-fill"></div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>A tool for creativity, learning, and prompt engineering.</p>
+        </footer>
+    </div>
+
+    <!-- Help Modal -->
+    <div id="help-modal" class="modal">
+        <div class="modal-content">
+            <span id="close-modal-btn" class="modal-close-btn">&times;</span>
+            <h2>How to Play</h2>
+            <p>Welcome to the Prompt Evolution Game! This tool helps you learn how to build creative and detailed prompts step-by-step.</p>
+            <ul>
+                <li><strong>Follow the Lessons:</strong> Each step introduces a new concept in prompt engineering. Read the lesson title to understand the goal.</li>
+                <li><strong>See the Prompt Grow:</strong> Watch the prompt text in the main display evolve with each step.</li>
+                <li><strong>Learn with Tooltips:</strong> Hover over any <span class="tooltip-container" style="display:inline-block; border-bottom: 2px dotted var(--accent); font-weight: 600; color: var(--accent);">highlighted</span> word to get a hint about why it was added.</li>
+                <li><strong>Mutate & Experiment:</strong> Use the "Mutation Sliders" (dropdowns) to swap keywords and instantly see how the prompt changes. This is the core of creative exploration!</li>
+                <li><strong>Navigate:</strong> Use the "Previous" and "Next" buttons to move through the 50 steps of the prompt's journey.</li>
+                <li><strong>Copy Your Creation:</strong> Click the copy icon at any time to copy the current prompt to your clipboard and use it in your favorite AI art generator.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="copy-notification" class="copy-notification">Prompt copied to clipboard!</div>
+
+    <script>
+        // --- DATA MODEL (Full 50-prompt dataset) ---
+        const gameData = {
+          "records": [
+            {
+              "Lesson": "Start small",
+              "Reason of Input": "Begin with a minimal seed",
+              "Evolving Prompt": "Twilight Garden",
+              "Mutation / Substitution": [
+                { "keyword": "Twilight", "category": "Time of Day", "values": ["Dusk", "Dawn", "Sunrise", "Golden Hour", "Sunset", "Midnight Glow"] },
+                { "keyword": "Garden", "category": "Place of Nature", "values": ["Grove", "Orchard", "Meadow", "Courtyard", "Sanctuary", "Vineyard"] }
+              ],
+              "Tooltips": { "Begin with a minimal seed": "Start with a simple, core idea that can be gradually expanded upon." }
+            },
+            {
+              "Lesson": "Add emotion",
+              "Reason of Input": "Infuse feeling into the scene",
+              "Evolving Prompt": "Serene Twilight Garden",
+              "Mutation / Substitution": [
+                { "keyword": "Serene", "category": "Mood", "values": ["Tranquil", "Mysterious", "Vibrant", "Melancholy", "Eerie"] },
+                { "keyword": "Twilight", "category": "Time of Day", "values": ["Dusk", "Dawn", "Sunrise", "Golden Hour", "Sunset", "Midnight Glow"] }
+              ],
+              "Tooltips": { "Infuse feeling into the scene": "Add an emotional quality to give the prompt a specific mood or atmosphere." }
+            },
+            {
+              "Lesson": "Specify subject",
+              "Reason of Input": "Introduce a focal element",
+              "Evolving Prompt": "Serene Twilight Garden with a marble Statue",
+               "Mutation / Substitution": [
+                { "keyword": "Serene", "category": "Mood", "values": ["Tranquil", "Mysterious", "Vibrant", "Melancholy", "Eerie"] },
+                { "keyword": "marble", "category": "Material", "values": ["bronze", "obsidian", "ice", "crystal", "wooden"] },
+                { "keyword": "Statue", "category": "Artifact", "values": ["Fountain", "Sundial", "Relic", "Throne", "Obelisk"] }
+              ],
+              "Tooltips": { "Introduce a focal element": "Add a primary subject to anchor the viewer's attention and add narrative interest."}
+            },
+            {
+              "Lesson": "Add detail",
+              "Reason of Input": "Enhance specificity",
+              "Evolving Prompt": "Serene Twilight Garden with a weathered, marble Statue",
+              "Mutation / Substitution": [
+                { "keyword": "weathered", "category": "Texture/Condition", "values": ["gleaming", "moss-covered", "cracked", "icy", "glowing"] },
+                { "keyword": "marble", "category": "Material", "values": ["bronze", "obsidian", "ice", "crystal", "wooden"] },
+                { "keyword": "Statue", "category": "Artifact", "values": ["Fountain", "Sundial", "Relic", "Throne", "Obelisk"] }
+              ],
+              "Tooltips": { "Enhance specificity": "Add descriptive words to make the elements in the scene more precise and vivid." }
+            },
+            {
+              "Lesson": "Add lighting",
+              "Reason of Input": "Control atmosphere with light",
+              "Evolving Prompt": "Serene Twilight Garden with a weathered, marble Statue, bathed in soft moonlight",
+              "Mutation / Substitution": [
+                { "keyword": "weathered", "category": "Texture/Condition", "values": ["gleaming", "moss-covered", "cracked", "icy", "glowing"] },
+                { "keyword": "moonlight", "category": "Light Source", "values": ["starlight", "lamplight", "firefly glow", "sunbeams", "torchlight"] }
+              ],
+              "Tooltips": { "Control atmosphere with light": "Use a specific type of light to dramatically alter the mood and visual focus of the scene." }
+            },
+            {
+              "Lesson": "Add flora",
+              "Reason of Input": "Introduce plant life for richness",
+              "Evolving Prompt": "Serene Twilight Garden with a weathered, marble Statue, bathed in soft moonlight, among ancient cherry trees",
+              "Mutation / Substitution": [
+                { "keyword": "moonlight", "category": "Light Source", "values": ["starlight", "lamplight", "firefly glow", "sunbeams", "torchlight"] },
+                { "keyword": "ancient", "category": "Age", "values": ["young", "blooming", "twisted", "glowing"] },
+                { "keyword": "cherry trees", "category": "Flora", "values": ["weeping willows", "towering redwoods", "a bamboo grove", "fields of lavender", "thorny rose bushes"] }
+              ],
+              "Tooltips": { "Introduce plant life for richness": "Add specific trees, flowers, or plants to create a more textured and believable environment." }
+            },
+            {
+              "Lesson": "Specify season",
+              "Reason of Input": "Set the time of year",
+              "Evolving Prompt": "Serene Twilight Garden in late Spring, with a weathered, marble Statue bathed in soft moonlight, among blooming cherry trees",
+              "Mutation / Substitution": [
+                { "keyword": "Spring", "category": "Season", "values": ["Autumn", "Winter", "Summer", "Monsoon"] },
+                { "keyword": "weathered", "category": "Texture/Condition", "values": ["gleaming", "moss-covered", "cracked", "icy", "glowing"] },
+                { "keyword": "blooming", "category": "State", "values": ["bare", "fruiting", "ancient", "young"] }
+              ],
+              "Tooltips": { "Set the time of year": "Defining the season changes colors, plant life, and overall mood." }
+            },
+            {
+              "Lesson": "Add weather",
+              "Reason of Input": "Use weather to transform the tone",
+              "Evolving Prompt": "Serene Twilight Garden in late Spring, a gentle mist swirling around a weathered, marble Statue bathed in soft moonlight, among blooming cherry trees",
+              "Mutation / Substitution": [
+                { "keyword": "gentle", "category": "Intensity", "values": ["thick", "rolling", "golden", "eerie"] },
+                { "keyword": "mist", "category": "Weather", "values": ["rain", "snowfall", "wind", "fog", "a thunderstorm"] }
+              ],
+              "Tooltips": { "Use weather to transform the tone": "Weather elements like rain, mist, or sun can drastically alter the scene's emotion." }
+            },
+            {
+              "Lesson": "Add fauna",
+              "Reason of Input": "Animate the scene with creatures",
+              "Evolving Prompt": "Serene Twilight Garden in late Spring, a gentle mist swirling around a weathered, marble Statue where a silver Fox rests, bathed in soft moonlight among blooming cherry trees",
+              "Mutation / Substitution": [
+                { "keyword": "silver", "category": "Color/Material", "values": ["red", "shadow", "spirit", "clockwork"] },
+                { "keyword": "Fox", "category": "Creature", "values": ["Owl", "Deer", "Wolf", "Dragon", "Phoenix"] },
+                { "keyword": "rests", "category": "Action", "values": ["sleeps", "watches", "plays", "hunts"] }
+              ],
+              "Tooltips": { "Animate the scene with creatures": "Adding animals or mythical creatures brings life, narrative, and magic to the prompt."}
+            },
+            {
+              "Lesson": "Add perspective",
+              "Reason of Input": "Control the viewpoint",
+              "Evolving Prompt": "Seen from a low angle, a serene Twilight Garden in late Spring, where a gentle mist swirls around a weathered, marble Statue where a silver Fox rests, bathed in soft moonlight among blooming cherry trees",
+              "Mutation / Substitution": [
+                { "keyword": "low angle", "category": "Perspective", "values": ["high angle", "wide shot", "close-up", "drone shot", "first-person view"] },
+                { "keyword": "silver", "category": "Color/Material", "values": ["red", "shadow", "spirit", "clockwork"] },
+                { "keyword": "Fox", "category": "Creature", "values": ["Owl", "Deer", "Wolf", "Dragon", "Phoenix"] }
+              ],
+              "Tooltips": { "Control the viewpoint": "Changing the camera angle or perspective alters the sense of scale and immersion."}
+            },
+            {
+              "Lesson": "Add sound",
+              "Reason of Input": "Enrich the sensory experience",
+              "Evolving Prompt": "Seen from a low angle, a serene Twilight Garden in late Spring, the sound of distant chimes faintly heard, where a gentle mist swirls around a weathered, marble Statue where a silver Fox rests, bathed in soft moonlight among blooming cherry trees",
+              "Mutation / Substitution": [
+                {"keyword": "distant", "category": "Distance", "values": ["nearby", "haunting", "melodious", "faint"]},
+                {"keyword": "chimes", "category": "Sound", "values": ["water flowing", "crickets chirping", "wind howling", "footsteps", "whispers"]}
+              ],
+              "Tooltips": {"Enrich the sensory experience": "Adding sound makes the scene more immersive and multi-dimensional."}
+            },
+            {
+              "Lesson": "Add scent",
+              "Reason of Input": "Deepen immersion with fragrance",
+              "Evolving Prompt": "Seen from a low angle, a serene Twilight Garden in late Spring, the air scented with cherry blossoms, the sound of distant chimes faintly heard, where a gentle mist swirls around a weathered, marble Statue where a silver Fox rests, bathed in soft moonlight",
+              "Mutation / Substitution": [
+                {"keyword": "cherry blossoms", "category": "Scent", "values": ["damp earth", "pine needles", "old books", "incense", "sea salt"]},
+                {"keyword": "chimes", "category": "Sound", "values": ["water flowing", "crickets chirping", "wind howling", "footsteps", "whispers"]}
+              ],
+              "Tooltips": {"Deepen immersion with fragrance": "Smell is a powerful sense; adding it to a prompt creates a deeply evocative experience."}
+            },
+            {
+              "Lesson": "Add architecture",
+              "Reason of Input": "Introduce man-made structures",
+              "Evolving Prompt": "Seen from a low angle, a serene Twilight Garden in late Spring beside a forgotten Temple, the air scented with cherry blossoms, the sound of distant chimes faintly heard, where a gentle mist swirls around a weathered, marble Statue where a silver Fox rests, bathed in soft moonlight",
+              "Mutation / Substitution": [
+                {"keyword": "forgotten", "category": "State", "values": ["hidden", "sacred", "ruined", "floating"]},
+                {"keyword": "Temple", "category": "Architecture", "values": ["Pagoda", "Castle", "Library", "Observatory", "Cottage"]}
+              ],
+              "Tooltips": {"Introduce man-made structures": "Buildings add context, history, and a sense of narrative to a natural scene."}
+            },
+            {
+              "Lesson": "Add motion",
+              "Reason of Input": "Introduce a dynamic element",
+              "Evolving Prompt": "Seen from a low angle, a serene Twilight Garden in late Spring beside a forgotten Temple, cherry blossom petals drifting on the wind, the air scented with their fragrance, the sound of distant chimes faintly heard, where a gentle mist swirls around a weathered, marble Statue where a silver Fox rests, bathed in soft moonlight",
+              "Mutation / Substitution": [
+                {"keyword": "petals", "category": "Object", "values": ["leaves", "spores", "embers", "raindrops"]},
+                {"keyword": "drifting", "category": "Motion", "values": ["cascading", "swirling", "falling", "dancing", "racing"]}
+              ],
+              "Tooltips": {"Introduce a dynamic element": "Adding movement prevents the scene from feeling static and adds a sense of life."}
+            },
+            {
+              "Lesson": "Add human presence",
+              "Reason of Input": "Hint at a story with a character",
+              "Evolving Prompt": "Seen from a low angle, a serene Twilight Garden in late Spring beside a forgotten Temple where a lone Monk meditates, cherry blossom petals drifting on the wind, the air scented with their fragrance, the sound of distant chimes faintly heard, where a gentle mist swirls around a weathered, marble Statue where a silver Fox rests, bathed in soft moonlight",
+              "Mutation / Substitution": [
+                {"keyword": "lone", "category": "Quantity", "values": ["young", "ancient", "robed", "sleeping"]},
+                {"keyword": "Monk", "category": "Character", "values": ["Knight", "Sorceress", "Explorer", "Child", "Ghost"]},
+                {"keyword": "meditates", "category": "Action", "values": ["prays", "reads", "sleeps", "stands guard"]}
+              ],
+              "Tooltips": {"Hint at a story with a character": "Adding a person immediately sparks questions and creates a narrative."}
+            },
+            {
+                "Lesson": "Refine Character Action",
+                "Reason of Input": "Detail the character's state",
+                "Evolving Prompt": "Seen from a low angle, a serene Twilight Garden in late Spring beside a forgotten Temple where a lone Monk in silk robes meditates deeply, cherry blossom petals drifting on the wind, the air scented with their fragrance, where a gentle mist swirls around a weathered, marble Statue where a silver Fox rests, bathed in soft moonlight",
+                "Mutation / Substitution": [
+                    {"keyword": "silk", "category": "Material", "values": ["tattered", "armored", "ceremonial", "humble"]},
+                    {"keyword": "deeply", "category": "Adverb", "values": ["peacefully", "intently", "calmly", "motionlessly"]}
+                ],
+                "Tooltips": {"Detail the character's state": "Adding an adverb to the action provides more information about the character's mood and focus."}
+            },
+            {
+                "Lesson": "Add Water Element",
+                "Reason of Input": "Introduce a reflective surface",
+                "Evolving Prompt": "Seen from a low angle, a serene Twilight Garden in late Spring beside a forgotten Temple and a tranquil pond, where a lone Monk in silk robes meditates deeply, cherry blossom petals drifting on the wind, the air scented with their fragrance, where a gentle mist swirls around a weathered, marble Statue where a silver Fox rests, bathed in soft moonlight",
+                "Mutation / Substitution": [
+                    {"keyword": "tranquil", "category": "Mood", "values": ["glowing", "frozen", "murky", "rippling"]},
+                    {"keyword": "pond", "category": "Water Body", "values": ["stream", "lake", "river", "spring"]}
+                ],
+                "Tooltips": {"Introduce a reflective surface": "Water adds visual depth, reflects light, and enhances the sense of tranquility."}
+            },
+            {
+                "Lesson": "Refine Water Element",
+                "Reason of Input": "Connect water to the environment",
+                "Evolving Prompt": "Seen from a low angle, a serene Twilight Garden in late Spring beside a forgotten Temple and a tranquil pond reflecting the starlit sky, where a lone Monk in silk robes meditates deeply, cherry blossom petals drifting on the wind, the air scented with their fragrance, where a gentle mist swirls around a weathered, marble Statue where a silver Fox rests, bathed in soft moonlight",
+                "Mutation / Substitution": [
+                    {"keyword": "tranquil", "category": "Mood", "values": ["glowing", "frozen", "murky", "rippling"]},
+                    {"keyword": "starlit sky", "category": "Reflection", "values": ["moon", "cherry trees", "temple", "clouds"]}
+                ],
+                "Tooltips": {"Connect water to the environment": "Describing what the water reflects creates a more cohesive and detailed scene."}
+            },
+            {
+                "Lesson": "Add more Fauna",
+                "Reason of Input": "Add more life to the water",
+                "Evolving Prompt": "Seen from a low angle, a serene Twilight Garden in late Spring beside a forgotten Temple and a tranquil pond reflecting the starlit sky, where golden koi fish swim gracefully, a lone Monk in silk robes meditates deeply, cherry blossom petals drifting on the wind, the air scented with their fragrance, where a gentle mist swirls around a weathered, marble Statue where a silver Fox rests, bathed in soft moonlight",
+                "Mutation / Substitution": [
+                    {"keyword": "golden", "category": "Color", "values": ["silver", "ghostly", "jeweled", "tiny"]},
+                    {"keyword": "koi fish", "category": "Aquatic Creature", "values": ["turtles", "dragonflies", "frogs", "glowing sprites"]},
+                    {"keyword": "gracefully", "category": "Adverb", "values": ["slowly", "playfully", "silently"]}
+                ],
+                "Tooltips": {"Add more life to the water": "Populating different parts of the scene with creatures makes it feel more alive and dynamic."}
+            },
+            {
+                "Lesson": "Refine Sky",
+                "Reason of Input": "Add celestial details",
+                "Evolving Prompt": "Seen from a low angle, a serene Twilight Garden in late Spring beside a forgotten Temple and a tranquil pond reflecting a sky filled with constellations, where golden koi fish swim gracefully, a lone Monk in silk robes meditates deeply, cherry blossom petals drifting on the wind, where a gentle mist swirls around a weathered, marble Statue where a silver Fox rests, bathed in soft moonlight",
+                "Mutation / Substitution": [
+                    {"keyword": "filled with", "category": "Density", "values": ["streaked by", "dominated by", "adorned with"]},
+                    {"keyword": "constellations", "category": "Celestial Feature", "values": ["a nebula", "the milky way", "a full moon", "an aurora"]}
+                ],
+                "Tooltips": {"Add celestial details": "Specifying what is in the sky makes the scene grander and more magical."}
+            },
+            {
+                "Lesson": "Add Celestial Event",
+                "Reason of Input": "Introduce a fleeting moment",
+                "Evolving Prompt": "Seen from a low angle, a serene Twilight Garden in late Spring beside a forgotten Temple and a tranquil pond reflecting a sky filled with constellations and a single shooting star, where golden koi fish swim gracefully, a lone Monk in silk robes meditates deeply, where a gentle mist swirls around a weathered, marble Statue where a silver Fox rests, bathed in soft moonlight",
+                "Mutation / Substitution": [
+                    {"keyword": "single", "category": "Quantity", "values": ["brilliant", "distant", "slow-moving"]},
+                    {"keyword": "shooting star", "category": "Celestial Event", "values": ["comet", "meteor shower", "lunar eclipse", "planetary alignment"]}
+                ],
+                "Tooltips": {"Introduce a fleeting moment": "A momentary event like a shooting star adds a sense of magic, luck, and narrative timing."}
+            },
+            {
+                "Lesson": "Refine Architecture",
+                "Reason of Input": "Add detail to structures",
+                "Evolving Prompt": "Seen from a low angle, a serene Twilight Garden in late Spring beside a forgotten Temple with intricate carvings, and a tranquil pond reflecting a sky filled with constellations and a single shooting star, where golden koi fish swim, a lone Monk in silk robes meditates deeply, where a gentle mist swirls around a weathered, marble Statue where a silver Fox rests, bathed in soft moonlight",
+                "Mutation / Substitution": [
+                    {"keyword": "forgotten", "category": "State", "values": ["hidden", "sacred", "ruined", "floating"]},
+                    {"keyword": "intricate", "category": "Detail Level", "values": ["ancient", "glowing", "mossy", "menacing"]},
+                    {"keyword": "carvings", "category": "Architectural Detail", "values": ["mosaics", "frescoes", "archways", "spires", "gargoyles"]}
+                ],
+                "Tooltips": {"Add detail to structures": "Describing the features of a building gives it more character and history."}
+            },
+            {
+                "Lesson": "Add another Artifact",
+                "Reason of Input": "Give the character a prop",
+                "Evolving Prompt": "Seen from a low angle, a serene Twilight Garden in late Spring beside a forgotten Temple with intricate carvings, where a lone Monk in silk robes holds an ancient scroll, a tranquil pond reflecting a sky filled with constellations and a single shooting star, golden koi fish swim, a gentle mist swirls around a weathered, marble Statue where a silver Fox rests, bathed in soft moonlight",
+                "Mutation / Substitution": [
+                    {"keyword": "holds", "category": "Action", "values": ["reads", "guards", "studies", "unfurls"]},
+                    {"keyword": "ancient", "category": "Age", "values": ["glowing", "sealed", "prophetic", "celestial"]},
+                    {"keyword": "scroll", "category": "Held Artifact", "values": ["lantern", "singing bowl", "staff", "relic", "glowing orb"]}
+                ],
+                "Tooltips": {"Give the character a prop": "An object held by a character can suggest their purpose, knowledge, or power."}
+            },
+            {
+                "Lesson": "Change Perspective Again",
+                "Reason of Input": "Zoom in for emotional focus",
+                "Evolving Prompt": "Close-up on the Monk's face, eyes closed in deep meditation, set in a serene Twilight Garden in late Spring beside a forgotten Temple, a tranquil pond reflecting a sky with a shooting star, a gentle mist swirling around a weathered, marble Statue where a silver Fox rests, bathed in soft moonlight",
+                "Mutation / Substitution": [
+                    {"keyword": "Close-up", "category": "Camera Shot", "values": ["Extreme close-up", "Medium shot", "Over-the-shoulder shot", "Dutch angle"]},
+                    {"keyword": "face", "category": "Subject", "values": ["hands", "scroll", "Statue", "Fox"]}
+                ],
+                "Tooltips": {"Zoom in for emotional focus": "Focusing tightly on a character's expression connects the viewer to their internal state."}
+            },
+            {
+                "Lesson": "Widen Scope",
+                "Reason of Input": "Pull back to reveal the scale",
+                "Evolving Prompt": "Pulling back to reveal the entire majestic valley, a serene Twilight Garden in late Spring beside a forgotten Temple, a tranquil pond reflecting a sky with a shooting star, a gentle mist swirling around a weathered, marble Statue where a silver Fox and a lone Monk rest, bathed in soft moonlight",
+                "Mutation / Substitution": [
+                    {"keyword": "majestic", "category": "Quality", "values": ["misty", "moonlit", "hidden", "ancient"]},
+                    {"keyword": "valley", "category": "Landscape", "values": ["canyon", "plateau", "forest", "mountain range", "island"]}
+                ],
+                "Tooltips": {"Pull back to reveal the scale": "Transitioning from a close-up to a wide shot creates a dramatic sense of place and grandeur."}
+            },
+            {
+                "Lesson": "Introduce a Path",
+                "Reason of Input": "Suggest a journey or direction",
+                "Evolving Prompt": "A single stone path winds through the majestic valley, leading to a serene Twilight Garden in late Spring beside a forgotten Temple, a tranquil pond reflecting a sky with a shooting star, a gentle mist swirling around a weathered, marble Statue where a silver Fox and a lone Monk rest, bathed in soft moonlight",
+                "Mutation / Substitution": [
+                    {"keyword": "single", "category": "Quantity", "values": ["winding", "ancient", "glowing"]},
+                    {"keyword": "stone path", "category": "Pathway", "values": ["mossy trail", "wooden bridge", "glowing walkway", "ancient road"]}
+                ],
+                "Tooltips": {"Suggest a journey or direction": "A path invites the viewer to imagine traveling through the scene and hints at a larger world."}
+            },
+            {
+                "Lesson": "Introduce a new Mood",
+                "Reason of Input": "Shift the emotional tone",
+                "Evolving Prompt": "A single stone path winds through the majestic valley, a sudden chill in the air, leading to a serene Twilight Garden beside a forgotten Temple, a tranquil pond reflecting a sky with a shooting star, a gentle mist swirling around a weathered, marble Statue where a silver Fox and a lone Monk rest, bathed in soft moonlight",
+                "Mutation / Substitution": [
+                    {"keyword": "sudden", "category": "Pacing", "values": ["subtle", "growing", "strange"]},
+                    {"keyword": "chill", "category": "Sensation", "values": ["warmth", "stillness", "rumble", "silence"]}
+                ],
+                "Tooltips": {"Shift the emotional tone": "Introducing a new sensory detail can foreshadow change or create narrative tension."}
+            },
+            {
+                "Lesson": "Shift Weather",
+                "Reason of Input": "Use clouds for foreshadowing",
+                "Evolving Prompt": "A single stone path winds through the majestic valley, a sudden chill in the air as clouds begin to cover the moon, leading to a serene Twilight Garden beside a forgotten Temple, a tranquil pond reflecting the darkening sky, a gentle mist swirling around a weathered, marble Statue where a silver Fox and a lone Monk rest",
+                "Mutation / Substitution": [
+                    {"keyword": "clouds", "category": "Weather Obstruction", "values": ["fog", "a storm front", "shadows", "an eclipse"]},
+                    {"keyword": "darkening", "category": "Light Change", "values": ["stormy", "empty", "rippling"]}
+                ],
+                "Tooltips": {"Use clouds for foreshadowing": "Obscuring the primary light source creates suspense and suggests that something is about to happen."}
+            },
+            {
+                "Lesson": "Introduce Conflict/Tension",
+                "Reason of Input": "Show a reaction to the change",
+                "Evolving Prompt": "A single stone path winds through the majestic valley, a sudden chill in the air as clouds cover the moon, leading to a serene Twilight Garden beside a forgotten Temple, a tranquil pond reflecting the dark sky, a mist swirling around a weathered, marble Statue where a silver Fox's ears perk up, sensing a change",
+                "Mutation / Substitution": [
+                    {"keyword": "ears", "category": "Body Part", "values": ["fur", "eyes", "tail"]},
+                    {"keyword": "perk up", "category": "Reaction", "values": ["flatten", "twitch", "glow", "ignite"]},
+                    {"keyword": "change", "category": "Object", "values": ["presence", "sound", "danger", "magic"]}
+                ],
+                "Tooltips": {"Show a reaction to the change": "A character's physical reaction to an environmental shift confirms that the change is significant."}
+            },
+            {
+                "Lesson": "Introduce a Mythical Creature",
+                "Reason of Input": "Bring in a major narrative element",
+                "Evolving Prompt": "A single stone path winds through the majestic valley as clouds cover the moon, leading to a Twilight Garden beside a forgotten Temple, a tranquil pond reflecting the dark sky, a mist swirling around a weathered, marble Statue where a silver Fox's ears perk up as a great Dragon descends from the clouds",
+                "Mutation / Substitution": [
+                    {"keyword": "great", "category": "Size", "values": ["ancient", "celestial", "shadow", "storm"]},
+                    {"keyword": "Dragon", "category": "Mythical Creature", "values": ["Griffin", "Phoenix", "Serpent", "Leviathan", "Titan"]},
+                    {"keyword": "descends", "category": "Action", "values": ["emerges", "awakens", "materializes"]}
+                ],
+                "Tooltips": {"Bring in a major narrative element": "Introducing a powerful, mythical creature escalates the scene from atmospheric to epic."}
+            },
+            {
+                "Lesson": "Describe the Creature",
+                "Reason of Input": "Give the new element specificity",
+                "Evolving Prompt": "A stone path winds through the valley as clouds cover the moon, leading to a Twilight Garden beside a forgotten Temple, a pond reflecting the dark sky, mist swirling around a weathered, marble Statue where a silver Fox's ears perk up as a great, emerald-scaled Dragon with wise eyes descends from the clouds",
+                "Mutation / Substitution": [
+                    {"keyword": "emerald-scaled", "category": "Creature Attribute", "values": ["obsidian-plated", "feathered", "storm-wreathed", "glowing", "ancient"]},
+                    {"keyword": "wise", "category": "Quality", "values": ["fiery", "ancient", "knowing", "sad"]},
+                    {"keyword": "eyes", "category": "Body Part", "values": ["claws", "wings", "heart", "voice"]}
+                ],
+                "Tooltips": {"Give the new element specificity": "Adding descriptive details to the creature makes it more vivid, unique, and believable."}
+            },
+            {
+                "Lesson": "Climax Action",
+                "Reason of Input": "Define the creature's first action",
+                "Evolving Prompt": "A stone path winds through the valley as clouds cover the moon, leading to a Twilight Garden beside a forgotten Temple, a pond reflecting the dark sky, mist swirling around a weathered, marble Statue where a silver Fox watches as a great, emerald-scaled Dragon with wise eyes lands softly, not disturbing a single petal",
+                "Mutation / Substitution": [
+                    {"keyword": "watches", "category": "Action", "values": ["crouches", "stands its ground", "hides"]},
+                    {"keyword": "lands", "category": "Action", "values": ["alights", "descends", "appears"]},
+                    {"keyword": "softly", "category": "Action Adverb", "values": ["powerfully", "silently", "majestically", "violently"]}
+                ],
+                "Tooltips": {"Define the creature's first action": "The first action of a powerful character reveals their intent and sets the tone for the interaction to come."}
+            },
+            {
+                "Lesson": "Interaction",
+                "Reason of Input": "Show a connection between characters",
+                "Evolving Prompt": "In a moonless Twilight Garden beside a forgotten Temple, a mist swirls around a weathered, marble Statue where a silver Fox and a great, emerald-scaled Dragon lock eyes in mutual respect, not disturbing a single fallen petal",
+                "Mutation / Substitution": [
+                    {"keyword": "moonless", "category": "Light", "values": ["silent", "sacred", "enchanted"]},
+                    {"keyword": "lock eyes", "category": "Interaction", "values": ["circle each other", "stand silently", "exchange a glance"]},
+                    {"keyword": "respect", "category": "Interaction Tone", "values": ["curiosity", "challenge", "understanding", "fear", "amusement"]}
+                ],
+                "Tooltips": {"Show a connection between characters": "The look shared between two characters can convey complex emotions and relationships without words."}
+            },
+            {
+                "Lesson": "Character Interaction",
+                "Reason of Input": "Reveal the third character's role",
+                "Evolving Prompt": "In a moonless Twilight Garden beside a forgotten Temple, a mist swirls around a weathered, marble Statue where a silver Fox and a great, emerald-scaled Dragon lock eyes, as the lone Monk opens his eyes, a serene smile on his face",
+                "Mutation / Substitution": [
+                    {"keyword": "opens his eyes", "category": "Action", "values": ["raises a hand", "speaks a single word", "remains still"]},
+                    {"keyword": "serene smile", "category": "Expression", "values": ["knowing look", "slight nod", "raised eyebrow", "outstretched hand"]}
+                ],
+                "Tooltips": {"Reveal the third character's role": "The reaction of the established character to a new arrival reveals their relationship and importance."}
+            },
+            {
+                "Lesson": "Implied Communication",
+                "Reason of Input": "Suggest a deeper connection",
+                "Evolving Prompt": "In a moonless Twilight Garden beside a forgotten Temple, a silent understanding passes between the Monk, the Fox, and the Dragon, a mist swirling around a weathered, marble Statue as a serene smile appears on the Monk's face",
+                "Mutation / Substitution": [
+                    {"keyword": "silent", "category": "Type", "values": ["sacred", "ancient", "sudden"]},
+                    {"keyword": "understanding", "category": "Shared Feeling", "values": ["pact", "challenge", "question", "memory", "prophecy"]}
+                ],
+                "Tooltips": {"Suggest a deeper connection": "Implying communication without dialogue adds a layer of magic and mystery."}
+            },
+            {
+                "Lesson": "Resolution Begins",
+                "Reason of Input": "Start de-escalating the tension",
+                "Evolving Prompt": "In a moonless Twilight Garden beside a forgotten Temple, a silent understanding passes between the Monk, the Fox, and the Dragon, who bows its head slightly, a mist swirling around a weathered, marble Statue",
+                "Mutation / Substitution": [
+                    {"keyword": "bows its head", "category": "Gesture", "values": ["unfurls its wings", "closes its eyes", "lets out a soft rumble", "touches its snout to the ground"]},
+                    {"keyword": "slightly", "category": "Adverb", "values": ["respectfully", "slowly", "regally"]}
+                ],
+                "Tooltips": {"Start de-escalating the tension": "A gesture of respect or peace signals that the climax is over and the resolution is beginning."}
+            },
+            {
+                "Lesson": "Symbolic Action",
+                "Reason of Input": "Reveal the purpose of the artifact",
+                "Evolving Prompt": "In a moonless Twilight Garden beside a forgotten Temple, a silent understanding passes between the Fox and the Dragon, who bows its head as the Monk unrolls an illuminated scroll, revealing a map of the stars",
+                "Mutation / Substitution": [
+                    {"keyword": "illuminated", "category": "Quality", "values": ["ancient", "glowing", "celestial"]},
+                    {"keyword": "scroll", "category": "Artifact", "values": ["orb", "book", "lantern"]},
+                    {"keyword": "map of the stars", "category": "Scroll Content", "values": ["an ancient prophecy", "a glowing poem", "a single, powerful word", "a moving image of the valley"]}
+                ],
+                "Tooltips": {"Reveal the purpose of the artifact": "Showing what the mysterious object does or contains is a key moment in the narrative."}
+            },
+            {
+                "Lesson": "Light Shift",
+                "Reason of Input": "Use light to signify resolution",
+                "Evolving Prompt": "In a Twilight Garden beside a forgotten Temple, a silent understanding passes between the Fox and a bowing Dragon, as the Monk's illuminated scroll bathes the scene in a golden glow, pushing back the shadows",
+                "Mutation / Substitution": [
+                    {"keyword": "golden glow", "category": "Light Quality", "values": ["silver light", "ethereal blue", "soft green radiance", "warm amber light"]},
+                    {"keyword": "pushing back", "category": "Action", "values": ["revealing", "banishing", "softening"]}
+                ],
+                "Tooltips": {"Use light to signify resolution": "A shift from darkness to a warm or magical light source symbolizes the return of peace and hope."}
+            },
+            {
+                "Lesson": "Resolution",
+                "Reason of Input": "Complete the environmental shift",
+                "Evolving Prompt": "In a Twilight Garden beside a forgotten Temple, a silent understanding passes between the Fox and a bowing Dragon, as the Monk's illuminated scroll bathes the scene in a golden glow, and the clouds part, the moonlight returning brighter than before",
+                "Mutation / Substitution": [
+                    {"keyword": "clouds part", "category": "Action", "values": ["mists clear", "storm subsides", "shadows retreat"]},
+                    {"keyword": "moonlight", "category": "Returning Light", "values": ["starlight", "the light of dawn", "a rainbow", "an aurora"]}
+                ],
+                "Tooltips": {"Complete the environmental shift": "Returning the environment to a peaceful state, often enhanced from its original state, provides a satisfying conclusion."}
+            },
+            {
+                "Lesson": "Peaceful State",
+                "Reason of Input": "Show the new state of harmony",
+                "Evolving Prompt": "In a moonlit Garden beside a forgotten Temple, the clouds having parted, an illuminated scroll bathes the scene in a golden glow as the great Dragon curls up to rest near a tranquil pond, a silent understanding shared with a watchful Fox and a serene Monk",
+                "Mutation / Substitution": [
+                    {"keyword": "curls up", "category": "Action", "values": ["lies down", "settles", "lands"]},
+                    {"keyword": "rest", "category": "State of Being", "values": ["sleep", "watch", "hum", "glow"]},
+                    {"keyword": "watchful", "category": "State", "values": ["peaceful", "sleeping", "content"]}
+                ],
+                "Tooltips": {"Show the new state of harmony": "Depicting the characters in a state of peace after the climax solidifies the resolution."}
+            },
+            {
+                "Lesson": "Final Character Pose",
+                "Reason of Input": "Conclude the character arcs",
+                "Evolving Prompt": "In a moonlit Garden beside a forgotten Temple, the clouds having parted, an illuminated scroll bathes the scene in a golden glow as the great Dragon rests near a tranquil pond, the Monk returning to his meditation with the Fox now resting at his feet",
+                "Mutation / Substitution": [
+                    {"keyword": "returning to", "category": "Action", "values": ["deepening", "continuing", "settling into"]},
+                    {"keyword": "meditation", "category": "State", "values": ["slumber", "watch", "study"]},
+                    {"keyword": "at his feet", "category": "Position", "values": ["on his lap", "by his side", "on the statue", "under the cherry trees"]}
+                ],
+                "Tooltips": {"Conclude the character arcs": "Showing the final positions and actions of the characters provides a sense of closure to their individual stories."}
+            },
+            {
+                "Lesson": "Final Sensory Detail (Sound)",
+                "Reason of Input": "Add a final layer of immersion",
+                "Evolving Prompt": "In a moonlit Garden beside a forgotten Temple, an illuminated scroll bathes the scene in a golden glow as the great Dragon rests near a tranquil pond, the Monk meditating with a Fox at his feet, the air filled with the soft sound of the Dragon's breathing and distant chimes",
+                "Mutation / Substitution": [
+                    {"keyword": "soft", "category": "Quality", "values": ["rhythmic", "deep", "gentle"]},
+                    {"keyword": "breathing", "category": "Final Sound", "values": ["purring", "humming", "dreaming", "singing"]}
+                ],
+                "Tooltips": {"Add a final layer of immersion": "A final, peaceful sound detail leaves the viewer with a lasting sense of the scene's atmosphere."}
+            },
+            {
+                "Lesson": "Final Sensory Detail (Sight)",
+                "Reason of Input": "Create a lasting visual impression",
+                "Evolving Prompt": "In a moonlit Garden beside a forgotten Temple, an illuminated scroll bathes the scene in a golden glow, creating a perfect tableau of mythic harmony as a great Dragon rests near a tranquil pond, and a Monk meditates with a Fox at his feet, the air filled with soft, distant chimes",
+                "Mutation / Substitution": [
+                    {"keyword": "perfect", "category": "Quality", "values": ["serene", "timeless", "sacred"]},
+                    {"keyword": "tableau", "category": "Composition", "values": ["scene", "vignette", "moment"]},
+                    {"keyword": "mythic harmony", "category": "Final Theme", "values": ["ancient peace", "magical balance", "sacred slumber", "celestial alignment"]}
+                ],
+                "Tooltips": {"Create a lasting visual impression": "Summarizing the scene with a powerful, thematic phrase helps it stick in the viewer's mind."}
+            },
+            {
+                "Lesson": "Zoom Out",
+                "Reason of Input": "Give a final sense of scale",
+                "Evolving Prompt": "An epic, wide shot of the serene valley, where a moonlit Garden beside a forgotten Temple glows with golden light, a perfect tableau of mythic harmony between a Dragon, a Fox, and a Monk",
+                "Mutation / Substitution": [
+                    {"keyword": "epic", "category": "Scale", "values": ["breathtaking", "cinematic", "sweeping"]},
+                    {"keyword": "wide shot", "category": "Final Camera Shot", "values": ["crane shot", "helicopter shot", "satellite view", "fade to black"]}
+                ],
+                "Tooltips": {"Give a final sense of scale": "Ending on a wide shot places the intimate scene within a vast, beautiful world, giving it a sense of finality and significance."}
+            },
+            {
+                "Lesson": "Add Artistic Style",
+                "Reason of Input": "Define the visual medium",
+                "Evolving Prompt": "Digital art of an epic, wide shot of a serene valley, where a moonlit Garden beside a forgotten Temple glows with golden light, a perfect tableau of mythic harmony between a Dragon, a Fox, and a Monk, cinematic lighting, style of Studio Ghibli",
+                "Mutation / Substitution": [
+                    {"keyword": "Digital art", "category": "Medium", "values": ["Oil painting", "Watercolor", "Ink wash", "3D render"]},
+                    {"keyword": "cinematic lighting", "category": "Lighting Style", "values": ["dramatic lighting", "volumetric lighting", "god rays", "Rembrandt lighting"]},
+                    {"keyword": "Studio Ghibli", "category": "Artistic Style", "values": ["Makoto Shinkai", "traditional ink wash", "fantasy realism", "Pixar", "Caravaggio"]}
+                ],
+                "Tooltips": {"Define the visual medium": "Specifying the art style, artist, or medium provides clear direction for how the final image should look."}
+            },
+            {
+                "Lesson": "Final Polish",
+                "Reason of Input": "Add final quality descriptors",
+                "Evolving Prompt": "Award-winning fantasy illustration, hyper-detailed 8k digital art of an epic, wide shot of a serene valley, where a moonlit Garden beside a forgotten Temple glows with golden light, a perfect tableau of mythic harmony between a Dragon, a Fox, and a Monk, cinematic lighting, style of Studio Ghibli",
+                 "Mutation / Substitution": [
+                    {"keyword": "Award-winning", "category": "Quality", "values": ["Masterpiece", "Trending on ArtStation", "Epic"]},
+                    {"keyword": "hyper-detailed", "category": "Quality Descriptor", "values": ["intricate", "photorealistic", "ethereal", "concept art"]},
+                    {"keyword": "8k", "category": "Resolution", "values": ["4k", "high resolution", "ultra high definition"]}
+                ],
+                "Tooltips": {"Add final quality descriptors": "Adding terms like 'hyper-detailed' or '8k' instructs an AI model to generate the image at the highest possible quality."}
+            }
+        ]
+        };
+
+        // --- STATE MANAGEMENT ---
+        let currentStep = 0;
+        let prompts = gameData.records.map(r => r["Evolving Prompt"]);
+
+        // --- DOM ELEMENTS ---
+        const lessonNumberEl = document.getElementById('lesson-number');
+        const lessonTitleEl = document.getElementById('lesson-title');
+        const promptTextEl = document.getElementById('prompt-text');
+        const slidersContainerEl = document.getElementById('sliders-container');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const progressFillEl = document.getElementById('progress-fill');
+        const copyBtn = document.getElementById('copy-prompt-btn');
+        const copyNotification = document.getElementById('copy-notification');
+        const helpBtn = document.getElementById('help-btn');
+        const helpModal = document.getElementById('help-modal');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+
+
+        // --- FUNCTIONS ---
+        function updateUI() {
+            const currentRecord = gameData.records[currentStep];
+            
+            // Update lesson info
+            lessonNumberEl.textContent = currentStep + 1;
+            lessonTitleEl.textContent = ` ${currentRecord["Reason of Input"]}`;
+            
+            // Update prompt display with integrated tooltips
+            promptTextEl.innerHTML = highlightKeywordsAndCreateTooltips(prompts[currentStep]);
+
+            // Update navigation buttons
+            prevBtn.disabled = currentStep === 0;
+            nextBtn.disabled = currentStep === gameData.records.length - 1;
+            
+            // Update sliders
+            generateSliders();
+
+            // Update progress bar
+            const progressPercent = ((currentStep + 1) / gameData.records.length) * 100;
+            progressFillEl.style.width = `${progressPercent}%`;
+        }
+
+        function highlightKeywordsAndCreateTooltips(prompt) {
+            let highlightedPrompt = prompt;
+            const currentRecord = gameData.records[currentStep];
+            const mutations = currentRecord["Mutation / Substitution"];
+            const lessonTooltipText = currentRecord.Tooltips[currentRecord["Reason of Input"]];
+
+            mutations.forEach(mutation => {
+                // Find which of the possible values is currently in the prompt
+                const allValues = [mutation.keyword, ...mutation.values];
+                let currentKeywordInPrompt = mutation.keyword; // Default
+                for(const val of allValues) {
+                     // Use a case-insensitive regex to check for the whole word
+                    const regex = new RegExp(`\\b(${val})\\b`, 'i');
+                    if (regex.test(prompt)) {
+                        currentKeywordInPrompt = val;
+                        break;
+                    }
+                }
+                
+                const regex = new RegExp(`\\b(${currentKeywordInPrompt})\\b`, 'gi');
+                const tooltipHtml = `
+                    <span class="tooltip-container">${currentKeywordInPrompt}
+                        <span class="tooltip-text">${lessonTooltipText}</span>
+                    </span>`;
+                highlightedPrompt = highlightedPrompt.replace(regex, tooltipHtml);
+            });
+            return highlightedPrompt;
+        }
+        
+        function generateSliders() {
+            slidersContainerEl.innerHTML = '<h3><span class="icon">🔄</span>Mutation Sliders</h3>'; // Reset sliders
+            const mutations = gameData.records[currentStep]["Mutation / Substitution"];
+
+            if (!mutations || mutations.length === 0) {
+                slidersContainerEl.innerHTML += '<p>No mutations available for this step.</p>';
+                return;
+            }
+
+            mutations.forEach(mutation => {
+                const selectEl = document.createElement('select');
+                
+                // Find the current value in the prompt string to set the default selection
+                const promptText = prompts[currentStep];
+                let currentValueInPrompt = mutation.keyword;
+                const allValues = [mutation.keyword, ...mutation.values];
+
+                for(const val of allValues) {
+                    const regex = new RegExp(`\\b(${val})\\b`, 'i');
+                    if (regex.test(promptText)) {
+                        currentValueInPrompt = val;
+                        break;
+                    }
+                }
+                
+                allValues.forEach(value => {
+                    const optionEl = document.createElement('option');
+                    optionEl.value = value;
+                    optionEl.textContent = `${mutation.category}: ${value}`;
+                    if (value.toLowerCase() === currentValueInPrompt.toLowerCase()) {
+                        optionEl.selected = true;
+                    }
+                    selectEl.appendChild(optionEl);
+                });
+                
+                selectEl.addEventListener('change', (e) => handleMutation(e, currentValueInPrompt));
+                slidersContainerEl.appendChild(selectEl);
+            });
+        }
+        
+        function handleMutation(event, oldValue) {
+            const newValue = event.target.value;
+            const oldPrompt = prompts[currentStep];
+            
+            // Use regex for whole word replacement, case-insensitive
+            const regex = new RegExp(`\\b(${oldValue})\\b`, 'gi');
+            const newPrompt = oldPrompt.replace(regex, newValue);
+
+            // Update the prompt in our state
+            prompts[currentStep] = newPrompt;
+            
+            // Refresh UI to show the new prompt and update sliders
+            updateUI();
+        }
+
+        function showCopyNotification() {
+            copyNotification.classList.add('show');
+            setTimeout(() => {
+                copyNotification.classList.remove('show');
+            }, 2000);
+        }
+
+        // --- EVENT LISTENERS ---
+        prevBtn.addEventListener('click', () => {
+            if (currentStep > 0) {
+                currentStep--;
+                updateUI();
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (currentStep < gameData.records.length - 1) {
+                currentStep++;
+                updateUI();
+            }
+        });
+
+        copyBtn.addEventListener('click', () => {
+            const textToCopy = promptTextEl.innerText;
+            // Using a fallback for environments where clipboard API might not be available (like sandboxed iframes)
+            const textArea = document.createElement('textarea');
+            textArea.value = textToCopy;
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                showCopyNotification();
+            } catch (err) {
+                console.error('Fallback: Oops, unable to copy', err);
+            }
+            document.body.removeChild(textArea);
+        });
+
+        // Help Modal Listeners
+        helpBtn.addEventListener('click', () => helpModal.classList.add('show'));
+        closeModalBtn.addEventListener('click', () => helpModal.classList.remove('show'));
+        helpModal.addEventListener('click', (e) => {
+            if (e.target === helpModal) { // Close if clicking on the overlay
+                helpModal.classList.remove('show');
+            }
+        });
+
+        // --- RESPONSIVE TOOLTIP LOGIC ---
+        promptTextEl.addEventListener('mouseover', (event) => {
+            const container = event.target.closest('.tooltip-container');
+            if (!container) return;
+
+            const tooltip = container.querySelector('.tooltip-text');
+            if (!tooltip) return;
+            
+            // Use requestAnimationFrame to ensure the element is rendered before getting its rect
+            requestAnimationFrame(() => {
+                // Reset alignment classes before calculation
+                tooltip.classList.remove('align-left', 'align-right');
+                tooltip.style.left = '50%';
+                tooltip.style.transform = 'translateX(-50%)';
+
+
+                const rect = tooltip.getBoundingClientRect();
+                const viewportWidth = window.innerWidth;
+
+                if (rect.right > (viewportWidth - 10)) {
+                    tooltip.style.left = 'auto';
+                    tooltip.style.right = '0';
+                    tooltip.style.transform = 'translateX(0)';
+                } else if (rect.left < 10) {
+                    tooltip.style.left = '0';
+                    tooltip.style.right = 'auto';
+                    tooltip.style.transform = 'translateX(0)';
+                }
+            });
+        });
+
+
+        // --- INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            updateUI();
+        });
+
+    </script>
+</body>
+</html>
+
