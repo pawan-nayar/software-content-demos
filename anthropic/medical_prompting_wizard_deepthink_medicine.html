@@ -1,0 +1,1502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>DeepThink • Medical Prompting Wizard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* Color Palette for Medical/Clinical Theme */
+  :root {
+    /* Core neutrals */
+    --bg: #f8f9fa;
+    --text: #212529;
+    --muted: #ffffff;
+    --border: #dee2e6;
+    /* Brand / accents */
+    --accent: #0d6efd;
+    --accent-2: #0b5ed7;
+    /* Header / footer */
+    --header-bg: #2c3e50;
+    --header-fg: #ecf0f1;
+    --heading: #343a40;
+    /* Chips and Labels */
+    --chip-bg: #e7f1ff;
+    --chip-border: #b9d3ff;
+    --chip-text: #0a58ca;
+    /* Semantic states */
+    --ok: #198754; --ok-soft: #d1e7dd;
+    --bad: #dc3545; --bad-soft: #f8d7da;
+    --warn: #ffc107; --warn-soft: #fff3cd;
+    --info: #0dcaf0; --info-soft: #cff4fc;
+    /* Inputs / focus */
+    --input-focus: #0d6efd;
+  }
+
+  html,body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    line-height:1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  .container{
+    max-width:880px;
+    margin:0 auto;
+    padding:24px;
+  }
+
+  /* Header/Footer */
+  header, footer {
+    background:var(--header-bg);
+    color:var(--header-fg);
+    text-align:center;
+  }
+  header .container, footer .container {
+    padding:24px;
+  }
+  h1 {
+    font-size:clamp(2rem, 5vw, 2.6rem);
+    margin:0 0 8px;
+    color:var(--header-fg);
+    letter-spacing: -0.025em;
+  }
+  
+  /* Intro chip */
+  .intro {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin: 12px auto 0;
+    max-width: 700px;
+    font-weight: 500;
+  }
+
+  /* Hub Styles */
+  #role-hub {
+    text-align: center;
+    padding: 2rem;
+    background: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+  }
+  .role-selection-grid {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+  }
+  .role-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    width: 200px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  }
+  .role-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    border-color: var(--accent);
+  }
+  .role-card h3 {
+    margin: 0.5rem 0 0 0;
+    color: var(--accent);
+  }
+   .role-card svg {
+    width: 48px;
+    height: 48px;
+    color: var(--accent);
+  }
+
+
+  /* Wizard Styles */
+  .wizard-container {
+    background: var(--muted);
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    margin-bottom: 24px;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -2px rgba(0,0,0,0.05);
+    display: none; /* Hidden by default */
+  }
+
+  .wizard-header {
+    padding: 1rem 1.5rem;
+    background: var(--chip-bg);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .wizard-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: var(--heading);
+    border: none;
+    padding: 0;
+  }
+    
+  .wizard-header p {
+      margin-top: 4px;
+      color: var(--text);
+  }
+
+  .wizard-body {
+    padding: 1.5rem;
+  }
+
+  .wizard-step {
+    display: none;
+  }
+
+  .wizard-step.active {
+    display: block;
+    animation: fadeIn 0.5s;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .step-progress {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+  
+  .step-question {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--heading);
+    margin-bottom: 8px;
+  }
+
+  .step-education {
+    font-size: 0.95rem;
+    color: color-mix(in srgb, var(--text) 80%, transparent);
+    margin-bottom: 1rem;
+    border-left: 3px solid var(--accent);
+    padding-left: 12px;
+  }
+
+  .prompt-example {
+    background: #2c3e50;
+    color: #ecf0f1;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 1rem;
+    font-family: monospace;
+    font-size: 0.9rem;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+  .prompt-example strong {
+      color: #7ed321;
+  }
+   .model-feedback {
+    background: var(--ok-soft);
+    border: 1px solid var(--ok);
+    color: var(--text);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 1rem;
+    font-family: monospace;
+    font-size: 0.9rem;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+
+  .step-commentary {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--warn);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+  }
+  .step-commentary h4 {
+    margin: 0 0 0.5rem 0;
+    color: var(--heading);
+    font-weight: 600;
+  }
+
+  .wizard-nav {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--border);
+    background: var(--bg);
+  }
+
+  .btn {
+    background:var(--accent);
+    color:#fff;
+    border:1px solid transparent;
+    border-radius:10px;
+    padding:10px 18px;
+    font-weight:600;
+    cursor:pointer;
+    box-shadow:0 1px 2px rgba(0,0,0,.04);
+    transition: all .2s ease;
+  }
+  .btn:hover:not(:disabled) {
+    background:var(--accent-2);
+    transform:translateY(-2px);
+    box-shadow:0 4px 12px rgba(0,0,0,.1);
+  }
+  .btn:disabled {
+    background: #adb5bd;
+    color: #495057;
+    cursor:not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+  .btn-secondary {
+    background: #e9ecef;
+    color: var(--text);
+    border-color: var(--border);
+  }
+  .btn-secondary:hover:not(:disabled) {
+    background: #ced4da;
+  }
+
+</style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <h1>DeepThink — Prompting Wizard</h1>
+      <div class="intro">A training module for clinicians to master sequential prompting for complex case analysis using backend AI models.</div>
+    </div>
+  </header>
+
+  <main class="container">
+    
+    <!-- Hub Section -->
+    <div id="role-hub">
+      <h2>Select Your Role</h2>
+      <p>Choose a specialty to begin your prompt training wizard.</p>
+      <div class="role-selection-grid">
+        <div class="role-card" onclick="showWizard('wizard-cardiology')">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" /></svg>
+          <h3>Cardiology</h3>
+        </div>
+        <div class="role-card" onclick="showWizard('wizard-oncology')">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>
+          <h3>Oncology</h3>
+        </div>
+        <div class="role-card" onclick="showWizard('wizard-medicine')">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m5.231 13.481L15 17.25m-4.5-1.5l-2.625 2.625a3.375 3.375 0 01-4.773-4.773l.48-1.084a3.752 3.752 0 015.73-2.113l6.08 6.08a3.752 3.752 0 01-2.113 5.73l-1.083.48a3.375 3.375 0 01-4.774-4.774l2.625-2.625m9.32-9.32l-2.625-2.625a3.375 3.375 0 00-4.774 4.774l.48 1.083a3.752 3.752 0 005.73 2.113l6.08-6.08a3.752 3.752 0 00-2.113-5.73l-1.084-.48z" /></svg>
+          <h3>Internal Medicine</h3>
+        </div>
+        <div class="role-card" onclick="showWizard('wizard-emergency')">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>
+          <h3>Emergency Medicine</h3>
+        </div>
+        <div class="role-card" onclick="showWizard('wizard-psychiatry')">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.182 15.182a4.5 4.5 0 01-6.364 0M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75s.168-.75.375-.75.375.336.375.75zm-.375 0h.008v.015h-.008V9.75zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75zm-.375 0h.008v.015h-.008V9.75z" /></svg>
+          <h3>Psychiatry</h3>
+        </div>
+        <div class="role-card" onclick="showWizard('wizard-pediatrics')">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
+          <h3>Pediatrics</h3>
+        </div>
+        <div class="role-card" onclick="showWizard('wizard-surgery')">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" /></svg>
+          <h3>Surgery</h3>
+        </div>
+        <div class="role-card" onclick="showWizard('wizard-neurology')">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" /></svg>
+          <h3>Neurology</h3>
+        </div>
+        <div class="role-card" onclick="showWizard('wizard-orthopedics')">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
+          <h3>Orthopedics</h3>
+        </div>
+        <div class="role-card" onclick="showWizard('wizard-anesthesiology')">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 001.5-.189m-1.5.189a6.01 6.01 0 01-1.5-.189m3.75 7.478a12.06 12.06 0 01-4.5 0m4.5 0a12.06 12.06 0 00-4.5 0" /></svg>
+          <h3>Anesthesiology</h3>
+        </div>
+        <div class="role-card" onclick="showWizard('wizard-radiology')">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" /></svg>
+          <h3>Radiology</h3>
+        </div>
+        <div class="role-card" onclick="showWizard('wizard-dermatology')">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z" /></svg>
+          <h3>Dermatology</h3>
+        </div>
+      </div>
+    </div>
+
+    <!-- Wizard 1: Cardiology -->
+    <div class="wizard-container" id="wizard-cardiology">
+      <div class="wizard-header">
+        <div>
+            <h2>Cardiology: New AFib Startup Kit</h2>
+            <p>Guide for initiating safe, guideline-directed management for a patient with new Atrial Fibrillation.</p>
+        </div>
+        <button class="btn btn-secondary" onclick="showRoleHub()">Back to Roles</button>
+      </div>
+      <div class="wizard-body">
+        <!-- Steps will be injected here by JS -->
+      </div>
+      <div class="wizard-nav">
+        <button class="btn btn-secondary" onclick="WIZARDS.cardiology.prevStep()">Back</button>
+        <button class="btn" onclick="WIZARDS.cardiology.nextStep()">Next</button>
+      </div>
+    </div>
+
+    <!-- Wizard 2: Oncology -->
+    <div class="wizard-container" id="wizard-oncology">
+      <div class="wizard-header">
+        <div>
+            <h2>Oncology: Neutropenic Fever Protocol</h2>
+            <p>Workflow for executing a safe and rapid response to a potential oncologic emergency.</p>
+        </div>
+         <button class="btn btn-secondary" onclick="showRoleHub()">Back to Roles</button>
+      </div>
+      <div class="wizard-body">
+        <!-- Steps will be injected here by JS -->
+      </div>
+      <div class="wizard-nav">
+        <button class="btn btn-secondary" onclick="WIZARDS.oncology.prevStep()">Back</button>
+        <button class="btn" onclick="WIZARDS.oncology.nextStep()">Next</button>
+      </div>
+    </div>
+
+    <!-- Wizard 3: Internal Medicine -->
+    <div class="wizard-container" id="wizard-medicine">
+        <div class="wizard-header">
+          <div>
+              <h2>Internal Medicine: Polypharmacy Review</h2>
+              <p>A systematic approach to de-risking a complex medication list for an elderly patient.</p>
+          </div>
+           <button class="btn btn-secondary" onclick="showRoleHub()">Back to Roles</button>
+        </div>
+        <div class="wizard-body">
+          <!-- Steps will be injected here by JS -->
+        </div>
+        <div class="wizard-nav">
+          <button class="btn btn-secondary" onclick="WIZARDS.medicine.prevStep()">Back</button>
+          <button class="btn" onclick="WIZARDS.medicine.nextStep()">Next</button>
+        </div>
+      </div>
+
+    <!-- Wizard 4: Emergency Medicine -->
+    <div class="wizard-container" id="wizard-emergency">
+      <div class="wizard-header">
+        <div>
+            <h2>Emergency Medicine: Trauma Triage Protocol</h2>
+            <p>Rapid assessment and prioritization workflow for multiple trauma patients in the ED.</p>
+        </div>
+        <button class="btn btn-secondary" onclick="showRoleHub()">Back to Roles</button>
+      </div>
+      <div class="wizard-body">
+        <!-- Steps will be injected here by JS -->
+      </div>
+      <div class="wizard-nav">
+        <button class="btn btn-secondary" onclick="WIZARDS.emergency.prevStep()">Back</button>
+        <button class="btn" onclick="WIZARDS.emergency.nextStep()">Next</button>
+      </div>
+    </div>
+
+    <!-- Wizard 5: Psychiatry -->
+    <div class="wizard-container" id="wizard-psychiatry">
+      <div class="wizard-header">
+        <div>
+            <h2>Psychiatry: Suicide Risk Assessment</h2>
+            <p>Comprehensive evaluation protocol for assessing and managing suicide risk in psychiatric patients.</p>
+        </div>
+        <button class="btn btn-secondary" onclick="showRoleHub()">Back to Roles</button>
+      </div>
+      <div class="wizard-body">
+        <!-- Steps will be injected here by JS -->
+      </div>
+      <div class="wizard-nav">
+        <button class="btn btn-secondary" onclick="WIZARDS.psychiatry.prevStep()">Back</button>
+        <button class="btn" onclick="WIZARDS.psychiatry.nextStep()">Next</button>
+      </div>
+    </div>
+
+    <!-- Wizard 6: Pediatrics -->
+    <div class="wizard-container" id="wizard-pediatrics">
+      <div class="wizard-header">
+        <div>
+            <h2>Pediatrics: Febrile Infant Protocol</h2>
+            <p>Evidence-based approach to evaluating and managing fever in infants under 3 months of age.</p>
+        </div>
+        <button class="btn btn-secondary" onclick="showRoleHub()">Back to Roles</button>
+      </div>
+      <div class="wizard-body">
+        <!-- Steps will be injected here by JS -->
+      </div>
+      <div class="wizard-nav">
+        <button class="btn btn-secondary" onclick="WIZARDS.pediatrics.prevStep()">Back</button>
+        <button class="btn" onclick="WIZARDS.pediatrics.nextStep()">Next</button>
+      </div>
+    </div>
+
+    <!-- Wizard 7: Surgery -->
+    <div class="wizard-container" id="wizard-surgery">
+      <div class="wizard-header">
+        <div>
+            <h2>Surgery: Preoperative Risk Assessment</h2>
+            <p>Comprehensive evaluation protocol for assessing surgical risk and optimizing patient outcomes.</p>
+        </div>
+        <button class="btn btn-secondary" onclick="showRoleHub()">Back to Roles</button>
+      </div>
+      <div class="wizard-body">
+        <!-- Steps will be injected here by JS -->
+      </div>
+      <div class="wizard-nav">
+        <button class="btn btn-secondary" onclick="WIZARDS.surgery.prevStep()">Back</button>
+        <button class="btn" onclick="WIZARDS.surgery.nextStep()">Next</button>
+      </div>
+    </div>
+
+    <!-- Wizard 8: Neurology -->
+    <div class="wizard-container" id="wizard-neurology">
+      <div class="wizard-header">
+        <div>
+            <h2>Neurology: Stroke Protocol</h2>
+            <p>Rapid assessment and treatment workflow for acute stroke patients using evidence-based protocols.</p>
+        </div>
+        <button class="btn btn-secondary" onclick="showRoleHub()">Back to Roles</button>
+      </div>
+      <div class="wizard-body">
+        <!-- Steps will be injected here by JS -->
+      </div>
+      <div class="wizard-nav">
+        <button class="btn btn-secondary" onclick="WIZARDS.neurology.prevStep()">Back</button>
+        <button class="btn" onclick="WIZARDS.neurology.nextStep()">Next</button>
+      </div>
+    </div>
+
+    <!-- Wizard 9: Orthopedics -->
+    <div class="wizard-container" id="wizard-orthopedics">
+      <div class="wizard-header">
+        <div>
+            <h2>Orthopedics: Fracture Management</h2>
+            <p>Systematic approach to evaluating and managing acute fractures with appropriate imaging and treatment protocols.</p>
+        </div>
+        <button class="btn btn-secondary" onclick="showRoleHub()">Back to Roles</button>
+      </div>
+      <div class="wizard-body">
+        <!-- Steps will be injected here by JS -->
+      </div>
+      <div class="wizard-nav">
+        <button class="btn btn-secondary" onclick="WIZARDS.orthopedics.prevStep()">Back</button>
+        <button class="btn" onclick="WIZARDS.orthopedics.nextStep()">Next</button>
+      </div>
+    </div>
+
+    <!-- Wizard 10: Anesthesiology -->
+    <div class="wizard-container" id="wizard-anesthesiology">
+      <div class="wizard-header">
+        <div>
+            <h2>Anesthesiology: Preoperative Assessment</h2>
+            <p>Comprehensive evaluation protocol for assessing anesthetic risk and optimizing patient safety during surgery.</p>
+        </div>
+        <button class="btn btn-secondary" onclick="showRoleHub()">Back to Roles</button>
+      </div>
+      <div class="wizard-body">
+        <!-- Steps will be injected here by JS -->
+      </div>
+      <div class="wizard-nav">
+        <button class="btn btn-secondary" onclick="WIZARDS.anesthesiology.prevStep()">Back</button>
+        <button class="btn" onclick="WIZARDS.anesthesiology.nextStep()">Next</button>
+      </div>
+    </div>
+
+    <!-- Wizard 11: Radiology -->
+    <div class="wizard-container" id="wizard-radiology">
+      <div class="wizard-header">
+        <div>
+            <h2>Radiology: Emergency Imaging Protocol</h2>
+            <p>Systematic approach to interpreting emergency imaging studies and communicating critical findings to clinical teams.</p>
+        </div>
+        <button class="btn btn-secondary" onclick="showRoleHub()">Back to Roles</button>
+      </div>
+      <div class="wizard-body">
+        <!-- Steps will be injected here by JS -->
+      </div>
+      <div class="wizard-nav">
+        <button class="btn btn-secondary" onclick="WIZARDS.radiology.prevStep()">Back</button>
+        <button class="btn" onclick="WIZARDS.radiology.nextStep()">Next</button>
+      </div>
+    </div>
+
+    <!-- Wizard 12: Dermatology -->
+    <div class="wizard-container" id="wizard-dermatology">
+      <div class="wizard-header">
+        <div>
+            <h2>Dermatology: Skin Cancer Screening</h2>
+            <p>Comprehensive evaluation protocol for assessing suspicious skin lesions and determining appropriate follow-up care.</p>
+        </div>
+        <button class="btn btn-secondary" onclick="showRoleHub()">Back to Roles</button>
+      </div>
+      <div class="wizard-body">
+        <!-- Steps will be injected here by JS -->
+      </div>
+      <div class="wizard-nav">
+        <button class="btn btn-secondary" onclick="WIZARDS.dermatology.prevStep()">Back</button>
+        <button class="btn" onclick="WIZARDS.dermatology.nextStep()">Next</button>
+      </div>
+    </div>
+
+  </main>
+
+  <footer>
+    <div class="container" style="padding:16px 24px">© DeepThink Player • Medical Edition</div>
+  </footer>
+
+<script>
+const WIZARD_DATA = {
+  cardiology: {
+    steps: [
+      {
+        question: "Let's start with the basics. How do you feed the initial patient data to the model?",
+        education: "Begin with a clear system prompt that parses the core patient variables. This sets the stage for all subsequent analysis.",
+        prompt: "<strong>[SYSTEM]</strong> Parse patient data: 72M with hx of HTN, DM2. No prior stroke. New diagnosis of atrial fibrillation. Vitals stable.",
+        commentary: "<h4>Why this works:</h4>Using the <strong>[SYSTEM]</strong> tag tells the model its role is to be a data processor. Providing structured labels (e.g., 'hx', 'vitals') helps it categorize the information correctly from the start."
+      },
+      {
+        question: "Calculate the stroke risk.",
+        education: "Now that the model has the data, command it to perform a specific, named calculation like the CHA₂DS₂-VASc score.",
+        prompt: "<strong>[SYSTEM]</strong> Using the patient data, calculate the CHA2DS2-VASc score.",
+        feedback: "<strong>CHA₂DS₂-VASc Score:</strong> 4 (High Risk). Anticoagulation is indicated.",
+        commentary: "<h4>Why this works:</h4>This is a direct, unambiguous command. By referencing a well-known clinical score, you are constraining the model to a specific task, leading to a factual and predictable output. The feedback shows the model has successfully completed the calculation."
+      },
+       {
+        question: "Now, calculate the bleeding risk.",
+        education: "Similarly, ask for the opposing risk score to create a balanced view of the clinical problem.",
+        prompt: "<strong>[SYSTEM]</strong> Using the patient data, calculate the HAS-BLED score.",
+        feedback: "<strong>HAS-BLED Score:</strong> 2 (Moderate Risk). Caution advised, but benefits of anticoagulation likely outweigh risks.",
+        commentary: "<h4>Why this works:</h4>Sequencing prompts to evaluate both sides of a clinical trade-off (stroke risk vs. bleeding risk) is a core skill. This creates the necessary context for the more nuanced steps that follow."
+      },
+      {
+        question: "How can we improve our risk assessment prompt?",
+        education: "A good prompt doesn't just ask for a score, it asks for an interpretation based on established guidelines. This moves from data to insight.",
+        prompt: "<strong>[IMPROVED PROMPT]</strong> Based on a CHA2DS2-VASc of 4 and HAS-BLED of 2, summarize the <strong>net clinical benefit</strong> of anticoagulation according to ESC guidelines.",
+        commentary: "<h4>Prompt Improvement:</h4>Notice the shift from asking 'what' to asking 'so what?'. By referencing a specific guideline (ESC guidelines), you force the model to ground its response in an external, authoritative source, dramatically improving the quality and defensibility of the output."
+      },
+      {
+        question: "Compare the different medication options.",
+        education: "With the 'if' of treatment established, explore the 'which'. Ask the model to generate a comparison table to support a choice between different drugs.",
+        prompt: "<strong>[USER]</strong> Create a comparison table of DOACs (Apixaban, Rivaroxaban) and Warfarin for this patient, covering dosing, monitoring, reversal agents, and major contraindications.",
+        commentary: "<h4>Why this works:</h4>Asking for a 'table' is a powerful formatting instruction. It forces the model to structure its output in a way that is easy for a human to scan and compare, making it a highly effective decision support tool."
+      },
+      {
+        question: "Decide on the initial management goal: rate or rhythm control?",
+        education: "Ask the model to outline the pros and cons of different strategies to help guide the clinical approach for this specific patient.",
+        prompt: "<strong>[USER]</strong> For a 72-year-old with new, minimally symptomatic AFib, outline the pros and cons of an initial rate control strategy versus a rhythm control strategy.",
+        commentary: "<h4>Why this works:</h4>By providing specific patient context ('72-year-old', 'minimally symptomatic'), you guide the model to tailor its generic knowledge, making the pros and cons list much more relevant and clinically useful than a textbook summary."
+      },
+      {
+        question: "Select a specific rate control medication.",
+        education: "Once a strategy is chosen, prompt the model for a specific, first-line medication recommendation with a standard starting dose.",
+        prompt: "<strong>[USER]</strong> Suggest a first-line agent for rate control in this patient, considering their history of HTN and DM2. Provide a typical starting dose.",
+        commentary: "<h4>Why this works:</h4>This is a 'convergent' prompt. After exploring broad strategies, you are now asking the model to converge on a single, specific, actionable recommendation, again using the patient's comorbidities to refine the choice."
+      },
+      {
+        question: "How can we add a layer of safety to that prompt?",
+        education: "A truly robust prompt anticipates risks. Always explicitly ask the model to check for and list contraindications relevant to the patient's profile.",
+        prompt: "<strong>[IMPROVED PROMPT]</strong> ...Provide a typical starting dose, <strong>and list any contraindications or cautions specific to this patient's profile, such as checking for bradycardia before starting.</strong>",
+        commentary: "<h4>Prompt Improvement:</h4>This is a critical safety technique. By explicitly asking for contraindications and cautions, you are building a 'negative constraint' into your prompt, forcing the model to act as a safety checklist and not just a suggestion engine."
+      },
+      {
+        question: "Draft the patient counseling script for the diagnosis.",
+        education: "Shift from clinical logic to patient communication. Ask the model to explain the diagnosis in simple terms, using an analogy to aid understanding.",
+        prompt: "<strong>[USER]</strong> Draft a simple, plain-language explanation of what atrial fibrillation is. Use an analogy like 'an electrical short-circuit in the heart'.",
+        commentary: "<h4>Why this works:</h4>We have switched from a <strong>[SYSTEM]</strong> role to a <strong>[USER]</strong> role, signaling a change in task from data analysis to creative content generation. Specifying the use of an 'analogy' is a powerful technique to get more empathetic and understandable outputs."
+      },
+      {
+        question: "Now, draft the counseling script for the treatment.",
+        education: "This is a critical shared decision. Prompt the model to create a script that balances the risks and benefits to facilitate a conversation, not just give an order.",
+        prompt: "<strong>[USER]</strong> Draft a shared decision-making script for starting Apixaban. Explain the risk of stroke without it versus the risk of bleeding with it.",
+        commentary: "<h4>Why this works:</h4>The key phrase here is 'shared decision-making script.' This tells the model to generate a balanced, conversational output that presents options, rather than a paternalistic instruction. The goal is to create a tool *for* the conversation."
+      },
+      {
+        question: "Create a follow-up and monitoring plan.",
+        education: "Good care extends beyond the visit. Prompt the system to generate a checklist of necessary follow-up actions and lab monitoring.",
+        prompt: "<strong>[SYSTEM]</strong> Generate a 3-month follow-up checklist for this patient, including necessary lab monitoring (renal function for DOAC), follow-up ECG, and symptom review.",
+        commentary: "<h4>Why this works:</h4>Asking for a 'checklist' is another powerful formatting command. This prompt helps transition from the immediate decision to the long-term management plan, ensuring continuity of care."
+      },
+      {
+        question: "Finally, synthesize all outputs into a final plan.",
+        education: "The final step is to ask the model to integrate all previous responses into a single, structured output for the medical record. This demonstrates the power of a sequential workflow.",
+        prompt: "<strong>[SYNTHESIS PROMPT]</strong> Synthesize all of the above into a structured A/P note: Assessment, Risk Scores, Plan (including medications, counseling points, and follow-up).",
+        commentary: "<h4>Why this works:</h4>The 'synthesis' prompt is a hallmark of an advanced workflow. It leverages the model's short-term memory of the conversation to consolidate multiple, distinct steps into a single, coherent, and immediately usable clinical document."
+      }
+    ]
+  },
+  oncology: {
+    steps: [
+       {
+        question: "A patient on chemotherapy calls with a fever. What is the first prompt?",
+        education: "Start by parsing the critical details from the triage call into a structured format for the model. This is the foundation for all subsequent steps.",
+        prompt: "<strong>[SYSTEM]</strong> Parse triage call: Pt is on Cycle 2 Day 10 of R-CHOP for DLBCL. Called with T 38.5°C at 2 AM. Feels weak.",
+        commentary: "<h4>Why this works:</h4>This initial prompt acts as a 'fact sheet' for the AI. By structuring the unstructured call data, you create a reliable source of truth that the model can refer back to in all subsequent prompts."
+      },
+      {
+        question: "Generate the single most critical instruction for the patient.",
+        education: "This is an emergency. The prompt must be direct and unambiguous, focusing on the one action that matters most: getting to the hospital.",
+        prompt: "<strong>[USER]</strong> This is a potential oncologic emergency. Generate the single most important, direct instruction for the patient's family.",
+        feedback: "<strong>MODEL OUTPUT:</strong> Instruct the patient to go to the nearest Emergency Department IMMEDIATELY. Do not delay.",
+        commentary: "<h4>Why this works:</h4>The phrase 'single most important' is a powerful constraint. It prevents the model from giving extraneous advice (e.g., 'take Tylenol') that could dangerously delay care. This focuses the output on the critical path."
+      },
+       {
+        question: "How can we improve the tone of that urgent instruction?",
+        education: "A purely robotic command can increase panic. An improved prompt asks for the same urgency but frames it with compassion.",
+        prompt: "<strong>[IMPROVED PROMPT]</strong> Generate an <strong>urgent but compassionate</strong> and direct script telling the family of a chemotherapy patient with a new fever to go to the nearest emergency department immediately.",
+        commentary: "<h4>Prompt Improvement:</h4>Adding emotional qualifiers like 'compassionate' is a key technique for shaping the model's tone. The AI can adjust its vocabulary and sentence structure to be firm yet reassuring, which is crucial for patient communication."
+      },
+      {
+        question: "What information does the Emergency Department need?",
+        education: "The ED needs context to triage appropriately. Prompt the model to create a concise handoff note that highlights the specific risk.",
+        prompt: "<strong>[SYSTEM]</strong> Create a concise handoff summary for an ED triage nurse for this patient. Emphasize 'risk of neutropenic sepsis' and the need for 'immediate evaluation and blood cultures'.",
+        commentary: "<h4>Why this works:</h4>This prompt anticipates the needs of the *next* person in the chain of care. By specifying the audience ('ED triage nurse') and the key risk ('neutropenic sepsis'), you ensure the output is tailored for rapid, high-stakes communication."
+      },
+      {
+        question: "Anticipate the ED's needs by drafting initial orders.",
+        education: "A sophisticated prompt helps the receiving team by generating an anticipated set of standard protocol orders.",
+        prompt: "<strong>[SYSTEM]</strong> Based on standard neutropenic fever protocols, draft a set of initial ED orders for this patient (CBC, CMP, Blood Cultures x2, UA, Chest X-ray, Empiric Antibiotics).",
+        commentary: "<h4>Why this works:</h4>This prompt demonstrates 'thinking ahead'. You're not just reporting the problem; you're providing the likely solution based on established protocols. This makes the handoff incredibly efficient and useful."
+      },
+      {
+        question: "Suggest a specific empiric antibiotic.",
+        education: "Move from a general plan to a specific medication choice based on established guidelines.",
+        prompt: "<strong>[USER]</strong> What is the recommended first-line empiric antibiotic coverage for inpatient neutropenic fever (e.g., Cefepime)? Provide a typical dose.",
+        commentary: "<h4>Why this works:</h4>After establishing the 'what' (antibiotics), this prompt drills down to the 'which' (Cefepime). Citing an example helps the model understand the class of drug you're looking for, leading to a more accurate recommendation."
+      },
+      {
+        question: "How do we make that antibiotic prompt safer and more practical?",
+        education: "Models don't know your hospital's specific protocols. A better prompt asks for alternatives in case of allergy or local resistance patterns.",
+        prompt: "<strong>[IMPROVED PROMPT]</strong> ...Provide a typical dose. <strong>Also, list common alternative agents in case of a severe penicillin allergy.</strong>",
+        commentary: "<h4>Prompt Improvement:</h4>This builds a safety net into the output. A good clinician always considers alternatives. By prompting for them, you turn the AI into a more robust clinical support tool that accounts for common exceptions."
+      },
+      {
+        question: "Close the communication loop with the primary team.",
+        education: "The on-call oncologist must be notified. A simple prompt can draft a professional notification for internal communication.",
+        prompt: "<strong>[SYSTEM]</strong> Draft a notification for the on-call oncologist about the patient en route to XYZ Hospital ED, including the initial plan.",
+        commentary: "<h4>Why this works:</h4>This step focuses on professional communication. The prompt is simple and direct, asking the model to perform a routine but important administrative task, freeing up the clinician's time."
+      },
+       {
+        question: "Prepare for the next step: admission.",
+        education: "Think ahead by prompting the model to draft a standard set of admission orders for the patient.",
+        prompt: "<strong>[SYSTEM]</strong> Draft a set of admission orders for this patient, including diagnosis, condition, diet, activity, and initial antibiotic plan.",
+        commentary: "<h4>Why this works:</h4>Like drafting ED orders, this is another 'thinking ahead' prompt. It uses the AI to prepare the necessary documentation for the next phase of care, further streamlining the patient's journey through the hospital."
+      },
+      {
+        question: "Address the family's needs by creating an FAQ.",
+        education: "A great clinician supports the family. Prompt the model to create a simple, plain-language FAQ to explain what is happening.",
+        prompt: "<strong>[USER]</strong> Create a simple FAQ for the patient's family explaining neutropenic fever in plain language. Answer: What is it? Why is it an emergency? What are the next steps in the hospital?",
+        commentary: "<h4>Why this works:</h4>This prompt explicitly asks the model to answer three specific questions. This structured approach results in a much more organized and helpful output than a generic 'explain neutropenic fever' prompt would."
+      },
+       {
+        question: "Plan the next 24-48 hours of care.",
+        education: "A forward-thinking prompt asks the model to outline the key monitoring parameters and decision points for the near future.",
+        prompt: "<strong>[SYSTEM]</strong> Outline the key monitoring parameters for the next 48 hours for this patient, including frequency of vital signs and criteria for antibiotic escalation.",
+        commentary: "<h4>Why this works:</h4>This prompt asks for 'criteria for escalation.' This is a sophisticated instruction that asks the model not just for a plan, but for the decision points *within* that plan, which is a core component of clinical thinking."
+      },
+      {
+        question: "Finally, assemble the complete handoff package.",
+        education: "The final prompt asks the model to consolidate all the generated information into a single, structured communication package for a safe transfer of care.",
+        prompt: "<strong>[SYNTHESIS PROMPT]</strong> Consolidate the ED handoff note, initial order set, and on-call notification into a single, structured communication package.",
+        commentary: "<h4>Why this works:</h4>The final synthesis prompt is the payoff for the entire sequence. It leverages the conversational context to create a comprehensive document that is far more valuable than the output of any single step."
+      }
+    ]
+  },
+  medicine: {
+    steps: [
+       {
+        question: "How do you start a polypharmacy review with a messy input?",
+        education: "The first prompt must command the model to ingest unstructured data (like text from a photo of pill bottles) and turn it into a clean, structured list.",
+        prompt: "<strong>[SYSTEM]</strong> Parse the following OCR text from medication labels into a structured list: {Drug Name, Dose, Frequency}. Reconcile all duplicates.<br>---<br>METFORMIN 500... LISINOPRIL 10... METFORMIN HCL 500MG...",
+        commentary: "<h4>Why this works:</h4>This prompt gives the model a clear task ('Parse'), a desired output format ('{Drug Name, Dose, Frequency}'), and a command to clean the data ('Reconcile all duplicates'). This structured instruction is the key to handling messy, real-world data."
+      },
+      {
+        question: "What is the first, most basic safety check?",
+        education: "Before applying complex guidelines, prompt for an initial screen of the most obvious high-risk issues: major drug-drug interactions and therapeutic duplications.",
+        prompt: "<strong>[USER]</strong> Screen the reconciled list for major drug-drug interactions and duplicate therapeutic classes (e.g., two different NSAIDs).",
+        feedback: "<strong>MODEL OUTPUT:</strong> FLAG: Duplicate NSAID (Ibuprofen, Naproxen). FLAG: High-risk interaction...",
+        commentary: "<h4>Why this works:</h4>This is a 'first pass' analysis. It's a simple prompt that quickly identifies the most immediate dangers before you invest time in a more nuanced review. The model's feedback confirms it has found actionable issues."
+      },
+      {
+        question: "How do you apply a specific clinical guideline?",
+        education: "Now, layer on a named, evidence-based standard. Command the model to cross-reference the structured list against a specific tool like the Beers Criteria.",
+        prompt: "<strong>[USER]</strong> Now, cross-reference the medication list against the 2023 Beers Criteria. Flag all Potentially Inappropriate Medications (PIMs) for an 85-year-old patient.",
+        commentary: "<h4>Why this works:</h4>By naming a specific, well-known guideline ('2023 Beers Criteria'), you are anchoring the model's response to a trusted external knowledge base. This is much more effective than asking a generic question like 'are any of these drugs bad?'."
+      },
+       {
+        question: "How can you improve that guideline prompt for better accuracy?",
+        education: "The model's output is vastly improved by providing clinical context. A better prompt includes not just age, but also key diagnoses that affect medication choice.",
+        prompt: "<strong>[IMPROVED PROMPT]</strong> Cross-reference against the 2023 Beers Criteria... <strong>for an 85-year-old patient with a history of falls, CKD stage 3, and dementia.</strong>",
+        commentary: "<h4>Prompt Improvement:</h4>This technique is called 'context injection.' The initial prompt was good, but this one is better because it provides the critical clinical context the model needs to apply the guidelines with much greater precision."
+      },
+       {
+        question: "How do you prompt the model to find more subtle problems?",
+        education: "Introduce the concept of a 'prescribing cascade.' Ask the model to analyze the list for instances where one drug might be causing a side effect that is being treated by another drug.",
+        prompt: "<strong>[USER]</strong> Analyze the list for potential prescribing cascades. For example, is there a medication causing a side effect that is being treated by another medication on the list?",
+         feedback: "<strong>MODEL OUTPUT:</strong> POSSIBLE CASCADE: Amlodipine (for HTN) may be causing peripheral edema, which is being treated with Furosemide.",
+        commentary: "<h4>Why this works:</h4>This is an advanced reasoning prompt. You are not just asking for factual recall; you are asking the model to hypothesize a relationship between two different medications based on their known side effect profiles. Providing an example helps the model understand the pattern you're looking for."
+      },
+       {
+        question: "Shift from identifying problems to creating solutions. How?",
+        education: "The goal is to facilitate a conversation. Prompt the model to generate open-ended, non-judgmental questions that the clinician can use to talk with the patient.",
+        prompt: "<strong>[USER]</strong> Based on the flagged PIMs and the possible prescribing cascade, generate three open-ended questions to start a deprescribing conversation with the patient and family.",
+        commentary: "<h4>Why this works:</h4>This prompt changes the model's task from 'analyst' to 'communications coach.' By asking for 'open-ended questions,' you guide the model to create conversational tools, not just factual statements, which is more useful for the clinician."
+      },
+      {
+        question: "Now, get more specific. What is the concrete action plan?",
+        education: "Move from questions to a concrete plan. Ask the model to suggest a specific action (Stop, Reduce, Switch) for each flagged medication, along with the clinical rationale.",
+        prompt: "<strong>[SYSTEM]</strong> For each flagged medication, suggest a specific action: [Stop, Reduce Dose, or Switch to Safer Alternative]. Provide the rationale.",
+        commentary: "<h4>Why this works:</h4>This prompt asks for a structured output with two parts for each item: a specific action and the rationale. This forces the model to not just make a recommendation, but to justify it, which is essential for clinical decision-making."
+      },
+       {
+        question: "Making changes can be risky. How do you build a safety net?",
+        education: "Prompt the model to create a detailed monitoring plan. This should include what to monitor, when to monitor, and what specific results should trigger an action.",
+        prompt: "<strong>[SYSTEM]</strong> Create a monitoring plan for the proposed changes. Include what to monitor (e.g., BP, electrolytes), when to monitor, and specific parameters that would require action.",
+        commentary: "<h4>Why this works:</h4>An action plan without a monitoring plan is incomplete and unsafe. This prompt ensures the AI generates the necessary follow-up steps to safely implement the proposed changes."
+      },
+       {
+        question: "How can we improve that monitoring prompt to be even safer?",
+        education: "A truly great prompt anticipates potential problems. Ask the model to include 'what to do if' instructions for the family in case of common adverse events.",
+        prompt: "<strong>[IMPROVED PROMPT]</strong> Create a monitoring plan... <strong>Also, include 'what to do if' instructions, such as what the family should do if the patient's edema worsens after stopping the diuretic.</strong>",
+        commentary: "<h4>Prompt Improvement:</h4>This adds another layer of safety and practicality. It moves beyond the clinical monitoring plan to create patient-facing instructions, making the output more comprehensive and useful in a real-world setting."
+      },
+      {
+        question: "How do you translate this complex plan for the patient?",
+        education: "The clinician's plan is too complex for the patient. Prompt the model to create a separate, simplified summary in plain language and a clear format.",
+        prompt: "<strong>[USER]</strong> Summarize the proposed medication changes in a simple, plain-language table for the patient. Use large font and clear headings: 'Medicines to Stop,' 'Medicines to Change,' 'New Instructions'.",
+        commentary: "<h4>Why this works:</h4>This prompt recognizes that different audiences need different outputs. It asks the model to perform a 'translation' task, converting complex clinical language into a format that is accessible to a layperson."
+      },
+       {
+        question: "How do you communicate the plan to other clinicians?",
+        education: "The patient has other doctors who need to be aware of these changes. Prompt the model to draft a concise, professional handoff note for the patient's PCP and other specialists.",
+        prompt: "<strong>[SYSTEM]</strong> Draft a concise note to the patient's primary care physician summarizing the medication reconciliation, the changes made, and the recommended monitoring plan.",
+        commentary: "<h4>Why this works:</h4>This prompt focuses on inter-professional communication. It asks for a 'concise note,' signaling that the output should be a professional summary, not a lengthy narrative, which is exactly what a busy PCP needs."
+      },
+      {
+        question: "Finally, how do you document your work efficiently?",
+        education: "The final synthesis prompt asks the model to combine all the previous analyses and plans into a single, structured SOAP note for efficient and comprehensive documentation in the EMR.",
+        prompt: "<strong>[SYNTHESIS PROMPT]</strong> Combine the reconciled list, flagged issues, deprescribing actions, monitoring plan, and communication notes into a single, structured SOAP note for the EMR.",
+        commentary: "<h4>Why this works:</h4>This is the final payoff. The synthesis prompt leverages the entire conversation to generate a complete, well-structured clinical note. This single prompt saves a huge amount of administrative time and ensures that the detailed reasoning from the entire workflow is accurately documented."
+      }
+    ]
+  },
+  emergency: {
+    steps: [
+      {
+        question: "A multi-vehicle accident brings 4 patients to your ED. How do you start the triage process?",
+        education: "Begin by parsing the critical information from the trauma call into a structured format that prioritizes the most life-threatening conditions first.",
+        prompt: "<strong>[SYSTEM]</strong> Parse trauma call: 4 patients from MVA. Patient 1: 25M, GCS 8, BP 80/50, RR 8. Patient 2: 45F, conscious, complaining chest pain. Patient 3: 8F, crying, appears alert. Patient 4: 30M, unconscious, bleeding from head.",
+        commentary: "<h4>Why this works:</h4>This initial prompt acts as a 'triage fact sheet' for the AI. By structuring the unstructured trauma data with vital signs and consciousness levels, you create a reliable foundation for all subsequent decision-making."
+      },
+      {
+        question: "Apply the primary survey (ABCDE) to the most critical patient.",
+        education: "Use the systematic ABCDE approach to identify and prioritize life-threatening conditions that require immediate intervention.",
+        prompt: "<strong>[SYSTEM]</strong> Apply primary survey (ABCDE) to Patient 1. Identify the most critical life-threatening condition requiring immediate intervention.",
+        feedback: "<strong>PRIMARY SURVEY:</strong> A - Airway compromised (GCS 8), B - Breathing inadequate (RR 8), C - Circulation shock (BP 80/50). Immediate intubation and fluid resuscitation required.",
+        commentary: "<h4>Why this works:</h4>The ABCDE framework provides a systematic approach to trauma assessment. By asking the model to apply this structured method, you ensure comprehensive evaluation and prevent missing critical conditions."
+      },
+      {
+        question: "How can we improve that assessment to be more specific?",
+        education: "A better prompt includes specific clinical parameters and asks for immediate action steps, not just identification of problems.",
+        prompt: "<strong>[IMPROVED PROMPT]</strong> Apply ABCDE to Patient 1 and <strong>specify the immediate interventions needed, including equipment required and team assignments.</strong>",
+        commentary: "<h4>Prompt Improvement:</h4>This enhanced prompt moves from problem identification to solution implementation. By asking for specific interventions and team assignments, you transform the AI from an assessor to an action coordinator."
+      },
+      {
+        question: "Calculate the Injury Severity Score (ISS) for systematic prioritization.",
+        education: "Use standardized scoring systems to objectively prioritize patients and communicate severity to the trauma team.",
+        prompt: "<strong>[USER]</strong> Calculate the Injury Severity Score for each patient based on their injuries. Rank them by priority for treatment.",
+        commentary: "<h4>Why this works:</h4>Scoring systems like ISS provide objective criteria for patient prioritization. This prompt leverages the model's knowledge of trauma scoring to create a systematic approach to resource allocation."
+      },
+      {
+        question: "Generate specific trauma team assignments.",
+        education: "Effective trauma response requires clear role assignments. Prompt the model to create specific team assignments based on patient needs and staff availability.",
+        prompt: "<strong>[SYSTEM]</strong> Assign trauma team roles: Team Leader, Airway, Circulation, Secondary Survey, Documentation. Specify which team member should handle each patient.",
+        commentary: "<h4>Why this works:</h4>This prompt transforms chaos into organized response. By assigning specific roles and responsibilities, you create a structured approach that maximizes efficiency and minimizes errors in high-stress situations."
+      },
+      {
+        question: "Create a communication protocol for family notification.",
+        education: "Trauma situations require immediate family communication. Prompt the model to generate a compassionate yet efficient notification protocol.",
+        prompt: "<strong>[USER]</strong> Draft a protocol for notifying families of trauma patients, including what information to share initially and how to handle multiple patients from the same family.",
+        commentary: "<h4>Why this works:</h4>Family communication in trauma situations is critical but often overlooked. This prompt ensures the AI generates a systematic approach to this sensitive but essential aspect of trauma care."
+      },
+      {
+        question: "Anticipate potential complications for each patient.",
+        education: "Proactive thinking prevents problems. Ask the model to identify potential complications and prepare contingency plans.",
+        prompt: "<strong>[SYSTEM]</strong> For each patient, identify potential complications in the next 2-4 hours and specify monitoring parameters and early warning signs.",
+        commentary: "<h4>Why this works:</h4>This prompt demonstrates advanced clinical thinking by asking the model to anticipate problems before they occur. This proactive approach is essential for trauma care where complications can be life-threatening."
+      },
+      {
+        question: "Create a handoff protocol for ICU transfer.",
+        education: "Smooth transitions are critical in trauma care. Prompt the model to generate a comprehensive handoff protocol for patients requiring ICU care.",
+        prompt: "<strong>[SYSTEM]</strong> Create a structured handoff protocol for transferring trauma patients to ICU, including current status, interventions performed, and ongoing concerns.",
+        commentary: "<h4>Why this works:</h4>Handoffs are high-risk moments in patient care. This prompt ensures the AI generates a systematic approach to transferring critical information, reducing the risk of communication errors."
+      },
+      {
+        question: "Develop a family support plan for the pediatric patient.",
+        education: "Pediatric trauma requires special consideration for family support. Prompt the model to create a comprehensive family support plan.",
+        prompt: "<strong>[USER]</strong> Create a family support plan for the 8-year-old patient, including how to explain procedures, involve parents in care decisions, and provide emotional support.",
+        commentary: "<h4>Why this works:</h4>Pediatric trauma care requires special attention to family dynamics and child development. This prompt ensures the AI considers the unique needs of pediatric patients and their families."
+      },
+      {
+        question: "Finally, synthesize the complete trauma response plan.",
+        education: "The final step consolidates all previous analyses into a comprehensive trauma response plan that can be implemented immediately.",
+        prompt: "<strong>[SYNTHESIS PROMPT]</strong> Consolidate the triage assessment, team assignments, treatment priorities, and communication protocols into a single, actionable trauma response plan.",
+        commentary: "<h4>Why this works:</h4>This synthesis prompt leverages all previous steps to create a comprehensive, immediately actionable plan. It demonstrates the power of sequential prompting in complex, high-stakes clinical situations."
+      }
+    ]
+  },
+  psychiatry: {
+    steps: [
+      {
+        question: "A patient presents with suicidal ideation. How do you begin the assessment?",
+        education: "Start with a structured approach to gathering critical information about suicide risk factors and protective factors.",
+        prompt: "<strong>[SYSTEM]</strong> Parse patient presentation: 28F, history of depression, reports 'wanting to end it all' for past 2 weeks. Has a plan but no means. Lives alone, no family nearby.",
+        commentary: "<h4>Why this works:</h4>This initial prompt structures the complex information about suicide risk into key categories: ideation, plan, means, and protective factors. This systematic approach is essential for accurate risk assessment."
+      },
+      {
+        question: "Apply the Columbia Suicide Severity Rating Scale (C-SSRS).",
+        education: "Use standardized assessment tools to systematically evaluate suicide risk and ensure comprehensive evaluation.",
+        prompt: "<strong>[SYSTEM]</strong> Apply the Columbia Suicide Severity Rating Scale to assess ideation, behavior, and intent. Score each component.",
+        feedback: "<strong>C-SSRS SCORE:</strong> Ideation: 4 (Active ideation with method), Behavior: 0 (No attempts), Intent: 3 (Some intent). Overall: High Risk.",
+        commentary: "<h4>Why this works:</h4>Standardized tools like C-SSRS provide objective criteria for suicide risk assessment. This prompt ensures the model applies evidence-based assessment methods rather than subjective evaluation."
+      },
+      {
+        question: "How can we improve that assessment to include protective factors?",
+        education: "A comprehensive suicide risk assessment must include both risk factors and protective factors to create a balanced evaluation.",
+        prompt: "<strong>[IMPROVED PROMPT]</strong> Apply C-SSRS and <strong>also assess protective factors including social support, coping skills, reasons for living, and access to mental health care.</strong>",
+        commentary: "<h4>Prompt Improvement:</h4>This enhanced prompt ensures the AI considers both risk and protective factors, creating a more balanced and comprehensive assessment that informs treatment planning."
+      },
+      {
+        question: "Determine the appropriate level of care and safety measures.",
+        education: "Based on the risk assessment, prompt the model to recommend specific safety measures and level of care needed.",
+        prompt: "<strong>[USER]</strong> Based on the C-SSRS score and protective factors, recommend the appropriate level of care (outpatient, intensive outpatient, inpatient) and specific safety measures.",
+        commentary: "<h4>Why this works:</h4>This prompt moves from assessment to action planning. By asking for specific recommendations about level of care and safety measures, you guide the model to provide actionable clinical decisions."
+      },
+      {
+        question: "Create a safety plan with specific coping strategies.",
+        education: "Safety planning is a critical intervention for suicide prevention. Prompt the model to create a detailed, personalized safety plan.",
+        prompt: "<strong>[SYSTEM]</strong> Create a detailed safety plan including warning signs, coping strategies, social contacts, professional resources, and environmental safety measures.",
+        commentary: "<h4>Why this works:</h4>Safety planning is an evidence-based intervention that empowers patients to manage their own safety. This prompt ensures the AI generates a comprehensive, personalized safety plan."
+      },
+      {
+        question: "Develop a medication management plan.",
+        education: "Pharmacological treatment is often necessary for suicide prevention. Prompt the model to recommend appropriate medications and monitoring.",
+        prompt: "<strong>[USER]</strong> Recommend appropriate medications for this patient, considering their suicide risk, and specify monitoring requirements and potential side effects.",
+        commentary: "<h4>Why this works:</h4>This prompt addresses the pharmacological aspect of suicide prevention. By asking for specific medications and monitoring requirements, you ensure the AI provides comprehensive treatment recommendations."
+      },
+      {
+        question: "Create a family education and support plan.",
+        education: "Family involvement is crucial for suicide prevention. Prompt the model to develop a comprehensive family education and support plan.",
+        prompt: "<strong>[USER]</strong> Develop a family education plan covering warning signs, how to respond to crisis, safety measures at home, and how to support the patient's recovery.",
+        commentary: "<h4>Why this works:</h4>Family education is essential for suicide prevention. This prompt ensures the AI generates a comprehensive plan that empowers families to support their loved ones effectively."
+      },
+      {
+        question: "Establish follow-up and monitoring protocols.",
+        education: "Ongoing monitoring is critical for suicide prevention. Prompt the model to create specific follow-up and monitoring protocols.",
+        prompt: "<strong>[SYSTEM]</strong> Create a follow-up protocol including frequency of visits, monitoring parameters, crisis intervention procedures, and criteria for escalating care.",
+        commentary: "<h4>Why this works:</h4>This prompt addresses the ongoing nature of suicide risk management. By specifying follow-up protocols and monitoring parameters, you ensure continuity of care and early intervention if needed."
+      },
+      {
+        question: "Develop a crisis intervention protocol.",
+        education: "Crisis situations require immediate, specific responses. Prompt the model to create a detailed crisis intervention protocol.",
+        prompt: "<strong>[SYSTEM]</strong> Create a crisis intervention protocol including immediate response steps, emergency contacts, and procedures for involuntary commitment if necessary.",
+        commentary: "<h4>Why this works:</h4>Crisis intervention protocols are essential for managing acute suicide risk. This prompt ensures the AI generates specific, actionable procedures for crisis situations."
+      },
+      {
+        question: "Finally, synthesize the complete suicide risk management plan.",
+        education: "The final step consolidates all previous assessments and interventions into a comprehensive suicide risk management plan.",
+        prompt: "<strong>[SYNTHESIS PROMPT]</strong> Consolidate the risk assessment, safety plan, treatment recommendations, and follow-up protocols into a single, comprehensive suicide risk management plan.",
+        commentary: "<h4>Why this works:</h4>This synthesis prompt creates a comprehensive, immediately actionable plan for suicide risk management. It demonstrates the power of sequential prompting in complex psychiatric situations."
+      }
+    ]
+  },
+  pediatrics: {
+    steps: [
+      {
+        question: "A 6-week-old infant presents with fever. How do you begin the evaluation?",
+        education: "Start with a systematic approach to evaluating fever in young infants, focusing on the most critical assessments first.",
+        prompt: "<strong>[SYSTEM]</strong> Parse infant presentation: 6-week-old, T 38.5°C, appears well, feeding normally, no respiratory distress. Birth history: full-term, no complications. No recent travel or sick contacts.",
+        commentary: "<h4>Why this works:</h4>This initial prompt structures the critical information about the febrile infant, including age, vital signs, and relevant history. This systematic approach is essential for accurate risk assessment in this high-risk population."
+      },
+      {
+        question: "Apply the Rochester criteria for risk stratification.",
+        education: "Use evidence-based criteria to systematically assess the risk of serious bacterial infection in febrile infants.",
+        prompt: "<strong>[SYSTEM]</strong> Apply the Rochester criteria to assess the risk of serious bacterial infection. Evaluate each component systematically.",
+        feedback: "<strong>ROCHESTER CRITERIA:</strong> Low risk - well-appearing, no respiratory distress, normal feeding. However, age < 3 months requires full sepsis workup regardless.",
+        commentary: "<h4>Why this works:</h4>Standardized criteria like Rochester provide objective risk stratification for febrile infants. This prompt ensures the model applies evidence-based assessment methods for this critical population."
+      },
+      {
+        question: "How can we improve that assessment to include parental concerns?",
+        education: "Parental intuition is important in pediatric care. A better prompt includes assessment of parental concerns and observations.",
+        prompt: "<strong>[IMPROVED PROMPT]</strong> Apply Rochester criteria and <strong>also assess parental concerns, changes in behavior, and any observations that might indicate serious illness.</strong>",
+        commentary: "<h4>Prompt Improvement:</h4>This enhanced prompt recognizes the importance of parental input in pediatric care. By including parental concerns and observations, the assessment becomes more comprehensive and family-centered."
+      },
+      {
+        question: "Determine the appropriate diagnostic workup.",
+        education: "Based on the risk assessment, prompt the model to recommend specific diagnostic tests and procedures.",
+        prompt: "<strong>[USER]</strong> Based on the Rochester criteria and age, recommend the appropriate diagnostic workup including laboratory tests, imaging, and procedures.",
+        commentary: "<h4>Why this works:</h4>This prompt moves from assessment to action planning. By asking for specific diagnostic recommendations, you guide the model to provide evidence-based diagnostic approaches for febrile infants."
+      },
+      {
+        question: "Create a treatment plan including antibiotic therapy.",
+        education: "Treatment decisions for febrile infants require careful consideration of risk factors and evidence-based protocols.",
+        prompt: "<strong>[SYSTEM]</strong> Recommend appropriate antibiotic therapy based on the risk assessment, including specific agents, dosing, and duration of treatment.",
+        commentary: "<h4>Why this works:</h4>This prompt addresses the critical decision of antibiotic therapy for febrile infants. By asking for specific recommendations, you ensure the AI provides evidence-based treatment approaches."
+      },
+      {
+        question: "Develop a parental education and discharge plan.",
+        education: "Parental education is crucial for safe discharge of febrile infants. Prompt the model to create a comprehensive education plan.",
+        prompt: "<strong>[USER]</strong> Create a parental education plan covering fever management, warning signs to watch for, when to seek immediate care, and follow-up instructions.",
+        commentary: "<h4>Why this works:</h4>Parental education is essential for safe care of febrile infants. This prompt ensures the AI generates a comprehensive plan that empowers parents to care for their child safely."
+      },
+      {
+        question: "Establish follow-up and monitoring protocols.",
+        education: "Ongoing monitoring is critical for febrile infants. Prompt the model to create specific follow-up and monitoring protocols.",
+        prompt: "<strong>[SYSTEM]</strong> Create a follow-up protocol including timing of visits, monitoring parameters, criteria for re-evaluation, and when to escalate care.",
+        commentary: "<h4>Why this works:</h4>This prompt addresses the ongoing nature of febrile infant care. By specifying follow-up protocols and monitoring parameters, you ensure continuity of care and early intervention if needed."
+      },
+      {
+        question: "Develop a protocol for managing parental anxiety.",
+        education: "Parental anxiety is common with febrile infants. Prompt the model to create strategies for managing parental concerns.",
+        prompt: "<strong>[USER]</strong> Develop strategies for managing parental anxiety, including communication techniques, reassurance methods, and when to involve additional support services.",
+        commentary: "<h4>Why this works:</h4>This prompt addresses the emotional aspect of pediatric care. By providing strategies for managing parental anxiety, the AI helps create a more supportive care environment."
+      },
+      {
+        question: "Create a protocol for managing complications.",
+        education: "Complications can develop rapidly in febrile infants. Prompt the model to create protocols for managing potential complications.",
+        prompt: "<strong>[SYSTEM]</strong> Create protocols for managing potential complications including sepsis, meningitis, and other serious bacterial infections, including early warning signs and immediate response procedures.",
+        commentary: "<h4>Why this works:</h4>This prompt addresses the critical need for rapid response to complications in febrile infants. By creating specific protocols, the AI helps ensure timely intervention for life-threatening conditions."
+      },
+      {
+        question: "Finally, synthesize the complete febrile infant management plan.",
+        education: "The final step consolidates all previous assessments and interventions into a comprehensive management plan for febrile infants.",
+        prompt: "<strong>[SYNTHESIS PROMPT]</strong> Consolidate the risk assessment, diagnostic workup, treatment plan, parental education, and follow-up protocols into a single, comprehensive febrile infant management plan.",
+        commentary: "<h4>Why this works:</h4>This synthesis prompt creates a comprehensive, immediately actionable plan for febrile infant management. It demonstrates the power of sequential prompting in complex pediatric situations."
+      }
+    ]
+  },
+  surgery: {
+    steps: [
+      {
+        question: "A 65-year-old patient needs elective surgery. How do you begin the preoperative assessment?",
+        education: "Start with a systematic approach to evaluating surgical risk, focusing on the most critical factors that affect outcomes.",
+        prompt: "<strong>[SYSTEM]</strong> Parse patient data: 65M, BMI 32, hx of HTN, DM2, CAD with prior MI 2 years ago. Needs elective cholecystectomy. Current medications: metformin, lisinopril, atorvastatin.",
+        commentary: "<h4>Why this works:</h4>This initial prompt structures the critical information about the surgical patient, including comorbidities, medications, and procedure type. This systematic approach is essential for accurate risk assessment."
+      },
+      {
+        question: "Calculate the Revised Cardiac Risk Index (RCRI).",
+        education: "Use standardized risk assessment tools to systematically evaluate cardiac risk for non-cardiac surgery.",
+        prompt: "<strong>[SYSTEM]</strong> Apply the Revised Cardiac Risk Index to assess cardiac risk for this patient undergoing non-cardiac surgery.",
+        feedback: "<strong>RCRI SCORE:</strong> 2 points (History of CAD, DM). Intermediate risk (1.3% risk of major cardiac events).",
+        commentary: "<h4>Why this works:</h4>Standardized tools like RCRI provide objective criteria for surgical risk assessment. This prompt ensures the model applies evidence-based assessment methods for surgical risk stratification."
+      },
+      {
+        question: "How can we improve that assessment to include functional capacity?",
+        education: "Functional capacity is a crucial component of surgical risk assessment. A better prompt includes evaluation of the patient's functional status.",
+        prompt: "<strong>[IMPROVED PROMPT]</strong> Apply RCRI and <strong>also assess functional capacity using metabolic equivalents (METs) and the patient's ability to perform daily activities.</strong>",
+        commentary: "<h4>Prompt Improvement:</h4>This enhanced prompt includes functional capacity assessment, which is essential for comprehensive surgical risk evaluation. By asking for METs and daily activity assessment, the evaluation becomes more complete."
+      },
+      {
+        question: "Determine the need for additional cardiac evaluation.",
+        education: "Based on the risk assessment, prompt the model to recommend whether additional cardiac evaluation is needed.",
+        prompt: "<strong>[USER]</strong> Based on the RCRI score and functional capacity, recommend whether additional cardiac evaluation (stress testing, echocardiogram) is needed before surgery.",
+        commentary: "<h4>Why this works:</h4>This prompt moves from assessment to action planning. By asking for specific recommendations about additional testing, you guide the model to provide evidence-based recommendations for preoperative evaluation."
+      },
+      {
+        question: "Create a medication management plan for the perioperative period.",
+        education: "Medication management is critical for surgical patients. Prompt the model to create a comprehensive medication plan.",
+        prompt: "<strong>[SYSTEM]</strong> Create a perioperative medication management plan including which medications to continue, hold, or modify, and the rationale for each decision.",
+        commentary: "<h4>Why this works:</h4>This prompt addresses the critical aspect of medication management in surgical patients. By asking for specific recommendations and rationale, the AI provides evidence-based medication management strategies."
+      },
+      {
+        question: "Develop a risk mitigation strategy.",
+        education: "Risk mitigation is essential for optimizing surgical outcomes. Prompt the model to create specific strategies for reducing risk.",
+        prompt: "<strong>[USER]</strong> Develop a risk mitigation strategy including preoperative optimization, intraoperative considerations, and postoperative monitoring for this patient.",
+        commentary: "<h4>Why this works:</h4>This prompt addresses the proactive aspect of surgical care. By asking for specific risk mitigation strategies, the AI helps create a comprehensive approach to optimizing surgical outcomes."
+      },
+      {
+        question: "Create a patient education and informed consent plan.",
+        education: "Patient education is crucial for informed consent and optimal outcomes. Prompt the model to create a comprehensive education plan.",
+        prompt: "<strong>[USER]</strong> Create a patient education plan covering the procedure, risks, benefits, alternatives, and what to expect during recovery.",
+        commentary: "<h4>Why this works:</h4>This prompt addresses the essential aspect of patient education in surgical care. By creating a comprehensive education plan, the AI helps ensure patients are well-informed and prepared for surgery."
+      },
+      {
+        question: "Establish postoperative monitoring and follow-up protocols.",
+        education: "Postoperative care is critical for surgical success. Prompt the model to create specific monitoring and follow-up protocols.",
+        prompt: "<strong>[SYSTEM]</strong> Create postoperative monitoring protocols including vital signs, laboratory tests, imaging, and criteria for early intervention or escalation of care.",
+        commentary: "<h4>Why this works:</h4>This prompt addresses the critical postoperative period. By creating specific monitoring protocols, the AI helps ensure early detection and intervention for potential complications."
+      },
+      {
+        question: "Develop a protocol for managing potential complications.",
+        education: "Complications can occur in any surgical patient. Prompt the model to create protocols for managing potential complications.",
+        prompt: "<strong>[SYSTEM]</strong> Create protocols for managing potential complications including cardiac events, infection, bleeding, and other procedure-specific risks.",
+        commentary: "<h4>Why this works:</h4>This prompt addresses the need for proactive complication management. By creating specific protocols, the AI helps ensure timely intervention for potential surgical complications."
+      },
+      {
+        question: "Finally, synthesize the complete preoperative risk management plan.",
+        education: "The final step consolidates all previous assessments and interventions into a comprehensive preoperative risk management plan.",
+        prompt: "<strong>[SYNTHESIS PROMPT]</strong> Consolidate the risk assessment, evaluation recommendations, medication management, risk mitigation strategies, and follow-up protocols into a single, comprehensive preoperative risk management plan.",
+        commentary: "<h4>Why this works:</h4>This synthesis prompt creates a comprehensive, immediately actionable plan for preoperative risk management. It demonstrates the power of sequential prompting in complex surgical situations."
+      }
+    ]
+  },
+  neurology: {
+    steps: [
+      {
+        question: "A 68-year-old patient presents with sudden onset left-sided weakness. How do you begin the stroke assessment?",
+        education: "Start with a rapid, systematic approach to stroke evaluation focusing on time-critical interventions and NIH Stroke Scale assessment.",
+        prompt: "<strong>[SYSTEM]</strong> Parse stroke presentation: 68M, sudden onset left hemiparesis, last seen normal 2 hours ago, BP 180/95, HR 88, no headache, no trauma. History of HTN, DM2.",
+        commentary: "<h4>Why this works:</h4>This initial prompt structures the critical information about the stroke patient, including time of onset, vital signs, and relevant history. Time is brain in stroke care, so systematic data collection is essential."
+      },
+      {
+        question: "Apply the NIH Stroke Scale (NIHSS) for objective assessment.",
+        education: "Use standardized scoring systems to systematically evaluate stroke severity and guide treatment decisions.",
+        prompt: "<strong>[SYSTEM]</strong> Apply the NIH Stroke Scale to assess stroke severity. Score each component systematically.",
+        feedback: "<strong>NIHSS SCORE:</strong> 8 (Moderate stroke). Components: Level of consciousness (0), Gaze (0), Visual fields (0), Facial palsy (2), Motor arm (2), Motor leg (2), Sensory (1), Language (1).",
+        commentary: "<h4>Why this works:</h4>Standardized tools like NIHSS provide objective criteria for stroke assessment. This prompt ensures the model applies evidence-based assessment methods for stroke severity evaluation."
+      },
+      {
+        question: "How can we improve that assessment to include time-critical factors?",
+        education: "A better prompt includes time-sensitive elements and asks for immediate treatment decisions based on the assessment.",
+        prompt: "<strong>[IMPROVED PROMPT]</strong> Apply NIHSS and <strong>determine if the patient is a candidate for thrombolytic therapy based on time of onset, contraindications, and NIHSS score.</strong>",
+        commentary: "<h4>Prompt Improvement:</h4>This enhanced prompt includes time-sensitive decision-making, which is critical in stroke care. By asking for thrombolytic therapy candidacy, the assessment becomes immediately actionable."
+      },
+      {
+        question: "Determine the need for immediate imaging studies.",
+        education: "Based on the stroke assessment, prompt the model to recommend specific imaging studies and their urgency.",
+        prompt: "<strong>[USER]</strong> Based on the NIHSS score and clinical presentation, recommend the appropriate imaging studies and their priority level for this patient.",
+        commentary: "<h4>Why this works:</h4>This prompt moves from assessment to action planning. By asking for specific imaging recommendations, you guide the model to provide evidence-based diagnostic approaches for stroke patients."
+      },
+      {
+        question: "Create a treatment plan including thrombolytic therapy considerations.",
+        education: "Treatment decisions for stroke patients require careful consideration of time windows and contraindications.",
+        prompt: "<strong>[SYSTEM]</strong> Create a treatment plan including thrombolytic therapy candidacy, contraindications, and alternative treatments if thrombolysis is not appropriate.",
+        commentary: "<h4>Why this works:</h4>This prompt addresses the critical decision of thrombolytic therapy for stroke patients. By asking for specific recommendations and contraindications, the AI provides evidence-based treatment approaches."
+      },
+      {
+        question: "Develop a monitoring plan for the acute phase.",
+        education: "Acute stroke patients require intensive monitoring. Prompt the model to create a comprehensive monitoring plan.",
+        prompt: "<strong>[USER]</strong> Create a monitoring plan for the first 24 hours including vital signs, neurological checks, and criteria for escalation of care.",
+        commentary: "<h4>Why this works:</h4>This prompt addresses the critical need for intensive monitoring in acute stroke patients. By creating specific monitoring protocols, the AI helps ensure early detection of complications."
+      },
+      {
+        question: "Establish a rehabilitation and recovery plan.",
+        education: "Stroke recovery requires comprehensive rehabilitation planning. Prompt the model to create a multidisciplinary recovery plan.",
+        prompt: "<strong>[SYSTEM]</strong> Create a rehabilitation plan including physical therapy, occupational therapy, speech therapy, and long-term recovery goals.",
+        commentary: "<h4>Why this works:</h4>This prompt addresses the long-term aspect of stroke care. By creating a comprehensive rehabilitation plan, the AI helps ensure optimal recovery outcomes."
+      },
+      {
+        question: "Develop a family education and support plan.",
+        education: "Family education is crucial for stroke recovery. Prompt the model to create a comprehensive family education plan.",
+        prompt: "<strong>[USER]</strong> Create a family education plan covering stroke recovery, warning signs of complications, and how to support the patient's rehabilitation.",
+        commentary: "<h4>Why this works:</h4>Family education is essential for stroke recovery. This prompt ensures the AI generates a comprehensive plan that empowers families to support their loved ones effectively."
+      },
+      {
+        question: "Create a protocol for managing potential complications.",
+        education: "Stroke patients are at risk for various complications. Prompt the model to create protocols for managing potential complications.",
+        prompt: "<strong>[SYSTEM]</strong> Create protocols for managing potential complications including hemorrhagic transformation, cerebral edema, and secondary stroke prevention.",
+        commentary: "<h4>Why this works:</h4>This prompt addresses the need for proactive complication management. By creating specific protocols, the AI helps ensure timely intervention for potential stroke complications."
+      },
+      {
+        question: "Finally, synthesize the complete stroke management plan.",
+        education: "The final step consolidates all previous assessments and interventions into a comprehensive stroke management plan.",
+        prompt: "<strong>[SYNTHESIS PROMPT]</strong> Consolidate the stroke assessment, treatment plan, monitoring protocols, rehabilitation plan, and family education into a single, comprehensive stroke management plan.",
+        commentary: "<h4>Why this works:</h4>This synthesis prompt creates a comprehensive, immediately actionable plan for stroke management. It demonstrates the power of sequential prompting in complex neurological situations."
+      }
+    ]
+  },
+  orthopedics: {
+    steps: [
+      {
+        question: "A 45-year-old patient presents with a fall and wrist pain. How do you begin the fracture assessment?",
+        education: "Start with a systematic approach to evaluating potential fractures, focusing on mechanism of injury and clinical examination.",
+        prompt: "<strong>[SYSTEM]</strong> Parse injury presentation: 45F, fall on outstretched hand, right wrist pain and swelling, limited range of motion, no deformity visible. No other injuries reported.",
+        commentary: "<h4>Why this works:</h4>This initial prompt structures the critical information about the potential fracture, including mechanism of injury, symptoms, and physical examination findings. This systematic approach is essential for accurate fracture assessment."
+      },
+      {
+        question: "Apply the Ottawa Ankle Rules to determine imaging necessity.",
+        education: "Use evidence-based clinical decision rules to systematically determine when imaging is necessary for potential fractures.",
+        prompt: "<strong>[SYSTEM]</strong> Apply the Ottawa Ankle Rules to determine if imaging is necessary for this patient's wrist injury.",
+        feedback: "<strong>OTTAWA RULES:</strong> Positive for imaging - pain in wrist area, tenderness at distal radius, and limited range of motion. X-ray indicated.",
+        commentary: "<h4>Why this works:</h4>Standardized clinical decision rules like Ottawa provide objective criteria for imaging decisions. This prompt ensures the model applies evidence-based assessment methods for fracture evaluation."
+      },
+      {
+        question: "How can we improve that assessment to include specific fracture types?",
+        education: "A better prompt includes assessment of specific fracture patterns and asks for immediate treatment decisions based on the assessment.",
+        prompt: "<strong>[IMPROVED PROMPT]</strong> Apply Ottawa Rules and <strong>assess for specific fracture patterns including Colles' fracture, scaphoid fracture, and other common wrist fractures.</strong>",
+        commentary: "<h4>Prompt Improvement:</h4>This enhanced prompt includes specific fracture pattern recognition, which is critical in orthopedic care. By asking for specific fracture types, the assessment becomes more comprehensive and clinically useful."
+      },
+      {
+        question: "Determine the appropriate imaging studies and views.",
+        education: "Based on the fracture assessment, prompt the model to recommend specific imaging studies and their positioning.",
+        prompt: "<strong>[USER]</strong> Based on the clinical assessment, recommend the appropriate imaging studies and specific views needed for this wrist injury.",
+        commentary: "<h4>Why this works:</h4>This prompt moves from assessment to action planning. By asking for specific imaging recommendations, you guide the model to provide evidence-based diagnostic approaches for fracture patients."
+      },
+      {
+        question: "Create a treatment plan including immobilization and follow-up.",
+        education: "Treatment decisions for fractures require careful consideration of fracture type, stability, and patient factors.",
+        prompt: "<strong>[SYSTEM]</strong> Create a treatment plan including immobilization method, duration of treatment, and follow-up schedule for this wrist fracture.",
+        commentary: "<h4>Why this works:</h4>This prompt addresses the critical decision of fracture treatment. By asking for specific recommendations, the AI provides evidence-based treatment approaches for fracture management."
+      },
+      {
+        question: "Develop a pain management plan.",
+        education: "Pain management is crucial for fracture patients. Prompt the model to create a comprehensive pain management plan.",
+        prompt: "<strong>[USER]</strong> Create a pain management plan including medication recommendations, non-pharmacological interventions, and monitoring for side effects.",
+        commentary: "<h4>Why this works:</h4>This prompt addresses the essential aspect of pain management in fracture care. By creating a comprehensive pain management plan, the AI helps ensure patient comfort and compliance with treatment."
+      },
+      {
+        question: "Establish a rehabilitation and recovery plan.",
+        education: "Fracture recovery requires comprehensive rehabilitation planning. Prompt the model to create a multidisciplinary recovery plan.",
+        prompt: "<strong>[SYSTEM]</strong> Create a rehabilitation plan including physical therapy, range of motion exercises, and long-term recovery goals for this wrist fracture.",
+        commentary: "<h4>Why this works:</h4>This prompt addresses the long-term aspect of fracture care. By creating a comprehensive rehabilitation plan, the AI helps ensure optimal recovery outcomes."
+      },
+      {
+        question: "Develop a patient education and discharge plan.",
+        education: "Patient education is crucial for fracture recovery. Prompt the model to create a comprehensive patient education plan.",
+        prompt: "<strong>[USER]</strong> Create a patient education plan covering fracture healing, activity restrictions, warning signs of complications, and follow-up instructions.",
+        commentary: "<h4>Why this works:</h4>Patient education is essential for fracture recovery. This prompt ensures the AI generates a comprehensive plan that empowers patients to participate in their own recovery."
+      },
+      {
+        question: "Create a protocol for managing potential complications.",
+        education: "Fracture patients are at risk for various complications. Prompt the model to create protocols for managing potential complications.",
+        prompt: "<strong>[SYSTEM]</strong> Create protocols for managing potential complications including compartment syndrome, nerve injury, and delayed union or nonunion.",
+        commentary: "<h4>Why this works:</h4>This prompt addresses the need for proactive complication management. By creating specific protocols, the AI helps ensure timely intervention for potential fracture complications."
+      },
+      {
+        question: "Finally, synthesize the complete fracture management plan.",
+        education: "The final step consolidates all previous assessments and interventions into a comprehensive fracture management plan.",
+        prompt: "<strong>[SYNTHESIS PROMPT]</strong> Consolidate the fracture assessment, treatment plan, pain management, rehabilitation plan, and patient education into a single, comprehensive fracture management plan.",
+        commentary: "<h4>Why this works:</h4>This synthesis prompt creates a comprehensive, immediately actionable plan for fracture management. It demonstrates the power of sequential prompting in complex orthopedic situations."
+      }
+    ]
+  },
+  anesthesiology: {
+    steps: [
+      {
+        question: "A 70-year-old patient needs emergency surgery. How do you begin the preoperative anesthetic assessment?",
+        education: "Start with a rapid, systematic approach to anesthetic risk assessment focusing on airway, breathing, and circulation.",
+        prompt: "<strong>[SYSTEM]</strong> Parse patient data: 70M, emergency appendectomy, BMI 28, hx of COPD, HTN, DM2. Current medications: albuterol, lisinopril, metformin. NPO for 4 hours.",
+        commentary: "<h4>Why this works:</h4>This initial prompt structures the critical information about the surgical patient, including comorbidities, medications, and fasting status. This systematic approach is essential for accurate anesthetic risk assessment."
+      },
+      {
+        question: "Apply the American Society of Anesthesiologists (ASA) Physical Status Classification.",
+        education: "Use standardized scoring systems to systematically evaluate anesthetic risk and guide treatment decisions.",
+        prompt: "<strong>[SYSTEM]</strong> Apply the ASA Physical Status Classification to assess anesthetic risk for this patient.",
+        feedback: "<strong>ASA CLASS:</strong> III (Severe systemic disease). Patient has multiple comorbidities affecting daily function.",
+        commentary: "<h4>Why this works:</h4>Standardized tools like ASA classification provide objective criteria for anesthetic risk assessment. This prompt ensures the model applies evidence-based assessment methods for anesthetic risk stratification."
+      },
+      {
+        question: "How can we improve that assessment to include airway evaluation?",
+        education: "A better prompt includes specific airway assessment and asks for immediate anesthetic planning based on the assessment.",
+        prompt: "<strong>[IMPROVED PROMPT]</strong> Apply ASA classification and <strong>perform a detailed airway assessment including Mallampati score, neck mobility, and mouth opening to determine intubation difficulty.</strong>",
+        commentary: "<h4>Prompt Improvement:</h4>This enhanced prompt includes specific airway assessment, which is critical in anesthetic care. By asking for detailed airway evaluation, the assessment becomes more comprehensive and clinically useful."
+      },
+      {
+        question: "Determine the appropriate anesthetic technique and medications.",
+        education: "Based on the anesthetic assessment, prompt the model to recommend specific anesthetic techniques and medications.",
+        prompt: "<strong>[USER]</strong> Based on the ASA classification and airway assessment, recommend the appropriate anesthetic technique and specific medications for this patient.",
+        commentary: "<h4>Why this works:</h4>This prompt moves from assessment to action planning. By asking for specific anesthetic recommendations, you guide the model to provide evidence-based approaches for anesthetic management."
+      },
+      {
+        question: "Create a monitoring plan for the perioperative period.",
+        education: "Monitoring is crucial for anesthetic safety. Prompt the model to create a comprehensive monitoring plan.",
+        prompt: "<strong>[SYSTEM]</strong> Create a monitoring plan including standard monitors, advanced monitors if needed, and specific parameters to watch for this patient.",
+        commentary: "<h4>Why this works:</h4>This prompt addresses the critical aspect of monitoring in anesthetic care. By asking for specific monitoring recommendations, the AI provides evidence-based monitoring approaches for patient safety."
+      },
+      {
+        question: "Develop a pain management plan for the postoperative period.",
+        education: "Postoperative pain management is essential for patient comfort and recovery. Prompt the model to create a comprehensive pain management plan.",
+        prompt: "<strong>[USER]</strong> Create a postoperative pain management plan including medication recommendations, regional techniques, and monitoring for side effects.",
+        commentary: "<h4>Why this works:</h4>This prompt addresses the essential aspect of postoperative pain management. By creating a comprehensive pain management plan, the AI helps ensure patient comfort and optimal recovery."
+      },
+      {
+        question: "Establish a protocol for managing potential complications.",
+        education: "Anesthetic complications can be life-threatening. Prompt the model to create protocols for managing potential complications.",
+        prompt: "<strong>[SYSTEM]</strong> Create protocols for managing potential complications including malignant hyperthermia, anaphylaxis, and difficult airway scenarios.",
+        commentary: "<h4>Why this works:</h4>This prompt addresses the need for proactive complication management. By creating specific protocols, the AI helps ensure timely intervention for potential anesthetic complications."
+      },
+      {
+        question: "Develop a patient education and informed consent plan.",
+        education: "Patient education is crucial for informed consent and optimal outcomes. Prompt the model to create a comprehensive education plan.",
+        prompt: "<strong>[USER]</strong> Create a patient education plan covering the anesthetic procedure, risks, benefits, and what to expect during recovery.",
+        commentary: "<h4>Why this works:</h4>This prompt addresses the essential aspect of patient education in anesthetic care. By creating a comprehensive education plan, the AI helps ensure patients are well-informed and prepared for anesthesia."
+      },
+      {
+        question: "Create a handoff protocol for postoperative care.",
+        education: "Smooth transitions are critical in anesthetic care. Prompt the model to generate a comprehensive handoff protocol for postoperative care.",
+        prompt: "<strong>[SYSTEM]</strong> Create a handoff protocol for transferring the patient to the recovery room, including current status, medications given, and ongoing concerns.",
+        commentary: "<h4>Why this works:</h4>Handoffs are high-risk moments in patient care. This prompt ensures the AI generates a systematic approach to transferring critical information, reducing the risk of communication errors."
+      },
+      {
+        question: "Finally, synthesize the complete anesthetic management plan.",
+        education: "The final step consolidates all previous assessments and interventions into a comprehensive anesthetic management plan.",
+        prompt: "<strong>[SYNTHESIS PROMPT]</strong> Consolidate the anesthetic assessment, technique selection, monitoring plan, pain management, and handoff protocols into a single, comprehensive anesthetic management plan.",
+        commentary: "<h4>Why this works:</h4>This synthesis prompt creates a comprehensive, immediately actionable plan for anesthetic management. It demonstrates the power of sequential prompting in complex anesthetic situations."
+      }
+    ]
+  },
+  radiology: {
+    steps: [
+      {
+        question: "A 55-year-old patient presents with chest pain. How do you begin the emergency imaging assessment?",
+        education: "Start with a systematic approach to emergency imaging evaluation focusing on life-threatening conditions and appropriate study selection.",
+        prompt: "<strong>[SYSTEM]</strong> Parse imaging request: 55M, acute chest pain, ECG shows ST elevation, troponin elevated. Request: STAT chest X-ray and CT angiogram. Clinical question: rule out aortic dissection.",
+        commentary: "<h4>Why this works:</h4>This initial prompt structures the critical information about the imaging request, including clinical presentation, laboratory results, and specific clinical questions. This systematic approach is essential for accurate imaging interpretation."
+      },
+      {
+        question: "Apply the ACR Appropriateness Criteria for chest pain imaging.",
+        education: "Use evidence-based guidelines to systematically evaluate the appropriateness of imaging studies and guide interpretation.",
+        prompt: "<strong>[SYSTEM]</strong> Apply the ACR Appropriateness Criteria to assess the appropriateness of the requested imaging studies for this patient's chest pain.",
+        feedback: "<strong>ACR CRITERIA:</strong> Appropriate - CT angiogram is the gold standard for aortic dissection. Chest X-ray is appropriate for initial screening.",
+        commentary: "<h4>Why this works:</h4>Standardized guidelines like ACR criteria provide objective criteria for imaging appropriateness. This prompt ensures the model applies evidence-based assessment methods for imaging decisions."
+      },
+      {
+        question: "How can we improve that assessment to include specific findings?",
+        education: "A better prompt includes specific imaging findings and asks for immediate clinical correlation based on the assessment.",
+        prompt: "<strong>[IMPROVED PROMPT]</strong> Apply ACR criteria and <strong>identify specific imaging findings that would indicate aortic dissection, including aortic diameter, intimal flap, and contrast enhancement patterns.</strong>",
+        commentary: "<h4>Prompt Improvement:</h4>This enhanced prompt includes specific imaging findings, which is critical in radiological interpretation. By asking for specific findings, the assessment becomes more comprehensive and clinically useful."
+      },
+      {
+        question: "Determine the appropriate imaging protocol and contrast administration.",
+        education: "Based on the imaging assessment, prompt the model to recommend specific imaging protocols and contrast administration.",
+        prompt: "<strong>[USER]</strong> Based on the clinical presentation and ACR criteria, recommend the appropriate imaging protocol and contrast administration for this patient.",
+        commentary: "<h4>Why this works:</h4>This prompt moves from assessment to action planning. By asking for specific imaging recommendations, you guide the model to provide evidence-based approaches for imaging protocols."
+      },
+      {
+        question: "Create a systematic approach to image interpretation.",
+        education: "Systematic image interpretation is crucial for accurate diagnosis. Prompt the model to create a comprehensive interpretation plan.",
+        prompt: "<strong>[SYSTEM]</strong> Create a systematic approach to interpreting the chest CT angiogram, including specific structures to evaluate and measurements to obtain.",
+        commentary: "<h4>Why this works:</h4>This prompt addresses the critical aspect of systematic image interpretation. By asking for specific evaluation criteria, the AI provides evidence-based approaches for image analysis."
+      },
+      {
+        question: "Develop a protocol for communicating critical findings.",
+        education: "Communication of critical findings is essential for patient safety. Prompt the model to create a comprehensive communication protocol.",
+        prompt: "<strong>[USER]</strong> Create a protocol for communicating critical findings to the clinical team, including immediate notification procedures and documentation requirements.",
+        commentary: "<h4>Why this works:</h4>This prompt addresses the essential aspect of communication in radiological care. By creating a comprehensive communication protocol, the AI helps ensure timely and accurate information transfer."
+      },
+      {
+        question: "Establish a protocol for managing potential complications.",
+        education: "Imaging complications can be life-threatening. Prompt the model to create protocols for managing potential complications.",
+        prompt: "<strong>[SYSTEM]</strong> Create protocols for managing potential complications including contrast reactions, radiation exposure, and claustrophobia during imaging.",
+        commentary: "<h4>Why this works:</h4>This prompt addresses the need for proactive complication management. By creating specific protocols, the AI helps ensure timely intervention for potential imaging complications."
+      },
+      {
+        question: "Develop a patient education and informed consent plan.",
+        education: "Patient education is crucial for informed consent and optimal outcomes. Prompt the model to create a comprehensive education plan.",
+        prompt: "<strong>[USER]</strong> Create a patient education plan covering the imaging procedure, risks, benefits, and what to expect during the study.",
+        commentary: "<h4>Why this works:</h4>This prompt addresses the essential aspect of patient education in radiological care. By creating a comprehensive education plan, the AI helps ensure patients are well-informed and prepared for imaging."
+      },
+      {
+        question: "Create a protocol for follow-up imaging and monitoring.",
+        education: "Follow-up imaging is often necessary for complete evaluation. Prompt the model to create a comprehensive follow-up protocol.",
+        prompt: "<strong>[SYSTEM]</strong> Create a follow-up protocol including timing of repeat imaging, specific studies needed, and criteria for additional evaluation.",
+        commentary: "<h4>Why this works:</h4>This prompt addresses the ongoing nature of radiological evaluation. By creating specific follow-up protocols, the AI helps ensure continuity of care and complete evaluation."
+      },
+      {
+        question: "Finally, synthesize the complete imaging management plan.",
+        education: "The final step consolidates all previous assessments and interventions into a comprehensive imaging management plan.",
+        prompt: "<strong>[SYNTHESIS PROMPT]</strong> Consolidate the imaging assessment, protocol selection, interpretation approach, communication protocols, and follow-up plan into a single, comprehensive imaging management plan.",
+        commentary: "<h4>Why this works:</h4>This synthesis prompt creates a comprehensive, immediately actionable plan for imaging management. It demonstrates the power of sequential prompting in complex radiological situations."
+      }
+    ]
+  },
+  dermatology: {
+    steps: [
+      {
+        question: "A 60-year-old patient presents with a changing mole. How do you begin the skin cancer screening assessment?",
+        education: "Start with a systematic approach to skin lesion evaluation focusing on the ABCDE criteria and risk factors for skin cancer.",
+        prompt: "<strong>[SYSTEM]</strong> Parse patient presentation: 60M, changing mole on back, noticed 3 months ago, family history of melanoma, fair skin, history of sunburns. Mole is 6mm, irregular borders, multiple colors.",
+        commentary: "<h4>Why this works:</h4>This initial prompt structures the critical information about the skin lesion, including risk factors, family history, and physical characteristics. This systematic approach is essential for accurate skin cancer risk assessment."
+      },
+      {
+        question: "Apply the ABCDE criteria for melanoma screening.",
+        education: "Use evidence-based criteria to systematically evaluate skin lesions and guide treatment decisions.",
+        prompt: "<strong>[SYSTEM]</strong> Apply the ABCDE criteria to assess this mole for signs of melanoma.",
+        feedback: "<strong>ABCDE ASSESSMENT:</strong> A - Asymmetry (positive), B - Border irregularity (positive), C - Color variation (positive), D - Diameter >6mm (positive), E - Evolution (positive). High suspicion for melanoma.",
+        commentary: "<h4>Why this works:</h4>Standardized criteria like ABCDE provide objective criteria for melanoma screening. This prompt ensures the model applies evidence-based assessment methods for skin lesion evaluation."
+      },
+      {
+        question: "How can we improve that assessment to include dermoscopic features?",
+        education: "A better prompt includes dermoscopic evaluation and asks for immediate biopsy decisions based on the assessment.",
+        prompt: "<strong>[IMPROVED PROMPT]</strong> Apply ABCDE criteria and <strong>evaluate dermoscopic features including atypical network, irregular dots and globules, and blue-white veil to determine biopsy necessity.</strong>",
+        commentary: "<h4>Prompt Improvement:</h4>This enhanced prompt includes dermoscopic evaluation, which is critical in dermatological care. By asking for specific dermoscopic features, the assessment becomes more comprehensive and clinically useful."
+      },
+      {
+        question: "Determine the appropriate biopsy technique and timing.",
+        education: "Based on the skin lesion assessment, prompt the model to recommend specific biopsy techniques and timing.",
+        prompt: "<strong>[USER]</strong> Based on the ABCDE assessment and dermoscopic features, recommend the appropriate biopsy technique and timing for this suspicious lesion.",
+        commentary: "<h4>Why this works:</h4>This prompt moves from assessment to action planning. By asking for specific biopsy recommendations, you guide the model to provide evidence-based approaches for skin lesion management."
+      },
+      {
+        question: "Create a comprehensive skin examination plan.",
+        education: "Complete skin examination is crucial for skin cancer screening. Prompt the model to create a comprehensive examination plan.",
+        prompt: "<strong>[SYSTEM]</strong> Create a comprehensive skin examination plan including total body mapping, photography, and documentation of all suspicious lesions.",
+        commentary: "<h4>Why this works:</h4>This prompt addresses the critical aspect of complete skin examination. By asking for specific examination protocols, the AI provides evidence-based approaches for comprehensive skin cancer screening."
+      },
+      {
+        question: "Develop a patient education and sun protection plan.",
+        education: "Patient education is crucial for skin cancer prevention. Prompt the model to create a comprehensive education plan.",
+        prompt: "<strong>[USER]</strong> Create a patient education plan covering sun protection, self-examination techniques, and warning signs of skin cancer.",
+        commentary: "<h4>Why this works:</h4>This prompt addresses the essential aspect of patient education in dermatological care. By creating a comprehensive education plan, the AI helps ensure patients are well-informed about skin cancer prevention."
+      },
+      {
+        question: "Establish a protocol for managing potential complications.",
+        education: "Skin cancer complications can be life-threatening. Prompt the model to create protocols for managing potential complications.",
+        prompt: "<strong>[SYSTEM]</strong> Create protocols for managing potential complications including metastatic spread, recurrence, and treatment side effects.",
+        commentary: "<h4>Why this works:</h4>This prompt addresses the need for proactive complication management. By creating specific protocols, the AI helps ensure timely intervention for potential skin cancer complications."
+      },
+      {
+        question: "Develop a follow-up and monitoring plan.",
+        education: "Follow-up monitoring is essential for skin cancer patients. Prompt the model to create a comprehensive monitoring plan.",
+        prompt: "<strong>[USER]</strong> Create a follow-up plan including frequency of visits, imaging studies, and criteria for additional evaluation.",
+        commentary: "<h4>Why this works:</h4>This prompt addresses the ongoing nature of skin cancer care. By creating specific follow-up protocols, the AI helps ensure continuity of care and early detection of recurrence."
+      },
+      {
+        question: "Create a protocol for family screening and genetic counseling.",
+        education: "Family screening is important for hereditary skin cancer syndromes. Prompt the model to create a comprehensive family screening protocol.",
+        prompt: "<strong>[SYSTEM]</strong> Create a protocol for family screening including genetic counseling, risk assessment, and screening recommendations for family members.",
+        commentary: "<h4>Why this works:</h4>This prompt addresses the familial aspect of skin cancer. By creating specific family screening protocols, the AI helps ensure comprehensive care for high-risk families."
+      },
+      {
+        question: "Finally, synthesize the complete skin cancer screening plan.",
+        education: "The final step consolidates all previous assessments and interventions into a comprehensive skin cancer screening plan.",
+        prompt: "<strong>[SYNTHESIS PROMPT]</strong> Consolidate the skin lesion assessment, biopsy recommendations, examination plan, patient education, and follow-up protocols into a single, comprehensive skin cancer screening plan.",
+        commentary: "<h4>Why this works:</h4>This synthesis prompt creates a comprehensive, immediately actionable plan for skin cancer screening. It demonstrates the power of sequential prompting in complex dermatological situations."
+      }
+    ]
+  }
+};
+
+const WIZARDS = {};
+let roleHub, wizardContainers;
+
+function createWizard(containerId, data) {
+  const wizardContainer = document.getElementById(containerId);
+  const body = wizardContainer.querySelector('.wizard-body');
+  const navNext = wizardContainer.querySelector('.wizard-nav button:last-child');
+  const navPrev = wizardContainer.querySelector('.wizard-nav button:first-child');
+  
+  let currentStep = 0;
+  const steps = data.steps;
+
+  steps.forEach((step, index) => {
+    const stepEl = document.createElement('div');
+    stepEl.className = 'wizard-step';
+    stepEl.id = `${containerId}-step-${index}`;
+    
+    let promptHtml = '';
+    if (step.prompt) {
+        promptHtml = `<div class="prompt-example">${step.prompt.replace(/<br>/g, '\n')}</div>`;
+    }
+    let feedbackHtml = '';
+    if (step.feedback) {
+        feedbackHtml = `<div class="model-feedback">${step.feedback.replace(/<br>/g, '\n')}</div>`
+    }
+    let commentaryHtml = '';
+    if (step.commentary) {
+        commentaryHtml = `<div class="step-commentary">${step.commentary}</div>`
+    }
+
+
+    stepEl.innerHTML = `
+      <div class="step-progress">Step ${index + 1} of ${steps.length}</div>
+      <div class="step-question">${step.question}</div>
+      <div class="step-education">${step.education}</div>
+      ${promptHtml}
+      ${feedbackHtml}
+      ${commentaryHtml}
+    `;
+    body.appendChild(stepEl);
+  });
+
+  const wizard = {
+    currentStep,
+    steps,
+    showStep: function(n) {
+      this.currentStep = n;
+      const allSteps = body.querySelectorAll('.wizard-step');
+      allSteps.forEach((s, i) => {
+        s.classList.toggle('active', i === n);
+      });
+      navPrev.disabled = n === 0;
+      navNext.disabled = false; // Enable by default
+      if (n === steps.length -1) {
+          navNext.textContent = 'Restart Wizard';
+      } else {
+          navNext.textContent = 'Next';
+      }
+    },
+    nextStep: function() {
+      if (this.currentStep < this.steps.length - 1) {
+        this.showStep(this.currentStep + 1);
+      } else {
+        // Reset on finish/restart
+        this.showStep(0);
+      }
+    },
+    prevStep: function() {
+      if (this.currentStep > 0) {
+        this.showStep(this.currentStep - 1);
+      }
+    }
+  };
+
+  WIZARDS[containerId.split('-')[1]] = wizard;
+  wizard.showStep(0);
+}
+
+function showWizard(wizardId) {
+    roleHub.style.display = 'none';
+    wizardContainers.forEach(container => {
+        container.style.display = (container.id === wizardId) ? 'block' : 'none';
+    });
+    window.scrollTo(0, 0);
+}
+
+function showRoleHub() {
+    roleHub.style.display = 'block';
+    wizardContainers.forEach(container => {
+        container.style.display = 'none';
+    });
+     window.scrollTo(0, 0);
+}
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    roleHub = document.getElementById('role-hub');
+    wizardContainers = document.querySelectorAll('.wizard-container');
+
+    createWizard('wizard-cardiology', WIZARD_DATA.cardiology);
+    createWizard('wizard-oncology', WIZARD_DATA.oncology);
+    createWizard('wizard-medicine', WIZARD_DATA.medicine);
+    createWizard('wizard-emergency', WIZARD_DATA.emergency);
+    createWizard('wizard-psychiatry', WIZARD_DATA.psychiatry);
+    createWizard('wizard-pediatrics', WIZARD_DATA.pediatrics);
+    createWizard('wizard-surgery', WIZARD_DATA.surgery);
+    createWizard('wizard-neurology', WIZARD_DATA.neurology);
+    createWizard('wizard-orthopedics', WIZARD_DATA.orthopedics);
+    createWizard('wizard-anesthesiology', WIZARD_DATA.anesthesiology);
+    createWizard('wizard-radiology', WIZARD_DATA.radiology);
+    createWizard('wizard-dermatology', WIZARD_DATA.dermatology);
+
+    showRoleHub(); // Start by showing the role hub
+});
+</script>
+</body>
+</html>
+
