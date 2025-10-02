@@ -12,31 +12,33 @@
       background: #f4f4f4;
     }
     .container {
-      max-width: 1200px;
+      max-width: 1100px;
       margin: 0 auto;
       display: flex;
-      gap: 20px;
+      gap: 16px;
       min-height: 600px;
-      padding: 20px;
+      padding: 16px;
     }
     .workflow-section,
     .info-section {
       background: white;
-      border-radius: 15px;
-      padding: 20px;
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
     }
     .workflow-section {
-      flex: 0 0 65%;
+      flex: 1 1 60%;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
+      min-width: 0; /* Allow shrinking */
     }
     .info-section {
-      flex: 0 0 35%;
+      flex: 1 1 40%;
       display: flex;
       flex-direction: column;
+      min-width: 0; /* Allow shrinking */
     }
     .instruction {
       text-align: center;
@@ -71,14 +73,34 @@
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    @media (max-width: 900px) {
+    @media (max-width: 768px) {
       .container {
         flex-direction: column;
+        gap: 12px;
+        padding: 12px;
       }
       .workflow-section,
       .info-section {
         flex: none;
         width: 100%;
+        padding: 12px;
+      }
+      .instruction {
+        font-size: 1rem;
+        margin-bottom: 12px;
+      }
+    }
+    @media (min-width: 769px) and (max-width: 1024px) {
+      .container {
+        max-width: 95%;
+        gap: 12px;
+        padding: 12px;
+      }
+      .workflow-section {
+        flex: 1 1 58%;
+      }
+      .info-section {
+        flex: 1 1 42%;
       }
     }
   </style>
@@ -94,69 +116,69 @@
       <div class="workflow-section">
         <div class="instruction">Click on different steps to learn about the Claude Code workflow!</div>
 
-        <svg class="workflow-svg" viewBox="0 0 800 300" style="width:100%; height:auto;">
-          <rect width="800" height="300" fill="#f8f9fa" opacity="0.3" rx="10"/>
+        <svg class="workflow-svg" viewBox="0 0 700 280" style="width:100%; height:auto; max-width:100%;">
+          <rect width="700" height="280" fill="#f8f9fa" opacity="0.3" rx="10"/>
 
           <!-- Step 1 -->
           <g class="workflow-step" data-step="task">
-            <rect x="20" y="50" width="100" height="60" fill="#2d2d2d" stroke="#333" stroke-width="2" rx="5"/>
-            <text x="70" y="75" text-anchor="middle" fill="#00ff41" font-family="monospace" font-size="16">$ claude</text>
-            <text x="70" y="95" text-anchor="middle" fill="#00ff41" font-family="monospace" font-size="14">"fix bug"</text>
-            <text x="70" y="125" text-anchor="middle" fill="#6c757d" font-size="14">Developer</text>
+            <rect x="15" y="45" width="90" height="55" fill="#2d2d2d" stroke="#333" stroke-width="2" rx="5"/>
+            <text x="60" y="68" text-anchor="middle" fill="#00ff41" font-family="monospace" font-size="14">$ claude</text>
+            <text x="60" y="85" text-anchor="middle" fill="#00ff41" font-family="monospace" font-size="12">"fix bug"</text>
+            <text x="60" y="115" text-anchor="middle" fill="#6c757d" font-size="12">Developer</text>
           </g>
 
           <!-- Arrow 1 -->
-          <path d="M 120 80 L 150 80" stroke="#6c757d" stroke-width="2" marker-end="url(#arrowhead)"/>
+          <path d="M 105 72 L 125 72" stroke="#6c757d" stroke-width="2" marker-end="url(#arrowhead)"/>
 
           <!-- Step 2 -->
           <g class="workflow-step" data-step="read">
-            <rect x="150" y="50" width="100" height="60" fill="#fff" stroke="#6c757d" stroke-width="2" rx="5"/>
-            <text x="200" y="85" text-anchor="middle" fill="#212529" font-size="14">Reads Repo</text>
+            <rect x="125" y="45" width="90" height="55" fill="#fff" stroke="#6c757d" stroke-width="2" rx="5"/>
+            <text x="170" y="78" text-anchor="middle" fill="#212529" font-size="12">Reads Repo</text>
           </g>
 
           <!-- Arrow 2 -->
-          <path d="M 250 80 L 280 80" stroke="#6c757d" stroke-width="2" marker-end="url(#arrowhead)"/>
+          <path d="M 215 72 L 235 72" stroke="#6c757d" stroke-width="2" marker-end="url(#arrowhead)"/>
 
           <!-- Step 3 -->
           <g class="workflow-step" data-step="modify">
-            <rect x="280" y="50" width="100" height="60" fill="#fff" stroke="#6c757d" stroke-width="2" rx="5"/>
-            <text x="330" y="85" text-anchor="middle" fill="#212529" font-size="14">Edits Files</text>
+            <rect x="235" y="45" width="90" height="55" fill="#fff" stroke="#6c757d" stroke-width="2" rx="5"/>
+            <text x="280" y="78" text-anchor="middle" fill="#212529" font-size="12">Edits Files</text>
           </g>
 
           <!-- Arrow 3 -->
-          <path d="M 380 80 L 410 80" stroke="#6c757d" stroke-width="2" marker-end="url(#arrowhead)"/>
+          <path d="M 325 72 L 345 72" stroke="#6c757d" stroke-width="2" marker-end="url(#arrowhead)"/>
 
           <!-- Step 4 -->
           <g class="workflow-step" data-step="commit">
-            <rect x="410" y="50" width="100" height="60" fill="#fff" stroke="#6c757d" stroke-width="2" rx="5"/>
-            <text x="460" y="85" text-anchor="middle" fill="#212529" font-size="14">Git Commit</text>
+            <rect x="345" y="45" width="90" height="55" fill="#fff" stroke="#6c757d" stroke-width="2" rx="5"/>
+            <text x="390" y="78" text-anchor="middle" fill="#212529" font-size="12">Git Commit</text>
           </g>
 
           <!-- Arrow 4 -->
-          <path d="M 510 80 L 540 80" stroke="#6c757d" stroke-width="2" marker-end="url(#arrowhead)"/>
+          <path d="M 435 72 L 455 72" stroke="#6c757d" stroke-width="2" marker-end="url(#arrowhead)"/>
 
           <!-- Step 5 -->
           <g class="workflow-step" data-step="pr">
-            <rect x="540" y="50" width="100" height="60" fill="#fff" stroke="#6c757d" stroke-width="2" rx="5"/>
-            <text x="590" y="85" text-anchor="middle" fill="#212529" font-size="14">GitHub PR</text>
+            <rect x="455" y="45" width="90" height="55" fill="#fff" stroke="#6c757d" stroke-width="2" rx="5"/>
+            <text x="500" y="78" text-anchor="middle" fill="#212529" font-size="12">GitHub PR</text>
           </g>
 
           <!-- Arrow 5 (down to review) -->
-          <path d="M 590 110 Q 590 150 560 150 L 280 150 Q 250 150 250 170" stroke="#6c757d" stroke-width="2" marker-end="url(#arrowhead)" fill="none"/>
+          <path d="M 500 100 Q 500 130 470 130 L 235 130 Q 205 130 205 150" stroke="#6c757d" stroke-width="2" marker-end="url(#arrowhead)" fill="none"/>
 
           <!-- Step 6 -->
           <g class="workflow-step" data-step="review">
-            <rect x="200" y="180" width="100" height="60" fill="#fff" stroke="#6c757d" stroke-width="2" rx="5"/>
-            <text x="250" y="215" text-anchor="middle" fill="#212529" font-size="14">Review</text>
+            <rect x="160" y="160" width="90" height="55" fill="#fff" stroke="#6c757d" stroke-width="2" rx="5"/>
+            <text x="205" y="193" text-anchor="middle" fill="#212529" font-size="12">Review</text>
           </g>
 
           <!-- Arrow 6 -->
-          <path d="M 300 210 L 380 210" stroke="#6c757d" stroke-width="2" marker-end="url(#arrowhead)"/>
+          <path d="M 250 187 L 315 187" stroke="#6c757d" stroke-width="2" marker-end="url(#arrowhead)"/>
 
           <!-- Step 7 -->
           <g class="workflow-step" data-step="merge">
-            <rect x="380" y="180" width="100" height="60" fill="#fff" stroke="#6c757d" stroke-width="2" rx="5"/>
-            <text x="430" y="215" text-anchor="middle" fill="#212529" font-size="14">Merge</text>
+            <rect x="315" y="160" width="90" height="55" fill="#fff" stroke="#6c757d" stroke-width="2" rx="5"/>
+            <text x="360" y="193" text-anchor="middle" fill="#212529" font-size="12">Merge</text>
           </g>
 
           <!-- Arrow defs -->
@@ -167,9 +189,9 @@
           </defs>
 
           <!-- Labels -->
-          <text x="400" y="25" text-anchor="middle" fill="#212529" font-size="20" font-weight="bold">Claude Code Workflow</text>
-          <text x="75" y="285" fill="#6c757d" font-size="16">Start</text>
-          <text x="460" y="285" fill="#6c757d" font-size="16">Complete</text>
+          <text x="350" y="25" text-anchor="middle" fill="#212529" font-size="18" font-weight="bold">Claude Code Workflow</text>
+          <text x="60" y="260" fill="#6c757d" font-size="14">Start</text>
+          <text x="360" y="260" fill="#6c757d" font-size="14">Complete</text>
         </svg>
       </div>
 
