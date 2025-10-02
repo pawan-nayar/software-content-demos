@@ -1,0 +1,1478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale-1.0">
+  <title>MidJourney Parameter Explorer</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    :root {
+      --bg-dark-primary: #0d1117;
+      --bg-dark-secondary: #161b22;
+      --border-color: #30363d;
+      --text-primary: #e6edf3;
+      --text-secondary: #8b949e;
+      --accent-blue: #58a6ff;
+      --accent-green: #2ea043;
+      --accent-yellow: #f1c40f;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      min-height: 100%;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+      background-color: var(--bg-dark-primary);
+      color: var(--text-primary);
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    .header {
+      text-align: center;
+      background-color: var(--bg-dark-secondary);
+      border-bottom: 1px solid var(--border-color);
+      padding: 1rem;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    #help-button {
+      position: absolute;
+      top: 50%;
+      right: 1.5rem;
+      transform: translateY(-50%);
+      background: var(--border-color);
+      border: 1px solid #484f58;
+      color: var(--text-secondary);
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    #help-button:hover {
+      background: #484f58;
+      color: var(--text-primary);
+      border-color: var(--text-secondary);
+    }
+    #help-button svg {
+      width: 20px;
+      height: 20px;
+    }
+
+
+    .header h1 {
+      margin: 0;
+      font-size: 1.75rem;
+      color: var(--accent-blue);
+    }
+     .header p {
+       margin: 0.25rem 0 0 0;
+       color: var(--text-secondary);
+       font-style: italic;
+     }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      padding: 3rem;
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      box-sizing: border-box;
+      flex-grow: 1;
+    }
+
+    .param-card {
+      background-color: var(--bg-dark-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .param-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    .param-card h2 {
+      margin: 0;
+      color: var(--accent-blue);
+      font-size: 1.5rem;
+    }
+    .param-card .byline {
+      color: var(--text-secondary);
+      font-style: italic;
+      min-height: 40px;
+    }
+    .param-card button {
+      margin-top: auto;
+      background-color: var(--border-color);
+      color: var(--text-primary);
+      border: 1px solid #484f58;
+      padding: 0.6rem 1.2rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+    .param-card button:hover {
+      background-color: var(--accent-green);
+      border-color: var(--accent-green);
+    }
+
+    /* Modal Styles */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(13, 17, 23, 0.85);
+      backdrop-filter: blur(8px);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .modal-overlay.visible {
+      display: flex;
+      opacity: 1;
+    }
+    .modal-box {
+      background: var(--bg-dark-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      width: 95%;
+      max-width: 1200px;
+      max-height: 95vh; /* Bigger modal */
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+      display: flex;
+      flex-direction: column;
+      transform: scale(0.95);
+      transition: transform 0.3s ease;
+    }
+    .modal-overlay.visible .modal-box {
+      transform: scale(1);
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+      flex-shrink: 0;
+    }
+    .modal-header h2 { margin: 0; font-size: 1.5rem; color: var(--accent-blue); }
+    .close-button { font-size: 2.5rem; font-weight: 300; color: var(--text-secondary); cursor: pointer; background: none; border: none; line-height: 1; }
+    .close-button:hover { color: var(--text-primary); }
+    .modal-content { padding: 1.5rem; flex-grow: 1; display: flex; gap: 1.5rem; overflow-y: auto; }
+    .modal-info { width: 300px; flex-shrink: 0; overflow-y: auto; padding-right: 1rem; }
+    .modal-info p { line-height: 1.6; color: var(--text-secondary); }
+    .modal-info .examples { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .chip { background: var(--border-color); color: var(--text-primary); padding: 0.4rem 0.8rem; border-radius: 16px; font-size: 0.8rem; }
+    #help-modal .modal-content { display: block; overflow-y: auto; }
+    #help-modal h4 { color: var(--accent-blue); margin-top: 1.5rem; margin-bottom: 0.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.3rem; }
+    #help-modal ul { padding-left: 20px; color: var(--text-secondary); }
+    #help-modal li { margin-bottom: 0.5rem; }
+
+
+    .viz-container { position: relative; flex-grow: 1; min-height: 300px; }
+    .viz-container svg { width: 100%; height: 100%; }
+
+    /* Tooltip */
+    .tooltip {
+      position: fixed;
+      padding: 0.7rem 1rem;
+      background: #1c2128; border: 1px solid var(--border-color);
+      border-radius: 8px; font-size: 0.85rem; color: var(--text-primary);
+      pointer-events: none; opacity: 0; transform: scale(0.95);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      white-space: normal; box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      max-width: 280px; line-height: 1.4; z-index: 9999;
+    }
+    .tooltip.visible { opacity: 1; transform: scale(1); }
+    .tooltip strong { color: var(--accent-blue); display: block; margin-bottom: 0.3rem; }
+
+    /* D3 Styles */
+    .axis-label, .cta-text { fill: var(--text-secondary); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .tick line { stroke: var(--border-color); stroke-opacity: 0.5; }
+    .tick text { fill: var(--text-secondary); }
+    .domain { stroke: var(--border-color); }
+    .grid-line { stroke: var(--border-color); stroke-opacity: 0.5; stroke-dasharray: 2,2; }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .header h1 { font-size: 1.25rem; }
+      .card-grid { padding: 1.5rem; }
+      .modal-content { flex-direction: column; overflow-y: auto;}
+      .modal-info { width: 100%; flex-shrink: 1; max-height: 40%; padding-right: 0;}
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <div>
+      <h1>MidJourney Parameter Explorer</h1>
+      <p>An interactive guide to key image generation parameters</p>
+    </div>
+    <button id="help-button" aria-label="Help">
+      <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"></path></svg>
+    </button>
+  </header>
+
+  <main class="card-grid" id="card-grid"></main>
+  
+  <div class="modal-overlay" id="param-modal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2 id="modal-title"></h2>
+        <button class="close-button">&times;</button>
+      </div>
+      <div class="modal-content">
+        <div class="modal-info">
+          <p id="modal-desc"></p>
+          <div class="examples" id="modal-examples"></div>
+        </div>
+        <div class="viz-container">
+          <svg id="modal-chart"></svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="help-modal">
+      <div class="modal-box">
+          <div class="modal-header">
+              <h2>How to Use This Explorer</h2>
+              <button class="close-button">&times;</button>
+          </div>
+          <div class="modal-content">
+              <h4>Welcome!</h4>
+              <p>This is an interactive guide designed to help you understand some of the most important parameters in MidJourney.</p>
+              
+              <h4>Main Screen</h4>
+              <p>You'll see a series of cards, each representing a key parameter:</p>
+              <ul>
+                  <li><b>Quality:</b> Controls the time and detail of the image generation.</li>
+                  <li><b>Aspect Ratio:</b> Sets the shape of your final image (e.g., square, widescreen).</li>
+                  <li><b>Style:</b> Manages how artistic or realistic the image appears.</li>
+              </ul>
+              <p>Click the "Visualize" button on any card to dive deeper.</p>
+
+              <h4>Visualization Modal</h4>
+              <p>When you click "Visualize", a large window will open with:</p>
+              <ul>
+                  <li><b>An Info Panel (Left):</b> A detailed description of the parameter and some example values you can use in your prompts.</li>
+                  <li><b>An Interactive Chart (Right):</b> A visual representation of the parameter. Follow the on-screen prompts (like "Hover for details") to interact with the chart and learn more.</li>
+              </ul>
+              <p>Click the '×' or anywhere outside the white box to close the visualization and return to the main screen.</p>
+          </div>
+      </div>
+  </div>
+
+  <div class="tooltip" id="tooltip"></div>
+
+<script>
+const paramData = {
+  "Quality": { byline: "How much rendering time MidJourney spends on your image.", desc: "The --quality or --q parameter controls time, effort, cost, and subtlety. Lower quality is faster and rougher, great for quick ideation. Higher quality is slower and more GPU-intensive but creates richer detail.", examples: ["--q 0.25 (Fastest)", "--q 0.5", "--q 1 (Default)", "--q 1.5", "--q 2 (Highest)"], drawFunc: drawQualityViz },
+  "Aspect Ratio": { byline: "The width-to-height ratio that shapes your canvas.", desc: "The --aspect or --ar parameter changes the shape of the final image. It's crucial for everything from cinematic landscapes to vertical social media posts.", examples: ["1:1 (Square)", "16:9 (Widescreen)", "9:16 (Vertical)", "4:3 (Classic)", "3:2 (Photography)"], drawFunc: drawAspectRatioViz },
+  "Style": { byline: "The interplay between realism and MidJourney's artistic opinion.", desc: "The --style raw parameter creates more realistic images, while --stylize or --s (0-1000) controls the strength of MidJourney's artistic interpretation. Combining them gives you a spectrum from photorealism to high art.", drawFunc: drawStyleViz },
+  "Weights / No": { byline: "Control how much each concept appears in your image.", desc: "Positive weight makes things appear MORE (higher = stronger). Negative weight makes things appear LESS (lower = weaker). Zero weight is normal appearance. --no blocks something completely.", examples: ["waterfall::2 (very prominent)", "birds::-1 (barely visible)", "people::0 (normal)", "--no cars (none at all)"], drawFunc: drawWeightsViz },
+  "Zoom / Pan": { byline: "Control framing and field of view (Desktop only)", desc: "Zoom out to show more of the scene beyond the original frame. Pan to reposition the subject within the expanded canvas. These parameters help you achieve perfect composition and framing.", examples: ["--zoom 1.5 (wider view)", "--pan up (subject lower)", "--pan right (subject left)", "--zoom 2 --pan down"], drawFunc: drawZoomPanViz }
+};
+
+const cardGrid = document.getElementById('card-grid');
+const paramModal = document.getElementById('param-modal');
+const helpModal = document.getElementById('help-modal');
+const helpButton = document.getElementById('help-button');
+const tooltipEl = document.getElementById('tooltip');
+
+function init() {
+    Object.keys(paramData).forEach(paramName => {
+        const data = paramData[paramName];
+        const card = document.createElement('div');
+        card.className = 'param-card';
+        card.innerHTML = `<h2>${paramName}</h2><p class="byline">${data.byline}</p><button data-param="${paramName}">Visualize</button>`;
+        cardGrid.appendChild(card);
+    });
+
+    cardGrid.addEventListener('click', e => { if (e.target.tagName === 'BUTTON') showModal(paramData[e.target.dataset.param], paramModal); });
+    helpButton.addEventListener('click', () => showModal(null, helpModal));
+
+    [paramModal, helpModal].forEach(modal => {
+        modal.querySelector('.close-button').addEventListener('click', () => closeModal(modal));
+        modal.addEventListener('click', e => { if (e.target === modal) closeModal(modal); });
+    });
+}
+
+function showModal(data, modalElement) {
+    if (data) {
+        modalElement.querySelector('#modal-title').textContent = Object.keys(paramData).find(key => paramData[key] === data);
+        modalElement.querySelector('#modal-desc').textContent = data.desc;
+        const examplesContainer = modalElement.querySelector('#modal-examples');
+        examplesContainer.innerHTML = (data.examples || []).map(e => `<div class="chip">${e}</div>`).join('');
+    }
+    modalElement.classList.add('visible');
+    if (data && data.drawFunc) {
+        setTimeout(() => data.drawFunc(), 150);
+    }
+}
+
+function closeModal(modalElement) {
+    modalElement.classList.remove('visible');
+    if (modalElement.id === 'param-modal') {
+        // Clean up tooltips first
+        hideTooltip();
+        // Clean up any dynamic elements before removing SVG
+        const svg = d3.select("#modal-chart svg");
+        if (svg.node() && svg.node().cleanup) {
+            svg.node().cleanup();
+        }
+        d3.select("#modal-chart").selectAll('*').remove();
+    }
+}
+
+function setupSVG() {
+    const svg = d3.select("#modal-chart");
+    svg.selectAll('*').remove();
+    const container = svg.node().getBoundingClientRect();
+    const margin = {top: 20, right: 30, bottom: 50, left: 50};
+    const width = container.width - margin.left - margin.right;
+    const height = container.height - margin.top - margin.bottom;
+    const g = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
+    return { svg, width, height, g, margin };
+}
+
+function showTooltip(event, content) {
+    tooltipEl.innerHTML = content;
+    tooltipEl.classList.add('visible');
+    const tooltipRect = tooltipEl.getBoundingClientRect();
+    const padding = 15;
+    let left = event.clientX + padding;
+    let top = event.clientY + padding;
+
+    if (left + tooltipRect.width > window.innerWidth - padding) left = event.clientX - tooltipRect.width - padding;
+    if (top + tooltipRect.height > window.innerHeight - padding) top = event.clientY - tooltipRect.height - padding;
+    if (left < padding) left = padding;
+    if (top < padding) top = padding;
+
+    tooltipEl.style.left = `${left}px`;
+    tooltipEl.style.top = `${top}px`;
+}
+
+function hideTooltip() { tooltipEl.classList.remove('visible'); }
+
+// Zoom & Pan visualization with mobile fallback
+function drawZoomPanViz() {
+    const { svg, width, height, g, margin } = setupSVG();
+    
+    // Detect mobile
+    const isMobile = window.innerWidth <= 768;
+    
+    if (isMobile) {
+        // Mobile: Minimal message directing to desktop
+        const centerX = width / 2;
+        const centerY = height / 2;
+        
+        svg.append("text")
+            .attr("x", centerX).attr("y", centerY - 20)
+            .attr("text-anchor", "middle")
+            .attr("fill", "var(--accent-blue)")
+            .style("font-size", "1.2rem")
+            .style("font-weight", "600")
+            .text("🖥️ Open this file in desktop");
+        
+        svg.append("text")
+            .attr("x", centerX).attr("y", centerY + 10)
+            .attr("text-anchor", "middle")
+            .attr("fill", "var(--accent-yellow)")
+            .style("font-size", "1rem")
+            .style("font-weight", "500")
+            .text("to feel its beauty");
+            
+        return; // Exit early for mobile
+    }
+    
+    // Desktop: Full interactive visualization restored
+    // State management
+    let currentState = { zoom: 1.0, pan: null };
+    
+    // Photography scene data - mountain landscape with subjects
+    const sceneElements = [
+        { type: 'sky', x: 0, y: 0, width: 400, height: 120, color: '#87CEEB' },
+        { type: 'mountains', x: 0, y: 120, width: 400, height: 100, color: '#8B7355' },
+        { type: 'trees', x: 0, y: 220, width: 400, height: 80, color: '#228B22' },
+        { type: 'ground', x: 0, y: 300, width: 400, height: 100, color: '#90EE90' },
+        { type: 'subject', x: 180, y: 250, width: 40, height: 50, color: '#FF6B6B' }
+    ];
+
+    // Desktop layout
+    const rightPanelWidth = 240;
+    const availableWidth = width - rightPanelWidth - 60;
+    const availableHeight = height - 120;
+    const baseSize = Math.min(availableWidth * 0.85, availableHeight * 0.75);
+    const viewportWidth = baseSize;
+    const viewportHeight = baseSize;
+    const centerX = availableWidth / 2 + 30;
+    const centerY = availableHeight / 2 + 60;
+
+    // Caption system
+    const captionY = centerY + viewportHeight/2 + 80;
+    const stepText = svg.append("text")
+        .attr("x", centerX).attr("y", captionY)
+        .attr("text-anchor", "middle")
+        .attr("fill", "var(--accent-yellow)")
+        .style("font-size", "0.9rem")
+        .style("font-weight", "500")
+        .style("opacity", 0);
+
+    function updateCaption(text, delay = 0) {
+        const words = text.split(' ');
+        const dwellTime = Math.max(4000, words.length * 333);
+        const lineBreakPause = 2000;
+        
+        stepText.transition()
+            .delay(delay)
+            .duration(400)
+            .style("opacity", 0)
+            .transition()
+            .duration(400)
+            .text(text)
+            .style("opacity", 1)
+            .transition()
+            .delay(dwellTime + lineBreakPause)
+            .duration(400)
+            .style("opacity", 0);
+        
+        return delay + 400 + 400 + dwellTime + lineBreakPause + 400;
+    }
+
+    // Create main container
+    const container = g.append("g")
+        .attr("transform", `translate(${centerX - viewportWidth/2}, ${centerY - viewportHeight/2})`);
+
+    // Create clipping path for viewport
+    const clipId = "viewport-clip";
+    svg.append("defs").append("clipPath")
+        .attr("id", clipId)
+        .append("rect")
+        .attr("width", viewportWidth)
+        .attr("height", viewportHeight);
+
+    // Expanded canvas frame
+    const expandedFrame = container.append("rect")
+        .attr("class", "expanded-frame")
+        .attr("x", 0).attr("y", 0)
+        .attr("width", viewportWidth)
+        .attr("height", viewportHeight)
+        .attr("fill", "none")
+        .attr("stroke", "var(--border-color)")
+        .attr("stroke-width", 2)
+        .attr("stroke-dasharray", "8,4")
+        .style("opacity", 0);
+
+    // Scene container
+    const sceneContainer = container.append("g")
+        .attr("class", "scene")
+        .attr("clip-path", `url(#${clipId})`);
+
+    // Create scene elements
+    const scene = sceneContainer.append("g").attr("class", "scene-elements");
+    
+    sceneElements.forEach(element => {
+        if (element.type === 'mountains') {
+            const mountainPath = `M0,${element.y + element.height} L50,${element.y + 20} L100,${element.y + 40} L150,${element.y + 10} L200,${element.y + 30} L250,${element.y + 15} L300,${element.y + 35} L350,${element.y + 25} L400,${element.y + 45} L400,${element.y + element.height} Z`;
+            scene.append("path")
+                .attr("d", mountainPath)
+                .attr("fill", element.color)
+                .attr("stroke", "#654321")
+                .attr("stroke-width", 1);
+        } else if (element.type === 'trees') {
+            for (let i = 0; i < 8; i++) {
+                const treeX = 30 + i * 45;
+                const treeHeight = 60 + Math.random() * 20;
+                scene.append("ellipse")
+                    .attr("cx", treeX)
+                    .attr("cy", element.y + 20)
+                    .attr("rx", 15)
+                    .attr("ry", treeHeight/2)
+                    .attr("fill", element.color);
+            }
+        } else if (element.type === 'subject') {
+            const subject = scene.append("g").attr("class", "main-subject");
+            subject.append("rect")
+                .attr("x", element.x)
+                .attr("y", element.y + 20)
+                .attr("width", element.width)
+                .attr("height", element.height - 20)
+                .attr("fill", element.color)
+                .attr("rx", 5);
+            subject.append("circle")
+                .attr("cx", element.x + element.width/2)
+                .attr("cy", element.y + 10)
+                .attr("r", 10)
+                .attr("fill", "#FFB347");
+            subject.append("rect")
+                .attr("x", element.x + 10)
+                .attr("y", element.y + 30)
+                .attr("width", 20)
+                .attr("height", 10)
+                .attr("fill", "#333");
+        } else {
+            scene.append("rect")
+                .attr("x", element.x)
+                .attr("y", element.y)
+                .attr("width", element.width)
+                .attr("height", element.height)
+                .attr("fill", element.type === 'sky' ? `url(#skyGradient)` : element.color);
+        }
+    });
+
+    // Sky gradient
+    const defs = svg.select("defs");
+    const skyGradient = defs.append("linearGradient")
+        .attr("id", "skyGradient")
+        .attr("x1", "0%").attr("y1", "0%")
+        .attr("x2", "0%").attr("y2", "100%");
+    skyGradient.append("stop")
+        .attr("offset", "0%")
+        .attr("stop-color", "#87CEEB");
+    skyGradient.append("stop")
+        .attr("offset", "100%")
+        .attr("stop-color", "#E0F6FF");
+
+    // Viewport frame
+    const viewportFrame = container.append("rect")
+        .attr("class", "viewport-frame")
+        .attr("x", 0).attr("y", 0)
+        .attr("width", viewportWidth)
+        .attr("height", viewportHeight)
+        .attr("fill", "none")
+        .attr("stroke", "var(--accent-blue)")
+        .attr("stroke-width", 3)
+        .style("opacity", 0);
+
+    // Original label
+    const originalLabel = container.append("text")
+        .attr("x", viewportWidth/2)
+        .attr("y", -10)
+        .attr("text-anchor", "middle")
+        .attr("fill", "var(--accent-blue)")
+        .style("font-size", "0.9rem")
+        .style("font-weight", "600")
+        .text("Original 1:1 Frame")
+        .style("opacity", 0);
+
+    // Control panel
+    const controlPanel = svg.append("g")
+        .attr("class", "control-panel")
+        .attr("transform", `translate(${width - rightPanelWidth + 30}, ${centerY - 40})`)
+        .style("opacity", 0);
+
+    // Pan arrows in 3x3 grid
+    const panDirections = [
+        { dir: 'up-left', symbol: '↖', x: 0, y: 0 },
+        { dir: 'up', symbol: '↑', x: 40, y: 0 },
+        { dir: 'up-right', symbol: '↗', x: 80, y: 0 },
+        { dir: 'left', symbol: '←', x: 0, y: 40 },
+        { dir: 'center', symbol: '●', x: 40, y: 40 },
+        { dir: 'right', symbol: '→', x: 80, y: 40 },
+        { dir: 'down-left', symbol: '↙', x: 0, y: 80 },
+        { dir: 'down', symbol: '↓', x: 40, y: 80 },
+        { dir: 'down-right', symbol: '↘', x: 80, y: 80 }
+    ];
+
+    const arrowGroup = controlPanel.append("g").attr("class", "pan-arrows");
+    
+    panDirections.forEach(direction => {
+        const arrow = arrowGroup.append("g")
+            .attr("class", `pan-arrow ${direction.dir}`)
+            .attr("transform", `translate(${direction.x}, ${direction.y})`)
+            .style("cursor", direction.dir === 'center' ? "default" : "pointer");
+
+        arrow.append("circle")
+            .attr("r", 15)
+            .attr("fill", direction.dir === 'center' ? "var(--border-color)" : "var(--bg-dark-secondary)")
+            .attr("stroke", "var(--border-color)")
+            .attr("stroke-width", 2);
+
+        arrow.append("text")
+            .attr("text-anchor", "middle")
+            .attr("dy", "0.35em")
+            .attr("fill", "var(--text-primary)")
+            .style("font-size", "1.2rem")
+            .text(direction.symbol);
+
+        if (direction.dir !== 'center') {
+            arrow.on("mouseover", function(event) {
+                d3.select(this).select("circle")
+                    .transition().duration(200)
+                    .attr("fill", "var(--accent-blue)");
+                showTooltip(event, `<strong>--pan ${direction.dir.replace('-', '')}</strong><br>Repositions subject in frame`);
+            })
+            .on("mouseout", function() {
+                if (currentState.pan !== direction.dir) {
+                    d3.select(this).select("circle")
+                        .transition().duration(200)
+                        .attr("fill", "var(--bg-dark-secondary)");
+                }
+                hideTooltip();
+            })
+            .on("click", function() {
+                panTo(direction.dir);
+            });
+        }
+    });
+
+    // Zoom slider
+    const zoomGroup = controlPanel.append("g")
+        .attr("class", "zoom-control")
+        .attr("transform", "translate(0, 130)");
+
+    zoomGroup.append("text")
+        .attr("x", 0).attr("y", -5)
+        .attr("fill", "var(--text-primary)")
+        .style("font-size", "0.9rem")
+        .text("Zoom Out:");
+
+    // HTML zoom slider
+    const controlPanelX = width - rightPanelWidth + 30;
+    const sliderTop = centerY + 90;
+    const zoomSlider = d3.select("#modal-chart").append("div")
+        .style("position", "absolute")
+        .style("top", `${sliderTop}px`)
+        .style("left", `${controlPanelX}px`)
+        .style("width", "120px");
+
+    const slider = zoomSlider.append("input")
+        .attr("type", "range")
+        .attr("min", 1.0)
+        .attr("max", 2.5)
+        .attr("step", 0.1)
+        .attr("value", 1.0)
+        .style("width", "100%")
+        .on("input", function() {
+            const zoomValue = +this.value;
+            zoomTo(zoomValue);
+        });
+
+    const zoomLabel = zoomSlider.append("div")
+        .style("text-align", "center")
+        .style("color", "var(--text-primary)")
+        .style("font-size", "0.8rem")
+        .style("margin-top", "5px")
+        .text("1.0x");
+
+    // Reset button
+    const resetBtn = controlPanel.append("g")
+        .attr("class", "reset-button")
+        .attr("transform", "translate(20, 180)")
+        .style("cursor", "pointer");
+
+    resetBtn.append("rect")
+        .attr("width", 60)
+        .attr("height", 25)
+        .attr("rx", 5)
+        .attr("fill", "var(--border-color)")
+        .attr("stroke", "var(--text-secondary)")
+        .attr("stroke-width", 1);
+
+    resetBtn.append("text")
+        .attr("x", 30).attr("y", 16)
+        .attr("text-anchor", "middle")
+        .attr("fill", "var(--text-primary)")
+        .style("font-size", "0.8rem")
+        .text("Reset");
+
+    resetBtn.on("mouseover", function() {
+        d3.select(this).select("rect")
+            .transition().duration(200)
+            .attr("fill", "var(--accent-green)");
+    })
+    .on("mouseout", function() {
+        d3.select(this).select("rect")
+            .transition().duration(200)
+            .attr("fill", "var(--border-color)");
+    })
+    .on("click", resetView);
+
+    // Command display
+    const commandY = captionY + 35;
+    const commandDisplay = svg.append("text")
+        .attr("x", centerX).attr("y", commandY)
+        .attr("text-anchor", "middle")
+        .attr("fill", "var(--accent-green)")
+        .style("font-family", "monospace")
+        .style("font-size", "0.9rem")
+        .style("font-weight", "500")
+        .text("Click arrows to pan or drag slider to zoom out")
+        .style("opacity", 0);
+
+    // Animation timeline
+    let timeline = 0;
+
+    // Phase 1: Introduction
+    timeline = updateCaption("Photography framing: original frame shows what MidJourney generates", timeline);
+    
+    expandedFrame.transition()
+        .delay(timeline - 3000)
+        .duration(800)
+        .style("opacity", 1);
+
+    viewportFrame.transition()
+        .delay(timeline - 2000)
+        .duration(800)
+        .style("opacity", 1);
+
+    originalLabel.transition()
+        .delay(timeline - 1500)
+        .duration(600)
+        .style("opacity", 1);
+
+    // Phase 2: Show scene
+    timeline = updateCaption("Zoom out reveals more of the scene beyond the original frame", timeline);
+
+    scene.style("opacity", 0)
+        .transition()
+        .delay(timeline - 3000)
+        .duration(1000)
+        .style("opacity", 1);
+
+    // Phase 3: Demo zoom
+    timeline = updateCaption("Pan repositions the subject within an expanded canvas", timeline);
+
+    setTimeout(() => {
+        zoomTo(1.8, true);
+        setTimeout(() => {
+            panTo('up', true);
+            setTimeout(() => {
+                resetView(true);
+            }, 2000);
+        }, 2000);
+    }, timeline - 4000);
+
+    // Phase 4: Show controls
+    timeline = updateCaption("Use controls to explore different framing options", timeline);
+
+    controlPanel.transition()
+        .delay(timeline - 2000)
+        .duration(800)
+        .style("opacity", 1);
+
+    commandDisplay.transition()
+        .delay(timeline - 1000)
+        .duration(600)
+        .style("opacity", 1);
+
+    // Core animation functions
+    function panTo(direction, isDemo = false) {
+        if (!isDemo) {
+            currentState.zoom = 1.0;
+            slider.property("value", 1.0);
+            zoomLabel.text("1.0x");
+        }
+        currentState.pan = direction;
+
+        arrowGroup.selectAll('.pan-arrow circle')
+            .transition().duration(300)
+            .attr("fill", d => "var(--bg-dark-secondary)");
+
+        arrowGroup.select(`.pan-arrow.${direction} circle`)
+            .transition().duration(300)
+            .attr("fill", "var(--accent-yellow)");
+
+        const panAmount = viewportWidth * 0.3;
+        let offsetX = 0, offsetY = 0;
+        
+        if (direction.includes('up')) offsetY = panAmount;
+        if (direction.includes('down')) offsetY = -panAmount;
+        if (direction.includes('left')) offsetX = panAmount;
+        if (direction.includes('right')) offsetX = -panAmount;
+
+        const newFrameSize = viewportWidth * 1.6;
+        expandedFrame.transition()
+            .duration(600)
+            .ease(d3.easeCubicOut)
+            .attr("x", -(newFrameSize - viewportWidth) / 2)
+            .attr("y", -(newFrameSize - viewportHeight) / 2)
+            .attr("width", newFrameSize)
+            .attr("height", newFrameSize);
+
+        sceneContainer.transition()
+            .duration(600)
+            .ease(d3.easeCubicOut)
+            .attr("transform", `translate(${offsetX}, ${offsetY})`);
+
+        const panCommand = direction === 'center' ? '' : `--pan ${direction.replace('-', '')}`;
+        commandDisplay.text(panCommand || "Original framing");
+    }
+
+    function zoomTo(zoomValue, isDemo = false) {
+        if (!isDemo) {
+            currentState.pan = null;
+            arrowGroup.selectAll('.pan-arrow circle')
+                .transition().duration(300)
+                .attr("fill", "var(--bg-dark-secondary)");
+            sceneContainer.transition()
+                .duration(600)
+                .attr("transform", "translate(0, 0)");
+        }
+        
+        currentState.zoom = zoomValue;
+        
+        if (!isDemo) {
+            zoomLabel.text(`${zoomValue.toFixed(1)}x`);
+        }
+
+        const scale = zoomValue;
+        const newSize = viewportWidth * scale;
+        expandedFrame.transition()
+            .duration(600)
+            .ease(d3.easeCubicOut)
+            .attr("x", -(newSize - viewportWidth) / 2)
+            .attr("y", -(newSize - viewportHeight) / 2)
+            .attr("width", newSize)
+            .attr("height", newSize);
+
+        const zoomCommand = zoomValue > 1.0 ? `--zoom ${zoomValue.toFixed(1)}` : '';
+        commandDisplay.text(zoomCommand || "Original framing");
+    }
+
+    function resetView(isDemo = false) {
+        currentState = { zoom: 1.0, pan: null };
+        
+        if (!isDemo) {
+            slider.property("value", 1.0);
+            zoomLabel.text("1.0x");
+        }
+
+        expandedFrame.transition()
+            .duration(600)
+            .ease(d3.easeCubicOut)
+            .attr("x", 0).attr("y", 0)
+            .attr("width", viewportWidth)
+            .attr("height", viewportHeight);
+
+        sceneContainer.transition()
+            .duration(600)
+            .ease(d3.easeCubicOut)
+            .attr("transform", "translate(0, 0)");
+
+        arrowGroup.selectAll('.pan-arrow circle')
+            .transition().duration(300)
+            .attr("fill", "var(--bg-dark-secondary)");
+
+        commandDisplay.text("Click arrows to pan or drag slider to zoom out");
+    }
+
+    // Cleanup function for modal close
+    function cleanup() {
+        if (zoomSlider.node()) {
+            zoomSlider.remove();
+        }
+    }
+
+    svg.node().cleanup = cleanup;
+}
+
+function drawQualityViz() {
+    const { svg, width, height, g, margin } = setupSVG();
+    
+    // Detect mobile
+    const isMobile = window.innerWidth <= 768;
+    
+    if (isMobile) {
+        // Mobile: Minimal message directing to desktop
+        const centerX = width / 2;
+        const centerY = height / 2;
+        
+        svg.append("text")
+            .attr("x", centerX).attr("y", centerY - 20)
+            .attr("text-anchor", "middle")
+            .attr("fill", "var(--accent-blue)")
+            .style("font-size", "1.2rem")
+            .style("font-weight", "600")
+            .text("🖥️ Open this file in desktop");
+        
+        svg.append("text")
+            .attr("x", centerX).attr("y", centerY + 10)
+            .attr("text-anchor", "middle")
+            .attr("fill", "var(--accent-yellow)")
+            .style("font-size", "1rem")
+            .style("font-weight", "500")
+            .text("to feel its beauty");
+            
+        return; // Exit early for mobile
+    }
+    
+    const vizData = [
+      {x: 0.25, y: 1.0, label: "--q 0.25", details: "Extremely fast, ideal for rapid concepting where detail is unimportant."},
+      {x: 0.5, y: 2.0, label: "--q 0.5", details: "Very fast with basic detail. Good for drafting multiple ideas quickly."},
+      {x: 1.0, y: 3.5, label: "--q 1", details: "The default. A solid balance of speed, cost, and high-quality detail."},
+      {x: 1.5, y: 4.5, label: "--q 1.5", details: "Slower and more costly, this adds a noticeable level of refinement and texture."},
+      {x: 2.0, y: 5.0, label: "--q 2", details: "Maximum detail and polish. Best for final renders when quality is paramount."}
+    ];
+
+    const x = d3.scaleLinear().domain([0, 2.2]).range([0, width]);
+    const y = d3.scaleLinear().domain([0, 5.5]).range([height, 0]);
+
+    const grid = g.append("g").style("opacity", 0);
+    grid.append("g").attr("transform", `translate(0,${height})`).call(d3.axisBottom(x).ticks(5).tickSize(-height).tickFormat("")).selectAll("line").attr("class", "grid-line");
+    grid.append("g").call(d3.axisLeft(y).ticks(5).tickSize(-width).tickFormat("")).selectAll("line").attr("class", "grid-line");
+    grid.transition().duration(1000).style("opacity", 1);
+    
+    const axes = g.append("g").style("opacity", 0);
+    axes.append("g").attr("transform", `translate(0,${height})`).call(d3.axisBottom(x).ticks(5));
+    axes.append("g").call(d3.axisLeft(y).ticks(5));
+    svg.append("text").attr("class", "axis-label").attr("x", margin.left + width / 2).attr("y", height + margin.top + 40).attr("text-anchor", "middle").text("Time / Effort →").style("opacity", 0).transition().duration(1000).delay(1000).style("opacity", 1);
+    svg.append("text").attr("class", "axis-label").attr("transform", "rotate(-90)").attr("x", -(margin.top + height / 2)).attr("y", 15).attr("text-anchor", "middle").text("Detail / Quality ↑").style("opacity", 0).transition().duration(1000).delay(1000).style("opacity", 1);
+    axes.transition().duration(1000).delay(500).style("opacity", 1);
+
+    const line = d3.line().x(d => x(d.x)).y(d => y(d.y)).curve(d3.curveCatmullRom.alpha(0.5));
+    const path = g.append("path").datum(vizData).attr("fill", "none").attr("stroke", "var(--accent-blue)").attr("stroke-width", 2).attr("stroke-dasharray", "4 4").attr("d", line);
+    const totalLength = path.node().getTotalLength();
+    path.attr("stroke-dasharray", totalLength).attr("stroke-dashoffset", totalLength).transition().duration(2000).delay(2000).ease(d3.easeSinOut).attr("stroke-dashoffset", 0);
+
+    g.selectAll("circle").data(vizData).enter().append("circle").attr("cx", d => x(d.x)).attr("cy", d => y(d.y)).attr("r", 0).attr("fill", "var(--accent-blue)").style("filter", "drop-shadow(0 0 5px var(--accent-blue))").on("mouseover", function(event, d) { d3.select(this).transition().duration(200).attr("r", 12).attr("fill", "var(--accent-yellow)"); showTooltip(event, `<strong>${d.label}</strong>${d.details}`); }).on("mouseout", function() { d3.select(this).transition().duration(200).attr("r", 8).attr("fill", "var(--accent-blue)"); hideTooltip(); }).transition().duration(800).delay((d, i) => 4000 + i * 300).ease(d3.easeElasticOut).attr("r", 8);
+
+    g.append("text").attr("class", "cta-text").attr("x", width/2).attr("y", height/2).attr("text-anchor", "middle").text("Hover dots for details").style("opacity", 0).transition().duration(1000).delay(6000).style("opacity", 1).transition().duration(1000).delay(8000).style("opacity", 0);
+}
+
+function drawAspectRatioViz() {
+    const { width, height, g, svg } = setupSVG();
+    
+    // Detect mobile
+    const isMobile = window.innerWidth <= 768;
+    
+    if (isMobile) {
+        // Mobile: Minimal message directing to desktop
+        const centerX = width / 2;
+        const centerY = height / 2;
+        
+        svg.append("text")
+            .attr("x", centerX).attr("y", centerY - 20)
+            .attr("text-anchor", "middle")
+            .attr("fill", "var(--accent-blue)")
+            .style("font-size", "1.2rem")
+            .style("font-weight", "600")
+            .text("🖥️ Open this file in desktop");
+        
+        svg.append("text")
+            .attr("x", centerX).attr("y", centerY + 10)
+            .attr("text-anchor", "middle")
+            .attr("fill", "var(--accent-yellow)")
+            .style("font-size", "1rem")
+            .style("font-weight", "500")
+            .text("to feel its beauty");
+            
+        return; // Exit early for mobile
+    }
+    
+    const vizData = [
+      {w: 1, h: 1, label: "1:1 Square", details: "The standard for social media profile pictures and Instagram grid posts. Excellent for centering a single subject, from portraits to product shots."},
+      {w: 16, h: 9, label: "16:9 Widescreen", details: "Cinematic and expansive. Use for YouTube thumbnails, desktop wallpapers, and epic landscapes. Captures a wide field of view, making it feel immersive."},
+      {w: 9, h: 16, label: "9:16 Vertical", details: "Perfect for mobile content like Instagram Stories, Reels, and TikTok. Fills the entire phone screen, ideal for grabbing attention on social feeds."},
+      {w: 4, h: 3, label: "4:3 Classic", details: "A balanced, traditional frame reminiscent of classic television and medium format film. Versatile for both print layouts and digital displays on tablets."},
+      {w: 3, h: 2, label: "3:2 Photography", details: "The standard for most DSLR cameras. A professional and familiar look that works beautifully for portraits, lifestyle shots, and printed photographs."}
+    ];
+    
+    const numCols = 3;
+    const numRows = Math.ceil(vizData.length / numCols);
+    const hPadding = 40;
+    const vPadding = 60;
+    
+    const availableHeight = height - 50;
+    const colWidth = (width - hPadding * (numCols - 1)) / numCols;
+    const rowHeight = (availableHeight - vPadding * (numRows - 1)) / numRows;
+
+    const node = g.selectAll("g").data(vizData).join("g")
+        .attr("transform", (d, i) => {
+            const col = i % numCols;
+            const row = Math.floor(i / numCols);
+            const xPos = col * (colWidth + hPadding) + colWidth / 2;
+            const yPos = row * (rowHeight + vPadding) + rowHeight / 2;
+            return `translate(${xPos}, ${yPos})`;
+        })
+        .style("cursor", "pointer")
+        .style("pointer-events", "none") 
+        .on("click", function(event, d) {
+            event.stopPropagation();
+            g.selectAll('rect').transition().duration(200).attr("stroke", "var(--accent-blue)").attr("stroke-width", 2);
+            d3.select(this).select("rect").transition().duration(200).attr("stroke", "var(--accent-yellow)").attr("stroke-width", 3);
+            showTooltip(event, `<strong>${d.label}</strong>${d.details}`);
+        });
+    
+    node.each(function(d, i) {
+        const group = d3.select(this);
+        const scale = Math.min(colWidth * 0.8 / d.w, rowHeight * 0.7 / d.h);
+        const rectW = d.w * scale;
+        const rectH = d.h * scale;
+
+        group.append("rect").attr("x", -rectW / 2).attr("y", -rectH / 2).attr("width", 0).attr("height", 0)
+            // THIS IS THE FIX: 'transparent' fill makes the shape clickable
+            .attr("fill", "transparent")
+            .attr("stroke", "var(--accent-blue)").attr("stroke-width", 2).attr("rx", 4)
+            .transition().duration(800).delay(i * 100).ease(d3.easeCubicOut)
+            .attr("width", rectW).attr("height", rectH)
+            .on("end", function() {
+                d3.select(this.parentNode).style("pointer-events", "auto");
+            });
+        
+        group.append("text").text(d => d.label.split(' ')[0]).attr("y", rectH / 2 + 25).attr("text-anchor", "middle")
+            .attr("fill", "var(--text-secondary)").style("font-size", "0.9rem").style("opacity", 0)
+            .transition().duration(800).delay(300 + i * 100).style("opacity", 1);
+    });
+    
+    const totalAnimationTime = 300 + vizData.length * 100;
+
+    g.append("text").attr("class", "cta-text")
+        .attr("x", width / 2)
+        .attr("y", height - 20)
+        .attr("text-anchor", "middle").text("Click any shape for details")
+        .style("opacity", 0).transition().duration(1000).delay(totalAnimationTime + 500).style("opacity", 1);
+}
+
+
+function drawStyleViz() {
+    const { svg, width, height, g, margin } = setupSVG();
+    
+    // Detect mobile
+    const isMobile = window.innerWidth <= 768;
+    
+    if (isMobile) {
+        // Mobile: Minimal message directing to desktop
+        const centerX = width / 2;
+        const centerY = height / 2;
+        
+        svg.append("text")
+            .attr("x", centerX).attr("y", centerY - 20)
+            .attr("text-anchor", "middle")
+            .attr("fill", "var(--accent-blue)")
+            .style("font-size", "1.2rem")
+            .style("font-weight", "600")
+            .text("🖥️ Open this file in desktop");
+        
+        svg.append("text")
+            .attr("x", centerX).attr("y", centerY + 10)
+            .attr("text-anchor", "middle")
+            .attr("fill", "var(--accent-yellow)")
+            .style("font-size", "1rem")
+            .style("font-weight", "500")
+            .text("to feel its beauty");
+            
+        return; // Exit early for mobile
+    }
+    
+    const vizData = [
+        {value:0, label:"--style raw --s 0", details:"Strictly photographic. Disables MidJourney's 'artistic opinion', resulting in images that look more like unedited photos."},
+        {value:100, label:"--style raw --s 100", details:"Documentary realism. Adds a subtle touch of composition and lighting, akin to a well-shot documentary film."},
+        {value:250, label:"--s 250 (Low)", details:"Tasteful and balanced. MidJourney's default aesthetic begins to appear, creating clean, professional, and aesthetically pleasing images."},
+        {value:500, label:"--s 500 (Medium)", details:"More artistic and stylized. Great for graphic illustrations, web banners, and images that need a strong, opinionated visual direction."},
+        {value:750, label:"--s 750 (High)", details:"Strongly stylized and often surreal. Perfect for posters, concept art, and creating unique, non-photorealistic visuals."},
+        {value:1000, label:"--s 1000 (Max)", details:"Maximum artistic interpretation. MidJourney takes creative liberty, producing highly abstract, experimental, and often unpredictable results."}
+    ];
+    const range = [0, 1000];
+
+    const x = d3.scaleLinear().domain(range).range([0, width]);
+    const y = d3.scaleLinear().domain([0, 1000]).range([height, 0]);
+
+    // Gridlines
+    g.append("g").call(d3.axisBottom(x).ticks(5).tickSize(-height).tickFormat("")).selectAll("line").attr("class", "grid-line").style("opacity", 0).transition().duration(1000).style("opacity", 1);
+    g.append("g").call(d3.axisLeft(y).ticks(5).tickSize(-width).tickFormat("")).selectAll("line").attr("class", "grid-line").style("opacity", 0).transition().duration(1000).style("opacity", 1);
+    
+    // Axes
+    g.append("g").attr("transform", `translate(0,${height})`).call(d3.axisBottom(x).tickFormat(d => `s ${d}`));
+    g.append("g").call(d3.axisLeft(y).ticks(5).tickFormat("")); 
+    
+    // Axis Labels
+    svg.append("text").attr("class", "axis-label").attr("x", margin.left + width / 2).attr("y", height + margin.top + 40).attr("text-anchor", "middle").text("Stylize Value →").style("opacity", 0).transition().delay(1000).duration(1000).style("opacity", 1);
+    svg.append("text").attr("class", "axis-label").attr("transform", "rotate(-90)").attr("x", -(margin.top + height / 2)).attr("y", 15).attr("text-anchor", "middle").text("Artistry Level ↑").style("opacity", 0).transition().delay(1000).duration(1000).style("opacity", 1);
+
+
+    // Diagonal Line
+    g.append("line")
+     .attr("x1", x(range[0])).attr("y1", y(range[0]))
+     .attr("x2", x(range[0])).attr("y2", y(range[0]))
+     .attr("stroke", "var(--accent-blue)").attr("stroke-width", 3)
+     .transition().duration(1500).delay(1500).ease(d3.easeCubicOut)
+     .attr("x2", x(range[1])).attr("y2", y(range[1]));
+         
+    // Static points along the line
+    const points = g.selectAll(".static-point").data(vizData).join("g")
+     .attr("transform", d => `translate(${x(d.value)}, ${y(d.value)})`)
+     .style("opacity", 0);
+    points.append("circle").attr("r", 5).attr("fill", "var(--text-primary)");
+    points.transition().duration(500).delay((d,i) => 3000 + i * 150).style("opacity", 1);
+
+    // Draggable Handle
+    const handle = g.append("circle").attr("r", 10).attr("fill", "var(--accent-yellow)").attr("cursor", "pointer")
+      .attr("cx", x(range[0])).attr("cy", y(range[0]))
+      .style("filter", "drop-shadow(0 0 6px var(--accent-yellow))")
+      .style("opacity", 0);
+    
+    handle.transition().delay(4000).duration(1000).style("opacity", 1);
+    
+    handle.call(d3.drag()
+      .on("drag", function(event) {
+          let posX = Math.max(0, Math.min(width, event.x));
+          let value = Math.round(x.invert(posX));
+          d3.select(this).attr("cx", x(value)).attr("cy", y(value));
+          const closest = vizData.reduce((a, b) => Math.abs(b.value - value) < Math.abs(a.value - value) ? b : a);
+          showTooltip(event.sourceEvent, `<strong>${closest.label}</strong> (${Math.round(value)})<br>${closest.details}`);
+      }).on("end", hideTooltip));
+
+    // CTA Text
+    g.append("text").attr("class", "cta-text").attr("x", width/2).attr("y", 40).attr("text-anchor", "middle").text("Drag the yellow handle").style("opacity", 0).transition().duration(1000).delay(5000).style("opacity", 1).transition().duration(1000).delay(7000).style("opacity", 0);
+}
+
+// Weights / --no visualization with proper pacing and responsiveness
+function drawWeightsViz() {
+    const { svg, width, height, g, margin } = setupSVG();
+    
+    // Detect mobile
+    const isMobile = window.innerWidth <= 768;
+    
+    if (isMobile) {
+        // Mobile: Minimal message directing to desktop
+        const centerX = width / 2;
+        const centerY = height / 2;
+        
+        svg.append("text")
+            .attr("x", centerX).attr("y", centerY - 20)
+            .attr("text-anchor", "middle")
+            .attr("fill", "var(--accent-blue)")
+            .style("font-size", "1.2rem")
+            .style("font-weight", "600")
+            .text("🖥️ Open this file in desktop");
+        
+        svg.append("text")
+            .attr("x", centerX).attr("y", centerY + 10)
+            .attr("text-anchor", "middle")
+            .attr("fill", "var(--accent-yellow)")
+            .style("font-size", "1rem")
+            .style("font-weight", "500")
+            .text("to feel its beauty");
+            
+        return; // Exit early for mobile
+    }
+
+    // Real prompt example split into responsive lines
+    const promptLines = [
+        "forest landscape with waterfall,",
+        "people hiking, birds flying",
+        "--no cars"
+    ];
+    
+    const data = [
+        {label: "waterfall", weight: 2, example: "waterfall::2", meaning: "Very prominent - dominates the scene"},
+        {label: "people", weight: 0, example: "people::0", meaning: "Normal appearance - balanced presence"},
+        {label: "birds", weight: -1, example: "birds::-1", meaning: "Barely visible - faded into background"},
+        {label: "cars", weight: 0, no: true, example: "--no cars", meaning: "Completely excluded from image"}
+    ];
+
+    const x = d3.scaleLinear().domain([-2, 2.5]).range([0, width]);
+    const size = d3.scaleSqrt().domain([0, 2]).range([8, 22]);
+    const color = d3.scaleDiverging([-2, 0, 2], d3.interpolateRdBu);
+
+    // Bottom caption system - moved to bottom to never cover work
+    const captionY = height + margin.bottom - 10;
+    const stepText = svg.append("text")
+        .attr("x", width/2).attr("y", captionY)
+        .attr("text-anchor", "middle")
+        .attr("fill", "var(--accent-yellow)")
+        .style("font-size", "0.9rem")
+        .style("font-weight", "500")
+        .style("opacity", 0);
+
+    function updateCaption(text, delay = 0) {
+        const words = text.split(' ');
+        const dwellTime = Math.max(4000, words.length * 333); // 3 words = 1 sec
+        const lineBreakPause = 3000; // 3s pause at end of logical breaks
+        
+        stepText.transition()
+            .delay(delay)
+            .duration(500)
+            .style("opacity", 0)
+            .transition()
+            .duration(500)
+            .text(text)
+            .style("opacity", 1)
+            .transition()
+            .delay(dwellTime + lineBreakPause)
+            .duration(500)
+            .style("opacity", 0);
+        
+        return delay + 500 + 500 + dwellTime + lineBreakPause + 500;
+    }
+
+    let timeline = 0;
+
+    // PHASE 1: Show prompt lines with proper timing (0-12s)
+    timeline = updateCaption("Here's a real MidJourney prompt we'll examine:", timeline);
+    
+    // Show prompt lines with responsive positioning
+    const promptContainer = svg.append("g").attr("transform", `translate(${width/2}, 60)`);
+    
+    promptLines.forEach((line, i) => {
+        const promptLine = promptContainer.append("text")
+            .attr("x", 0)
+            .attr("y", i * 25)
+            .attr("text-anchor", "middle")
+            .attr("fill", "var(--accent-blue)")
+            .style("font-size", "0.85rem")
+            .style("font-family", "monospace")
+            .style("font-weight", "500")
+            .style("opacity", 0)
+            .text(line);
+        
+        promptLine.transition()
+            .delay(timeline - 2000 + i * 1500) // 1.5s between lines
+            .duration(800)
+            .style("opacity", 1);
+    });
+
+    // Keep prompt visible longer, then fade
+    promptContainer.transition()
+        .delay(timeline + 8000)
+        .duration(1000)
+        .style("opacity", 0);
+
+    // PHASE 2: Explain weight concept (12-18s)
+    timeline = updateCaption("Weights control how much each concept appears in your image", timeline);
+    
+    const xAxis = g.append("g")
+        .attr("transform", `translate(0,${height/2})`)
+        .style("opacity", 0);
+    xAxis.call(d3.axisBottom(x).ticks(5))
+        .selectAll("text")
+        .attr("fill", "var(--text-secondary)");
+    
+    xAxis.transition()
+        .delay(timeline - 4000)
+        .duration(1500)
+        .style("opacity", 1);
+
+    // PHASE 3: Show neutral line (18-24s)
+    timeline = updateCaption("Zero means normal appearance. Left is less visible, right is more prominent", timeline);
+    
+    const zeroLine = g.append("line")
+        .attr("x1", x(0)).attr("x2", x(0))
+        .attr("y1", height/2).attr("y2", height/2)
+        .attr("stroke", "var(--accent-yellow)")
+        .attr("stroke-dasharray", "4,4")
+        .attr("stroke-width", 3)
+        .style("opacity", 0);
+    
+    zeroLine.transition()
+        .delay(timeline - 4000)
+        .duration(2000)
+        .attr("y1", 80).attr("y2", height - 60)
+        .style("opacity", 1);
+
+    // Add scale labels with slow animation
+    const leftLabel = g.append("text")
+        .attr("x", x(-1.5))
+        .attr("y", height/2 - 20)
+        .attr("text-anchor", "middle")
+        .attr("fill", color(-1))
+        .style("font-size", "0.85rem")
+        .style("font-weight", "600")
+        .style("opacity", 0)
+        .text("LESS VISIBLE");
+    
+    const rightLabel = g.append("text")
+        .attr("x", x(1.5))
+        .attr("y", height/2 - 20)
+        .attr("text-anchor", "middle")
+        .attr("fill", color(1))
+        .style("font-size", "0.85rem")
+        .style("font-weight", "600")
+        .style("opacity", 0)
+        .text("MORE PROMINENT");
+
+    leftLabel.transition()
+        .delay(timeline - 2500)
+        .duration(1000)
+        .style("opacity", 1);
+    
+    rightLabel.transition()
+        .delay(timeline - 1500)
+        .duration(1000)
+        .style("opacity", 1);
+
+    // PHASE 4: Place concepts slowly (24-35s)
+    timeline = updateCaption("Now let's place each concept according to its weight", timeline);
+    
+    const nodes = g.selectAll("g.node")
+        .data(data)
+        .join("g")
+        .attr("class", "node")
+        .attr("transform", d => `translate(${x(d.no ? -2.2 : d.weight)}, ${height/2})`)
+        .style("cursor", "pointer")
+        .style("opacity", 0);
+
+    // Slow staggered appearance - 2.5s between each concept
+    data.forEach((d, i) => {
+        const node = d3.select(nodes.nodes()[i]);
+        
+        node.transition()
+            .delay(timeline - 6000 + i * 2500)
+            .duration(1200)
+            .style("opacity", 1);
+    });
+
+    // Circles with slow growth
+    nodes.append("circle")
+        .attr("r", 0)
+        .attr("fill", d => {
+            if (d.no) return "#333";
+            if (d.weight === 0) return "none";
+            return color(d.weight);
+        })
+        .attr("stroke", d => {
+            if (d.no) return "#333";
+            if (d.weight === 0) return "#777";
+            return "none";
+        })
+        .attr("stroke-width", 2)
+        .attr("opacity", d => d.no ? 0.8 : (d.weight < 0 ? 0.6 : 1));
+
+    data.forEach((d, i) => {
+        const circle = d3.select(nodes.nodes()[i]).select("circle");
+        
+        circle.transition()
+            .delay(timeline - 6000 + i * 2500)
+            .duration(1200)
+            .attr("r", d.no ? 15 : size(Math.abs(d.weight) || 0.8))
+            .style("filter", d.weight > 0 ? "drop-shadow(0 0 10px rgba(88,166,255,0.7))" : null);
+    });
+
+    // Labels with smart positioning to avoid overlap
+    nodes.append("text")
+        .attr("text-anchor", "middle")
+        .attr("fill", "var(--text-primary)")
+        .style("font-size", "0.9rem")
+        .style("font-weight", "600")
+        .style("opacity", 0)
+        .text(d => d.label)
+        .attr("y", (d, i) => {
+            // Smart positioning based on weight to avoid overlap
+            if (d.no) return -30;
+            if (d.weight === 0) return 40;
+            if (d.weight > 0) return -30;
+            return 40;
+        });
+
+    // Weight example labels
+    nodes.append("text")
+        .attr("text-anchor", "middle")
+        .attr("fill", "var(--accent-blue)")
+        .style("font-size", "0.8rem")
+        .style("font-weight", "500")
+        .style("opacity", 0)
+        .text(d => d.example)
+        .attr("y", (d, i) => {
+            if (d.no) return -45;
+            if (d.weight === 0) return 55;
+            if (d.weight > 0) return -45;
+            return 55;
+        });
+
+    // Animate labels with delay after circles
+    data.forEach((d, i) => {
+        const node = d3.select(nodes.nodes()[i]);
+        
+        node.selectAll("text").transition()
+            .delay(timeline - 5000 + i * 2500)
+            .duration(800)
+            .style("opacity", 1);
+    });
+
+    // Add crosses for --no items with dramatic effect
+    nodes.filter(d => d.no)
+        .each(function(d, nodeIndex) {
+            const node = d3.select(this);
+            
+            const cross1 = node.append("line")
+                .attr("x1", 0).attr("x2", 0)
+                .attr("y1", 0).attr("y2", 0)
+                .attr("stroke", "#ff6b6b")
+                .attr("stroke-width", 4);
+            
+            const cross2 = node.append("line")
+                .attr("x1", 0).attr("x2", 0)
+                .attr("y1", 0).attr("y2", 0)
+                .attr("stroke", "#ff6b6b")
+                .attr("stroke-width", 4);
+            
+            cross1.transition()
+                .delay(timeline - 4000 + nodeIndex * 2500 + 800)
+                .duration(800)
+                .attr("x1", -12).attr("x2", 12)
+                .attr("y1", -12).attr("y2", 12);
+            
+            cross2.transition()
+                .delay(timeline - 4000 + nodeIndex * 2500 + 1200)
+                .duration(800)
+                .attr("x1", 12).attr("x2", -12)
+                .attr("y1", -12).attr("y2", 12);
+        });
+
+    // PHASE 5: Final explanation (35s+)
+    timeline = updateCaption("Hover any concept to learn exactly how it affects your image", timeline);
+
+    // Rich hover tooltips - ensure all nodes are hoverable
+    nodes
+        .style("pointer-events", "all")
+        .on("mouseover", function(event, d) {
+            const practical = d.no ? "This concept will NOT appear in your image at all" :
+                             (d.weight === 0 ? "This concept appears normally - not emphasized or de-emphasized" :
+                              d.weight > 0 ? `This concept will be VERY prominent and dominate the scene (${d.weight}x stronger)` :
+                              `This concept will barely be visible, pushed to the background (${Math.abs(d.weight)}x weaker)`);
+            
+            const usage = d.no ? "Use --no to completely exclude unwanted elements" :
+                         (d.weight === 0 ? "Use ::0 when you want something present but not dominant" :
+                          d.weight > 0 ? "Use positive weights (::1, ::2, ::3) to make things the focus" :
+                          "Use negative weights (::-1, ::-2) to minimize unwanted elements");
+            
+            const tip = `<strong>${d.label}</strong> ${d.example}<br><br>${practical}<br><br><em>${usage}</em>`;
+            showTooltip(event, tip);
+            
+            // Highlight on hover - make sure we target the circle properly
+            const circle = d3.select(this).select("circle");
+            if (!circle.empty()) {
+                circle.transition()
+                    .duration(300)
+                    .attr("stroke-width", 6)
+                    .style("filter", "drop-shadow(0 0 20px rgba(255,255,255,0.9))");
+            }
+        })
+        .on("mouseout", function(event, d) {
+            hideTooltip();
+            const circle = d3.select(this).select("circle");
+            if (!circle.empty()) {
+                circle.transition()
+                    .duration(300)
+                    .attr("stroke-width", 2)
+                    .style("filter", d.weight > 0 ? "drop-shadow(0 0 10px rgba(88,166,255,0.7))" : null);
+            }
+        });
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
+
