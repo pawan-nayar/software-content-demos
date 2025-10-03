@@ -25,7 +25,7 @@ Each folder includes its own `index.html` (mini-homepage), while this root READM
 
 ## 🚀 The Vision: Future of Software Content Documentation
 
-Most software tutorials today feel like **slides without a soul** — command dumps and screenshots. This repo is different. It was built to capture the **confusion, curiosity, and creativity** that real learners face when stepping into tools like GitHub, Salesforce, Adobe, or MidJourney.
+Most software tutorials today feel like **slides without a soul** — command dumps and screenshots. This repo is different. It was built to capture the **confusion, curiosity, and creativity** that real learners face when stepping into tools like GitHub, Salesforce, Anthropic, Python, Acrobat, or MidJourney.
 
 It is part of the **Life Long Learning Operating System (LLLOS) research**, founded by **Pawan Nayar**, which explores how software content can evolve into a **deep, interactive, role-based ecosystem**.
 
@@ -115,7 +115,7 @@ This repo is just a **seed**. Over time, it will expand to cover:
 * More modalities (interactive labs, 3D visualizations, audio explanations).
 * More layers (beginner → pro workflows, role-specific guides, multilingual editions).
 
-We are building a **living Operating System for Learning Content**.
+We are building a **living Operating System for Learning Content**. 
 
 ---
 
