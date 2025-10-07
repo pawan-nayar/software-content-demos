@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confusion Pair: Text-to-Image vs. Image-to-Image</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        /* --- Base Styles & Variables --- */
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #212529;
+            --muted-bg: #f8f9fa;
+            --border-color: #e9ecef;
+            --accent-color: #ea7a27;
+            --accent-hover: #d96d1a;
+            --header-bg: #212529;
+            --header-fg: #f8f9fa;
+            --neutral-gradient: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            --success-color: #16a34a;
+            --success-bg: #dcfce7;
+            --error-color: #dc2626;
+            --error-bg: #fee2e2;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        /* Global typography rhythm */
+        p { margin: 0 0 1rem; }
+        ul, ol { margin: 0 0 1rem 1.25rem; padding-left: 1.25rem; }
+        ul { list-style: disc; }
+        ol { list-style: decimal; }
+        li { margin: 0.35rem 0; }
+        pre, code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+        
+        /* --- Header & Footer --- */
+        .site-header {
+            background: var(--header-bg);
+            color: var(--header-fg);
+            padding: 14px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            position: sticky;
+            top: 0;
+            z-index: 60;
+        }
+        .logo {
+            font-weight: 700;
+            font-size: 1.15rem;
+            color: #fff;
+            text-decoration: none;
+        }
+        .site-header nav {
+            display: flex;
+            gap: 14px;
+        }
+        .site-header nav a {
+            color: #ced4da;
+            text-decoration: none;
+        }
+        .site-header nav a:hover {
+            color: #fff;
+            text-decoration: underline;
+        }
+        .site-footer {
+            background: var(--header-bg);
+            color: var(--header-fg);
+            padding: 14px 18px;
+            text-align: center;
+            margin-top: 2rem;
+        }
+        
+        /* --- Breadcrumbs & Intro --- */
+        .breadcrumbs {
+            margin: 1.5rem 0 1rem;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        .breadcrumbs a {
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+        .breadcrumbs a:hover {
+            text-decoration: underline;
+        }
+        .intro {
+            font-size: 1.05rem;
+            color: #495057;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+
+        h1, h2, h3 {
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+        
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        h2 {
+            font-size: 1.75rem;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+            margin-top: 2.5rem;
+        }
+        
+        section {
+            margin-bottom: 2rem;
+        }
+
+        /* --- Confusion Pair Card --- */
+        .confusion-pair-card {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            background: var(--muted-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .pair-item h3 {
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+
+        .formula {
+            font-family: monospace;
+            background: #e9ecef;
+            padding: 0.5rem;
+            border-radius: 6px;
+            display: inline-block;
+            margin-top: 0.5rem;
+            word-break: break-all;
+        }
+
+        .confusion-trigger {
+            grid-column: 1 / -1;
+            margin-top: 1rem;
+            padding: 1rem;
+            background: var(--error-bg);
+            color: var(--error-color);
+            border-radius: 8px;
+            border: 1px solid var(--error-color);
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        /* --- Comparison Table (Elegant Scroll) --- */
+        .table-container {
+            overflow-x: auto;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            margin: 1rem 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+            table-layout: fixed; /* prevents layout jumps and eaten first row */
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: top;
+            word-break: break-word;
+        }
+
+        thead th {
+            background-color: var(--text-color);
+            color: var(--bg-color);
+            position: static; /* avoid sticky overlapping the first row */
+            z-index: 1;
+        }
+        
+        thead .helper-text {
+            font-weight: 400;
+            font-size: 0.8rem;
+            color: #ced4da;
+            display: block;
+        }
+
+        tbody tr:first-child td { /* ensure first row is never visually hidden under header */
+            border-top: 1px solid var(--border-color);
+        }
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+        
+        tbody tr:nth-child(even) {
+            background-color: var(--muted-bg);
+        }
+
+        /* --- Mnemonics --- */
+        .mnemonics-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .mnemonic-card {
+            background: var(--neutral-gradient);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+        
+        .mnemonic-card .analogy {
+            font-size: 1.5rem;
+            font-weight: 800;
+        }
+        
+        .mnemonic-card .explanation {
+            margin-top: 0.5rem;
+            color: #495057;
+        }
+
+        /* --- Glossary Cloud --- */
+        .glossary-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            justify-content: center;
+        }
+
+        .glossary-chip {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            border-radius: 999px;
+            background:#fff7ed;
+            border:1px solid #ffd8a8;
+            color:#d9480f;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(253,126,20,.12);
+            transition: all 0.2s ease;
+        }
+
+        .glossary-chip:hover, .glossary-chip:focus {
+            background: #ffecde;
+            transform: translateY(-2px);
+        }
+        
+        .chip-tip {
+            position: fixed;
+            z-index: 101;
+            min-width: 240px;
+            max-width: min(92vw, 420px);
+            background: var(--accent-color);
+            color: #fff;
+            padding: 12px 14px;
+            border-radius: 12px;
+            box-shadow: 0 12px 28px rgba(253, 126, 20, .35);
+            opacity: 0;
+            visibility: hidden;
+            transition: .15s;
+            line-height: 1.45;
+        }
+
+        .chip-tip.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .chip-tip .arrow {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: var(--accent-color);
+            transform: rotate(45deg);
+        }
+        
+        /* --- Quick Quiz (Upgraded) --- */
+        .quiz-container {
+            padding: 20px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            background: #fff;
+        }
+        .quiz-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .quiz-btn {
+            background: var(--accent-color);
+            color: #fff;
+            border: none;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        .quiz-btn:hover { background-color: var(--accent-hover); }
+        .quiz-btn:disabled { background-color: #ced4da; cursor: not-allowed; }
+
+        .quiz-body { display: none; }
+        .quiz-body.active { display: block; }
+        .quiz-question { font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem; }
+        .quiz-options { display: grid; gap: 12px; }
+        .quiz-option label {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            background: #f8f9fa;
+            transition: all 0.2s ease;
+        }
+        .quiz-option label:hover { border-color: var(--accent-color); }
+        .quiz-option input[type="radio"] { flex-shrink: 0; }
+        .quiz-option .explanation { 
+            display: none; 
+            margin-top: 10px; 
+            padding: 15px; 
+            border-radius: 6px; 
+            border-left: 4px solid #a0aec0;
+            font-size: 0.9rem;
+        }
+
+        .quiz-option.selected.correct label { background: var(--success-bg); border-color: var(--success-color); }
+        .quiz-option.selected.wrong label { background: var(--error-bg); border-color: var(--error-color); }
+
+        .quiz-option.correct .explanation { border-left-color: var(--success-color); background: #f0fff4; }
+        .quiz-option.wrong .explanation { border-left-color: var(--error-color); background: #fff5f5; }
+        
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .quiz-feedback.correct {
+            background-color: var(--success-bg);
+            border: 1px solid var(--success-color);
+            display: block;
+        }
+
+        .quiz-feedback.incorrect {
+            background-color: var(--error-bg);
+            border: 1px solid var(--error-color);
+            display: block;
+        }
+        
+        /* --- FAQ Accordion --- */
+        .faq-accordion {
+            display: grid;
+            gap: 0.5rem;
+        }
+        .faq-question {
+            width: 100%;
+            background-color: var(--muted-bg);
+            border: 1px solid var(--border-color);
+            padding: 1rem 1.25rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-align: left;
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+        }
+        .faq-question::after {
+            content: '+';
+            font-size: 1.5rem;
+            color: var(--accent-color);
+            transition: transform 0.2s;
+        }
+        .faq-question[aria-expanded="true"]::after {
+            transform: rotate(45deg);
+        }
+        .faq-answer {
+            padding: 1.25rem;
+            border: 1px solid var(--border-color);
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            background-color: #fff;
+        }
+
+        /* --- Workflow Section --- */
+        .workflow-section {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+        .workflow-card {
+            background: var(--muted-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+        }
+        .workflow-card h3 {
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+        .workflow-card ul {
+            list-style: disc;
+            padding-left: 1.25rem;
+        }
+        .workflow-card li {
+            margin-bottom: 0.5rem;
+        }
+        .workflow-card h4 {
+            margin-top: 1rem;
+            font-weight: 600;
+        }
+        .workflow-pipeline {
+            margin-top: 1rem;
+            padding-left: 1rem;
+            border-left: 3px solid var(--accent-color);
+        }
+
+
+        /* --- Takeaway --- */
+        .takeaway {
+            text-align: center;
+            font-size: 1.25rem;
+            font-weight: 600;
+            padding: 2rem;
+            background: var(--text-color);
+            color: var(--bg-color);
+            border-radius: 12px;
+            line-height: 1.7;
+        }
+        .takeaway strong {
+            font-weight: 800;
+            font-size: 1.5rem;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+
+        /* --- Responsive Breakpoints --- */
+        @media (min-width: 640px) {
+            .confusion-pair-card, .workflow-section {
+                grid-template-columns: 1fr 1fr;
+            }
+            .mnemonics-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (min-width: 960px) {
+            .mnemonics-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <a class="logo" href="#">Beyond Dictionary</a>
+        <nav>
+            <a href="#">Learning</a>
+            <a href="#">Games</a>
+            <a href="#">Blog</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <main>
+            <nav class="breadcrumbs" aria-label="Breadcrumb">
+                <a href="#">AI Art</a> › <a href="#">Confusion Pairs</a> › <span>Text-to-Image vs. Image-to-Image</span>
+            </nav>
+            <h1>Text-to-Image vs. Image-to-Image</h1>
+            <p class="intro">
+                Understanding the difference between starting from a blank canvas and building upon an existing image is fundamental to mastering AI art workflows. This guide clarifies when to prompt from scratch and when to leverage visual references.
+            </p>
+
+            <!-- 1. Confusion Pair Card -->
+            <section aria-labelledby="confusion-pair-title">
+                <h2 id="confusion-pair-title">At a Glance</h2>
+                <div class="confusion-pair-card">
+                    <div class="pair-item">
+                        <h3>Text-to-Image</h3>
+                        <p>Creates entirely new images from written descriptions alone, with no visual input. The AI interprets your words and synthesizes a complete image from its training data, like an artist painting from a purely verbal commission.</p>
+                        <div class="formula">/imagine [your prompt]</div>
+                    </div>
+                    <div class="pair-item">
+                        <h3>Image-to-Image</h3>
+                        <p>Transforms or builds upon an existing image while maintaining aspects of its structure, composition, or style. The AI uses the source image as a foundation, making modifications guided by both the visual input and text prompts.</p>
+                        <div class="formula">img2img | ControlNet | IP-Adapter</div>
+                    </div>
+                    <div class="confusion-trigger">
+                        <strong>Common Misconception:</strong> Believing that a strong text prompt will completely override a source image, or that Text-to-Image can reliably recreate specific poses and compositions without a visual reference.
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. Comparison Table -->
+            <section aria-labelledby="comparison-title">
+                <h2 id="comparison-title">Side-by-Side Comparison</h2>
+                 <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Aspect <span class="helper-text">What we're comparing</span></th>
+                                <th>Text-to-Image</th>
+                                <th>Image-to-Image</th>
+                                <th>Why It's Confused</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Definition</strong></td>
+                                <td>Pure text prompt creates image from scratch.</td>
+                                <td>Existing image + optional text modifies or guides output.</td>
+                                <td>Both use prompts and AI models to create images.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Starting Point</strong></td>
+                                <td>Blank—no visual reference.</td>
+                                <td>Visual foundation that constrains possibilities.</td>
+                                <td>Both produce final images, obscuring the different origins.</td>
+                            </tr>
+                             <tr>
+                                <td><strong>Creative Control</strong></td>
+                                <td>Maximum creative freedom, minimum consistency.</td>
+                                <td>Constrained freedom, maximum structural consistency.</td>
+                                <td>Users expect full control in both workflows.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Prompt Role</strong></td>
+                                <td>Describes everything from scratch.</td>
+                                <td>Guides modifications to the existing visual.</td>
+                                <td>Prompts are used in both, creating false equivalence.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Consistency</strong></td>
+                                <td>Near-impossible to recreate exact poses or faces across images.</td>
+                                <td>Maintains structural elements and features across iterations.</td>
+                                <td>Both can generate "similar" results with enough effort.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Use Case</strong></td>
+                                <td>Exploration, concept generation, novel creations.</td>
+                                <td>Refinement, style transfer, character consistency, pose control.</td>
+                                <td>Both are used in iterative creative workflows.</td>
+                            </tr>
+                             <tr>
+                                <td><strong>Typical Workflow</strong></td>
+                                <td>Write → Generate → Refine prompt → Regenerate</td>
+                                <td>Upload → Adjust strength → Add guidance → Generate variants</td>
+                                <td>Both involve iteration and refinement.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- 3. Mnemonics -->
+            <section aria-labelledby="mnemonics-title">
+                <h2 id="mnemonics-title">Memory Aids</h2>
+                <div class="mnemonics-grid">
+                    <div class="mnemonic-card">
+                        <div class="analogy">Blank Page vs. Sketch</div>
+                        <p class="explanation"><strong>Text-to-Image</strong> starts from nothing like a writer facing a blank page. <strong>Image-to-Image</strong> starts with a sketch that you refine and color.</p>
+                    </div>
+                    <div class="mnemonic-card">
+                        <div class="analogy">Command vs. Collaboration</div>
+                         <p class="explanation"><strong>Text-to-Image</strong> is a command: "create this." <strong>Image-to-Image</strong> is collaboration: "here's what I have, help me change it."</p>
+                    </div>
+                    <div class="mnemonic-card">
+                        <div class="analogy">Lottery vs. Editing</div>
+                        <p class="explanation"><strong>Text-to-Image</strong> is a lottery—you might get lucky with consistency. <strong>Image-to-Image</strong> is editing—you control what stays and what changes.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 4. Glossary Cloud -->
+            <section aria-labelledby="glossary-title">
+                <h2 id="glossary-title">Glossary Cloud</h2>
+                <div class="glossary-cloud" id="glossaryCloud">
+                    <!-- Chips will be inserted by JS -->
+                </div>
+            </section>
+
+            <!-- 5. Quick Quiz -->
+            <section aria-labelledby="quiz-title">
+                <h2 id="quiz-title">Quick Quiz</h2>
+                <div class="quiz-container">
+                    <div class="quiz-navigation">
+                        <button class="quiz-btn" id="quizPrevBtn">❮</button>
+                        <span class="question-counter">
+                            <span id="quizCurrentQ">1</span> of <span id="quizTotalQ">6</span>
+                        </span>
+                        <button class="quiz-btn" id="quizNextBtn">❯</button>
+                    </div>
+                    <div id="quiz-body-container">
+                        <!-- Quiz questions will be injected here by JS -->
+                    </div>
+                </div>
+            </section>
+            
+            <!-- 6. When to Use Each Workflow -->
+            <section aria-labelledby="workflow-title">
+                <h2 id="workflow-title">When to Use Each Workflow</h2>
+                <div class="workflow-section">
+                    <div class="workflow-card">
+                        <h3>Text-to-Image</h3>
+                        <p>Best for the start of the creative process when ideas are fluid.</p>
+                        <h4>Use Cases:</h4>
+                        <ul>
+                            <li>Initial concept exploration</li>
+                            <li>Creating completely original compositions</li>
+                            <li>Rapid ideation with different variations</li>
+                            <li>Seeking surprising, unexpected results</li>
+                        </ul>
+                        <h4>Workflow:</h4>
+                        <ol>
+                            <li>Craft descriptive prompt.</li>
+                            <li>Generate multiple variations.</li>
+                            <li>Refine prompt based on results.</li>
+                            <li>Repeat until a strong foundation is found.</li>
+                        </ol>
+                    </div>
+                    <div class="workflow-card">
+                        <h3>Image-to-Image</h3>
+                        <p>Best for refinement and production when consistency is key.</p>
+                        <h4>Use Cases:</h4>
+                        <ul>
+                            <li>Maintaining specific poses or characters</li>
+                            <li>Applying a consistent style (Style Transfer)</li>
+                            <li>Iterative refinement of existing concepts</li>
+                            <li>Fixing or modifying parts of an image</li>
+                        </ul>
+                         <h4>Workflow:</h4>
+                         <ol>
+                            <li>Upload source image (photo, sketch, etc).</li>
+                            <li>Set strength (how much to preserve).</li>
+                            <li>Add text prompt for modifications.</li>
+                            <li>Generate controlled variations.</li>
+                        </ol>
+                    </div>
+                </div>
+                <h3 style="margin-top: 2rem;">Blending Both for Maximum Control</h3>
+                <div class="workflow-pipeline">
+                    <p>Advanced workflows almost always combine both approaches in a specific order for the best results.</p>
+                    <h4>The Standard Pipeline:</h4>
+                    <ol>
+                        <li><strong>Text-to-Image:</strong> Generate dozens of initial concepts to explore possibilities.</li>
+                        <li><strong>Select Best:</strong> Choose the strongest image that has the core elements you want.</li>
+                        <li><strong>Image-to-Image:</strong> Use the selected image as a base for controlled refinement.</li>
+                        <li><strong>ControlNet/IP-Adapter:</strong> Lock specific features (pose, face, style) while varying others with new prompts.</li>
+                    </ol>
+                </div>
+            </section>
+
+            <!-- NEW: Example Prompts Table -->
+            <section aria-labelledby="examples-title">
+                <h2 id="examples-title">Practical Examples: Prompts & Processes</h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Theme/Goal</th>
+                                <th>Text-to-Image Approach</th>
+                                <th>Image-to-Image Approach</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Consistent Character</strong></td>
+                                <td><em>Prompt:</em> "photo of a young south asian girl, smiling, long black hair, wearing a red jacket, cinematic lighting" (Results will vary each time).</td>
+                                <td><em>Process:</em> Use best result from T2I as a reference. <em>Prompt:</em> "...wearing a blue scarf, in a snowy park" (using IP-Adapter for face).</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Logo Ideation</strong></td>
+                                <td><em>Prompt:</em> "minimalist logo for 'The Daily Grind', icon of a coffee bean and a clock, vector, simple" (Good for wide exploration).</td>
+                                <td><em>Process:</em> Use a rough sketch of a bean/clock as a reference. <em>Prompt:</em> "...clean lines, monochrome, professional branding" (using low strength).</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Architectural Redesign</strong></td>
+                                <td><em>Prompt:</em> "ultra-modern house, glass walls, infinity pool, lush garden, photorealistic, sunset" (Generates brand new concepts).</td>
+                                <td><em>Process:</em> Use a photo of an existing house. <em>Prompt:</em> "...in the style of Zaha Hadid, curved organic forms, concrete and wood".</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Changing Art Style</strong></td>
+                                <td><em>Prompt:</em> "a portrait of a cat, oil painting" (Generates a new, random cat painting).</td>
+                                <td><em>Process:</em> Use a photo of *your* cat. <em>Prompt:</em> "...in the style of Van Gogh, impressionist, heavy brushstrokes" (Style Transfer).</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Achieving a Specific Pose</strong></td>
+                                <td><em>Prompt:</em> "a superhero landing on one knee, dramatic pose" (Often fails to get the exact pose right).</td>
+                                <td><em>Process:</em> Use a reference image/3D model of the pose. <em>Prompt:</em> "a spiderman character..." (using ControlNet OpenPose).</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- 7. FAQ Section -->
+            <section aria-labelledby="faq-title">
+                <h2 id="faq-title">Frequently Asked Questions</h2>
+                <div class="faq-accordion" id="faqAccordion">
+                    <!-- FAQs will be inserted by JS -->
+                </div>
+            </section>
+
+            <!-- 8. Takeaway -->
+            <section aria-labelledby="takeaway-title">
+                 <h2 id="takeaway-title" class="sr-only" style="display:none;">Takeaway</h2>
+                <div class="takeaway">
+                    <strong>Master when to explore versus when to refine.</strong>
+                    Use Text-to-Image for maximum creative freedom when you need new ideas. Switch to Image-to-Image for maximum control and consistency once you have a concept worth building on.
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <footer class="site-footer">
+        <small>© 2025 Beyond Dictionary</small>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- DATA (Single Source of Truth) ---
+            const glossaryData = [
+                { term: 'Text-to-Image', emoji: '✏️', definition: 'The process of generating an image from a written description (prompt) with no visual input.' },
+                { term: 'Image-to-Image', emoji: '🖼️', definition: 'The process of transforming a source image using AI, guided by a text prompt and parameters like "strength".' },
+                { term: 'ControlNet', emoji: '📐', definition: 'A powerful technique used with Image-to-Image that allows you to copy composition, poses, or edges from a reference image.' },
+                { term: 'IP-Adapter', emoji: '🎭', definition: 'Stands for Image Prompt Adapter. A method to transfer the style or character likeness from a reference image to a new generation.' },
+                { term: 'img2img', emoji: '🔄', definition: 'A common shorthand for the Image-to-Image process, particularly in interfaces like Stable Diffusion.' },
+                { term: 'Reference Image', emoji: '📌', definition: 'The input visual used in an Image-to-Image workflow to guide the AI\'s output.' },
+                { term: 'Pose Transfer', emoji: '💃', definition: 'Using a tool like ControlNet to apply the pose from a reference image to a newly generated character.' },
+                { term: 'Style Transfer', emoji: '🎨', definition: 'Applying the artistic style (e.g., color, texture) of one image to the content of another.' },
+                { term: 'Denoising Strength', emoji: '🌊', definition: 'A key setting in Image-to-Image that controls how much the AI alters the original image. High strength = more change, low strength = less change.' },
+                { term: 'Prompt Weight', emoji: '⚖️', definition: 'Emphasizing certain words in a text prompt to increase their influence on the final image.' },
+                { term: 'Seed', emoji: '🌱', definition: 'A number used to initialize the AI\'s random generation. Using the same seed with the same prompt creates the same image.' },
+                { term: 'Character Consistency', emoji: '👯', definition: 'The challenge of recreating the same character, especially facial features, across multiple AI generations.' }
+            ];
+            
+            const quizData = [
+                 { 
+                    question: "You need to create 10 variations of the same character in different outfits and settings, but the face and body proportions must remain identical. Which approach gives you the most reliable consistency?",
+                    correct: 1,
+                    options: [
+                        { text: "Text-to-Image with detailed character descriptions", explanation: "Incorrect. Even with a perfect prompt, Text-to-Image will generate slight variations in facial features and proportions every time." },
+                        { text: "Image-to-Image using one reference image", explanation: "✅ Correct! Using a single image as a base (with tools like IP-Adapter or ControlNet) is the standard workflow for maintaining character consistency." },
+                        { text: "They're equally effective for this task", explanation: "Incorrect. Image-to-Image is vastly superior for consistency." }
+                    ]
+                },
+                {
+                    question: "You have a very specific composition in mind from a rough sketch you drew. What is the best way to bring it to life?",
+                    correct: 1,
+                    options: [
+                        { text: "Describing the sketch in a detailed Text-to-Image prompt", explanation: "Incorrect. It's extremely difficult for AI to perfectly match a complex described composition without a visual guide." },
+                        { text: "Using the sketch as a reference in an Image-to-Image workflow with ControlNet", explanation: "✅ Correct! This is precisely what tools like ControlNet (scribble or canny models) are designed for—adhering to a source image's structure." },
+                        { text: "Generating random images until one matches the sketch", explanation: "Incorrect. This would be incredibly inefficient and is unlikely to succeed." }
+                    ]
+                },
+                {
+                    question: "Your goal is to brainstorm a wide variety of completely new and unexpected logo ideas for a brand. Which workflow is most suitable for this initial exploratory phase?",
+                    correct: 0,
+                    options: [
+                        { text: "Text-to-Image", explanation: "✅ Correct! Text-to-Image offers maximum creative freedom and is perfect for generating a diverse range of concepts when you don't have a visual starting point." },
+                        { text: "Image-to-Image", explanation: "Incorrect. Image-to-Image is for refining or transforming an existing idea, not for pure, unconstrained brainstorming." },
+                        { text: "Both are equally good for initial exploration", explanation: "Incorrect. Text-to-Image is far better suited for the initial exploratory phase." }
+                    ]
+                },
+                {
+                    question: "In an Image-to-Image workflow, what does a 'high denoising strength' setting typically do?",
+                    correct: 1,
+                    options: [
+                        { text: "It makes the output rely more on the source image", explanation: "Incorrect. This describes a *low* denoising strength, which preserves the original image." },
+                        { text: "It makes the output rely more on the text prompt, ignoring the source image", explanation: "✅ Correct! High denoising strength tells the AI to add more 'noise' and then rebuild the image based more heavily on the text prompt, allowing for greater deviation from the source." },
+                        { text: "It improves the image quality without changing the content", explanation: "Incorrect. Denoising strength directly controls the balance between the source image and the prompt, fundamentally changing the content." }
+                    ]
+                },
+                 {
+                    question: "You want to apply the artistic style of a Van Gogh painting to a photograph of your house. What is this specific technique called?",
+                    correct: 2,
+                    options: [
+                        { text: "Pose Transfer", explanation: "Incorrect. Pose transfer copies the pose of a character, not the overall artistic style." },
+                        { text: "Concept Blending", explanation: "Incorrect. This is a more general term. 'Style Transfer' is the specific name for this technique." },
+                        { text: "Style Transfer", explanation: "✅ Correct! Style Transfer is a classic Image-to-Image use case where the aesthetic of one image (the style) is applied to the content of another." }
+                    ]
+                },
+                {
+                    question: "What is the primary purpose of using a 'seed' number in AI image generation?",
+                    correct: 2,
+                    options: [
+                        { text: "To increase the randomness of the output", explanation: "Incorrect. Using a fixed seed *removes* randomness to ensure the result is the same every time." },
+                        { text: "To make the generation process faster", explanation: "Incorrect. The seed number doesn't affect the speed of generation." },
+                        { text: "To create reproducible and consistent results", explanation: "✅ Correct! Using the same seed, prompt, and settings allows you to regenerate the exact same image, which is crucial for making small, iterative changes." }
+                    ]
+                }
+            ];
+
+            const faqData = {
+                "Core Concepts": [
+                    { q: 'Can text prompts in Image-to-Image completely override the starting image?', a: 'Not completely. The source image always exerts influence—even at low strength settings, compositional elements, palettes, and structure tend to persist. You can dramatically transform an image with high denoising and strong guidance, but foundational aspects remain anchored to the original reference, especially composition and silhouette.' },
+                    { q: 'Are Text-to-Image and Image-to-Image mutually exclusive?', a: 'No. They exist on a spectrum controlled by the amount of visual guidance and the denoising strength. Pure Text-to-Image starts from noise with only your words. Image-to-Image adds an anchor image that biases the result. Many tools let you blend both, e.g., reference images, style adapters, pose maps.' },
+                    { q: 'What does “strength” mean in Image-to-Image?', a: 'Strength (or denoising) controls how strictly the model respects the reference. Low strength preserves layout and shapes; high strength allows larger departures driven by your prompt. It is not a quality slider—rather, it is a dial between “copy the source” and “rebuild from the idea.”' }
+                ],
+                "Professional Workflow": [
+                    { q: 'When should I switch from Text-to-Image to Image-to-Image?', a: 'Start with Text-to-Image to explore many compositions quickly. Once you have a promising frame, switch to Image-to-Image to iterate with control—stabilising pose, perspective, and character identity. This two‑stage approach accelerates exploration while preserving consistency in later production steps.' },
+                    { q: 'How do I keep consistent faces across a generated series?', a: 'Pick one strong face from Text‑to‑Image, then iterate with Image‑to‑Image using face/IP‑Adapter plus low‑to‑medium strength. Lock pose with ControlNet when needed. Avoid constantly re‑rolling from scratch—carry the same base forward so tiny features (eye distance, jawline) remain stable.' },
+                    { q: 'Can ControlNet maintain both composition and style simultaneously?', a: 'Yes. Use ControlNet for structure (pose/edges/depth) while applying a style reference or adapter for aesthetics. Treat them as separate channels: one governs the “where” (shapes and layout), the other the “how” (color and texture). Balancing both yields reliable, art‑directable results.' }
+                ],
+                "Troubleshooting": [
+                    { q: 'Why does my Image-to-Image output ignore parts of my text prompt?', a: 'Reference influence can overpower text. Lower the image weight/strength, add regional prompting or masks for targeted edits, and ensure the requested element is plausible in the given layout. If the scene fundamentally contradicts the prompt, recompose with Text‑to‑Image before returning to Image‑to‑Image.' },
+                    { q: 'When is Text-to-Image the better choice?', a: 'Use Text‑to‑Image when you need new compositions, when no suitable reference exists, or when surprise and variety matter more than strict control. It is ideal for moodboards, early ideation, and discovering framing you wouldn’t have drawn yourself.' },
+                    { q: 'Can I chain both methods in one pipeline?', a: 'Absolutely. A common pipeline is: Text‑to‑Image for dozens of ideas → select one → Image‑to‑Image for controlled refinement → optional ControlNet/IP‑Adapter for pose, face, or style locking. This chain preserves creative breadth up front and production reliability at the end.' }
+                ]
+            };
+            
+            // --- INITIALIZATION ---
+            function initializeAll() {
+                setupGlossary();
+                setupQuiz();
+                setupFaqAccordion();
+            }
+
+            // --- COMPONENT SETUP FUNCTIONS ---
+            function setupGlossary() {
+                const cloud = document.getElementById('glossaryCloud');
+                if (!cloud) return;
+                cloud.innerHTML = glossaryData.map(kw => `<button class="glossary-chip" type="button"><span class="icon">${kw.emoji || '🔸'}</span><span>${kw.term}</span></button>`).join('');
+                const tip = document.createElement('div');
+                tip.className = 'chip-tip';
+                tip.innerHTML = '<div class="arrow" aria-hidden="true"></div><div class="tip-content"></div>';
+                document.body.appendChild(tip);
+                const tipContent = tip.querySelector('.tip-content');
+                const tipArrow = tip.querySelector('.arrow');
+                let openBtn = null;
+                function clamp(n, min, max){ return Math.max(min, Math.min(n, max)); }
+
+                function positionTipFor(btn){
+                    const rect = btn.getBoundingClientRect();
+                    const vw = window.innerWidth;
+                    const pad = 8;
+                    tip.style.maxWidth = Math.min(vw - pad*2, 420) + 'px';
+                    const tipRect = tip.getBoundingClientRect();
+                    const preferTop = rect.top > (window.innerHeight - rect.bottom);
+                    const top = preferTop ? rect.top - tipRect.height - 12 : rect.bottom + 12;
+                    const left = clamp(rect.left + rect.width/2 - tipRect.width/2, pad, vw - tipRect.width - pad);
+                    tip.style.top = Math.max(8, top) + 'px';
+                    tip.style.left = left + 'px';
+                    tipArrow.style.top = preferTop ? (tipRect.height - 6) + 'px' : '-6px';
+                    tipArrow.style.left = clamp(rect.left + rect.width/2 - left - 6, 10, tipRect.width - 22) + 'px';
+                }
+
+                function openTip(btn, text){ tipContent.innerHTML = text; tip.classList.add('show'); positionTipFor(btn); openBtn = btn; }
+                function closeTip(){ tip.classList.remove('show'); openBtn = null; }
+
+                cloud.querySelectorAll('.glossary-chip').forEach((btn, i) => {
+                    const def = glossaryData[i].definition;
+                    btn.addEventListener('mouseover', () => { openTip(btn, def); });
+                    btn.addEventListener('focus', () => { openTip(btn, def); });
+                    btn.addEventListener('mouseout', closeTip);
+                    btn.addEventListener('blur', closeTip);
+                });
+                
+                window.addEventListener('resize', () => { if(openBtn) positionTipFor(openBtn); });
+                window.addEventListener('scroll', () => { if(openBtn) positionTipFor(openBtn); }, { passive: true });
+            }
+
+            function setupQuiz() {
+                const bodyContainer = document.getElementById('quiz-body-container');
+                const prevBtn = document.getElementById('quizPrevBtn');
+                const nextBtn = document.getElementById('quizNextBtn');
+                const currentQSpan = document.getElementById('quizCurrentQ');
+                const totalQSpan = document.getElementById('quizTotalQ');
+                if (!bodyContainer) return;
+                
+                let currentQuestionIndex = 0;
+                totalQSpan.textContent = quizData.length;
+
+                function renderQuestion() {
+                    const qData = quizData[currentQuestionIndex];
+                    let optionsHTML = qData.options.map((opt, index) => `
+                        <div class="quiz-option" data-option-index="${index}">
+                            <label>
+                                <input type="radio" name="q${currentQuestionIndex}" value="${index}">
+                                <span>${opt.text}</span>
+                            </label>
+                            <div class="explanation">${opt.explanation}</div>
+                        </div>`).join('');
+                    
+                    bodyContainer.innerHTML = `<div class="quiz-body active">
+                        <p class="quiz-question">${qData.question}</p>
+                        <div class="quiz-options">${optionsHTML}</div>
+                    </div>`;
+
+                    currentQSpan.textContent = currentQuestionIndex + 1;
+                    prevBtn.disabled = currentQuestionIndex === 0;
+                    nextBtn.disabled = currentQuestionIndex === quizData.length - 1;
+
+                    bodyContainer.querySelectorAll('.quiz-option input').forEach(radio => {
+                        radio.addEventListener('change', handleOptionSelect);
+                    });
+                }
+
+                function handleOptionSelect(e) {
+                    const selectedOptionIndex = parseInt(e.target.value);
+                    const qData = quizData[currentQuestionIndex];
+                    const parentQuestionDiv = e.target.closest('.quiz-body');
+                    
+                    parentQuestionDiv.querySelectorAll('.quiz-option').forEach(optDiv => {
+                        optDiv.classList.remove('selected', 'correct', 'wrong');
+                        optDiv.querySelector('.explanation').style.display = 'none';
+                        optDiv.querySelector('input').disabled = true; // Disable all options
+                    });
+                    
+                    const selectedOptionDiv = e.target.closest('.quiz-option');
+                    selectedOptionDiv.classList.add('selected');
+                    selectedOptionDiv.querySelector('.explanation').style.display = 'block';
+                    
+                    if (selectedOptionIndex === qData.correct) {
+                        selectedOptionDiv.classList.add('correct');
+                    } else {
+                        selectedOptionDiv.classList.add('wrong');
+                        const correctOptionDiv = parentQuestionDiv.querySelector(`.quiz-option[data-option-index="${qData.correct}"]`);
+                        correctOptionDiv.classList.add('correct');
+                        // No need to show explanation for correct one unless user clicks it
+                    }
+                }
+
+                prevBtn.addEventListener('click', () => { 
+                    if (currentQuestionIndex > 0) { 
+                        currentQuestionIndex--; 
+                        renderQuestion(); 
+                    } 
+                });
+
+                nextBtn.addEventListener('click', () => { 
+                    if (currentQuestionIndex < quizData.length - 1) { 
+                        currentQuestionIndex++; 
+                        renderQuestion(); 
+                    } 
+                });
+
+                renderQuestion();
+            }
+
+            function setupFaqAccordion() {
+                const faqAccordion = document.getElementById('faqAccordion');
+                if (!faqAccordion) return;
+
+                // Render grouped FAQs similar to the reference pattern
+                for (const group in faqData) {
+                    const header = document.createElement('h3');
+                    header.textContent = group;
+                    faqAccordion.appendChild(header);
+
+                    const groupWrap = document.createElement('div');
+                    groupWrap.className = 'accordion';
+
+                    faqData[group].forEach(item => {
+                        const faqItem = document.createElement('div');
+
+                        const question = document.createElement('button');
+                        question.className = 'faq-question';
+                        question.setAttribute('aria-expanded', 'false');
+                        question.innerHTML = item.q;
+
+                        const answer = document.createElement('div');
+                        answer.className = 'faq-answer';
+                        answer.hidden = true;
+                        answer.innerHTML = `<p>${item.a}</p>`;
+
+                        faqItem.appendChild(question);
+                        faqItem.appendChild(answer);
+                        groupWrap.appendChild(faqItem);
+                    });
+
+                    faqAccordion.appendChild(groupWrap);
+                }
+
+                faqAccordion.addEventListener('click', e => {
+                    const question = e.target.closest('.faq-question');
+                    if (!question) return;
+
+                    const isExpanded = question.getAttribute('aria-expanded') === 'true';
+                    question.setAttribute('aria-expanded', !isExpanded);
+                    question.nextElementSibling.hidden = isExpanded;
+                });
+            }
+
+            // --- RUN INITIALIZATION ---
+            initializeAll();
+        });
+    </script>
+</body>
+</html>
+
