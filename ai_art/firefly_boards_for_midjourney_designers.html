@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Firefly Boards for Midjourney Designers: A Complete How-To Guide</title>
+  <meta name="description" content="A complete how-to guide for Midjourney users transitioning to Adobe Firefly Boards. Learn to remix, use style references, collaborate, and master a new creative workflow.">
+  <meta name="keywords" content="Adobe Firefly, Firefly Boards, Midjourney, Generative AI, AI for Designers, AI Workflow, Moodboard, AI Collaboration">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ================= Base / Theme ================= */
+    :root {
+      --text:#212529; --bg:#fff; --muted:#f8f9fa; --border:#e9ecef;
+      --accent:#fd7e14; --accent-2:#e87312; --accent-soft:#fff7ed; --header-bg:#212529; --header-fg:#f8f9fa;
+      --ok:#16a34a; --ok-soft:#dcfce7; --bad:#dc2626; --bad-soft:#fee2e2;
+      --tip-bg: var(--accent-soft); --tip-border: var(--accent);
+      --translation-bg: var(--muted); --translation-border: var(--border);
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;}
+    .container{max-width:800px;margin:auto;padding:24px;background:#fff}
+    a{color:var(--accent);text-decoration:none}
+    a:hover{text-decoration:underline}
+
+    /* ================= Header / Footer / Breadcrumbs ================= */
+    .site-header,.site-footer{background:var(--header-bg);color:var(--header-fg);padding:14px 24px}
+    .site-header{position:sticky;top:0;z-index:100}
+    .site-footer{text-align:center;margin-top:50px;padding:40px}
+
+    /* ================= Typography & Layout ================= */
+    h1{font-size:clamp(2rem,5vw,2.6rem);text-align:left;margin-bottom:8px;color:var(--text);line-height:1.2}
+    .byline{font-size:clamp(1rem,3vw,1.2rem);font-style:italic;color:#4a5568;margin-bottom:24px}
+    h2{font-size:clamp(1.5rem,4vw,2rem);color:var(--text);margin:48px 0 16px;border-bottom:2px solid var(--border);padding-bottom:8px}
+    h3{font-size:clamp(1.2rem,3vw,1.5rem);color:var(--text);margin-top:32px;margin-bottom:12px}
+    h4{font-size:clamp(1rem,2.5vw,1.2rem);font-weight:bold;color:var(--accent-2);margin-bottom:10px}
+    p{margin-bottom:16px;word-wrap:break-word}
+    ul{margin-left:24px;margin-bottom:24px;list-style:disc;padding-left:1.25rem}
+    li{margin-bottom:12px;padding-left:0.25em}
+    .intro{font-size:1.1rem;line-height:1.8;background:var(--muted);padding:24px;border-radius:12px;border-left:4px solid var(--accent);margin:24px 0}
+    .img-frame{width:100%;border-radius:12px;margin:16px 0 24px;box-shadow:0 4px 15px rgba(0,0,0,0.1)}
+    .img-frame img{width:100%;display:block;border-radius:12px}
+    code{background:#f3e8ff;color:var(--accent-2);padding:2px 6px;border-radius:4px;font-family:'Courier New',Courier,monospace;word-break:break-all}
+
+    /* ================= Structural & Callout Elements ================= */
+    .table-wrap{position:relative;border:1px solid var(--border);border-radius:12px;background:#fff;margin:24px 0}
+    .table-scroll{position:relative;overflow-x:auto}
+    table.data-table{width:100%;border-collapse:collapse;}
+    table.data-table th, table.data-table td{padding:14px 16px;border:1px solid var(--border);text-align:left;vertical-align:top;}
+    table.data-table thead th{background:var(--muted);font-weight:600;}
+    .callout { padding: 16px; margin: 20px 0; border-left: 4px solid var(--accent); border-radius: 8px; background: var(--accent-soft); }
+    .callout p:last-child { margin-bottom: 0; }
+    .pro-tip { background-color: var(--accent-soft); border-color: var(--accent); }
+    .midjourney-translation { background-color: var(--muted); border-color: var(--border); }
+    .callout-title { font-weight: 700; margin-bottom: 8px; display: block; }
+    .accordion{display:grid;gap:8px}
+    .accordion-header{width:100%;text-align:left;background:var(--muted);border:1px solid var(--border);padding:16px 20px;border-radius:8px;cursor:pointer;font-size:1.1rem;font-weight:bold;display:flex;align-items:center;justify-content:space-between}
+    .accordion-header[aria-expanded="true"]{background:#e9ecef}
+    .accordion-content{padding:20px;display:none;border:1px solid var(--border);border-top:none;border-radius:0 0 8px 8px}
+
+    /* --- Quiz Styles --- */
+    .quiz-container{padding:20px;border:2px solid var(--border);border-radius:12px;background:#fff}
+    .quiz-navigation{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border)}
+    .quiz-body{display:none;} .quiz-body.active{display:block}
+    .quiz-options{display:grid; gap:12px;}
+    .quiz-option label{display:flex; align-items:center; gap:12px; padding:14px;border:2px solid var(--border);border-radius:8px;cursor:pointer;background:#f8f9fa}
+    .quiz-option .explanation{display:none;margin-top:10px;padding:15px;border-radius:6px;border-left:4px solid #a0aec0}
+    .quiz-option.selected.correct label{background:var(--ok-soft);border-color:var(--ok)}
+    .quiz-option.selected.wrong label{background:var(--bad-soft);border-color:var(--bad)}
+    .quiz-option.correct .explanation{border-left-color:var(--ok);background:#f0fff4}
+    .quiz-option.wrong .explanation{border-left-color:var(--bad);background:#fff5f5}
+
+    /* --- Glossary Styles --- */
+    .glossary-cloud{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px;justify-content:center}
+    .glossary-chip{position:relative;display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:999px;background:#fff7ed;border:1px solid #ffd8a8;color:#d9480f;font-weight:600;cursor:pointer;box-shadow:0 2px 6px rgba(253,126,20,.12)}
+    .glossary-chip:hover, .glossary-chip:focus{background:#ffecde;}
+    .chip-tip{position:fixed;z-index:101;min-width:240px;max-width:min(92vw,420px);background:var(--accent);color:#fff;padding:12px 14px;border-radius:12px;box-shadow:0 12px 28px rgba(253,126,20,.35);opacity:0;visibility:hidden;transition:.15s;line-height:1.45}
+    .chip-tip.show{opacity:1;visibility:visible}
+    .chip-tip .arrow{position:absolute;width:12px;height:12px;background:var(--accent);transform:rotate(45deg)}
+  </style>
+</head>
+<body>
+
+  <header class="site-header"><strong>AI Designer Academy</strong></header>
+
+  <div class="container">
+    
+    <h1>From Chaos Grids to Creative Boards</h1>
+    <p class="byline">The Complete How-To Guide for Midjourney Designers Switching to Adobe Firefly Boards</p>
+    <div class="callout pro-tip"><span class="callout-title">Version note</span><p>All Midjourney comparisons in this guide reference <strong>Midjourney v7</strong> (Oct 2025) features and behavior.</p></div>
+
+  <div class="callout midjourney-translation">
+    <span class="callout-title">🧠 Midjourney v7 quick comparison</span>
+    <ul>
+      <li><strong>Draft Mode:</strong> Rapid ideation (roughly 10× faster) for quick explorations; great for early concept passes.</li>
+      <li><strong>Personalization:</strong> Initial rating flow builds a taste profile to bias results toward your aesthetic.</li>
+      <li><strong>Speed Modes:</strong> <em>Turbo</em> for fastest results at higher cost; <em>Relax</em> for slower, budget‑friendly batching.</li>
+    </ul>
+    <p style="margin:0">Use v7’s speed/personalization for discovery, then refine on a structured Firefly Board with references.</p>
+  </div>
+
+    <section id="introduction">
+        <h2>1. Introduction — From Chaos Grids to Creative Boards</h2>
+        <p class="intro">If you're reading this, you're likely a master of the Midjourney grid. You thrive on the magic of the `/imagine` command, skillfully navigating chaos and style parameters to unearth visual gems from the digital ether. You love the spark of surprise, but you've also felt the frustration of losing context, struggling with consistency, and hitting a wall when it's time to refine, share, and collaborate. <strong>Midjourney is an artist's dream lab; Firefly Boards is the design studio that turns those dreams into shareable moodboards.</strong> This guide is your bridge. We'll show you how to translate your hard-won prompting skills into a new, persistent, and collaborative visual workspace where you can compose, remix, and direct your AI creations with unprecedented control.</p>
+    </section>
+
+    <section id="game-best-practices">
+        <h2>🎮 Best Practices for Game Teams</h2>
+        <p class="byline">Turn Firefly Boards into a living design system for online and casino games</p>
+        <div class="callout">
+            <span class="callout-title">Working with Firefly Boards and AI‑assisted visual workflows</span>
+            <p>Boards feel infinite. The best teams don’t fight the chaos—they frame it. Use these field‑tested practices to make your board a system, not a scrapbook.</p>
+        </div>
+
+        <h3>1) Anchor Your Vision: Style + Structure</h3>
+        <p>Pin two anchors—<strong>Reference image (style)</strong> for mood/lighting/texture and <strong>Structure reference</strong> for layout/proportion. New generations will stay coherent around these two guides.</p>
+        <p><em>How‑to:</em> Select image → right panel → set as Reference image (style) / Structure reference.</p>
+
+        <h3>2) Work in Lanes, Not Heaps</h3>
+        <p>Create columns like <strong>Characters</strong>, <strong>Environments</strong>, <strong>UI</strong>, <strong>FX</strong>, <strong>Promo</strong>. Grow each lane with <strong>Generate similar</strong> to avoid random drift.</p>
+        <p><em>Tip:</em> Add emoji headers or subtle background tints so teammates find lanes fast.</p>
+
+        <h3>3) Keep Swatches and Texture Memory Alive</h3>
+        <p>Drop color tiles, gradients, and texture snippets under your hero art. Use <strong>Prompt from image</strong> on swatches to codify palette language for newcomers.</p>
+
+        <h3>4) Design for Real Screens</h3>
+        <p>Add frames for phone/tablet/desktop; test icons at <strong>64–128 px</strong> on the board. If it reads at thumbnail, it’s ready.</p>
+
+        <h3>5) Plan UI States as a Family</h3>
+        <p>Lay out <strong>idle → hover → pressed → disabled</strong> in one row. Use your Structure reference to keep pixel‑alignment consistent and compare legibility.</p>
+
+        <h3>6) Iterate Early, Refine Late</h3>
+        <p>Start with rough silhouettes and grey boxes; align early. Then apply generative polish. Building feel before finish saves re‑renders later.</p>
+
+        <h3>7) Hand Off Cleanly</h3>
+        <p>Name frames clearly (<code>icon64_idle</code>), add export sizes/DPI notes, and preserve <strong>Content Credentials</strong> where supported.</p>
+
+        <h3>Team Tips & Smart Habits</h3>
+        <ul>
+            <li><strong>Seasonal variants:</strong> Keep event skins (Halloween, Lunar New Year) near the master look to preserve coherence.</li>
+            <li><strong>Localization lane:</strong> Reserve a space for numerals/legal lines/market text; duplicate per region.</li>
+            <li><strong>Safe art checklist:</strong> Pin a small tile with sourcing do’s/don’ts (Adobe Stock, public‑domain refs).</li>
+            <li><strong>Feedback cycle:</strong> Add a “Team Notes” frame; drop weekly sticky reactions for lightweight reviews.</li>
+        </ul>
+    </section>
+
+    <section id="core-difference">
+        <h2>2. Understanding the Core Difference</h2>
+        <p>Before diving in, it's crucial to understand the fundamental mindset shift. Midjourney is a "slot machine" of creativity—you pull the lever with a prompt and get four results. Firefly Boards is an infinite canvas where every generated image stays, influences the next, and becomes part of a larger visual conversation.</p>
+        <div class="table-wrap"><div class="table-scroll">
+            <table class="data-table">
+                <thead><tr><th>Concept</th><th>Midjourney (The "Dream Lab")</th><th>Firefly Boards (The "Design Studio")</th></tr></thead>
+                <tbody>
+                    <tr><td><strong>Generation Logic</strong></td><td>Prompt → 4 random outputs (seeds, `--chaos`)</td><td>Canvas → Multiple prompts, visual + textual references</td></tr>
+                    <tr><td><strong>Iteration Method</strong></td><td>"V1-V4" buttons, re-rolls, Vary (Region)</td><td>Remix, Generate Similar, Describe Image</td></tr>
+                    <tr><td><strong>Style Control</strong></td><td>`--style`, `--sref`, `--cref`, `--ar`, `--stylize`</td><td>Style Reference, Composition Reference, Visual Intensity slider</td></tr>
+                    <tr><td><strong>Editing Ability</strong></td><td>Limited (Vary Region, Pan/Zoom)</td><td>Built-in Generative Fill and precise Generative Text Edit</td></tr>
+                    <tr><td><strong>Collaboration</strong></td><td>Individual (Discord share)</td><td>Real-time, multi-user shared workspace</td></tr>
+                    <tr><td><strong>Output Handling</strong></td><td>Export individual images</td><td>Move seamlessly to Photoshop, Illustrator, Express</td></tr>
+                </tbody>
+            </table>
+        </div></div>
+    </section>
+
+    <section id="getting-started">
+        <h2>3. Getting Started: Your First Firefly Board</h2>
+        <p>Let's get hands-on. Creating your first board is about setting up your thinking space.</p>
+        <h3>Step 1: Create a Board</h3>
+        <p>Navigate to <code>firefly.adobe.com</code>, sign in, and select the <strong>Boards</strong> tab. Click "New Board" to open a blank, infinite canvas. This is your personal studio.</p>
+
+        <h3>Step 2: Import Your Visuals</h3>
+        <p>A board is most powerful when you seed it with inspiration. You can:</p>
+        <ul>
+            <li><strong>Drag and drop your favorite Midjourney images</strong> directly onto the canvas.</li>
+            <li>Upload sketches, screenshots, brand guidelines, or reference photos.</li>
+            <li>Use the sidebar to pull images from Adobe Stock.</li>
+        </ul>
+        <div class="callout pro-tip">
+            <span class="callout-title">💡 Pro Tip</span>
+            <p>Start with 6-10 "anchor visuals"—a mix of your best Midjourney art, a color palette image, and a few real-world photos. This creates a grounded and versatile direction for the AI to follow.</p>
+        </div>
+    </section>
+
+    <section id="generating-images">
+        <h2>4. Generating New Images: The Firefly Way</h2>
+        <p>Text-to-image generation happens right on your board, not in a separate chat window. At the bottom of the screen is your prompt bar. Type your prompt (e.g., <code>"a minimalist logo for a coffee shop, vector art, owl mascot"</code>), and on the right, you can adjust settings before you hit "Generate."</p>
+        <ul>
+            <li><strong>Aspect Ratio:</strong> Choose from Square, Portrait, Landscape, etc.</li>
+            <li><strong>Content Type:</strong> "Art" for illustrative styles, "Photo" for realism.</li>
+            <li><strong>Reference strength:</strong> Controls how strongly a reference image influences the result (label may vary by release).</li>
+        </ul>
+        <div class="callout midjourney-translation">
+            <span class="callout-title">🧠 Midjourney Translation</span>
+            <p>Think of <strong>Reference strength</strong> like a combined <code>--stylize</code> and <code>--chaos</code> slider. Lower values suggest a lighter influence; higher values apply a stronger stylistic push.</p>
+        </div>
+        <div class="callout pro-tip">
+            <span class="callout-title">✅ Best Practice</span>
+            <p>Always save 2-3 outputs from each prompt. Unlike Midjourney's grid, these images persist on your board. Don't delete early versions; they can be used as references later, creating a visible "thought trail."</p>
+        </div>
+    </section>
+
+    <section id="remix">
+        <h2>5. Blend & Generate Similar: Exploring Variations from References</h2>
+        <p><strong>Blend / Generate Similar</strong> are the core tools for exploration. They combine cues from one or more reference images to produce new candidates. Labels and placement may vary by release; look for actions like <em>Generate similar</em>, <em>Blend</em>, or <em>Use as reference</em> in the UI.</p>
+        <h3>How To Use Remix:</h3>
+        <ol>
+            <li>Select two or more images on your board by clicking on them.</li>
+            <li>Choose <strong>Generate similar</strong> or <strong>Blend</strong> from the toolbar or right panel (label may vary).</li>
+            <li>Firefly generates a set of new images that combine concepts from your selections.</li>
+            <li>You can even add a text prompt to guide the remix, like <code>"make it more futuristic"</code>.</li>
+        </ol>
+        <div class="callout pro-tip">
+            <span class="callout-title">💡 Pro Tip</span>
+            <p>Try a "Blend → Prompt from image → Blend again" loop. Blend two images, pick the best result, use Prompt from image/Describe to view a suggested prompt, tweak it, and blend that with one of your originals. This creates an organic evolution akin to long iterative sessions.</p>
+        </div>
+    </section>
+
+    <section id="references">
+        <h2>6. Apply Style or Structure References</h2>
+        <p>This is where you gain true directorial control. Firefly has two distinct reference modes that guide all subsequent generations on your board until you clear them.</p>
+
+        <h3>a. Reference image (Style)</h3>
+        <p>Select an image and apply it as a <strong>reference image</strong> for style. Firefly will borrow that image's color palette, lighting, texture, and overall mood for new generations. (In Midjourney terms, this acts like <code>--sref</code>.)</p>
+
+        <h3>b. Structure reference</h3>
+        <p>Select an image as a <strong>structure reference</strong> to guide layout and perspective while filling with your prompt content. Labeling may appear as “Structure” or "Reference image (structure)" depending on the release.</p>
+        <div class="callout midjourney-translation">
+            <span class="callout-title">🧠 Midjourney Translation</span>
+            <p><strong>Reference image (style)</strong> ≈ <code>--sref</code>. <strong>Structure reference</strong> locks layout cues. <strong>Reference strength</strong> controls how strongly references are applied.</p>
+        </div>
+    </section>
+
+    <section id="describe-image">
+        <h2>7. Prompt from Image (Describe): Reverse‑Engineer a Prompt</h2>
+        <p>Ever see a great Midjourney image and wonder what prompt created it? Firefly includes <strong>Prompt from image</strong> (also surfaced as <em>Describe</em> in some contexts). It suggests a prompt based on the selected image.</p>
+        <h3>How to Use Describe Image:</h3>
+        <ol>
+            <li>Click on any image on your board (even one from Midjourney).</li>
+            <li>In the right-hand panel, click <strong>Prompt from image</strong> (may appear as <em>Describe</em>).</li>
+            <li>Firefly will suggest a descriptive prompt.</li>
+            <li>You can now edit this text—change the mood, add details—and regenerate new, similar images.</li>
+        </ol>
+        <div class="callout pro-tip">
+            <span class="callout-title">💡 Pro Tip</span>
+            <p>Use 'Describe' on your favorite Midjourney outputs to learn how Firefly's model interprets them. This helps you align your prompting vocabulary between the two tools for better results.</p>
+        </div>
+    </section>
+
+    <section id="generative-text">
+        <h2>8. Text Effects & Text Editing</h2>
+        <p>Firefly provides text-related features, but precise pixel‑level text replacement inside arbitrary images may be limited or evolving. Check current labels such as <strong>Text Effects</strong> or in‑app text editing tools for availability in your region and release.</p>
+        <h3>How to use text tools (when available):</h3>
+        <ol>
+            <li>Select an image that contains text.</li>
+            <li>Choose available text editing or <strong>Text Effects</strong> features in the panel.</li>
+            <li>In the prompt box, describe the change you want to make. Be specific.</li>
+        </ol>
+        <p><strong>Example Prompts (for Text Effects/overlays):</strong></p>
+        <ul>
+            <li><code>"Change the text 'Grand Opening' to 'Summer Fest 2025' and keep the same font, color, and lighting."</code></li>
+            <li><code>"Replace the word 'Explore' with 'Discover' while preserving the 3D embossing effect."</code></li>
+        </ul>
+    </section>
+
+    <section id="organizing">
+        <h2>9. Organizing, Annotating, and Presenting</h2>
+        <p>A Firefly Board is more than a generator; it’s a thinking space. Use its organizational tools to turn your creative chaos into a clear presentation.</p>
+        <ul>
+            <li><strong>Text Notes:</strong> Add sticky notes to label sections like "Color Studies," "Character Concepts," or "Client Feedback."</li>
+            <li><strong>Shapes & Frames:</strong> Use rectangles or circles to visually group related ideas.</li>
+            <li><strong>Smart Layout:</strong> Select multiple images and use the layout tools to align and distribute them neatly for a clean look.</li>
+        </ul>
+        <div class="callout pro-tip">
+            <span class="callout-title">💡 Pro Tip</span>
+            <p>Name your boards after the creative intent, not the project name (e.g., "Moody Interiors - Warm Light" instead of "Client Project X"). This helps you find and reuse aesthetic threads across different projects later.</p>
+        </div>
+    </section>
+
+    <section id="collaboration">
+        <h2>10. Collaboration and Export</h2>
+        <p>This is where Firefly Boards truly leaves the solo world of Midjourney behind.</p>
+        <h3>Collaboration:</h3>
+        <p>Click the <strong>"Invite"</strong> button to share your board link. You can set permissions for "View" or "Edit." Team members or clients can then add comments, upload their own references, and generate new images in real-time alongside you.</p>
+
+        <h3>Export:</h3>
+        <p>When you have a final asset, you can export or send to other Adobe apps where supported. Look for actions like <strong>Open in Photoshop</strong>, <strong>Open in Illustrator</strong>, or <strong>Open in Express</strong>; availability and fidelity (e.g., layers/masks) can vary by feature, format, and release. Adobe embeds <strong>Content Credentials</strong> to provide provenance for many AI‑assisted assets.</p>
+    </section>
+
+    <section id="advanced-workflows">
+        <h2>11. Advanced Workflows</h2>
+        <p>Ready to level up? Try these pro strategies:</p>
+        <ul>
+            <li><strong>Remix Loops:</strong> Remix → Describe → Edit Prompt → Generate. Repeat this loop to evolve ideas organically.</li>
+            <li><strong>Cross-Model Play:</strong> Use Firefly Image 3 for a photorealistic base, then use a partner model's style reference to give it an artistic flair.</li>
+            <li><strong>Multi-Board System:</strong> Use one board for chaotic exploration, a second for refining the best ideas, and a third, clean board to present the final direction to clients.</li>
+        </ul>
+    </section>
+
+    <section id="closing">
+        <h2>12. Closing: The Mindset Shift</h2>
+        <p>The journey from Midjourney to Firefly Boards is a shift in philosophy. One rewards surprise; the other rewards synthesis. One reveals stunning possibilities; the other makes them tangible, editable, and collaborative.</p>
+        <p>Don't abandon the Midjourney dream lab. Instead, bring its most potent creations into the Firefly design studio. Use Describe and Remix to understand and evolve them. Treat your boards not as static galleries, but as living design surfaces where your ideas, your references, and your team can finally coexist. <strong>Midjourney gives you sparks. Firefly Boards gives you structure to build a fire.</strong></p>
+    </section>
+
+    <hr style="margin: 60px 0;">
+
+    <section id="quiz-main">
+        <h2>Test Your Knowledge: Mastery Quiz</h2>
+        <div class="quiz-container" id="quiz-container-1"></div>
+    </section>
+
+    <hr style="margin: 60px 0;">
+
+    <section id="faq">
+        <h2>Frequently Asked Questions</h2>
+        <div id="faq-accordion-container"></div>
+    </section>
+
+    <hr style="margin: 60px 0;">
+
+    <section id="glossary">
+      <h2>Key Terms for the AI Designer</h2>
+      <div class="glossary-cloud" id="glossaryCloud"></div>
+    </section>
+
+  </div>
+
+  <footer class="site-footer">© 2025 AI Designer Academy. All Rights Reserved.</footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // --- DATA ---
+     const quiz1Questions = [
+    {
+        q: "What is the primary function of the 'Remix' feature in Firefly Boards?",
+        correct: 2,
+        options: [
+            { text: "To change the aspect ratio of an image.", explanation: "Incorrect. The aspect ratio is a standard setting you choose from a dropdown menu *before* generating an image. Remix is a creative tool used on existing images, not a formatting control." },
+            { text: "To add a text prompt to an existing image.", explanation: "Incorrect. While you can add a text prompt *during* a Remix to guide it, the core function isn't just adding a prompt. The 'Describe Image' feature is closer to generating a prompt from an image." },
+            { text: "To blend the style and content of multiple selected images into new variations.", explanation: "✅ Correct! Remix is the core creative engine for intelligently blending multiple visual ideas, combining their aesthetics and subjects into new, unique outputs." },
+            { text: "To export an image directly to Photoshop.", explanation: "Incorrect. Exporting to Photoshop is a separate function used for sending a finished asset to the next stage of your workflow. Remix is for creative ideation *within* the board." }
+        ]
+    },
+    {
+        q: "You set one image as Reference image (style) and another as Structure reference before generating. What result should you expect?",
+        correct: 2,
+        options: [
+            { text: "Random variety—references are only decorative.", explanation: "Not quite. References actively steer generations; they are not just labels on the board." },
+            { text: "Only colors will be consistent; layouts will always drift.", explanation: "Partly. Style affects color/texture, but Structure reference also guides layout and proportion." },
+            { text: "Coherent look and stable layouts across new images.", explanation: "✅ Correct! Style governs mood/texture; Structure stabilizes composition. Together they keep new images in the same visual universe." },
+            { text: "No change unless you also switch Content Type to Photo.", explanation: "Content Type influences rendering mode, but references already steer style and structure." }
+        ]
+    },
+    {
+        q: "Your icons look great at 256 px but blur at 64 px. What should you do on the board?",
+        correct: 1,
+        options: [
+            { text: "Increase Visual Intensity to 100.", explanation: "Intensity controls how strongly style is applied, not legibility at small sizes." },
+            { text: "Add device frames and test at 64–128 px, then simplify shapes/contrast.", explanation: "✅ Correct! Design for real screens: preview at target sizes and adjust stroke, contrast, and negative space." },
+            { text: "Use Remix with a blank square to sharpen details.", explanation: "Remix blends sources; it won’t solve low‑size clarity by itself." },
+            { text: "Switch to Relax mode for higher quality.", explanation: "Speed/cost modes don’t replace small‑size readability checks and refinements." }
+        ]
+    },
+    {
+        q: "A Midjourney user wants to maintain a consistent style across multiple generations. What is the most direct equivalent in Firefly Boards?",
+        correct: 0,
+        options: [
+            { text: "Selecting an image and using it as a 'Style Reference'.", explanation: "✅ Correct! Using an image as a 'Style Reference' is Firefly's direct equivalent to Midjourney's `--sref`, locking in an aesthetic for subsequent generations." },
+            { text: "Using the same text prompt repeatedly.", explanation: "Incorrect. Just like in Midjourney, using the same text prompt without a style reference will still produce varied results. The 'Style Reference' is the key to enforcing aesthetic consistency." },
+            { text: "Using the 'Remix' feature on the same two images.", explanation: "Incorrect. Remix is designed to create *new blends and variations* from sources. While related, it's a tool for creative exploration, not for maintaining a single, consistent style across different prompts." },
+            { text: "Adjusting the 'Visual Intensity' slider to 100.", explanation: "Incorrect. The Visual Intensity slider only works *in conjunction with* a Style Reference. By itself, it does nothing. It controls how strongly the reference is applied, but doesn't create the consistency on its own." }
+        ]
+    },
+    {
+        q: "What is the key advantage of a Firefly Board's 'persistent canvas' over Midjourney's interface?",
+        correct: 3,
+        options: [
+            { text: "It generates images faster.", explanation: "Incorrect. Generation speed is dependent on the model and server load, not the interface. The advantage of the canvas is in workflow and organization, not raw speed." },
+            { text: "It has more style parameters you can type.", explanation: "Incorrect. Midjourney actually relies more on typed parameters (`--ar`, `--s`, etc.). Firefly's advantage is its *visual* and contextual control system, using pinned images as references rather than just text commands." },
+            { text: "It only allows photorealistic images.", explanation: "Incorrect. Firefly Boards supports a wide variety of styles, from photorealism to vector art to watercolors, which can be guided by prompts and style references. It is not limited to one aesthetic." },
+            { text: "It keeps all your generated ideas and references visible in one contextual workspace.", explanation: "✅ Correct! This is the core workflow difference. It prevents loss of context and allows you to build upon ideas visually, as all assets remain active and usable." }
+        ]
+    },
+    {
+        q: "You have a sketch of a character's pose you want the AI to follow, but with a photorealistic style. Which two features should you use?",
+        correct: 1,
+        options: [
+            { text: "Remix and Describe Image.", explanation: "Incorrect. While useful tools, Remix is for blending and Describe is for reverse-engineering a prompt. Neither of them directly forces the AI to follow a specific compositional structure." },
+            { text: "'Composition Reference' for the sketch and a 'Photo' content type.", explanation: "✅ Correct! 'Composition Reference' will lock in the pose and layout from your sketch, while the 'Photo' content type will guide the AI to render it realistically." },
+            { text: "Style Reference and Generative Text Edit.", explanation: "Incorrect. A 'Style Reference' would try to copy the *style* of your sketch (e.g., pencil lines), not its structure. Generative Text Edit is for modifying text and is not relevant here." },
+            { text: "Visual Intensity and a partner model.", explanation: "Incorrect. Visual Intensity is only used to control the strength of a 'Style Reference.' A partner model is just another generation engine. You need to tell the AI *what structure to follow* first." }
+        ]
+    },
+    {
+        q: "What does the 'Describe Image' feature allow you to do?",
+        correct: 0,
+        options: [
+            { text: "Reverse-engineer a text prompt from any image on the board.", explanation: "✅ Correct! It's like prompt archaeology, allowing you to see how Firefly interprets an image and then edit that prompt for new creations." },
+            { text: "Add a voice description to an image.", explanation: "Incorrect. 'Describe Image' is a text-based feature for generating prompts; it does not involve audio or accessibility descriptions in that sense." },
+            { text: "Automatically organize your board based on image content.", explanation: "Incorrect. This describes a potential AI-powered organization feature, but the 'Describe Image' tool is specifically for generating a textual prompt from a single visual source." },
+            { text: "Change the file name of an image.", explanation: "Incorrect. This is a basic file management action. 'Describe Image' is a generative AI feature for understanding and translating visual content into text." }
+        ]
+    },
+    {
+        q: "If you want to apply a style reference with a very light touch, what setting should you adjust?",
+        correct: 2,
+        options: [
+            { text: "The Aspect Ratio.", explanation: "Incorrect. The aspect ratio controls the shape and dimensions of the output image (e.g., square, portrait) and has no effect on the strength of a style's influence." },
+            { text: "The Content Type to 'Art'.", explanation: "Incorrect. The content type ('Art' or 'Photo') sets the general category for the generation but does not control the intensity of a specific style reference." },
+            { text: "Lower the 'Visual Intensity' slider (e.g., to 20-30).", explanation: "✅ Correct! 'Visual Intensity' is precisely for this purpose. A low value creates a subtle influence, while a high value creates a strong style transfer." },
+            { text: "Use the 'Remix' feature instead.", explanation: "Incorrect. Remix is a different tool for blending multiple images. While you can achieve subtle blends, the dedicated control for style strength is the 'Visual Intensity' slider." }
+        ]
+    },
+    {
+        q: "Which feature in Firefly Boards is specifically designed for editing text *within* an image?",
+        correct: 3,
+        options: [
+            { text: "Remix", explanation: "Incorrect. Remix is for blending entire images. It does not offer the precise control needed to target and edit a specific line of text within an image." },
+            { text: "Describe Image", explanation: "Incorrect. Describe Image generates a prompt based on the whole image; it doesn't allow you to perform localized edits on specific parts like text." },
+            { text: "Text Notes", explanation: "Incorrect. Text Notes are like digital sticky notes you can place *on* the canvas to add comments or labels. They are separate elements and do not edit the pixels of an image itself." },
+            { text: "Generative Text Edit", explanation: "✅ Correct! This is the specialized tool for this production-focused task, allowing you to change words while preserving the original typography's style and texture." }
+        ]
+    },
+    {
+        q: "What is a key collaborative feature of Firefly Boards that is absent in Midjourney's standard workflow?",
+        correct: 1,
+        options: [
+            { text: "The ability to upscale images.", explanation: "Incorrect. Midjourney has upscaling features built into its workflow. The key difference in collaboration is the shared workspace, not image resolution." },
+            { text: "Real-time, multi-user editing and commenting on a shared canvas.", explanation: "✅ Correct! Firefly Boards is built for teamwork, allowing multiple designers to work on the same visual space simultaneously." },
+            { text: "Using image prompts.", explanation: "Incorrect. Midjourney has supported image prompts for a long time. The collaborative advantage of Boards lies in its real-time, shared interface." },
+            { text: "Generating four images at once.", explanation: "Incorrect. Midjourney's iconic 2x2 grid is a core part of its experience. Firefly also generates multiple options, but the collaboration happens on the persistent canvas." }
+        ]
+    },
+    {
+        q: "A 'Remix Loop' is an advanced workflow that involves which sequence?",
+        correct: 0,
+        options: [
+            { text: "Remix -> Describe -> Edit Prompt -> Generate.", explanation: "✅ Correct! This powerful loop allows you to evolve an idea by blending visuals (Remix), translating the result back to text (Describe), and then refining that text." },
+            { text: "Export -> Import -> Remix.", explanation: "Incorrect. While you can do this, it's not the intended 'Remix Loop.' The loop is about staying within the board to evolve ideas rapidly without needing to export and re-import." },
+            { text: "Generate -> Invite -> Comment.", explanation: "Incorrect. This describes a collaborative review process, not the specific 'Remix Loop' technique for creative iteration and evolution of an asset." },
+            { text: "Style Reference -> Composition Reference -> Generate.", explanation: "Incorrect. This is a powerful workflow for controlling generation, but it describes setting static guides rather than the iterative, evolutionary process of a 'Remix Loop'." }
+        ]
+    },
+    {
+        q: "What is the purpose of 'Content Credentials' in Firefly?",
+        correct: 2,
+        options: [
+            { text: "To prove you have a paid Adobe subscription.", explanation: "Incorrect. Your subscription status is tied to your Adobe account. Content Credentials are a feature embedded within the image file itself, independent of your account status." },
+            { text: "A feature to rate the quality of a generated image.", explanation: "Incorrect. Rating an image is a separate UI function for providing feedback to Adobe. Content Credentials are secure, embedded metadata about the image's origin." },
+            { text: "Secure metadata that provides provenance and proves an image was generated with AI.", explanation: "✅ Correct! They are like a digital nutrition label, providing transparency and proving the origin of the AI-generated asset, crucial for commercial and ethical use." },
+            { text: "A setting that limits image generation to brand-safe content only.", explanation: "Incorrect. While Firefly is designed to be commercially safe, Content Credentials are the 'proof' of this after the fact. They don't control the generation, they document it." }
+        ]
+    },
+    {
+        q: "Compared to Midjourney's single-prompt focus, Firefly Boards encourages a workflow based on...",
+        correct: 3,
+        options: [
+            { text: "Guesswork and random chance.", explanation: "Incorrect. In fact, Firefly Boards is designed to *reduce* guesswork by making all your references and previous generations visible and active parts of the creative process." },
+            { text: "Writing the longest possible prompts.", explanation: "Incorrect. Because so much context comes from visual references (like Style Reference), prompts in Boards can often be shorter and more direct than in Midjourney." },
+            { text: "Only using reference images without text.", explanation: "Incorrect. The most powerful workflow in Boards comes from combining visual references (Style, Composition) *with* descriptive text prompts to guide the AI with maximum precision." },
+            { text: "Synthesis, curation, and contextual iteration.", explanation: "✅ Correct! This captures the core mindset shift. Boards are for synthesizing ideas from multiple sources and iterating within a persistent, visible context." }
+        ]
+    },
+    {
+        q: "You've generated a perfect character in Midjourney. What is the recommended first step to build a world around them in Firefly Boards?",
+        correct: 1,
+        options: [
+            { text: "Try to recreate the character from scratch using a text prompt.", explanation: "Incorrect. This would be inefficient and unlikely to produce the exact same result. It's much better to use your existing, perfect asset as the starting point." },
+            { text: "Import the Midjourney image and set it as a 'Style Reference' to generate matching assets.", explanation: "✅ Correct! Using your hero asset as the 'Style Reference' is the fastest way to ensure all new elements share a consistent aesthetic with your character." },
+            { text: "Use the 'Remix' tool on the character and a blank square.", explanation: "Incorrect. Remix requires at least two source images to blend. Remixing with a blank space wouldn't provide any creative direction for the AI." },
+            { text: "Immediately export it to Photoshop.", explanation: "Incorrect. While this might be a later step, the goal is to build a world *around* the character first. This ideation and asset generation is best done within the board itself before moving to Photoshop for compositing." }
+        ]
+    }
+];
+
+      const faqs = [
+        { q: "Can I use Midjourney-style parameters like `--ar 16:9` or `--chaos 70` in Firefly Boards?", a: "No, you cannot. Firefly uses a different, more visual control system. You control the <strong>aspect ratio</strong> using a dropdown menu. You control <strong>style</strong> by setting a 'Style Reference' image and adjusting the 'Visual Intensity' slider, which acts as a replacement for both `--stylize` and `--chaos`." },
+        { q: "Is the image quality in Firefly as good as Midjourney V7?", a: "The 'best' quality is subjective. Midjourney V7 improves prompt adherence and detail over V6 and adds Draft Mode for rapid ideation. Adobe Firefly Image 3 is engineered for high‑fidelity photorealism, prompt adherence, and commercial safety. A pragmatic workflow is to use Midjourney for initial 'spark' exploration and Firefly for refining, variations, and production‑ready assets." },
+        { q: "How do I maintain character consistency in Firefly Boards?", a: "While Firefly doesn't have a direct `--cref` equivalent yet, the best method is to use your main character image as both a <strong>Style Reference</strong> (for color/texture) and a <strong>Composition Reference</strong> (for general pose/shape), and then use very specific prompts. For minor changes, generating a similar character and then using Generative Fill in Photoshop is a powerful workflow." },
+        { q: "What's the point of Boards if I can just use folders on my computer?", a: "Folders are for storage; Boards are for thinking. On a Board, all your ideas are visible at once, creating a contextual 'visual conversation.' More importantly, the images on a Board are *active*—they can be used as style and composition references to influence new AI generations, something a static image in a folder cannot do." },
+        { q: "Is everything I make in Firefly Boards commercially safe to use?", a: "Yes. This is a primary advantage of the Adobe ecosystem. The Firefly model is trained on Adobe Stock's licensed library and public domain content. Adobe offers enterprise customers IP indemnification, which means they provide legal protection against copyright claims for content generated with Firefly. This is a crucial benefit for professional and corporate work." },
+        { q: "Can I upload my own art style to guide the generations?", a: "Yes. This is done via the 'Style Reference' feature. If you have a specific illustration style, you can upload several examples of your work to a board, select one as the Style Reference, and Firefly will attempt to mimic that aesthetic in its outputs." },
+        { q: "What does the 'Visual Intensity' slider actually do?", a: "It controls how strongly a 'Style Reference' is applied. A low value (0-30) will make a gentle suggestion—the new image will only be lightly influenced. A high value (70-100) will perform a dramatic style transfer, making the new image look very much like the reference. The default (50) is a balanced blend." },
+        { q: "Does Remix work with just one image?", a: "No, the core idea of Remix is to blend elements from *multiple* sources. You need to select at least two images on your board to activate the Remix feature." },
+        { q: "Can I edit a Midjourney image in Firefly Boards?", a: "Absolutely. This is a core workflow. You can import a Midjourney PNG, select it, and then use prompts to generate variations *around* it. You can also use it as a Style Reference, or select parts of it to modify with Generative Fill-style edits directly on the board." },
+        { q: "How does the collaboration feature work in real time?", a: "When you invite someone to edit a board, you will both see the same canvas. If your colleague adds an image, it will appear on your screen instantly. You can see their mouse movements and selections, allowing you to discuss and create together as if you were in the same room with a physical corkboard." },
+        { q: "What happens when I 'Open in Photoshop'?", a: "Firefly sends the selected image directly to Photoshop as a new document. Often, for images generated with features like Generative Fill, it will open as a layered file, allowing you to edit the generated content non-destructively." },
+        { q: "Are there limits to how many images I can put on a board?", a: "While the canvas is conceptually 'infinite,' there are practical performance limits. A board with hundreds of high-resolution images may become slower to load and navigate. A good practice is to create new boards for distinct ideas rather than putting an entire project on a single, massive board." },
+        { q: "Can partner models (like Runway) use my style references?", a: "This capability depends on the specific integration of the partner model within the Firefly ecosystem. Generally, core Firefly features like Style Reference are most deeply integrated with the native Firefly Image model. Functionality with partner models may vary." },
+        { q: "What is a 'Genesis Pin'?", a: "This is a community term, not an official one. It refers to the very first image you place on a board that defines its core direction. This 'genesis pin' is often a strong Midjourney creation that is then used as the initial Style Reference to seed the entire creative conversation on that board." },
+        { q: "Can Firefly Boards create vector graphics?", a: "Yes. You can prompt for vector art by adding terms like <code>'vector logo'</code>, <code>'flat illustration'</code>, or <code>'icon'</code> to your prompt. You can also select 'Art' as the content type and look for a 'Vector' style preset. The output can then be opened in Adobe Illustrator for further refinement." },
+        { q: "How is the 'Describe Image' feature different from Midjourney's `/describe` command?", a: "They are very similar in concept. Both analyze an image and generate text prompts to replicate it. The key difference is workflow integration. In Boards, the described prompt appears in an editable field directly linked to the generator, allowing you to instantly tweak it and create a new version right next to the original." },
+        { q: "Can I organize my boards into folders?", a: "Currently, the organization within Firefly is a flat structure where you can see all your recent files and boards. Advanced folder-based organization is a frequently requested feature, so this may change in future updates." },
+        { q: "Does the 'Generative Text Edit' work on any image?", a: "It works best on images where the text is relatively clear and distinct from the background. It may struggle with highly stylized, distorted, or handwritten text. It is a feature currently in beta and is continuously improving." },
+        { q: "Is there a way to 'lock' an image on the board so it can't be accidentally moved?", a: "While there isn't a dedicated 'lock' feature like in design software, a common practice is to move finalized or key reference images to a specific corner or edge of the board, effectively creating a 'safe zone' away from the main active workspace." },
+        { q: "What's the best way to learn the 'vocabulary' Firefly understands best?", a: "Use the 'Describe Image' feature on everything! Upload your favorite Midjourney art, professional photographs, and classic paintings. See what words Firefly uses to describe them. This will quickly teach you the specific keywords and phrasing that yield the best results from its model." }
+      ];
+      
+      const glossaryData = [
+        { term: "Board", def: "The infinite, persistent canvas in Adobe Firefly where users can place, generate, and remix images and notes." },
+        { term: "Canvas", def: "The interactive workspace of a Firefly Board, allowing for freeform arrangement of visual assets." },
+        { term: "Remix", def: "A core Firefly feature that blends the aesthetic and content of two or more selected images to create new variations." },
+        { term: "Style Reference", def: "A designated image on a Board whose aesthetic (color, texture, light) is used to influence all subsequent AI generations." },
+        { term: "Composition Reference", def: "A designated image on a Board whose layout and structure are used as a template for new AI generations." },
+        { term: "Visual Intensity", def: "A slider (0-100) that controls how strongly a Style Reference is applied to a new generation." },
+        { term: "Describe Image", def: "A feature that reverse-engineers a text prompt from any selected image, allowing for easy editing and re-generation." },
+        { term: "Generative Text Edit", def: "A specialized tool for editing text within an image while preserving the original font, style, and texture." },
+        { term: "Content Credentials", def: "Secure metadata embedded in Firefly assets that provides provenance, proving the image's origin and AI-assisted creation." },
+        { term: "Anchor Visual", def: "A user-uploaded image (like a Midjourney render) used as a starting point or key inspiration on a Board." },
+        { term: "Genesis Pin", def: "A community term for the first image pinned as a Style Reference, which sets the creative direction for the entire board." },
+        { term: "Remix Loop", def: "An advanced workflow: Remix images, Describe the best result, edit the new prompt, and generate again to evolve an idea." },
+        { term: "Persistent Canvas", def: "The core concept of Boards, where assets remain in a spatial context, unlike the linear history of a chatbot." },
+        { term: "Partner Model", def: "Third-party AI models (e.g., from Runway) that can be accessed and used within the Firefly ecosystem." },
+        { term: "Smart Layout", def: "Tools within Boards that help automatically align and distribute selected images for a cleaner, more organized presentation." },
+        { term: "Text Note", def: "A digital sticky note that can be placed on a Board to add comments, labels, or instructions." },
+        { term: "Synthesis", def: "The act of combining multiple ideas or references to form a new, cohesive whole—a key principle of the Boards workflow." },
+        { term: "Curation", def: "The act of selecting, organizing, and refining the best ideas on a Board to build a clear creative direction." },
+        { term: "IP Indemnification", def: "Legal and financial protection offered by Adobe to enterprise users against copyright claims for Firefly-generated content." },
+        { term: "Firefly Image 3", def: "The latest version of Adobe's native generative image model, optimized for photorealism and control." }
+      ];
+
+      // --- SETUP FUNCTIONS ---
+      function setupAccordions() {
+        const faqContainer = document.getElementById('faq-accordion-container');
+        if (faqContainer) {
+            faqContainer.innerHTML = `<div class="accordion">${faqs.map(faq => `
+                <div class="accordion-item">
+                    <button class="accordion-header" aria-expanded="false"><span>${faq.q}</span><span>+</span></button>
+                    <div class="accordion-content"><p>${faq.a.replace(/`([^`]+)`/g, '<code>$1</code>')}</p></div>
+                </div>`).join('')}</div>`;
+        }
+        document.querySelectorAll('.accordion-header').forEach(h => h.addEventListener('click', () => {
+            const expanded = h.getAttribute('aria-expanded') === 'true';
+            h.setAttribute('aria-expanded', !expanded);
+            h.nextElementSibling.style.display = expanded ? 'none' : 'block';
+            h.childNodes[1].textContent = expanded ? '+' : '−';
+        }));
+      }
+
+      function setupQuiz(containerId, questionsData) {
+        const quizContainer = document.getElementById(containerId);
+        if (!quizContainer) return;
+        
+        quizContainer.innerHTML = `
+            <div class="quiz-navigation">
+                <button class="prev-btn">❮</button>
+                <span class="question-counter"><span class="current-q">1</span> of <span>${questionsData.length}</span></span>
+                <button class="next-btn">❯</button>
+            </div>
+            <div class="quiz-body-container"></div>`;
+        
+        const bodyContainer = quizContainer.querySelector('.quiz-body-container');
+        const prevBtn = quizContainer.querySelector('.prev-btn');
+        const nextBtn = quizContainer.querySelector('.next-btn');
+        const currentQSpan = quizContainer.querySelector('.current-q');
+        let currentQuestionIndex = 0;
+
+        function renderQuestion() {
+            const qData = questionsData[currentQuestionIndex];
+            let optionsHTML = qData.options.map((opt, index) => `
+                <div class="quiz-option" data-option-index="${index}">
+                    <label>
+                        <input type="radio" name="q${currentQuestionIndex}" value="${index}">
+                        <span>${opt.text}</span>
+                    </label>
+                    <div class="explanation">${opt.explanation}</div>
+                </div>`).join('');
+            bodyContainer.innerHTML = `<div class="quiz-body active"><p><strong>Q${currentQuestionIndex + 1}:</strong> ${qData.q}</p><div class="quiz-options">${optionsHTML}</div></div>`;
+            currentQSpan.textContent = currentQuestionIndex + 1;
+            prevBtn.disabled = currentQuestionIndex === 0;
+            nextBtn.disabled = currentQuestionIndex === questionsData.length - 1;
+            bodyContainer.querySelectorAll('.quiz-option input').forEach(radio => radio.addEventListener('change', handleOptionSelect));
+        }
+
+        function handleOptionSelect(e) {
+            const selectedOptionIndex = parseInt(e.target.value);
+            const qData = questionsData[currentQuestionIndex];
+            const parentQuestionDiv = e.target.closest('.quiz-body');
+            parentQuestionDiv.querySelectorAll('.quiz-option').forEach(optDiv => {
+                optDiv.classList.remove('selected', 'correct', 'wrong');
+                optDiv.querySelector('.explanation').style.display = 'none';
+            });
+            const selectedOptionDiv = e.target.closest('.quiz-option');
+            selectedOptionDiv.classList.add('selected');
+            selectedOptionDiv.querySelector('.explanation').style.display = 'block';
+            if (selectedOptionIndex === qData.correct) {
+                selectedOptionDiv.classList.add('correct');
+            } else {
+                selectedOptionDiv.classList.add('wrong');
+                parentQuestionDiv.querySelector(`.quiz-option[data-option-index="${qData.correct}"]`).classList.add('correct');
+            }
+        }
+        prevBtn.addEventListener('click', () => { if (currentQuestionIndex > 0) { currentQuestionIndex--; renderQuestion(); } });
+        nextBtn.addEventListener('click', () => { if (currentQuestionIndex < questionsData.length - 1) { currentQuestionIndex++; renderQuestion(); } });
+        renderQuestion();
+      }
+      
+      function setupGlossary() {
+        const cloud = document.getElementById('glossaryCloud');
+        if (!cloud) return;
+        cloud.innerHTML = glossaryData.map(kw => `<button class="glossary-chip" type="button" data-def="${kw.def}">${kw.term}</button>`).join('');
+        const tip = document.createElement('div');
+        tip.className = 'chip-tip';
+        tip.innerHTML = '<div class="arrow"></div><div class="tip-content"></div>';
+        document.body.appendChild(tip);
+        const tipContent = tip.querySelector('.tip-content');
+        let openBtn = null;
+
+        function positionTipFor(btn) {
+            const rect = btn.getBoundingClientRect();
+            const tipRect = tip.getBoundingClientRect();
+            let top = rect.bottom + 12;
+            let arrowTop = -6;
+            if (top + tipRect.height > window.innerHeight) {
+                top = rect.top - tipRect.height - 12;
+                arrowTop = tipRect.height - 6;
+            }
+            let left = rect.left + rect.width / 2 - tipRect.width / 2;
+            left = Math.max(8, Math.min(left, window.innerWidth - tipRect.width - 8));
+            // Use fixed positioning: no scroll offsets needed
+            tip.style.top = `${top}px`;
+            tip.style.left = `${left}px`;
+            tip.querySelector('.arrow').style.top = `${arrowTop}px`;
+            tip.querySelector('.arrow').style.left = `${rect.left + rect.width / 2 - left - 6}px`;
+        }
+
+        cloud.querySelectorAll('.glossary-chip').forEach(btn => {
+            // Hover/focus (desktop & keyboard)
+            btn.addEventListener('mouseenter', (e) => {
+                tipContent.textContent = e.currentTarget.dataset.def;
+                tip.classList.add('show');
+                openBtn = e.currentTarget;
+                requestAnimationFrame(() => positionTipFor(e.currentTarget));
+            });
+            btn.addEventListener('mouseleave', () => { tip.classList.remove('show'); openBtn = null; });
+            btn.addEventListener('focus', (e) => {
+                tipContent.textContent = e.currentTarget.dataset.def;
+                tip.classList.add('show');
+                openBtn = e.currentTarget;
+                requestAnimationFrame(() => positionTipFor(e.currentTarget));
+            });
+            btn.addEventListener('blur', () => { tip.classList.remove('show'); openBtn = null; });
+
+            // Click/tap toggle (mobile-friendly)
+            btn.addEventListener('click', (e) => {
+                const isOpen = tip.classList.contains('show') && openBtn === e.currentTarget;
+                if (isOpen) {
+                    tip.classList.remove('show');
+                    openBtn = null;
+                } else {
+                    tipContent.textContent = e.currentTarget.dataset.def;
+                    tip.classList.add('show');
+                    openBtn = e.currentTarget;
+                    requestAnimationFrame(() => positionTipFor(e.currentTarget));
+                }
+            });
+
+            // Keyboard toggle for accessibility (Enter/Space)
+            btn.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    btn.click();
+                }
+            });
+        });
+
+        // Close on outside click
+        document.addEventListener('click', (e) => {
+            if (openBtn && !e.target.closest('.glossary-chip') && !tip.contains(e.target)) {
+                tip.classList.remove('show');
+                openBtn = null;
+            }
+        });
+
+        // Reposition on scroll/resize
+        window.addEventListener('scroll', () => { if (openBtn) positionTipFor(openBtn); }, { passive: true });
+        window.addEventListener('resize', () => { if (openBtn) positionTipFor(openBtn); });
+      }
+
+      // --- INITIALIZE ALL COMPONENTS ---
+      setupQuiz('quiz-container-1', quiz1Questions);
+      setupAccordions();
+      setupGlossary();
+    });
+  </script>
+</body>
+</html>
