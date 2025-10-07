@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Negative Prompt vs. Exclusion</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #212529;
+            --muted-bg: #f8f9fa;
+            --border-color: #e9ecef;
+            --accent-color: #ea7a27;
+            --accent-hover: #d96d1a;
+            --header-bg: #212529;
+            --header-fg: #f8f9fa;
+            --neutral-gradient: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            --success-color: #16a34a;
+            --success-bg: #dcfce7;
+            --error-color: #dc2626;
+            --error-bg: #fee2e2;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+        }
+
+        body { font-family: 'Inter', sans-serif; background: var(--bg-color); color: var(--text-color); line-height: 1.6; }
+        /* Global typography rhythm */
+        p { margin: 0 0 1rem; }
+        ul, ol { margin: 0 0 1rem 1.25rem; padding-left: 1.25rem; }
+        ul { list-style: disc; }
+        ol { list-style: decimal; }
+        li { margin: 0.35rem 0; }
+        pre, code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+        .container { max-width: 960px; margin: 0 auto; padding: 1rem; }
+
+        .site-header { background: var(--header-bg); color: var(--header-fg); padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; position: sticky; top: 0; z-index: 60; }
+        .logo { font-weight: 700; font-size: 1.15rem; color: #fff; text-decoration: none; }
+        .site-header nav { display: flex; gap: 14px; }
+        .site-header nav a { color: #ced4da; text-decoration: none; }
+        .site-header nav a:hover { color: #fff; text-decoration: underline; }
+        .site-footer { background: var(--header-bg); color: var(--header-fg); padding: 14px 18px; text-align: center; margin-top: 2rem; }
+
+        h1, h2, h3 { font-weight: 800; margin-bottom: 1rem; }
+        h1 { text-align: center; font-size: 2.5rem; margin-bottom: 1rem; }
+        h2 { font-size: 1.75rem; border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem; margin-top: 2.5rem; }
+        section { margin-bottom: 2rem; }
+        .intro { font-size: 1.05rem; color: #495057; margin-bottom: 2rem; text-align: center; }
+
+        /* Pair card */
+        .confusion-pair-card { display: grid; grid-template-columns: 1fr; gap: 1rem; background: var(--muted-bg); border-radius: 12px; padding: 1.5rem; border: 1px solid var(--border-color); }
+        .pair-item h3 { color: var(--accent-color); font-weight: 600; }
+        .formula { font-family: monospace; background: #e9ecef; padding: 0.5rem; border-radius: 6px; display: inline-block; margin-top: 0.5rem; word-break: break-all; }
+        .confusion-trigger { grid-column: 1 / -1; margin-top: 1rem; padding: 1rem; background: var(--error-bg); color: var(--error-color); border-radius: 8px; border: 1px solid var(--error-color); text-align: center; font-weight: 600; }
+
+        /* Tables */
+        .table-container { overflow-x: auto; border: 1px solid var(--border-color); border-radius: 12px; margin: 1rem 0; }
+        table { width: 100%; border-collapse: collapse; min-width: 600px; table-layout: fixed; }
+        th, td { padding: 1rem; text-align: left; border-bottom: 1px solid var(--border-color); vertical-align: top; word-break: break-word; }
+        thead th { background: var(--text-color); color: var(--bg-color); position: static; z-index: 1; }
+        thead .helper-text { font-weight: 400; font-size: 0.8rem; color: #ced4da; display: block; }
+        tbody tr:first-child td { border-top: 1px solid var(--border-color); }
+        tbody tr:nth-child(even) { background: var(--muted-bg); }
+
+        /* Mnemonics */
+        .mnemonics-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+        .mnemonic-card { background: var(--neutral-gradient); padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); text-align: center; }
+        .mnemonic-card .analogy { font-size: 1.5rem; font-weight: 800; }
+        .mnemonic-card .explanation { margin-top: 0.5rem; color: #495057; }
+
+        /* Glossary */
+        .glossary-cloud { display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center; }
+        .glossary-chip { position: relative; display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 999px; background:#fff7ed; border:1px solid #ffd8a8; color:#d9480f; font-weight: 600; cursor: pointer; box-shadow: 0 2px 6px rgba(253,126,20,.12); transition: all 0.2s ease; }
+        .glossary-chip:hover, .glossary-chip:focus { background:#ffecde; transform: translateY(-2px); }
+        .chip-tip { position: fixed; z-index: 101; min-width: 240px; max-width: min(92vw, 420px); background: var(--accent-color); color: #fff; padding: 12px 14px; border-radius: 12px; box-shadow: 0 12px 28px rgba(253,126,20,.35); opacity: 0; visibility: hidden; transition: .15s; line-height: 1.45; }
+        .chip-tip.show { opacity: 1; visibility: visible; }
+        .chip-tip .arrow { position: absolute; width: 12px; height: 12px; background: var(--accent-color); transform: rotate(45deg); }
+
+        /* Quiz */
+        .quiz-container { padding: 20px; border: 2px solid var(--border-color); border-radius: 12px; background: #fff; }
+        .quiz-navigation { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color); }
+        .quiz-btn { background: var(--accent-color); color: #fff; border: none; padding: 10px 14px; border-radius: 10px; font-weight: 700; cursor: pointer; transition: background-color 0.2s ease; }
+        .quiz-btn:hover { background: var(--accent-hover); }
+        .quiz-btn:disabled { background-color: #ced4da; cursor: not-allowed; }
+        .quiz-body { display: none; }
+        .quiz-body.active { display: block; }
+        .quiz-question { font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem; }
+        .quiz-options { display: grid; gap: 12px; }
+        .quiz-option label { display: flex; align-items: center; gap: 12px; padding: 14px; border: 2px solid var(--border-color); border-radius: 8px; cursor: pointer; background: #f8f9fa; transition: all 0.2s ease; }
+        .quiz-option label:hover { border-color: var(--accent-color); }
+        .quiz-option input[type="radio"] { flex-shrink: 0; }
+        .quiz-option .explanation { display: none; margin-top: 10px; padding: 15px; border-radius: 6px; border-left: 4px solid #a0aec0; font-size: 0.9rem; }
+        .quiz-option.selected.correct label { background: var(--success-bg); border-color: var(--success-color); }
+        .quiz-option.selected.wrong label { background: var(--error-bg); border-color: var(--error-color); }
+        .quiz-option.correct .explanation { border-left-color: var(--success-color); background: #f0fff4; }
+        .quiz-option.wrong .explanation { border-left-color: var(--error-color); background: #fff5f5; }
+
+        /* FAQ Accordion (from reference) */
+        .faq-accordion { display: grid; gap: 0.5rem; }
+        .faq-question { width: 100%; background: var(--muted-bg); border: 1px solid var(--border-color); padding: 1rem 1.25rem; border-radius: 8px; cursor: pointer; font-weight: 600; display: flex; justify-content: space-between; align-items: center; text-align: left; font-size: 1rem; }
+        .faq-question::after { content: '+'; font-size: 1.5rem; color: var(--accent-color); transition: transform 0.2s; }
+        .faq-question[aria-expanded="true"]::after { transform: rotate(45deg); }
+        .faq-answer { padding: 1.25rem; border: 1px solid var(--border-color); border-top: none; border-radius: 0 0 8px 8px; background: #fff; }
+
+        /* Responsive */
+        @media (min-width: 640px) { .confusion-pair-card, .workflow-section { grid-template-columns: 1fr 1fr; } .mnemonics-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (min-width: 960px) { .mnemonics-grid { grid-template-columns: repeat(3, 1fr); } }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <a class="logo" href="#">Beyond Dictionary</a>
+        <nav>
+            <a href="#">Learning</a>
+            <a href="#">Games</a>
+            <a href="#">Blog</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <main>
+            <h1>Negative Prompt vs. Exclusion</h1>
+            <p class="intro">Understanding the difference between discouraging unwanted elements and attempting to block them entirely is crucial for effective AI image generation. This guide clarifies a subtle but important distinction that affects how reliably you can control your outputs.</p>
+
+            <section aria-labelledby="glance-title">
+                <h2 id="glance-title">At a Glance</h2>
+                <div class="confusion-pair-card">
+                    <div class="pair-item">
+                        <h3>Negative Prompt</h3>
+                        <p>Guides the AI to reduce the likelihood of generating certain features, styles, or objects. Acts as a soft constraint that nudges the model away from unwanted elements, like lowering their probability without guaranteeing complete removal.</p>
+                        <div class="formula">--no [element] (Midjourney) | Negative prompt: [elements] (Stable Diffusion) | "What to avoid" field (Firefly)</div>
+                    </div>
+                    <div class="pair-item">
+                        <h3>Exclusion</h3>
+                        <p>Attempts to completely prevent specific content from appearing by explicitly instructing the model to remove or never include it. Functions as a hard constraint when supported, though actual enforcement varies by platform and is rarely absolute.</p>
+                        <div class="formula">--no [specific object] (Midjourney) | "without [element]" (DALL·E) | "exclude" tags (various platforms)</div>
+                    </div>
+                    <div class="confusion-trigger">
+                        <strong>Common Misconception:</strong> Believing that negative prompts guarantee complete removal of elements, or that "exclusion" syntax creates an absolute block—when in reality both function on a probability spectrum with varying reliability.
+                    </div>
+                </div>
+            </section>
+
+            <section aria-labelledby="comparison-title">
+                <h2 id="comparison-title">Side-by-Side Comparison</h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Aspect <span class="helper-text">What we're comparing</span></th>
+                                <th>Negative Prompt</th>
+                                <th>Exclusion</th>
+                                <th>Why It's Confused</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Definition</strong><span class="helper-text">What the instruction does</span></td>
+                                <td>Decreases probability of unwanted features appearing.</td>
+                                <td>Attempts to completely prevent specific content from appearing.</td>
+                                <td>Both aim to eliminate unwanted content from generations.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Strength</strong><span class="helper-text">How forcefully it acts</span></td>
+                                <td>Soft constraint—reduces likelihood but doesn't guarantee absence.</td>
+                                <td>Hard constraint—aims for complete prevention (when supported).</td>
+                                <td>Effect strength varies by model, making distinction unclear.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Syntax</strong><span class="helper-text">How you write it</span></td>
+                                <td>negative: blur, watermark or general quality terms.</td>
+                                <td>--no cars or "without people" targeting specific objects.</td>
+                                <td>Many platforms use identical syntax for both concepts.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Mechanism</strong><span class="helper-text">How the AI processes it</span></td>
+                                <td>Lowers attention weights during generation process.</td>
+                                <td>Blocks or heavily penalizes specific tokens/concepts.</td>
+                                <td>Users can't see the internal processing difference.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Reliability</strong><span class="helper-text">How consistently it works</span></td>
+                                <td>Probabilistic—reduces but doesn't eliminate.</td>
+                                <td>Inconsistent—depends on model architecture and implementation.</td>
+                                <td>Neither guarantees 100% effectiveness across all contexts.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Use Case</strong><span class="helper-text">When to apply it</span></td>
+                                <td>Quality control, style tuning, artifact reduction.</td>
+                                <td>Content compliance, strict object removal, safety filtering.</td>
+                                <td>Both address unwanted content in overlapping scenarios.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Typical Workflow</strong><span class="helper-text">Implementation process</span></td>
+                                <td>Add quality/style terms to negative field.</td>
+                                <td>Specify exact objects/elements to block.</td>
+                                <td>Both involve adding terms to similar prompt fields.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section aria-labelledby="core-title">
+                <h2 id="core-title">The Core Confusion Explained</h2>
+                <p>Negative prompts function as probabilistic weights that make certain features less likely to appear. When you add "blurry, low quality, watermark" to a negative prompt, you're adjusting the model's internal probability calculations to favor sharper, cleaner images—but there's no guarantee these elements won't appear.</p>
+                <p>Exclusions attempt to create stronger boundaries by explicitly targeting specific objects or concepts for removal. When you write <code>--no cars</code> or "without people," you're signaling that these specific elements should be blocked entirely—but whether this creates a true "hard block" depends entirely on the platform's implementation.</p>
+                <ul>
+                    <li>Many platforms use identical syntax for both concepts</li>
+                    <li>The internal mechanisms are invisible to users</li>
+                    <li>Neither approach guarantees absolute removal</li>
+                    <li>The terminology varies widely across tools</li>
+                    <li>Results depend on how strongly the element appeared in the original generation probability</li>
+                </ul>
+            </section>
+
+            <section aria-labelledby="when-title">
+                <h2 id="when-title">When to Use Each Approach</h2>
+                <div class="workflow-section" style="display:grid;grid-template-columns:1fr;gap:1.5rem;">
+                    <div class="workflow-card" style="background:var(--muted-bg);border-radius:12px;padding:1.5rem;border:1px solid var(--border-color);">
+                        <h3 style="color:var(--accent-color);font-weight:600;">Negative Prompt</h3>
+                        <h4>Best For:</h4>
+                        <ul>
+                            <li>Improving overall image quality (reducing blur, noise, artifacts)</li>
+                            <li>Tuning artistic style (avoiding cartoon, 3D render, specific aesthetics)</li>
+                            <li>Suppressing common unwanted elements (extra fingers, text, watermarks)</li>
+                            <li>General aesthetic refinement without targeting specific objects</li>
+                        </ul>
+                        <h4>Typical Workflow:</h4>
+                        <ol>
+                            <li>Generate initial image with positive prompt only</li>
+                            <li>Identify quality issues or unwanted stylistic elements</li>
+                            <li>Add broad negative terms: "blurry, distorted, low quality, ugly, deformed"</li>
+                            <li>Add style negatives: "cartoon, 3D render, anime" (if unwanted)</li>
+                            <li>Adjust and iterate based on results</li>
+                        </ol>
+                        <p><strong>Example</strong><br>Prompt: "portrait of a woman in Victorian dress, oil painting"<br>Negative: "blurry, low quality, extra fingers, deformed hands, watermark, signature, text, modern clothing"</p>
+                    </div>
+                    <div class="workflow-card" style="background:var(--muted-bg);border-radius:12px;padding:1.5rem;border:1px solid var(--border-color);">
+                        <h3 style="color:var(--accent-color);font-weight:600;">Exclusion</h3>
+                        <h4>Best For:</h4>
+                        <ul>
+                            <li>Removing specific identifiable objects (cars, people, animals)</li>
+                            <li>Content compliance and safety filtering</li>
+                            <li>Enforcing brand guidelines or content restrictions</li>
+                            <li>Attempting strict removal when probabilistic reduction isn't enough</li>
+                        </ul>
+                        <h4>Typical Workflow:</h4>
+                        <ol>
+                            <li>Identify specific objects that must not appear</li>
+                            <li>Use platform-specific exclusion syntax</li>
+                            <li>Generate and verify output manually</li>
+                            <li>Iterate if excluded elements still appear</li>
+                        </ol>
+                        <p><strong>Examples</strong><br>
+                        Midjourney: <code>/imagine forest landscape --no people --no buildings --no cars</code><br>
+                        DALL·E: "A forest landscape without any people, buildings, or vehicles"<br>
+                        Stable Diffusion: Positive: "forest landscape" | Negative: "(people:1.5), (buildings:1.5), (cars:1.5)"</p>
+                    </div>
+                </div>
+            </section>
+
+            <section aria-labelledby="platform-title">
+                <h2 id="platform-title">Platform-Specific Implementation</h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Platform</th>
+                                <th>Syntax</th>
+                                <th>How It Works</th>
+                                <th>Reliability</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Midjourney</strong></td>
+                                <td><code>--no [element]</code></td>
+                                <td>Single unified parameter for both quality negatives and object exclusions.</td>
+                                <td>Moderate — not guaranteed.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Stable Diffusion</strong></td>
+                                <td>Negative prompt field with optional weights.</td>
+                                <td>Weighted probability reduction (higher weights = stronger attempt).</td>
+                                <td>Variable — stronger with higher weights.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>DALL·E 3</strong></td>
+                                <td>Natural language: "without" or "no".</td>
+                                <td>Integrated into language understanding and safety layers.</td>
+                                <td>Moderate — depends on phrasing.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Adobe Firefly</strong></td>
+                                <td>“What to avoid” field.</td>
+                                <td>Separate suppression mechanism.</td>
+                                <td>Moderate — some elements persist.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Gemini</strong></td>
+                                <td>Natural language exclusion.</td>
+                                <td>Language-based interpretation.</td>
+                                <td>Variable — less predictable.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section aria-labelledby="combine-title">
+                <h2 id="combine-title">Combining Both for Maximum Control</h2>
+                <p><strong>Layered Approach:</strong></p>
+                <ul>
+                    <li>Start with negative prompts for quality and style.</li>
+                    <li>Add specific exclusions for objects that must not appear.</li>
+                    <li>Use weighted negatives (when available) for critical exclusions.</li>
+                    <li>Verify outputs and iterate as needed.</li>
+                </ul>
+                <p><strong>Example (Stable Diffusion)</strong><br>
+                Positive: "professional product photography, luxury watch on marble surface, studio lighting"<br>
+                Negative: "blurry, low quality, watermark, signature, text, amateur, (hands:1.8), (people:1.8), (reflections of photographer:1.6), plastic, cheap"</p>
+            </section>
+
+            <section aria-labelledby="mnemonics-title">
+                <h2 id="mnemonics-title">Memory Aids</h2>
+                <div class="mnemonics-grid">
+                    <div class="mnemonic-card"><div class="analogy">Negative Prompt = Volume Knob</div><p class="explanation">Negative Prompt turns down the volume on unwanted features—quieter but not silent. Exclusion tries to mute the channel entirely—aiming for silence but not always succeeding.</p></div>
+                    <div class="mnemonic-card"><div class="analogy">Fog vs. Wall</div><p class="explanation">Negative Prompt is fog that obscures elements—makes them less visible but doesn't remove them. Exclusion attempts to build a wall—blocks the view but walls can have gaps.</p></div>
+                    <div class="mnemonic-card"><div class="analogy">Discourage vs. Forbid</div><p class="explanation">Negative Prompt discourages the AI like a suggestion. Exclusion attempts to forbid like a rule (that may or may not be enforced).</p></div>
+                </div>
+            </section>
+
+            <section aria-labelledby="glossary-title">
+                <h2 id="glossary-title">Glossary Cloud</h2>
+                <div class="glossary-cloud" id="glossaryCloud"></div>
+            </section>
+
+            <section aria-labelledby="quiz-title">
+                <h2 id="quiz-title">Quick Quiz</h2>
+                <div class="quiz-container">
+                    <div class="quiz-navigation">
+                        <button class="quiz-btn" id="quizPrevBtn">❮</button>
+                        <span class="question-counter"><span id="quizCurrentQ">1</span> of <span id="quizTotalQ">6</span></span>
+                        <button class="quiz-btn" id="quizNextBtn">❯</button>
+                    </div>
+                    <div id="quiz-body-container"></div>
+                </div>
+            </section>
+
+            <section aria-labelledby="faq-title">
+                <h2 id="faq-title">Frequently Asked Questions</h2>
+                <div class="faq-accordion" id="faqAccordion"></div>
+            </section>
+
+            <section aria-labelledby="takeaway-title">
+                <h2 id="takeaway-title" class="sr-only" style="display:none;">Takeaway</h2>
+                <div class="takeaway" style="text-align:center;font-size:1.25rem;font-weight:600;padding:2rem;background:var(--text-color);color:var(--bg-color);border-radius:12px;line-height:1.7;">
+                    <strong style="display:block;font-weight:800;font-size:1.5rem;margin-bottom:0.5rem;">TL;DR</strong>
+                    Negative prompts reduce probability of unwanted features—soft constraints that make elements less likely. Exclusions attempt complete prevention of specific content—hard constraints that aim for total blocking. Neither guarantees absolute removal; both work on probability spectrums with platform-dependent reliability. Combine strategically and always verify critical requirements manually.
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <footer class="site-footer"><small>© 2025 Beyond Dictionary</small></footer>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function(){
+        // Glossary
+        const glossaryData = [
+            { term: 'Negative Prompt', emoji: '📝', definition: 'A list of terms that reduces the probability of associated features appearing (soft constraint).' },
+            { term: 'Exclusion', emoji: '⛔', definition: 'An instruction aiming to block specific content entirely (hard constraint, platform dependent).' },
+            { term: 'Content Filter', emoji: '🧱', definition: 'System-enforced safety or policy filters that block categories of content.' },
+            { term: 'Prompt Weight', emoji: '⚖️', definition: 'A numeric emphasis applied to a term that increases or decreases its influence.' },
+            { term: 'Soft Constraint', emoji: '🎚️', definition: 'A probabilistic suggestion rather than an absolute rule.' },
+            { term: 'Hard Block', emoji: '🧱', definition: 'An attempted absolute rule that forbids certain content (not always guaranteed).' },
+            { term: 'Token Suppression', emoji: '🔤', definition: 'Reducing the attention weight of tokens associated with unwanted concepts.' },
+            { term: 'Safety Filter', emoji: '🛡️', definition: 'A platform mechanism that blocks restricted content categories.' },
+            { term: '--no Parameter', emoji: '➖', definition: 'Midjourney parameter used to discourage or exclude specified terms.' },
+            { term: 'Weighted Negative', emoji: '📉', definition: 'Stable Diffusion syntax like (term:1.6) to more strongly suppress an element.' },
+            { term: 'Probability Reduction', emoji: '🎲', definition: 'The statistical effect of negatives; less likely, not impossible.' },
+            { term: 'Object Removal', emoji: '🧽', definition: 'Targeting specific items (e.g., cars, people) for exclusion.' },
+            { term: 'Compliance Filtering', emoji: '📋', definition: 'Ensuring generated content meets legal or brand rules.' }
+        ];
+
+        const quizData = [
+            {
+                question: "You're generating professional product photography for a watch brand. Hands, people, and reflections keep appearing despite negatives. The client requires absolutely no human elements. What’s the most reliable approach?",
+                correct: 1,
+                options: [
+                    { text: 'Keep strengthening the negative prompt weights', explanation: 'May help, but still offers no guarantee of complete removal.' },
+                    { text: 'Use explicit exclusion syntax, generate multiple versions, and manually verify each output', explanation: '✅ Most reliable—combines technical suppression with manual QA to ensure compliance.' },
+                    { text: 'Switch to a different AI platform', explanation: 'Platform switching alone won\'t guarantee exclusion without verification.' },
+                    { text: 'All approaches are equally reliable across platforms', explanation: 'False—reliability varies by implementation and settings.' }
+                ]
+            },
+            {
+                question: "Which statement best describes the difference between a negative prompt and an exclusion?",
+                correct: 0,
+                options: [
+                    { text: 'Negative = probabilistic reduction; Exclusion = attempted hard block (platform dependent)', explanation: '✅ Correct. Negatives reduce likelihood. Exclusions try to prevent, but enforcement varies.' },
+                    { text: 'Negative = style only; Exclusion = objects only', explanation: 'Incorrect. Negatives can target objects, and exclusions can affect style terms too.' },
+                    { text: 'They are identical on all platforms', explanation: 'Incorrect. Behavior and syntax differ widely across tools.' }
+                ]
+            },
+            {
+                question: "On Stable Diffusion, what does a higher weight like (people:1.8) in the negative field do?",
+                correct: 2,
+                options: [
+                    { text: 'It guarantees there will be no people', explanation: 'Incorrect. Weights increase suppression but do not guarantee absolute removal.' },
+                    { text: 'It improves image quality only', explanation: 'Incorrect. The weight targets a specific concept, not generic quality.' },
+                    { text: 'It more strongly suppresses the targeted concept during generation', explanation: '✅ Correct. Higher weight = stronger suppression of the token(s).' }
+                ]
+            },
+            {
+                question: "When should you avoid adding more negative prompts?",
+                correct: 1,
+                options: [
+                    { text: 'When there is a specific object to remove', explanation: 'Incorrect. Negatives can still help; pair with an exclusion if supported.' },
+                    { text: 'When the image already looks correct and no issues are present', explanation: '✅ Correct. Unnecessary negatives can over‑constrain and degrade results.' },
+                    { text: 'When using Text‑to‑Image', explanation: 'Incorrect. Negatives can be useful in Text‑to‑Image as well.' }
+                ]
+            },
+            {
+                question: "Which is the best layered approach for critical content control?",
+                correct: 0,
+                options: [
+                    { text: 'Start with quality/style negatives → add explicit exclusions → verify outputs', explanation: '✅ Correct. This layered flow is reliable and audit‑friendly.' },
+                    { text: 'Use only exclusions with no negatives', explanation: 'Incorrect. Exclusions alone may fail or reduce quality unnecessarily.' },
+                    { text: 'Add many negatives first, then re‑roll randomly', explanation: 'Incorrect. Random re‑rolling lacks control and traceability.' }
+                ]
+            },
+            {
+                question: "DALL·E 3 best responds to exclusions written as…",
+                correct: 2,
+                options: [
+                    { text: 'Weighted tokens (object:2.0)', explanation: 'Incorrect. DALL·E 3 uses natural language rather than token weights.' },
+                    { text: 'A long list of comma‑separated negatives', explanation: 'Incorrect. While it can work, explicit phrasing is clearer for the model.' },
+                    { text: 'Natural language like “without X” or “no Y elements”', explanation: '✅ Correct. DALL·E 3 is optimized for natural language Instructions.' }
+                ]
+            }
+        ];
+
+        const faqData = {
+            "Core Concepts": [
+                { q: 'Can negative prompts fully guarantee an element will never appear?', a: 'No. Negative prompts are probabilistic—they reduce likelihood but cannot guarantee complete absence. If an element is strongly tied to your positive prompt, negatives may only partially suppress it. For critical exclusions, generate multiple versions and manually verify.' },
+                { q: 'Which tools support true absolute content exclusion?', a: 'None guarantee absolute exclusion consistently. Safety filters (DALL·E, Firefly) block categories effectively, but user-specified exclusions remain probabilistic across platforms.' }
+            ],
+            "Quality & Creativity": [
+                { q: 'Do exclusion attempts reduce generation quality or creative flexibility?', a: 'Heavy-handed exclusions can reduce quality by over-constraining the model. Excessive negative weights may cause artifacts or oversimplified compositions. Use the minimum exclusion strength needed—start light and increase only if elements persist.' },
+                { q: 'Should I always add negative prompts?', a: 'No. Only add negatives to solve specific problems. Unnecessary negatives can over-constrain the model and reduce creative quality. Start clean and add only when issues appear.' },
+                { q: 'Can negatives change artistic style?', a: 'Yes. Adding terms like “cartoon, anime, 3D render” to negatives when aiming for photorealism often improves results by discouraging aesthetic drift.' }
+            ],
+            "Workflow & Syntax": [
+                { q: 'How can negatives and exclusions be combined for best results?', a: 'Layer them strategically: use broad negatives for quality/style (e.g., blurry, low quality), then add weighted object exclusions (e.g., (people:1.6)). Test incrementally—add one layer at a time and keep only what measurably helps.' },
+                { q: 'What\'s the proper syntax across platforms?', a: '<strong>Midjourney</strong>: --no element1, element2 • <strong>Stable Diffusion</strong>: negative field or weighted (element:1.5) • <strong>DALL·E</strong>: natural language (without/ excluding) • <strong>Firefly</strong>: What to avoid field.' },
+                { q: 'Why do excluded elements sometimes still appear?', a: 'Exclusions conflict with positive prompt associations. If you prompt “busy city street” and exclude cars/people, the model struggles because cities inherently include them. Rephrase the scene or pick a different setting for better compliance.' }
+            ]
+        };
+
+        function setupGlossary(){
+            const cloud = document.getElementById('glossaryCloud');
+            if(!cloud) return;
+            cloud.innerHTML = glossaryData.map(kw => `<button class="glossary-chip" type="button"><span class="icon">${kw.emoji||'🔸'}</span><span>${kw.term}</span></button>`).join('');
+            const tip = document.createElement('div'); tip.className='chip-tip'; tip.innerHTML = '<div class="arrow" aria-hidden="true"></div><div class="tip-content"></div>'; document.body.appendChild(tip);
+            const tipContent = tip.querySelector('.tip-content'); const tipArrow = tip.querySelector('.arrow'); let openBtn=null;
+            function clamp(n,min,max){ return Math.max(min, Math.min(n,max)); }
+            function positionTipFor(btn){ const rect = btn.getBoundingClientRect(); const vw = window.innerWidth; const pad=8; tip.style.maxWidth = Math.min(vw-pad*2,420)+'px'; const tipRect = tip.getBoundingClientRect(); const preferTop = rect.top > (window.innerHeight-rect.bottom); const top = preferTop ? rect.top - tipRect.height - 12 : rect.bottom + 12; const left = clamp(rect.left + rect.width/2 - tipRect.width/2, pad, vw - tipRect.width - pad); tip.style.top = Math.max(8, top)+'px'; tip.style.left = left+'px'; tipArrow.style.top = preferTop ? (tipRect.height-6)+'px' : '-6px'; tipArrow.style.left = clamp(rect.left + rect.width/2 - left - 6, 10, tipRect.width - 22) + 'px'; }
+            function openTip(btn,text){ tipContent.innerHTML=text; tip.classList.add('show'); positionTipFor(btn); openBtn=btn; }
+            function closeTip(){ tip.classList.remove('show'); openBtn=null; }
+            cloud.querySelectorAll('.glossary-chip').forEach((btn,i)=>{ const def = glossaryData[i].definition; btn.addEventListener('mouseover', ()=>openTip(btn,def)); btn.addEventListener('focus', ()=>openTip(btn,def)); btn.addEventListener('mouseout', closeTip); btn.addEventListener('blur', closeTip); });
+            window.addEventListener('resize', ()=>{ if(openBtn) positionTipFor(openBtn); });
+            window.addEventListener('scroll', ()=>{ if(openBtn) positionTipFor(openBtn); }, { passive:true });
+        }
+
+        function setupQuiz(){
+            const bodyContainer = document.getElementById('quiz-body-container');
+            const prevBtn = document.getElementById('quizPrevBtn');
+            const nextBtn = document.getElementById('quizNextBtn');
+            const currentQSpan = document.getElementById('quizCurrentQ');
+            const totalQSpan = document.getElementById('quizTotalQ');
+            if(!bodyContainer) return; let idx = 0; totalQSpan.textContent = quizData.length;
+            function render(){ const q = quizData[idx]; const optionsHTML = q.options.map((opt,i)=>`<div class=\"quiz-option\" data-option-index=\"${i}\"><label><input type=\"radio\" name=\"q${idx}\" value=\"${i}\"><span>${opt.text}</span></label><div class=\"explanation\">${opt.explanation}</div></div>`).join(''); bodyContainer.innerHTML = `<div class=\"quiz-body active\"><p class=\"quiz-question\">${q.question}</p><div class=\"quiz-options\">${optionsHTML}</div></div>`; currentQSpan.textContent = idx+1; prevBtn.disabled = idx===0; nextBtn.disabled = idx===quizData.length-1; bodyContainer.querySelectorAll('.quiz-option input').forEach(r=>r.addEventListener('change', handle)); }
+            function handle(e){ const selected = parseInt(e.target.value); const q = quizData[idx]; const parent = e.target.closest('.quiz-body'); parent.querySelectorAll('.quiz-option').forEach(opt=>{ opt.classList.remove('selected','correct','wrong'); opt.querySelector('.explanation').style.display='none'; opt.querySelector('input').disabled=true; }); const selectedDiv = e.target.closest('.quiz-option'); selectedDiv.classList.add('selected'); selectedDiv.querySelector('.explanation').style.display='block'; if(selected===q.correct){ selectedDiv.classList.add('correct'); } else { selectedDiv.classList.add('wrong'); const correctDiv = parent.querySelector(`.quiz-option[data-option-index=\"${q.correct}\"]`); correctDiv.classList.add('correct'); } }
+            prevBtn.addEventListener('click', ()=>{ if(idx>0){ idx--; render(); } });
+            nextBtn.addEventListener('click', ()=>{ if(idx<quizData.length-1){ idx++; render(); } });
+            render();
+        }
+
+        function setupFaq(){
+            const acc = document.getElementById('faqAccordion');
+            if(!acc) return;
+            for(const group in faqData){
+                const header = document.createElement('h3');
+                header.textContent = group;
+                acc.appendChild(header);
+                const groupWrap = document.createElement('div');
+                groupWrap.className = 'faq-accordion';
+                faqData[group].forEach(item=>{
+                    const wrap = document.createElement('div');
+                    const q = document.createElement('button');
+                    q.className='faq-question';
+                    q.setAttribute('aria-expanded','false');
+                    q.innerHTML=item.q;
+                    const a = document.createElement('div');
+                    a.className='faq-answer'; a.hidden=true; a.innerHTML = `<p>${item.a}</p>`;
+                    wrap.appendChild(q); wrap.appendChild(a); groupWrap.appendChild(wrap);
+                });
+                acc.appendChild(groupWrap);
+            }
+            acc.addEventListener('click', e=>{ const q = e.target.closest('.faq-question'); if(!q) return; const expanded = q.getAttribute('aria-expanded')==='true'; q.setAttribute('aria-expanded', !expanded); q.nextElementSibling.hidden = expanded; });
+        }
+
+        // run
+        setupGlossary();
+        setupQuiz();
+        setupFaq();
+    });
+    </script>
+</body>
+</html>
+
+
