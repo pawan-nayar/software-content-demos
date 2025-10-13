@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 0: Introduction to Claude Code | Claude Code for Financial Consultants</title>
+    <meta name="description" content="Discover Claude Code—Anthropic's official IDE-integrated assistant. Learn what it is, how it works, and why it matters for consultants.">
+    <meta name="keywords" content="Claude Code, Anthropic, VS Code, JetBrains, IDE, coding assistant, secure local AI, npm install, financial consulting">
+    <meta name="author" content="Cretorial">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Module 0: Introduction to Claude Code">
+    <meta property="og:description" content="Learn about Anthropic's official IDE-integrated coding assistant and why it matters for consultants.">
+    <meta property="og:image" content="https://example.com/module0-preview.jpg">
+    <meta property="og:url" content="https://example.com/claude-code-module-0">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:title" content="Module 0: Claude Code Introduction">
+    <meta property="twitter:description" content="Discover Anthropic's official IDE-integrated assistant for consultants.">
+    <meta property="twitter:image" content="https://example.com/module0-preview.jpg">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <style>
+      :root {
+        --text: #212529; --bg: #ffffff; --muted: #f8f9fa; --border: #dee2e6;
+        --accent: #fd7e14; --accent-2: #e87312; --accent-soft: #fff7ed;
+        --header-bg: #212529; --header-fg: #f8f9fa;
+        --ok: #198754; --ok-soft: #d1e7dd; --bad: #dc3545; --bad-soft: #f8d7da;
+        --info: #0d6efd; --info-soft: #cfe2ff;
+      }
+      *{box-sizing:border-box;margin:0;padding:0}
+      html,body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.8; scroll-behavior: smooth;}
+      
+      .container{max-width:900px;margin:auto;padding:24px;background:#fff}
+      
+      h1, h2, h3, h4 { color: var(--header-bg); font-weight: 700; line-height: 1.3; }
+      h1{font-size:clamp(2rem,5vw,2.8rem); margin-bottom: 8px;}
+      h2{font-size:clamp(1.6rem,4vw,2.2rem); margin: 60px 0 24px; border-bottom: 2px solid var(--border); padding-bottom: 12px;}
+      h3{font-size:clamp(1.2rem,3vw,1.5rem); margin: 40px 0 16px; color: var(--accent-2); }
+      p{margin-bottom: 20px;}
+
+      .site-header,.site-footer{background:var(--header-bg);color:var(--header-fg);padding:14px 24px}
+      .site-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;position:sticky;top:0;z-index:100; box-shadow: 0 2px 10px rgba(0,0,0,0.1);}
+      .logo{font-weight:700;font-size:1.15rem;color:#fff; text-decoration: none;}
+      .logo:hover{color:var(--accent);}
+      .site-footer{text-align:center;margin-top:50px;padding:30px; font-size: 0.9rem;}
+      
+      /* Module Navigation */
+      .module-nav { background: #2d2d2d; border-bottom: 2px solid var(--accent); padding: 12px 24px; position: sticky; top: 56px; z-index: 99; }
+      .module-nav-inner { display: flex; gap: 8px; overflow-x: auto; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; scrollbar-width: thin; scrollbar-color: var(--accent) #3a3a3a; }
+      .module-nav-inner::-webkit-scrollbar { height: 4px; }
+      .module-nav-inner::-webkit-scrollbar-track { background: #3a3a3a; }
+      .module-nav-inner::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
+      .module-link { display: flex; align-items: center; gap: 6px; padding: 8px 14px; background: #3a3a3a; color: #e2e8f0; text-decoration: none; border-radius: 6px; font-size: 0.85rem; font-weight: 500; transition: all 0.2s; white-space: nowrap; flex-shrink: 0; }
+      .module-link:hover { background: var(--accent); color: white; }
+      .module-link.active { background: var(--accent); color: white; font-weight: 600; }
+      .module-link.completed::before { content: '✓'; display: inline-block; width: 16px; height: 16px; background: var(--ok); color: white; border-radius: 50%; text-align: center; line-height: 16px; font-size: 11px; margin-right: 2px; }
+      .module-link .module-num { opacity: 0.7; }
+      .nav-controls { display: none; }
+      
+      @media (max-width: 768px) {
+        .module-nav { top: 52px; padding: 8px 12px; position: relative; }
+        .module-nav-wrapper { position: relative; }
+        .module-nav-inner { gap: 12px; padding: 0 40px; scroll-snap-type: x mandatory; }
+        .module-link { scroll-snap-align: center; padding: 10px 16px; font-size: 0.9rem; min-width: 140px; justify-content: center; }
+        .nav-controls { display: flex; position: absolute; top: 50%; transform: translateY(-50%); width: 100%; justify-content: space-between; pointer-events: none; z-index: 1; }
+        .nav-btn { pointer-events: all; background: var(--accent); color: white; border: none; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+        .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+        .nav-btn-prev { margin-left: 4px; }
+        .nav-btn-next { margin-right: 4px; }
+      }
+      
+      .module-section { margin-bottom: 60px; }
+      .icon-prefix { font-size: 1.5rem; margin-right: 12px; }
+
+      .context-box, .analogy-box { background: var(--accent-soft); border-left: 4px solid var(--accent); padding: 24px; margin: 32px 0; border-radius: 8px; }
+      .context-box h3, .analogy-box h3 { color: var(--accent-2); font-size: 1.3rem; margin-top: 0; margin-bottom: 10px; }
+      .context-box p, .analogy-box p { font-size: 1.1rem; margin-bottom: 0; }
+
+      .reasons-list { list-style: none; padding-left: 0; }
+      .reasons-list li { display: flex; align-items: flex-start; margin-bottom: 16px; font-size: 1.1rem; }
+      .reasons-list li::before { content: '✓'; color: var(--ok); font-weight: bold; font-size: 1.5rem; margin-right: 12px; line-height: 1.2; }
+      
+      .comparison-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin: 32px 0; }
+      .comparison-card { background: var(--muted); padding: 24px; border-radius: 12px; }
+      .comparison-card h4 { margin-top: 0; }
+      .comparison-card.without { border-top: 4px solid var(--bad); }
+      .comparison-card.with { border-top: 4px solid var(--ok); }
+      
+      .key-tips-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+      .tip-card { background: var(--info-soft); padding: 20px; border-radius: 8px; border-left: 4px solid var(--info); }
+      .tip-card p { margin: 0; font-style: italic; }
+      .tip-card footer { text-align: right; font-weight: bold; color: var(--info); margin-top: 12px; }
+
+      .reflection-box { background: var(--muted); padding: 24px; border-radius: 12px; }
+      .reflection-box ol { padding-left: 20px; }
+
+      .accordion .accordion-item + .accordion-item { margin-top: 10px; }
+      .accordion-header { width: 100%; text-align: left; background: var(--muted); border: 1px solid var(--border); padding: 16px 20px; border-radius: 8px; cursor: pointer; font-size: 1.1rem; font-weight: 600; display: flex; align-items: center; justify-content: space-between; transition: background-color 0.2s; }
+      .accordion-header:hover { background-color: #e9ecef; }
+      .accordion-header::after { content: '+'; font-size: 1.5rem; color: var(--text); transition: transform 0.2s; }
+      .accordion-header[aria-expanded="true"] { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+      .accordion-header[aria-expanded="true"]::after { transform: rotate(45deg); }
+      .accordion-content { padding: 24px; display: none; border: 1px solid var(--border); border-top: none; border-radius: 0 0 8px 8px; background: #fff; }
+      
+      .glossary-list dt { font-weight: 700; color: var(--accent-2); }
+      .glossary-list dd { margin-left: 20px; margin-bottom: 12px; }
+      
+      /* --- Quiz Styles --- */
+      .quiz-container{padding:20px;border:2px solid var(--border);border-radius:12px;background:#fff;margin:24px 0}
+      .quiz-navigation{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border)}
+      .quiz-navigation .btn { min-width: 50px; }
+      .quiz-navigation .question-counter { font-weight: 600; font-size: 1.05rem; }
+      .quiz-body{display:none;} .quiz-body.active{display:block}
+      .quiz-options{display:grid; gap:12px;}
+      .quiz-option label{display:flex; align-items:center; gap:12px; padding:14px;border:2px solid var(--border);border-radius:8px;cursor:pointer;background:#f8f9fa; transition: all 0.2s;}
+      .quiz-option label:hover { background: #e9ecef; border-color: var(--accent); }
+      .quiz-option input[type="radio"]{flex-shrink:0;}
+      .quiz-option .explanation{display:none;margin-top:10px;padding:15px;border-radius:6px;border-left:4px solid #a0aec0}
+      .quiz-option.selected.correct label{background:var(--ok-soft);border-color:var(--ok)}
+      .quiz-option.selected.wrong label{background:var(--bad-soft);border-color:var(--bad)}
+      .quiz-option.correct .explanation{border-left-color:var(--ok);background:#f0fff4; display: block;}
+      .quiz-option.wrong .explanation{border-left-color:var(--bad);background:#fff5f5; display: block;}
+      
+      /* --- SVG Tooltip Styles --- */
+      .svg-container-wrapper { position: relative; width:100%; }
+      .svg-tooltip { position: fixed; background-color: #2d2d2d; color: white; padding: 16px; border-radius: 8px; font-size: 13px; pointer-events: none; opacity: 0; transition: opacity 0.2s; white-space: normal; width: 100%; max-width: 300px; border: 1px solid var(--accent); z-index: 10000; line-height: 1.6; box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+      .svg-tooltip-title { font-weight: 700; font-size: 15px; color: var(--accent); margin-bottom: 8px; }
+      .svg-tooltip-desc { font-size: 13px; color: #e0e0e0; margin-bottom: 6px; }
+      .svg-tooltip-tip { font-size: 12px; color: #a0a0a0; font-style: italic; margin-top: 8px; }
+      @media (max-width: 640px) { .svg-tooltip { max-width: calc(100vw - 40px); font-size: 12px; padding: 12px; left: 50% !important; bottom: 20px !important; transform: translateX(-50%) !important; top: auto !important; } }
+      svg .clickable-area { cursor: pointer; transition: opacity 0.2s; pointer-events: all; }
+      svg .clickable-area:hover { opacity: 0.85; }
+      svg .clickable-area rect { pointer-events: all; }
+      
+      .bridge-box { text-align: center; border: 2px dashed var(--accent); border-radius: 12px; padding: 32px; margin-top: 40px; }
+      .bridge-box a { background: var(--accent); color: white; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: 700; display: inline-block; transition: background-color 0.2s; }
+      .bridge-box a:hover { background: var(--accent-2); }
+
+      @media (max-width: 640px) { .comparison-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+ <header class="site-header">
+     <a href="claude_code_for_financial_consultants_index.html" class="logo">Claude for Consultants</a>
+     <span style="font-size:0.9rem;opacity:0.8;">Module 0 of 6</span>
+ </header>
+
+ <nav class="module-nav" role="navigation" aria-label="Course modules">
+     <div class="module-nav-wrapper">
+         <div class="nav-controls">
+             <button class="nav-btn nav-btn-prev" id="navPrev" aria-label="Previous modules">‹</button>
+             <button class="nav-btn nav-btn-next" id="navNext" aria-label="Next modules">›</button>
+         </div>
+         <div class="module-nav-inner" id="moduleNavInner">
+             <a href="claude_code_for_financial_consultants_part_0.html" class="module-link active" data-module="0">
+                 <span class="module-num">M0</span> Introduction
+             </a>
+             <a href="claude_code_for_financial_consultants_part_1.html" class="module-link" data-module="1">
+                 <span class="module-num">M1</span> Orientation
+             </a>
+             <a href="claude_code_for_financial_consultants_part_2.html" class="module-link" data-module="2">
+                 <span class="module-num">M2</span> Installation
+             </a>
+             <a href="claude_code_for_financial_consultants_part_3.html" class="module-link" data-module="3">
+                 <span class="module-num">M3</span> First Changes
+             </a>
+             <a href="claude_code_for_financial_consultants_part_4.html" class="module-link" data-module="4">
+                 <span class="module-num">M4</span> CLAUDE.md
+             </a>
+             <a href="claude_code_for_financial_consultants_part_5.html" class="module-link" data-module="5">
+                 <span class="module-num">M5</span> AI-Native
+             </a>
+         </div>
+     </div>
+ </nav>
+
+ <div class="container">
+   
+    <h1>MODULE 0: Why Claude Code?</h1>
+  <div class="analogy-box" role="note" aria-label="Note for non‑coders">
+    <h3>For financial consultants, not programmers</h3>
+    <p>You won’t write code here. You’ll speak to Claude in plain English to draft analyses, summarize docs, and structure deliverables. No IDE setup today—Module 1 handles installation in a few clicks, and Module 2 walks you through using the workspace. You stay in charge: Claude proposes; you review and approve.</p>
+  </div>
+   <div class="context-box" role="note" aria-label="Product banner" style="display:flex;align-items:flex-start;gap:16px;">
+     <div style="font-size:1.5rem">⚡</div>
+     <div>
+       <strong>Powered by Anthropic's official Claude Code</strong> (<span>current release</span>) — the IDE‑integrated coding assistant for <strong>VS Code</strong> and <strong>JetBrains</strong> on macOS, Windows, and Linux. 
+       <a href="https://docs.claude.com/en/docs/claude-code/quickstart" target="_blank" rel="noopener">Read the docs</a>.
+     </div>
+   </div>
+
+    <!-- 1. CONTEXT -->
+    <section class="module-section">
+        <h2><span class="icon-prefix">📍</span>Context: Why This Matters Now</h2>
+        <div class="context-box">
+            <h3>What Claude Code actually is</h3>
+            <p><strong>Claude Code is Anthropic’s official assistant</strong> that lives inside an editor app called an <em>IDE</em> (think: your digital desk where documents and tools live together). You’ll chat in plain English to draft, transform, and check work. No prior IDE knowledge is required—this course sets it up for you.</p>
+            <p><strong>Safeguard:</strong> Claude <em>never changes files without your approval</em>. You’ll see a clear preview of proposed edits first, then click Approve to apply. Installation is a guided, one‑time step in Module 1 (official extension + simple <code>npm</code> support).</p>
+        </div>
+    </section>
+
+    <!-- 2. CORE CONTENT -->
+    <section class="module-section">
+        <h2><span class="icon-prefix">💡</span>Core Content: 10 Reasons to Start</h2>
+        <ul class="reasons-list">
+            <li><strong>Secure & local</strong> — runs in your IDE; reviews diffs before changes land.</li>
+            <li><strong>Business logic → working code</strong> — turn a brief into scripts, with tests.</li>
+            <li><strong>Explains unfamiliar repos</strong> — map functions, flows, and side‑effects.</li>
+            <li><strong>Refactors with oversight</strong> — propose edits, you approve per hunk.</li>
+            <li><strong>Boilerplate in seconds</strong> — CLIs, ETL jobs, APIs scaffolded safely.</li>
+            <li><strong>Cross‑platform</strong> — VS Code/JetBrains on macOS/Windows/Linux.</li>
+            <li><strong>npm installer</strong> — fast setup, enterprise‑friendly.</li>
+            <li><strong>Team workflows</strong> — shared prompts and consistent patterns.</li>
+            <li><strong>Compliance by design</strong> — you keep control of source and secrets.</li>
+            <li><strong>Faster delivery</strong> — from idea to reviewed PR in hours, not days.</li>
+        </ul>
+    </section>
+
+    <!-- 3. HANDS-ON PRACTICE (Conceptual for Module 0) -->
+    <section class="module-section">
+        <h2><span class="icon-prefix">🛠️</span>Hands-On: See the Difference</h2>
+        <p>Below is a simulated view of the Claude Code interface in VS Code. You'll use the <strong>real workspace</strong> in Module 2.</p>
+        <div class="comparison-grid">
+            <div class="comparison-card with" style="grid-column: 1 / -1;">
+                <h4>Claude Code in VS Code — Interactive Simulation</h4>
+                <p style="font-size:0.9rem;color:#6c757d;margin-bottom:8px;">💡 Click the highlighted Claude panel areas to learn more</p>
+                <div class="svg-container-wrapper">
+                  <div style="width:100%;border-radius:8px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.3);">
+                    <svg id="claude-vscode-svg" viewBox="0 0 1200 700" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;">
+                        <!-- VS Code Window Frame -->
+                        <rect width="1200" height="700" fill="#1e1e1e"/>
+                        
+                        <!-- Top Bar -->
+                        <rect width="1200" height="35" fill="#323233"/>
+                        <text x="20" y="23" fill="#cccccc" font-family="'Segoe UI', sans-serif" font-size="13">Visual Studio Code</text>
+                        <circle cx="1150" cy="17.5" r="5" fill="#ff5f56"/>
+                        <circle cx="1170" cy="17.5" r="5" fill="#ffbd2e"/>
+                        <circle cx="1130" cy="17.5" r="5" fill="#27c93f"/>
+                        
+                        <!-- Sidebar -->
+                        <rect x="0" y="35" width="60" height="665" fill="#252526"/>
+                        <g>
+                            <rect x="15" y="50" width="30" height="30" fill="#333333" rx="4"/>
+                            <text x="30" y="73" fill="#888888" font-family="monospace" font-size="18" text-anchor="middle">📁</text>
+                        </g>
+                        <g>
+                            <rect x="15" y="90" width="30" height="30" fill="#fd7e14" rx="4"/>
+                            <text x="30" y="113" fill="white" font-family="monospace" font-size="18" text-anchor="middle">🤖</text>
+                        </g>
+                        
+                        <!-- Main Editor Area -->
+                        <rect x="60" y="35" width="740" height="665" fill="#1e1e1e"/>
+                        <text x="80" y="65" fill="#888888" font-family="'Consolas', monospace" font-size="12">report_summary.py</text>
+                        
+                        <!-- Code in editor (before change) -->
+                        <text x="80" y="100" fill="#9cdcfe" font-family="'Consolas', monospace" font-size="11">def</text>
+                        <text x="110" y="100" fill="#dcdcaa" font-family="'Consolas', monospace" font-size="11">generate_summary</text>
+                        <text x="240" y="100" fill="#cccccc" font-family="'Consolas', monospace" font-size="11">(client_data):</text>
+                        
+                        <text x="100" y="120" fill="#6a9955" font-family="'Consolas', monospace" font-size="11"># Manual summary generation</text>
+                        <text x="100" y="140" fill="#cccccc" font-family="'Consolas', monospace" font-size="11">total = </text>
+                        <text x="145" y="140" fill="#b5cea8" font-family="'Consolas', monospace" font-size="11">0</text>
+                        
+                        <!-- Claude Side Panel -->
+                        <rect x="800" y="35" width="400" height="665" fill="#252526"/>
+                        <rect x="800" y="35" width="400" height="40" fill="#2d2d30"/>
+                        <text x="820" y="60" fill="#cccccc" font-family="'Segoe UI', sans-serif" font-size="14" font-weight="600">Claude Code</text>
+                        
+                        <!-- Chat Messages -->
+                        <rect x="815" y="90" width="370" height="160" fill="#1e1e1e" rx="6"/>
+                        <text x="830" y="110" fill="#888888" font-family="'Segoe UI', sans-serif" font-size="11">You:</text>
+                        <text x="830" y="130" fill="#d4d4d4" font-family="'Segoe UI', sans-serif" font-size="12">Add error handling to the</text>
+                        <text x="830" y="147" fill="#d4d4d4" font-family="'Segoe UI', sans-serif" font-size="12">generate_summary function</text>
+                        
+                        <rect x="815" y="170" width="370" height="70" fill="#2a2a2a" rx="6"/>
+                        <text x="830" y="190" fill="#fd7e14" font-family="'Segoe UI', sans-serif" font-size="11" font-weight="600">Claude:</text>
+                        <text x="830" y="210" fill="#d4d4d4" font-family="'Segoe UI', sans-serif" font-size="11">I'll add try-except blocks to handle</text>
+                        <text x="830" y="225" fill="#d4d4d4" font-family="'Segoe UI', sans-serif" font-size="11">data validation errors.</text>
+                        
+                        <!-- Diff Preview Section -->
+                        <text x="820" y="275" fill="#cccccc" font-family="'Segoe UI', sans-serif" font-size="12" font-weight="600">Proposed Changes</text>
+                        <rect x="815" y="285" width="370" height="280" fill="#1e1e1e" rx="6"/>
+                        
+                        <!-- File name in diff -->
+                        <rect x="820" y="290" width="360" height="25" fill="#2d2d30" rx="4"/>
+                        <text x="830" y="307" fill="#9cdcfe" font-family="'Consolas', monospace" font-size="10">report_summary.py</text>
+                        
+                        <!-- Diff lines -->
+                        <g>
+                            <rect x="825" y="325" width="350" height="16" fill="#4b1818"/>
+                            <text x="835" y="337" fill="#f48771" font-family="'Consolas', monospace" font-size="10">-   total = 0</text>
+                        </g>
+                        <g>
+                            <rect x="825" y="343" width="350" height="16" fill="#1a3d1a"/>
+                            <text x="835" y="355" fill="#89d185" font-family="'Consolas', monospace" font-size="10">+   try:</text>
+                        </g>
+                        <g>
+                            <rect x="825" y="361" width="350" height="16" fill="#1a3d1a"/>
+                            <text x="835" y="373" fill="#89d185" font-family="'Consolas', monospace" font-size="10">+       total = 0</text>
+                        </g>
+                        <g>
+                            <rect x="825" y="379" width="350" height="16" fill="#1a3d1a"/>
+                            <text x="835" y="391" fill="#89d185" font-family="'Consolas', monospace" font-size="10">+       if not client_data:</text>
+                        </g>
+                        <g>
+                            <rect x="825" y="397" width="350" height="16" fill="#1a3d1a"/>
+                            <text x="835" y="409" fill="#89d185" font-family="'Consolas', monospace" font-size="10">+           raise ValueError()</text>
+                        </g>
+                        <g>
+                            <rect x="825" y="415" width="350" height="16" fill="#1a3d1a"/>
+                            <text x="835" y="427" fill="#89d185" font-family="'Consolas', monospace" font-size="10">+   except ValueError:</text>
+                        </g>
+                        <g>
+                            <rect x="825" y="433" width="350" height="16" fill="#1a3d1a"/>
+                            <text x="835" y="445" fill="#89d185" font-family="'Consolas', monospace" font-size="10">+       return "Invalid data"</text>
+                        </g>
+                        
+                        <!-- Stats -->
+                        <text x="830" y="475" fill="#6a9955" font-family="'Segoe UI', sans-serif" font-size="10">+7 lines added, -1 line removed</text>
+                        
+                        <!-- Action Buttons -->
+                        <rect x="815" y="590" width="175" height="35" fill="#198754" rx="6" style="cursor:pointer;"/>
+                        <text x="902.5" y="612" fill="white" font-family="'Segoe UI', sans-serif" font-size="13" font-weight="600" text-anchor="middle">✓ Approve & Apply</text>
+                        
+                        <rect x="1005" y="590" width="175" height="35" fill="#444444" rx="6" style="cursor:pointer;"/>
+                        <text x="1092.5" y="612" fill="#e0e0e0" font-family="'Segoe UI', sans-serif" font-size="13" font-weight="600" text-anchor="middle">✗ Reject</text>
+                        
+                        <!-- Input box -->
+                        <rect x="815" y="640" width="370" height="40" fill="#2d2d30" rx="6" stroke="#555555" stroke-width="1"/>
+                        <text x="830" y="665" fill="#888888" font-family="'Segoe UI', sans-serif" font-size="11" font-style="italic">Ask Claude to edit, explain, or generate...</text>
+                        
+                        <!-- Interactive Overlay Areas -->
+                        <g id="chat-area" class="clickable-area">
+                            <rect x="815" y="90" width="370" height="160" fill="#fd7e14" fill-opacity="0.05" stroke="#fd7e14" stroke-opacity="0.3" stroke-width="2" rx="6"/>
+                        </g>
+                        <g id="diff-area" class="clickable-area">
+                            <rect x="815" y="285" width="370" height="280" fill="#fd7e14" fill-opacity="0.05" stroke="#fd7e14" stroke-opacity="0.3" stroke-width="2" rx="6"/>
+                        </g>
+                        <g id="approve-btn-area" class="clickable-area">
+                            <rect x="815" y="590" width="175" height="35" fill="#fd7e14" fill-opacity="0.05" stroke="#fd7e14" stroke-opacity="0.3" stroke-width="2" rx="6"/>
+                        </g>
+                        <g id="input-area" class="clickable-area">
+                            <rect x="815" y="640" width="370" height="40" fill="#fd7e14" fill-opacity="0.05" stroke="#fd7e14" stroke-opacity="0.3" stroke-width="2" rx="6"/>
+                        </g>
+                    </svg>
+                  </div>
+                  <div id="svg-tooltip" class="svg-tooltip"></div>
+            </div>
+                <p style="margin-top:16px;"><strong>How it works:</strong> Chat in plain English → Claude proposes code changes → Review the diff (green = added, red = removed) → Click <span style="color:var(--ok);font-weight:600;">Approve</span> to apply or <span style="color:#888;font-weight:600;">Reject</span> to discard. <em>Nothing changes in your files until you approve.</em></p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Simulator: Bridge to Practice -->
+    <section class="module-section">
+        <h2><span class="icon-prefix">⌨️</span>Quick Simulator</h2>
+        <div class="context-box">
+            <h3>Try a dry‑run</h3>
+            <p>Type this in your head as if you were in the terminal: <code>claude "list my files"</code>. Imagine Claude showing a small diff‑style preview of what it plans to read. In Module 2, you’ll try it for real.</p>
+        </div>
+    </section>
+
+    <!-- 4. KEY TIPS -->
+    <section class="module-section">
+        <h2><span class="icon-prefix">💬</span>3 Key Tips from Early Adopters</h2>
+        <div class="key-tips-grid">
+            <div class="tip-card">
+                <p>“I treated it like training a junior associate. Once I explained context clearly, results became eerily accurate.”</p>
+                <footer>— Maya, Strategy Consultant</footer>
+            </div>
+            <div class="tip-card">
+                <p>“I started with client-agnostic data just to see patterns. Confidence grows fast when nothing’s at risk.”</p>
+                <footer>— James, M&A Manager</footer>
+            </div>
+            <div class="tip-card">
+                <p>“My first three prompts were awful because I didn’t specify what output I wanted. Be explicit: ask for ‘table format’ or ‘3 key insights.’”</p>
+                <footer>— Alex, Financial Analyst</footer>
+            </div>
+        </div>
+    </section>
+
+    <!-- Error Decoding: Reduce Fear -->
+    <section class="module-section">
+        <h2><span class="icon-prefix">🧯</span>Common Errors, Decoded</h2>
+        <div class="comparison-grid">
+            <div class="comparison-card">
+                <h4>"command not found"</h4>
+                <p>Close and reopen your terminal. Then try <code>claude --version</code> again.</p>
+            </div>
+            <div class="comparison-card">
+                <h4>"permission denied"</h4>
+                <p>You’re trying to write where your user can’t. Switch folders (e.g., Desktop) and try again.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. REFLECTION QUESTIONS -->
+    <section class="module-section">
+        <h2><span class="icon-prefix">🧠</span>Reflection Questions</h2>
+        <div class="reflection-box">
+            <p>Before moving on, take a moment to think about your own work:</p>
+            <ol>
+                <li>Which of the "10 Reasons" resonates most with the challenges you face in your daily workflow?</li>
+                <li>What is one repetitive, time-consuming task you currently do (e.g., summarizing meeting notes, formatting reports) that an LLM could potentially draft for you?</li>
+                <li>Considering the "Before and After" example, what could you do with the hours saved each week?</li>
+                <li>What’s your risk tolerance for experimenting with paid APIs? Set a small, safe budget before Module 2.</li>
+            </ol>
+        </div>
+    </section>
+
+    <!-- 6. COMMON QUESTIONS (FAQ) -->
+    <section class="module-section">
+        <h2><span class="icon-prefix">❓</span>Common Questions</h2>
+        <div class="accordion" id="faq-accordion">
+            <!-- FAQ Items will be injected by JS -->
+        </div>
+    </section>
+
+    <!-- 7. GLOSSARY -->
+    <section class="module-section">
+        <h2><span class="icon-prefix">📚</span>6 Key Terms You Just Learned</h2>
+        <dl class="glossary-list">
+            <dt>Claude Code</dt>
+            <dd>Anthropic's official coding assistant that integrates with your editor. You interact with it using the <code>claude</code> command in your terminal or a chat panel in your IDE.</dd>
+            <dt>IDE (Integrated Development Environment)</dt>
+            <dd>Your workspace app (like VS Code/JetBrains). In this course, you’ll only need basic actions we guide step‑by‑step—no programming expertise required.</dd>
+            <dt>Prompt</dt>
+            <dd>Your natural language instruction to Claude. It's a question or a command, not computer code.</dd>
+            <dt>LLM (Large Language Model)</dt>
+            <dd>The underlying AI engine (like Claude) that understands and generates text.</dd>
+            <dt>Synthesis</dt>
+            <dd>The process of combining information from multiple sources to create a new, structured understanding. This is a core consulting skill that LLMs accelerate.</dd>
+            <dt>Workflow</dt>
+            <dd>A series of steps you take to complete a task. LLMs can help automate or speed up parts of your workflow.</dd>
+            <dt>Guardrails</dt>
+            <dd>The safety rules you must follow, like not using confidential client data in public AI tools.</dd>
+        </dl>
+    </section>
+    
+    <!-- 8. MC QUESTIONS -->
+    <section class="module-section">
+        <h2><span class="icon-prefix">✅</span>Knowledge Check</h2>
+        <div class="quiz-container">
+            <div class="quiz-navigation">
+                <button class="btn" id="quizPrevBtn">❮</button>
+                <span class="question-counter"><span id="currentQ">1</span> of <span id="totalQ">8</span></span>
+                <button class="btn" id="quizNextBtn">❯</button>
+            </div>
+            <div id="quiz-body-container"></div>
+        </div>
+    </section>
+
+    <!-- 9. BRIDGE TO NEXT MODULE -->
+    <section class="module-section">
+        <h2><span class="icon-prefix">🪜</span>What You Learned & What's Next</h2>
+        <div class="bridge-box">
+            <h3>Where you are now:</h3>
+            <p>You understand <strong>what Claude Code is</strong>: an official Anthropic product for VS Code/JetBrains, how it behaves (local, secure, explicit approvals), and the value it brings to a consulting workflow.</p>
+            <h3>Where you’re going next:</h3>
+            <p>In Module 1, we’ll install the IDE extension. In Module 2, you will <strong>use the real Claude Code workspace</strong> to chat, generate, and apply changes for the first time.</p>
+            <a href="claude_code_for_financial_consultants_part_1.html">Continue to Module 1: Setup & Installation</a>
+        </div>
+    </section>
+
+ </div>
+
+ <footer class="site-footer">
+   <p>Module 0 of 6 in the "Claude for Consultants" Series</p>
+ </footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // --- Module Navigation with Completion Tracking ---
+    const currentModule = 0;
+    
+    // Mark completed modules in nav
+    for (let i = 0; i < currentModule; i++) {
+        if (localStorage.getItem(`module${i}_completed`)) {
+            const link = document.querySelector(`.module-link[data-module="${i}"]`);
+            if (link) link.classList.add('completed');
+        }
+    }
+    
+    // Mark current module as completed when user scrolls to bottom
+    let completionMarked = false;
+    window.addEventListener('scroll', () => {
+        if (completionMarked) return;
+        const scrollHeight = document.documentElement.scrollHeight;
+        const scrollTop = document.documentElement.scrollTop;
+        const clientHeight = document.documentElement.clientHeight;
+        
+        if (scrollTop + clientHeight >= scrollHeight - 100) {
+            localStorage.setItem(`module${currentModule}_completed`, 'true');
+            completionMarked = true;
+            const link = document.querySelector(`.module-link[data-module="${currentModule}"]`);
+            if (link) link.classList.add('completed');
+        }
+    });
+    
+    // Mobile carousel navigation
+    const navInner = document.getElementById('moduleNavInner');
+    const navPrev = document.getElementById('navPrev');
+    const navNext = document.getElementById('navNext');
+    
+    if (navInner && navPrev && navNext) {
+        // Scroll to active module on load (mobile)
+        const activeLink = navInner.querySelector('.module-link.active');
+        if (activeLink && window.innerWidth <= 768) {
+            activeLink.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        }
+        
+        // Prev/Next button handlers
+        navPrev.addEventListener('click', () => {
+            navInner.scrollBy({ left: -160, behavior: 'smooth' });
+        });
+        
+        navNext.addEventListener('click', () => {
+            navInner.scrollBy({ left: 160, behavior: 'smooth' });
+        });
+        
+        // Update button states on scroll
+        function updateNavButtons() {
+            const scrollLeft = navInner.scrollLeft;
+            const scrollWidth = navInner.scrollWidth;
+            const clientWidth = navInner.clientWidth;
+            
+            navPrev.disabled = scrollLeft <= 0;
+            navNext.disabled = scrollLeft + clientWidth >= scrollWidth - 5;
+        }
+        
+        navInner.addEventListener('scroll', updateNavButtons);
+        window.addEventListener('resize', updateNavButtons);
+        updateNavButtons();
+    }
+    
+    // --- Rest of Module 0 JavaScript ---
+    // --- Data ---
+    const faqData = [
+        { q: "Do I need to know how to code?", a: "No. Think of Claude Code like an analyst who speaks perfect English — not code. You’ll give instructions in natural language and approve any changes before they apply." },
+        { q: "Will this replace consultants?", a: "No. Treat it as a force multiplier. Like spell‑check for thinking, it sharpens drafts and accelerates analysis—but judgment, ethics, and client context remain yours." },
+        { q: "What if Claude gets something wrong?", a: "It can, and it will. That's why the workflow is built around your approval. Nothing gets saved or changed without your explicit confirmation. You are always the final checkpoint." },
+        { q: "Is my client's data safe?", a: "This is the most important question. Prompts are processed through Claude’s secure API, but as a rule, you should never paste sensitive or proprietary client data into any public AI tool. Always use sanitized samples unless your firm has a specific, secure enterprise AI policy." },
+    ];
+
+    const quizData = [
+        { 
+            q: "According to the module, what is the primary benefit of using Claude Code for a consultant?", 
+            correct: 1, 
+            options: [
+                { text: "It replaces the need for junior consultants.", explanation: "Incorrect. Claude Code is a productivity tool, not a replacement for human judgment or team members. It helps you work faster by drafting, synthesizing, and structuring information, but strategic thinking, client relationships, and ethical oversight remain your responsibility. Think of it as an assistant that accelerates your workflow, not a substitute for your expertise or your team's collaborative intelligence." },
+                { text: "It accelerates information synthesis and drafting.", explanation: "✅ Correct! Claude Code saves consultants hours by quickly synthesizing data, drafting analyses, and structuring deliverables—so you spend less time on mechanics and more time on insights." },
+                { text: "It guarantees 100% accurate financial predictions.", explanation: "Incorrect. No AI tool can guarantee accuracy, especially for complex financial forecasting that depends on market conditions, assumptions, and context. Claude Code is excellent at organizing information and generating drafts, but you must always verify outputs, check assumptions, and apply your professional judgment. It's a drafting assistant, not an oracle—treat every output as a first draft requiring your review and refinement." },
+                { text: "It designs marketing websites automatically.", explanation: "Incorrect. While Claude Code can help with code-related tasks, this module is focused on consulting workflows like report generation, data analysis, and synthesis—not web design. The tool is versatile, but its primary value for consultants lies in accelerating research, drafting deliverables, and structuring complex information. If you need a website built, specialized tools or developers are better suited for that task." }
+            ]
+        },
+        { 
+            q: "What is the best analogy for Claude Code presented in this module?", 
+            correct: 0, 
+            options: [
+                { text: "A very fast junior consultant.", explanation: "✅ Correct! Like a junior consultant, Claude needs clear direction and context but can quickly produce structured drafts, summaries, and analyses—saving you valuable time." },
+                { text: "A magic crystal ball.", explanation: "Incorrect. Claude Code isn't magic, and it doesn't predict the future. It's a practical tool that requires clear instructions and your oversight. Treating it like a 'crystal ball' would mean expecting it to intuitively understand vague requests or generate perfect outputs without guidance—which leads to disappointing results. Instead, approach it like training a new team member: provide context, be specific, and review its work carefully." },
+                { text: "A replacement for Microsoft Excel.", explanation: "Incorrect. Excel and Claude Code serve different purposes. Excel is a spreadsheet tool for calculations, data organization, and visualization, while Claude Code is an AI assistant for generating text, drafting analyses, and synthesizing information. You might use Claude to interpret Excel data or draft reports based on spreadsheet insights, but it doesn't replace Excel's core functionality. Think of them as complementary tools in your consulting toolkit." },
+                { text: "A secure file storage system.", explanation: "Incorrect. Claude Code is not a storage system—it's an interactive assistant that helps you generate, edit, and refine content in real time. While it operates securely within your IDE, its purpose is active collaboration on drafts and analysis, not passive storage of files. For secure file storage, you'd use cloud services like OneDrive, Google Drive, or enterprise solutions. Claude Code is about creation and iteration, not archiving." }
+            ]
+        },
+        { 
+            q: "What is the 'Golden Rule' for using AI in a consulting context?", 
+            correct: 3, 
+            options: [
+                { text: "Always trust the AI's first answer.", explanation: "Incorrect. Blind trust in AI outputs is dangerous, especially in consulting where accuracy and context matter immensely. Claude Code can make mistakes, hallucinate facts, or misinterpret instructions. Your job is to review every output critically, verify facts against trusted sources, and apply your professional judgment. Treat AI as a drafting assistant, not a final authority—always validate its work before using it in client deliverables or decision-making." },
+                { text: "Only use the AI for quantitative tasks.", explanation: "Incorrect. Claude Code excels at both qualitative and quantitative tasks—drafting narratives, synthesizing research, structuring reports, and even explaining data. Limiting it to numbers would miss much of its value. However, for any task (quantitative or qualitative), you must verify outputs, check logic, and ensure accuracy. The real guideline is to use AI thoughtfully across your workflow while maintaining oversight, not to restrict it to one type of task." },
+                { text: "Use the most complex prompts possible.", explanation: "Incorrect. Complexity doesn't equal quality. In fact, overly complex or vague prompts often confuse the AI and produce poor results. The key is clarity and specificity—clear instructions, explicit context, and concrete examples. A simple, well-structured prompt like 'Summarize this data into 3 key insights with supporting numbers' will outperform a convoluted, jargon-filled request. Effective prompting is about precision, not sophistication." },
+                { text: "Never input confidential client data into a public tool.", explanation: "✅ Correct! Client confidentiality is paramount. Always use sanitized, anonymized, or generic data unless your firm has a secure, enterprise-approved AI setup with proper data protection." }
+            ]
+        },
+        { 
+            q: "In the hands-on example, the main advantage shown is:", 
+            correct: 2, 
+            options: [
+                { text: "Improved creativity.", explanation: "Incorrect. While Claude Code can help brainstorm ideas, the core advantage demonstrated in this module is speed and efficiency—not enhanced creativity. Creativity remains your domain; Claude accelerates execution by handling repetitive structuring, drafting, and synthesis tasks. It's a time-saver for mechanics, not a replacement for original thinking. Use it to free up mental bandwidth for creative strategy, but don't expect it to generate breakthrough ideas without your direction." },
+                { text: "Better strategic judgment.", explanation: "Incorrect. Strategic judgment comes from your experience, industry knowledge, and contextual understanding—not from an AI tool. Claude Code helps you organize information and draft analyses faster, but it doesn't possess the nuanced judgment required for high-stakes consulting decisions. It can surface patterns or structure options, but you must interpret significance, weigh trade-offs, and make the final call. Think of it as a research assistant, not a strategist." },
+                { text: "A significant reduction in time spent on repetitive tasks.", explanation: "✅ Correct! The example demonstrates how Claude Code can compress hours of drafting, formatting, and synthesis into minutes—freeing you to focus on higher-value strategic work." },
+                { text: "Higher final quality of the presentation.", explanation: "Incorrect. Quality depends on your input, review, and refinement—not the AI alone. Claude Code can produce a solid first draft quickly, but the final quality comes from your edits, fact-checking, and professional polish. It's a speed tool, not a quality guarantee. A rushed AI draft without your careful review will likely have gaps, inaccuracies, or tone issues. The advantage is efficiency; quality is your responsibility through iteration and oversight." }
+            ]
+        },
+        { 
+            q: "What is the key takeaway from the 'Tips from Early Adopters'?", 
+            correct: 0, 
+            options: [
+                { text: "Being explicit and providing clear context in your prompts leads to better results.", explanation: "✅ Correct! Maya, James, and Alex all emphasize clarity and context. Specific, well-framed instructions are the foundation of high-quality AI outputs in consulting work." },
+                { text: "AI is too difficult for beginners to use effectively.", explanation: "Incorrect. The tips from early adopters show the opposite—AI becomes effective quickly once you learn to communicate clearly. Maya treated it like training a junior associate; James started with low-risk experiments; Alex learned to be explicit about desired outputs. None of them suggested it was too difficult; they all highlighted simple adjustments that led to fast improvement. The learning curve is real but short if you approach it with curiosity and clarity." },
+                { text: "You should only use AI for non-critical tasks.", explanation: "Incorrect. The adopters used AI for substantive work—client summaries, pattern analysis, and report generation. The key isn't avoiding critical tasks; it's starting with lower-risk experiments to build confidence, then scaling up with proper oversight. James's advice to use 'client-agnostic data' initially is about safe experimentation, not permanent limitation. Once you trust the tool and your review process, you can apply it to more important work—always with verification." },
+                { text: "It takes years to learn how to use Claude Code properly.", explanation: "Incorrect. The testimonials show rapid skill development. Alex's 'first three prompts were awful' but improved quickly by being explicit. Maya saw results after explaining context clearly—not after years of practice. The tool is designed for natural language, so the learning curve is measured in days or weeks of experimentation, not years. The key is intentional practice: try, observe, refine your prompts, and iterate. Mastery may take time, but useful proficiency comes fast." }
+            ]
+        },
+        { 
+            q: "What does 'diff view' refer to in the context of Claude Code?", 
+            correct: 1, 
+            options: [
+                { text: "A type of financial analysis report.", explanation: "Incorrect. 'Diff view' is a technical term from software development, not finance. It's a visual preview showing proposed changes to a file: what will be removed (in red) and what will be added (in green). This allows you to review edits before they're applied to your document. In consulting workflows, it means you see exactly what Claude wants to change before approving—giving you full control and oversight over every modification." },
+                { text: "A preview of proposed changes before they are applied.", explanation: "✅ Correct! The diff view shows you exactly what Claude wants to add (green) or remove (red) from your files, so you approve changes with full visibility." },
+                { text: "A summary of all errors in your code.", explanation: "Incorrect. A diff view is not an error report—it's a side-by-side comparison showing proposed edits. Errors might be highlighted by a linter or debugger, but the diff view specifically shows 'before and after' versions of text or code. It's about previewing changes, not diagnosing problems. When Claude suggests edits, the diff view lets you see exactly what will change, so you can approve or reject with confidence—whether those changes fix errors or simply refine content." },
+                { text: "A built-in Git integration for version control.", explanation: "Incorrect. While Git also uses 'diff' terminology to show changes between file versions, Claude Code's diff view is separate from Git. It's part of Claude's approval workflow: you see proposed edits before they're applied to your local file. Git tracks changes after they're saved; Claude's diff happens before. They serve different purposes—Claude's diff is for real-time review; Git's diff is for version history. You might use both tools, but they're independent features." }
+            ]
+        },
+        { 
+            q: "Which statement best describes the approval workflow in Claude Code?", 
+            correct: 2, 
+            options: [
+                { text: "Claude makes all changes automatically without user input.", explanation: "Incorrect. This would be extremely risky and against Claude Code's core design principle. Every change requires your explicit approval. Claude proposes edits, shows you a diff preview, and waits for you to click 'Approve' before applying anything. This safeguard ensures you maintain full control over your files, prevent unintended modifications, and review every suggestion for accuracy and appropriateness. Automatic changes would undermine trust and safety—especially critical in consulting environments." },
+                { text: "You must manually type every change Claude suggests.", explanation: "Incorrect. That would defeat the purpose of using an AI assistant. Claude Code automates the mechanics of editing—you approve, and it applies the changes instantly. You don't retype anything. The workflow is: you give an instruction, Claude shows proposed edits in a diff view, you review, and if satisfied, you click 'Approve & Apply.' The actual typing and file modification happen automatically after your approval. This saves time while keeping you in control." },
+                { text: "You review proposed changes, then approve or reject them.", explanation: "✅ Correct! Claude shows you what it wants to change (via diff), and you decide whether to approve or reject—giving you full control and oversight." },
+                { text: "Changes are saved to the cloud and synced across devices.", explanation: "Incorrect. Claude Code works locally within your IDE. Changes are applied to files on your machine, not synced to a cloud. If you want cloud sync, you'd use a separate service like OneDrive, Google Drive, or Git version control. Claude's job is to propose and apply local edits after your approval; it doesn't handle file storage or synchronization. Keep your own backup and version control systems in place—Claude doesn't replace those workflows." }
+            ]
+        },
+        { 
+            q: "Why is it important to start with 'low-risk' experiments when learning Claude Code?", 
+            correct: 3, 
+            options: [
+                { text: "Because Claude Code is unstable and crashes frequently.", explanation: "Incorrect. Claude Code is a production-grade tool from Anthropic; stability isn't the concern. The reason to start with low-risk experiments is to build your confidence and learn effective prompting techniques without jeopardizing important client work. You're learning how to communicate with AI, spot its limitations, and refine your review process. Starting small—like summarizing public data or drafting internal memos—lets you experiment safely, make mistakes, and iterate without consequences." },
+                { text: "Because AI tools are illegal to use in consulting.", explanation: "Incorrect. AI tools are not illegal—they're increasingly common in professional services. However, their use must comply with confidentiality, data protection, and ethical guidelines. The reason to start with low-risk experiments is practical: you're learning how the tool behaves, where it excels, and where it makes mistakes. Using non-confidential, generic data initially protects client privacy, reduces pressure, and lets you explore capabilities freely. Once confident, you can scale up responsibly." },
+                { text: "Because Claude Code requires expensive API credits.", explanation: "Incorrect. While Claude Code does use API credits that have a cost, that's not the main reason for low-risk experiments. The real reason is pedagogical: you're building skills, testing prompts, and learning to review AI outputs critically. Starting with non-critical tasks (like summarizing public articles or drafting internal notes) lets you learn without the stress of high-stakes client work. It's about confidence-building and skill development, not cost management. Set a small budget, but focus on learning." },
+                { text: "To build confidence and learn effective prompting without risking client work.", explanation: "✅ Correct! Low-risk experiments let you learn Claude's strengths and weaknesses, refine your prompting skills, and build trust in your review process before applying it to high-stakes consulting deliverables." }
+            ]
+        }
+    ];
+
+    // --- Interactivity Setup ---
+    function setupAccordions() {
+        const faqContainer = document.getElementById('faq-accordion');
+        if (!faqContainer) return;
+        faqContainer.innerHTML = faqData.map(item => `
+            <div class="accordion-item">
+                <button class="accordion-header" aria-expanded="false">${item.q}</button>
+                <div class="accordion-content"><p>${item.a}</p></div>
+            </div>
+        `).join('');
+
+        faqContainer.addEventListener('click', (e) => {
+            const header = e.target.closest('.accordion-header');
+            if (header) {
+                const expanded = header.getAttribute('aria-expanded') === 'true';
+                header.setAttribute('aria-expanded', !expanded);
+                header.nextElementSibling.style.display = expanded ? 'none' : 'block';
+            }
+        });
+    }
+
+    function setupQuiz() {
+        const bodyContainer = document.getElementById('quiz-body-container');
+        const prevBtn = document.getElementById('quizPrevBtn');
+        const nextBtn = document.getElementById('quizNextBtn');
+        const currentQSpan = document.getElementById('currentQ');
+        const totalQSpan = document.getElementById('totalQ');
+        if (!bodyContainer || !prevBtn || !nextBtn || !currentQSpan || !totalQSpan) return;
+        
+        let currentQuestionIndex = 0;
+        totalQSpan.textContent = quizData.length;
+
+        function renderQuestion() {
+            const qData = quizData[currentQuestionIndex];
+            let optionsHTML = qData.options.map((opt, index) => `
+                <div class="quiz-option" data-option-index="${index}">
+                        <label>
+                        <input type="radio" name="q${currentQuestionIndex}" value="${index}">
+                        <span>${opt.text}</span>
+                        </label>
+                    <div class="explanation">${opt.explanation}</div>
+                </div>`).join('');
+            bodyContainer.innerHTML = `<div class="quiz-body active"><p><strong>Question ${currentQuestionIndex + 1}:</strong> ${qData.q}</p><div class="quiz-options">${optionsHTML}</div></div>`;
+            currentQSpan.textContent = currentQuestionIndex + 1;
+            prevBtn.disabled = currentQuestionIndex === 0;
+            nextBtn.disabled = currentQuestionIndex === quizData.length - 1;
+            bodyContainer.querySelectorAll('.quiz-option input').forEach(radio => radio.addEventListener('change', handleOptionSelect));
+        }
+
+        function handleOptionSelect(e) {
+            const selectedOptionIndex = parseInt(e.target.value);
+            const qData = quizData[currentQuestionIndex];
+            const parentQuestionDiv = e.target.closest('.quiz-body');
+            parentQuestionDiv.querySelectorAll('.quiz-option').forEach(optDiv => {
+                optDiv.classList.remove('selected', 'correct', 'wrong');
+                optDiv.querySelector('.explanation').style.display = 'none';
+            });
+            const selectedOptionDiv = e.target.closest('.quiz-option');
+            selectedOptionDiv.classList.add('selected');
+            selectedOptionDiv.querySelector('.explanation').style.display = 'block';
+            if (selectedOptionIndex === qData.correct) {
+                selectedOptionDiv.classList.add('correct');
+                } else {
+                selectedOptionDiv.classList.add('wrong');
+                parentQuestionDiv.querySelector(`.quiz-option[data-option-index="${qData.correct}"]`).classList.add('correct');
+            }
+        }
+        prevBtn.addEventListener('click', () => { if (currentQuestionIndex > 0) { currentQuestionIndex--; renderQuestion(); } });
+        nextBtn.addEventListener('click', () => { if (currentQuestionIndex < quizData.length - 1) { currentQuestionIndex++; renderQuestion(); } });
+        renderQuestion();
+    }
+
+    // --- SVG Interactive Tooltips ---
+    function setupSVGTooltips() {
+        const svg = document.getElementById('claude-vscode-svg');
+        const tooltip = document.getElementById('svg-tooltip');
+        if (!svg || !tooltip) return;
+
+        const tooltipContent = {
+            'chat-area': {
+                title: 'Chat Interface',
+                desc: 'This is where you type plain-English instructions to Claude. No code knowledge needed—just describe what you want.',
+                tip: 'Example: "Add error handling to the generate_summary function"'
+            },
+            'diff-area': {
+                title: 'Diff Preview (Changes)',
+                desc: 'Before Claude changes anything, you see exactly what will be added (green) or removed (red). This is your safety checkpoint.',
+                tip: 'You stay in control—nothing happens until you approve.'
+            },
+            'approve-btn-area': {
+                title: 'Approve & Apply Button',
+                desc: 'Click this to accept Claude\'s proposed changes. Only after you click will your file be modified.',
+                tip: 'Always review the diff first—Claude can make mistakes!'
+            },
+            'input-area': {
+                title: 'Prompt Input Box',
+                desc: 'Type your next instruction here. Be specific: ask for summaries, drafts, edits, or explanations.',
+                tip: 'Good prompt: "Summarize this data into 3 key insights with supporting numbers"'
+            }
+        };
+
+        const updateTooltipPosition = (e) => {
+            if (window.innerWidth <= 640) {
+                tooltip.style.left = '50%';
+                tooltip.style.bottom = '20px';
+                tooltip.style.top = 'auto';
+                tooltip.style.transform = 'translateX(-50%)';
+                return;
+            }
+            
+            tooltip.style.bottom = 'auto';
+            tooltip.style.transform = 'none';
+            
+            const isTouchEvent = e.type && e.type.startsWith('touch');
+            const eventX = isTouchEvent ? e.touches[0].pageX : e.pageX;
+            const eventY = isTouchEvent ? e.touches[0].pageY : e.pageY;
+            
+            const x = eventX + 15;
+            const y = eventY + 15;
+            const clientWidth = document.documentElement.clientWidth;
+            const clientHeight = document.documentElement.clientHeight;
+            const { offsetWidth, offsetHeight } = tooltip;
+            
+            let left = (x + offsetWidth > clientWidth) ? `${x - offsetWidth - 30}px` : `${x}px`;
+            let top = (y + offsetHeight > clientHeight) ? `${y - offsetHeight - 30}px` : `${y}px`;
+            
+            if (parseInt(left) < 0) left = '15px';
+            if (parseInt(top) < 0) top = '15px';
+            
+            tooltip.style.left = left;
+            tooltip.style.top = top;
+        };
+
+        function positionByElement(el) {
+            if (window.innerWidth <= 640) {
+                tooltip.style.left = '50%';
+                tooltip.style.bottom = '20px';
+                tooltip.style.top = 'auto';
+                tooltip.style.transform = 'translateX(-50%)';
+                return;
+            }
+            const rectEl = el.querySelector('rect') || el;
+            const rect = rectEl.getBoundingClientRect();
+            const { offsetWidth, offsetHeight } = tooltip;
+            let left = rect.right + 12;
+            let top = rect.top + 12;
+            const vw = document.documentElement.clientWidth;
+            const vh = document.documentElement.clientHeight;
+            if (left + offsetWidth > vw - 8) left = rect.left - offsetWidth - 12;
+            if (top + offsetHeight > vh - 8) top = rect.bottom - offsetHeight - 12;
+            if (left < 8) left = 8;
+            if (top < 8) top = 8;
+            tooltip.style.left = `${left}px`;
+            tooltip.style.top = `${top}px`;
+        }
+
+        const showTooltip = (e, content, el) => {
+            if (!content) return;
+            tooltip.innerHTML = `
+                <div class="svg-tooltip-title">${content.title}</div>
+                <div class="svg-tooltip-desc">${content.desc}</div>
+                <div class="svg-tooltip-tip">💡 ${content.tip}</div>
+            `;
+            tooltip.style.opacity = '1';
+            if (el) { positionByElement(el); } else if (e && e.pageX !== undefined) { updateTooltipPosition(e); }
+        };
+
+        const hideTooltip = () => {
+            tooltip.style.opacity = '0';
+        };
+
+        const clickableRects = svg.querySelectorAll('.clickable-area rect');
+        clickableRects.forEach(rect => {
+            const el = rect.parentElement;
+            const content = tooltipContent[el.id];
+            if (!content) return;
+
+            let tooltipTimer;
+
+            // Click-to-toggle behavior for reliability
+            rect.addEventListener('click', (e) => {
+                const isOpen = tooltip.style.opacity === '1' && tooltip.dataset.openFor === el.id;
+                if (isOpen) {
+                    hideTooltip();
+                    tooltip.dataset.openFor = '';
+                } else {
+                    showTooltip(null, content, el);
+                    tooltip.dataset.openFor = el.id;
+                }
+            });
+
+            // Keyboard accessibility
+            rect.setAttribute('tabindex', '0');
+            rect.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    rect.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+                }
+            });
+        });
+
+        // Close on outside click / scroll / resize
+        document.addEventListener('click', (e) => {
+            const withinSvg = e.target.closest('#claude-vscode-svg');
+            if (!withinSvg) hideTooltip();
+        });
+        window.addEventListener('scroll', hideTooltip, { passive: true });
+        window.addEventListener('resize', hideTooltip);
+    }
+
+    // --- Initial Load ---
+    setupAccordions();
+    setupQuiz();
+    setupSVGTooltips();
+});
+</script>
+
+</body>
+</html>
