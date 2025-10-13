@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Claude Code Workflow: The Beginner's Journey for Doctors</title>
-    <meta name="description" content="An interactive guide showing how a beginner can go from an idea to a live GitHub project using Anthropic's Claude Code, without writing any code.">
-    <meta name="keywords" content="Claude Code, GitHub for Beginners, AI Coding Assistant, No-Code, AI Workflow, Learn to Code">
+    <title>Vibe Coding for Doctors: Build Apps Without Learning Syntax</title>
+    <meta name="description" content="A doctor's guide to building real medical tools with Claude Code - no coding experience needed. From patient forms to GitHub in minutes.">
+    <meta name="keywords" content="Claude Code for doctors, medical app development, no-code for physicians, AI coding assistant healthcare">
     <meta name="author" content="Beyond Dictionary">
     <meta name="robots" content="index, follow">
 
@@ -14,7 +14,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
 
     <style>
-      /* --- Base Styles (from provided example) --- */
+      /* --- Base Styles --- */
       :root {
         --text:#212529; --bg:#fff; --muted:#f8f9fa; --border:#e9ecef;
         --accent:#d9480f; --accent-2:#c9400a; --header-bg:#212529; --header-fg:#f8f9fa;
@@ -40,6 +40,7 @@
       .byline{font-size:clamp(1rem,3vw,1.25rem);font-style:italic;color:#4a5568;margin-bottom:24px}
       h2{font-size:clamp(1.5rem,4vw,2.2rem);color:var(--text);margin:64px 0 24px;border-bottom:2px solid var(--border);padding-bottom:12px}
       h3{font-size:clamp(1.2rem,3vw,1.6rem);color:var(--text);margin-top:48px;margin-bottom:16px}
+      h4{font-size:1.1rem;font-weight:600;margin-bottom:0.5rem;}
       p, ul, li {font-size: 1.1rem; max-width: 75ch;}
       p{margin-bottom:20px;word-wrap:break-word; line-height: 1.9;}
       ul{margin-left:24px;margin-bottom:24px;padding-left:1em}
@@ -48,8 +49,19 @@
       strong { font-weight: 600; }
       .highlight-accent { color: var(--accent-2); font-weight: 600; }
       .code-block { background: #212529; color: #f8f9fa; border: 1px solid #495057; border-radius: 8px; padding: 1.2em; font-family: 'Roboto Mono', monospace; white-space: pre-wrap; text-align: left; margin: 16px 0; }
+      code { background: #f1f3f5; padding: 2px 6px; border-radius: 4px; font-family: 'Roboto Mono', monospace; font-size: 0.95em; }
+      pre code { background: transparent; padding: 0; }
 
-      /* --- NEW: Interactive Workflow Diagram --- */
+      /* Button Styles */
+      .btn { background: var(--accent); color: #fff; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: background-color 0.2s ease; font-size: 1.1rem; text-decoration: none; display: inline-block; }
+      .btn:hover { background-color: var(--accent-2); text-decoration: none; }
+
+      /* Card Grid */
+      .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; margin-top: 16px; }
+      .card { background: #fff; border: 2px solid var(--border); border-radius: 12px; padding: 20px; transition: all 0.3s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+      .card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+
+      /* --- Interactive Workflow Diagram --- */
       .workflow-wrapper { background: var(--muted); padding: 2.5rem 2rem; border-radius: 12px; text-align: center; }
       .workflow-diagram { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin: 2rem 0; }
       .workflow-step { display: flex; flex-direction: column; gap: 20px; align-items: center; }
@@ -66,7 +78,7 @@
       .legend-item { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; }
       .legend-swatch { width: 16px; height: 16px; border-radius: 4px; border: 1px solid rgba(0,0,0,0.1); }
 
-      /* --- NEW: Detailed Breakdown Section --- */
+      /* --- Detailed Breakdown Section --- */
       .breakdown-section { border-left: 3px solid var(--border); padding: 1rem 0 1rem 2rem; margin-top: 2rem; transition: border-color 0.3s; }
       .breakdown-section.active { border-color: var(--accent); }
       .breakdown-section h3 { margin-top: 0; display: flex; align-items: center; gap: 12px; }
@@ -77,13 +89,18 @@
       .fallback-tip { background: var(--bad-soft); border: 1px solid var(--bad); padding: 1rem; border-radius: 8px; margin: 1rem 0; }
       .fallback-tip code { background: rgba(0,0,0,0.1); padding: 2px 6px; border-radius: 4px; font-family: 'Roboto Mono', monospace;}
 
-      /* --- NEW: Prompt Library --- */
+      /* --- Prompt Library --- */
       .prompt-category h3 { border-left: 3px solid var(--accent); padding-left: 12px; }
       .prompt-item { display: flex; align-items: center; gap: 1rem; background: var(--muted); padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid var(--border); }
       .prompt-text { flex-grow: 1; font-family: 'Roboto Mono', monospace; font-size: 1rem; color: #343a40; }
       .copy-btn { background: var(--accent); color: #fff; border: none; padding: 10px 18px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: background-color 0.2s ease; }
       .copy-btn:hover{background-color:var(--accent-2);}
       .copy-btn.copied { background-color: var(--ok); }
+
+      /* SVG Animation Styles */
+      .scan-visual { max-width: 100%; height: auto; margin: 20px 0; }
+      @keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
+      .pulse-animate { animation: pulse 2s infinite; }
     </style>
 </head>
 <body>
@@ -95,8 +112,8 @@
 
  <div class="container">
    
-   <h1>Interactive Claude Code Workflow</h1>
-   <p class="byline">The Beginner's Journey: From Intent to Shipped Project for Doctors</p>
+   <h1>Vibe Coding for Doctors</h1>
+   <p class="byline">Build Real Medical Tools Without Learning Syntax With Claude Code</p>
    
    <h2>What is Claude Code?</h2>
    <p>Claude Code is a command-line tool that lets you delegate coding tasks to Claude directly from your terminal. Instead of manually writing code, debugging syntax, and managing Git workflows, you simply describe what you want in plain English.</p>
@@ -104,6 +121,224 @@
    <p class="intro">
     <strong>The Magic:</strong> You say "create a patient feedback form and deploy it to GitHub" — Claude handles the HTML, CSS, Git commits, repository creation, and deployment. All automatically. This workflow shows Anya's journey from complete beginner to having a live project on GitHub, without writing a single line of code or memorizing Git commands.
    </p>
+
+   <!-- NEW: Setup & Prerequisites Section -->
+   <section id="prerequisites" style="margin: 48px 0;">
+        <h2>🔧 Before You Start: Setup & Prerequisites</h2>
+        <div class="intro" style="background: linear-gradient(135deg, var(--muted) 0%, #fff 100%);">
+            <p><strong>Let's make sure you have everything needed to use Claude Code effectively.</strong> Don't worry—this is a one-time setup!</p>
+          <section id="doctor-faqs" style="margin-top: 64px;">
+        <h2>❓ 10 FAQs for Doctors Who Want to Vibe Code</h2>
+        <p style="margin-bottom: 24px;">Real questions from physicians learning to build with Claude Code:</p>
+        
+        <div class="card" style="margin-bottom: 16px; border-left: 4px solid var(--accent);">
+            <h3 style="color: var(--accent); margin-top: 0; margin-bottom: 12px; font-size: 1.2rem;">1. "I barely know how to use Excel. Can I really code?"</h3>
+            <p style="margin: 0; font-size: 1rem;">Yes! That's the whole point of vibe coding. You describe what you want ("create a patient intake form"), and Claude writes the code. You approve changes without understanding every line. Think of it like ordering from a menu—you don't need to know how to cook to enjoy the meal.</p>
+        </div>
+
+        <div class="card" style="margin-bottom: 16px; border-left: 4px solid var(--accent);">
+            <h3 style="color: var(--accent); margin-top: 0; margin-bottom: 12px; font-size: 1.2rem;">2. "What medical tools can I actually build?"</h3>
+            <p style="margin: 0; font-size: 1rem;">Plenty! Patient feedback forms, appointment schedulers, symptom checkers, medication trackers, clinical calculators (BMI, eGFR, MELD score), consent form generators, staff scheduling tools, or simple educational sites for patients. Start small—a single-page tool—then expand.</p>
+        </div>
+
+        <div class="card" style="margin-bottom: 16px; border-left: 4px solid var(--accent);">
+            <h3 style="color: var(--accent); margin-top: 0; margin-bottom: 12px; font-size: 1.2rem;">3. "How much time does this take? I'm already overworked."</h3>
+            <p style="margin: 0; font-size: 1rem;">Your first tool takes 30-60 minutes (including setup). After that, simple projects take 10-20 minutes. The beauty: Claude works at conversation speed. No YouTube tutorials, no Stack Overflow rabbit holes. Say what you want, approve the code, done.</p>
+        </div>
+
+        <div class="card" style="margin-bottom: 16px; border-left: 4px solid var(--accent);">
+            <h3 style="color: var(--accent); margin-top: 0; margin-bottom: 12px; font-size: 1.2rem;">4. "Is this secure enough for patient data?"</h3>
+            <p style="margin: 0; font-size: 1rem;"><strong>Important:</strong> The tools you build with this guide are for <em>learning and internal use</em>, not for storing real PHI. For HIPAA-compliant apps, you'd need proper hosting, encryption, and BAAs. Use Claude Code to prototype ideas and build non-PHI tools (like calculators or educational content).</p>
+        </div>
+
+        <div class="card" style="margin-bottom: 16px; border-left: 4px solid var(--accent);">
+            <h3 style="color: var(--accent); margin-top: 0; margin-bottom: 12px; font-size: 1.2rem;">5. "What if Claude makes a mistake in the code?"</h3>
+            <p style="margin: 0; font-size: 1rem;">You always approve changes before they happen. If something breaks, use <code>git checkout .</code> to undo. Test everything in a browser before deploying. Claude is smart but not perfect—treat it like a very competent resident: trust but verify.</p>
+        </div>
+
+        <div class="card" style="margin-bottom: 16px; border-left: 4px solid var(--accent);">
+            <h3 style="color: var(--accent); margin-top: 0; margin-bottom: 12px; font-size: 1.2rem;">6. "Do I need to learn 'real' programming eventually?"</h3>
+            <p style="margin: 0; font-size: 1rem;">Not necessarily! Vibe coding is a valid end state. But if you get curious, Claude teaches as it works—you'll naturally absorb HTML, CSS, and JavaScript concepts. Many doctors end up learning by osmosis. No pressure either way.</p>
+        </div>
+
+        <div class="card" style="margin-bottom: 16px; border-left: 4px solid var(--accent);">
+            <h3 style="color: var(--accent); margin-top: 0; margin-bottom: 12px; font-size: 1.2rem;">7. "Can I collaborate with other doctors on projects?"</h3>
+            <p style="margin: 0; font-size: 1rem;">Absolutely! Once your project is on GitHub, invite collaborators. They can fork your repo, suggest changes via pull requests, or you can give them direct access. Claude Code makes team coding accessible—no complex Git workflows to master first.</p>
+        </div>
+
+        <div class="card" style="margin-bottom: 16px; border-left: 4px solid var(--accent);">
+            <h3 style="color: var(--accent); margin-top: 0; margin-bottom: 12px; font-size: 1.2rem;">8. "What's the monthly cost?"</h3>
+            <p style="margin: 0; font-size: 1rem;">Claude Pro is $20/month (required for Claude Code CLI). GitHub is free for public repos. Node.js is free. That's it—$20/month total. No hidden enterprise pricing. Cancel anytime.</p>
+        </div>
+
+        <div class="card" style="margin-bottom: 16px; border-left: 4px solid var(--accent);">
+            <h3 style="color: var(--accent); margin-top: 0; margin-bottom: 12px; font-size: 1.2rem;">9. "I built something useful. Can I share it publicly?"</h3>
+            <p style="margin: 0; font-size: 1rem;">Yes! GitHub makes your code public by default (you can make it private). Add a README explaining what it does and how to use it. Other doctors can discover and use your tools. Open-source medical tools are valuable—you might help thousands of clinicians.</p>
+        </div>
+
+        <div class="card" style="margin-bottom: 16px; border-left: 4px solid var(--accent);">
+            <h3 style="color: var(--accent); margin-top: 0; margin-bottom: 12px; font-size: 1.2rem;">10. "What's the first project I should build?"</h3>
+            <p style="margin: 0; font-size: 1rem;"><strong>Start with a clinical calculator you use regularly.</strong> BMI calculator, Framingham Risk Score, CURB-65, or Wells' Criteria. It's practical, you understand the logic, and you'll immediately see value. Then expand to forms, schedulers, or patient education sites.</p>
+        </div>
+
+        <div style="background: linear-gradient(135deg, var(--ok-soft) 0%, #fff 100%); padding: 24px; border-radius: 12px; border: 2px solid var(--ok); margin-top: 32px; text-align: center;">
+            <h3 style="color: var(--ok); margin-top: 0; margin-bottom: 16px;">🎉 Ready to Build Your First Tool?</h3>
+            <p style="margin-bottom: 16px;">Scroll back up and follow Node 1. In 30 minutes, you'll have a working project on GitHub.</p>
+            <a href="#node-1" class="btn" style="margin-right: 12px;">Start Building →</a>
+            <a href="claude_code_mastery.html" class="btn" style="background: var(--myth-color);">Or Level Up with Mastery System</a>
+        </div>
+   </section>
+
+ </div>
+        
+        <div class="grid" style="margin-top: 24px;">
+            <div class="card" style="border-left: 4px solid var(--ok);">
+                <h3 style="color: var(--ok); margin-bottom: 12px; margin-top: 0;">✅ 1. Install Node.js</h3>
+                <p style="font-size: 0.95rem; margin-bottom: 12px;">Required for running Claude Code CLI</p>
+                <ol style="font-size: 0.9rem; padding-left: 20px;">
+                    <li>Visit <a href="https://nodejs.org" target="_blank">nodejs.org</a></li>
+                    <li>Download the LTS version</li>
+                    <li>Run installer and follow prompts</li>
+                    <li>Verify: Open terminal, type <code>node --version</code></li>
+                </ol>
+            </div>
+            
+            <div class="card" style="border-left: 4px solid var(--ok);">
+                <h3 style="color: var(--ok); margin-bottom: 12px; margin-top: 0;">✅ 2. Install Claude Code CLI</h3>
+                <p style="font-size: 0.95rem; margin-bottom: 12px;">The terminal interface to Claude</p>
+                <div class="code-block" style="font-size: 0.9rem; margin: 12px 0;">npm install -g @anthropic-ai/claude-code</div>
+                <p style="font-size: 0.9rem; margin: 0;">Verify installation: <code>claude --version</code></p>
+            </div>
+            
+            <div class="card" style="border-left: 4px solid var(--ok);">
+                <h3 style="color: var(--ok); margin-bottom: 12px; margin-top: 0;">✅ 3. Set Up GitHub Account</h3>
+                <p style="font-size: 0.95rem; margin-bottom: 12px;">For saving and sharing your projects</p>
+                <ol style="font-size: 0.9rem; padding-left: 20px;">
+                    <li>Create account at <a href="https://github.com" target="_blank">github.com</a></li>
+                    <li>Install GitHub CLI: <code>gh auth login</code></li>
+                    <li>Follow authentication prompts</li>
+                </ol>
+            </div>
+            
+            <div class="card" style="border-left: 4px solid var(--info-color);">
+                <h3 style="color: var(--info-color); margin-bottom: 12px; margin-top: 0;">💡 4. Quick Test</h3>
+                <p style="font-size: 0.95rem; margin-bottom: 12px;">Verify everything works!</p>
+                <div class="code-block" style="font-size: 0.9rem;">claude --version
+gh --version
+node --version</div>
+                <p style="font-size: 0.9rem; margin: 0;">All three should return version numbers.</p>
+            </div>
+        </div>
+
+        <div style="background: #fff7ed; padding: 20px; border-radius: 12px; border-left: 4px solid var(--accent); margin-top: 24px;">
+            <h4 style="color: var(--accent); margin-bottom: 12px; margin-top: 0;">⚠️ Important Note</h4>
+            <p style="margin: 0; font-size: 1rem;">You'll need a <strong>Claude Pro subscription</strong> to use Claude Code. Visit <a href="https://claude.ai/upgrade" target="_blank">claude.ai/upgrade</a> to subscribe.</p>
+        </div>
+   </section>
+
+   <!-- NEW: How Claude Reads Your Project -->
+   <section id="file-reading-context" style="margin: 48px 0;">
+        <h2>📂 How Claude Understands Your Project</h2>
+        <p>One of the most powerful features of Claude Code is its ability to understand your entire project context. Here's how it works:</p>
+        
+        <div style="background: var(--muted); padding: 24px; border-radius: 12px; margin: 24px 0;">
+            <svg class="scan-visual" viewBox="0 0 700 250" xmlns="http://www.w3.org/2000/svg">
+                <!-- Step 1: Your Files -->
+                <rect x="40" y="60" width="120" height="130" fill="#e9ecef" stroke="#212529" stroke-width="2" rx="8"/>
+                <text x="100" y="95" text-anchor="middle" font-size="16" font-weight="600" fill="#212529">📁 Your Files</text>
+                <text x="100" y="120" text-anchor="middle" font-size="11" fill="#6c757d">index.html</text>
+                <text x="100" y="140" text-anchor="middle" font-size="11" fill="#6c757d">style.css</text>
+                <text x="100" y="160" text-anchor="middle" font-size="11" fill="#6c757d">CLAUDE.md</text>
+                <text x="100" y="180" text-anchor="middle" font-size="11" fill="#6c757d">README.md</text>
+                
+                <!-- Arrow 1 -->
+                <path d="M 160 125 L 260 125" stroke="#fd7e14" stroke-width="4" fill="none" marker-end="url(#arrowhead1)">
+                    <animate attributeName="stroke-dasharray" values="0 500; 500 0" dur="2s" repeatCount="indefinite"/>
+                </path>
+                <defs>
+                    <marker id="arrowhead1" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                        <polygon points="0 0, 10 3, 0 6" fill="#fd7e14" />
+                    </marker>
+                </defs>
+                <text x="210" y="115" text-anchor="middle" font-size="10" fill="#fd7e14" font-weight="600">READS</text>
+                
+                <!-- Step 2: Claude Analyzes -->
+                <rect x="260" y="60" width="120" height="130" fill="#fef3e7" stroke="#fd7e14" stroke-width="3" rx="8"/>
+                <text x="320" y="95" text-anchor="middle" font-size="16" font-weight="600" fill="#212529">🤖 Claude</text>
+                <text x="320" y="120" text-anchor="middle" font-size="11" fill="#6c757d">Reads rules</text>
+                <text x="320" y="140" text-anchor="middle" font-size="11" fill="#6c757d">Scans structure</text>
+                <text x="320" y="160" text-anchor="middle" font-size="11" fill="#6c757d">Understands context</text>
+                <circle cx="320" cy="180" r="8" fill="#fd7e14" class="pulse-animate"/>
+                
+                <!-- Arrow 2 -->
+                <path d="M 380 125 L 480 125" stroke="#16a34a" stroke-width="4" fill="none" marker-end="url(#arrowhead2)">
+                    <animate attributeName="stroke-dasharray" values="0 500; 500 0" dur="2s" begin="1s" repeatCount="indefinite"/>
+                </path>
+                <defs>
+                    <marker id="arrowhead2" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                        <polygon points="0 0, 10 3, 0 6" fill="#16a34a" />
+                    </marker>
+                </defs>
+                <text x="430" y="115" text-anchor="middle" font-size="10" fill="#16a34a" font-weight="600">CREATES</text>
+                
+                <!-- Step 3: Smart Output -->
+                <rect x="480" y="60" width="120" height="130" fill="#dcfce7" stroke="#16a34a" stroke-width="3" rx="8"/>
+                <text x="540" y="95" text-anchor="middle" font-size="16" font-weight="600" fill="#212529">✅ Output</text>
+                <text x="540" y="120" text-anchor="middle" font-size="11" fill="#6c757d">Context-aware</text>
+                <text x="540" y="140" text-anchor="middle" font-size="11" fill="#6c757d">Follows rules</text>
+                <text x="540" y="160" text-anchor="middle" font-size="11" fill="#6c757d">Smart changes</text>
+                <text x="540" y="180" text-anchor="middle" font-size="13" fill="#16a34a" font-weight="600">✨</text>
+            </svg>
+            <p style="text-align: center; font-size: 0.95rem; color: #6b7280; margin: 12px 0 0 0;">
+                Claude automatically scans your project when you run a command—no manual file selection needed!
+            </p>
+        </div>
+
+        <div style="background: #fff; padding: 20px; border-radius: 8px; border: 2px solid var(--border); margin: 24px 0;">
+            <h4 style="color: var(--accent); margin-bottom: 12px; margin-top: 0;">🔍 The Automatic Scanning Process</h4>
+            <ol style="font-size: 1rem; line-height: 1.8; padding-left: 20px;">
+                <li><strong>Step 1 - CLAUDE.md First:</strong> Reads your project rules file to understand coding standards and preferences</li>
+                <li><strong>Step 2 - Directory Scan:</strong> Examines your project structure to see what files exist and how they're organized</li>
+                <li><strong>Step 3 - Context Analysis:</strong> When you make a request, Claude reads related files (e.g., "style the form" → looks for HTML/CSS)</li>
+                <li><strong>Step 4 - Transparent Proposal:</strong> Shows you exactly which files it will modify before making any changes</li>
+            </ol>
+        </div>
+
+        <div class="breakdown-card">
+            <h4>💡 Key Insight: You're Always in Control</h4>
+            <p style="margin-bottom: 12px;">Claude can't modify files without your approval. The workflow is:</p>
+            <div class="code-block" style="font-size: 0.9rem;">1. You: "Add a login form"
+2. Claude: Scans project → "I'll modify index.html and style.css"
+3. Claude: Shows you the proposed changes
+4. You: Type 'y' to approve or 'n' to reject
+5. Claude: Makes the changes only after approval</div>
+        </div>
+   </section>
+
+   <!-- NEW: Deep Dive Link Section -->
+   <section id="deep-dive-link" style="background: linear-gradient(135deg, #fef3e7 0%, #fff 100%); padding: 32px; border-radius: 12px; border-left: 4px solid var(--accent); margin: 48px 0;">
+        <h3 style="color: var(--accent); margin-bottom: 16px; margin-top: 0;">🎓 Want to Master Claude Code?</h3>
+        <p style="margin-bottom: 16px; font-size: 1.1rem;">This guide shows you the basics—enough to build your first projects with confidence. But if you're ready to level up with advanced techniques, real assessments, and expert-level workflows...</p>
+        <a href="claude_code_mastery.html" class="btn" style="display: inline-block; margin-bottom: 16px;">Explore the Complete Mastery System →</a>
+        <div style="display: flex; flex-wrap: wrap; gap: 16px; margin-top: 20px;">
+            <div style="flex: 1; min-width: 200px; background: rgba(255,255,255,0.7); padding: 12px; border-radius: 8px;">
+                <strong style="color: var(--accent);">📚 30+ Scenarios</strong>
+                <p style="font-size: 0.9rem; margin: 4px 0 0 0; color: #6b7280;">Real-world coding challenges</p>
+            </div>
+            <div style="flex: 1; min-width: 200px; background: rgba(255,255,255,0.7); padding: 12px; border-radius: 8px;">
+                <strong style="color: var(--accent);">✅ Interactive Quizzes</strong>
+                <p style="font-size: 0.9rem; margin: 4px 0 0 0; color: #6b7280;">Test your understanding</p>
+            </div>
+            <div style="flex: 1; min-width: 200px; background: rgba(255,255,255,0.7); padding: 12px; border-radius: 8px;">
+                <strong style="color: var(--accent);">🔍 Debugging Mindset</strong>
+                <p style="font-size: 0.9rem; margin: 4px 0 0 0; color: #6b7280;">Think like an expert</p>
+            </div>
+            <div style="flex: 1; min-width: 200px; background: rgba(255,255,255,0.7); padding: 12px; border-radius: 8px;">
+                <strong style="color: var(--accent);">👥 Team Skills</strong>
+                <p style="font-size: 0.9rem; margin: 4px 0 0 0; color: #6b7280;">Collaboration best practices</p>
+            </div>
+        </div>
+   </section>
 
     <section id="interactive-workflow">
         <h2>Interactive Workflow</h2>
@@ -250,6 +485,85 @@ git push -u origin main
         </div>
    </section>
 
+   <!-- NEW: Troubleshooting Section -->
+   <section id="troubleshooting" style="margin-top: 64px;">
+        <h2>⚠️ Troubleshooting Guide: What Can Go Wrong</h2>
+        <p style="margin-bottom: 24px;">Even the best developers encounter issues. Here's how to solve the most common problems:</p>
+        
+        <div class="grid" style="gap: 24px;">
+            <div class="card" style="border-left: 4px solid var(--bad);">
+                <h3 style="color: var(--bad); margin-bottom: 12px; margin-top: 0;">❌ "Command not found: claude"</h3>
+                <p style="font-size: 0.95rem; margin-bottom: 12px;"><strong>Problem:</strong> Claude Code CLI isn't installed or not in PATH</p>
+                <p style="font-size: 0.95rem; margin-bottom: 12px;"><strong>Fix:</strong></p>
+                <div class="code-block" style="font-size: 0.85rem;">npm install -g @anthropic-ai/claude-code
+claude --version  # Test installation</div>
+            </div>
+            
+            <div class="card" style="border-left: 4px solid var(--bad);">
+                <h3 style="color: var(--bad); margin-bottom: 12px; margin-top: 0;">❌ "Authentication failed"</h3>
+                <p style="font-size: 0.95rem; margin-bottom: 12px;"><strong>Problem:</strong> GitHub credentials not set up</p>
+                <p style="font-size: 0.95rem; margin-bottom: 12px;"><strong>Fix:</strong></p>
+                <div class="code-block" style="font-size: 0.85rem;">gh auth login  # Follow prompts
+# OR set up Personal Access Token at:
+# Settings → Developer → Personal Access Tokens</div>
+            </div>
+            
+            <div class="card" style="border-left: 4px solid var(--bad);">
+                <h3 style="color: var(--bad); margin-bottom: 12px; margin-top: 0;">❌ "Repository already exists"</h3>
+                <p style="font-size: 0.95rem; margin-bottom: 12px;"><strong>Problem:</strong> GitHub repo name is taken</p>
+                <p style="font-size: 0.95rem; margin-bottom: 12px;"><strong>Fix:</strong></p>
+                <ul style="font-size: 0.95rem; padding-left: 20px;">
+                    <li>Choose a different repo name</li>
+                    <li>Delete the existing repo on GitHub first</li>
+                    <li>Or push to existing: <code>git remote add origin ...</code></li>
+                </ul>
+            </div>
+            
+            <div class="card" style="border-left: 4px solid var(--bad);">
+                <h3 style="color: var(--bad); margin-bottom: 12px; margin-top: 0;">❌ Claude ignores CLAUDE.md</h3>
+                <p style="font-size: 0.95rem; margin-bottom: 12px;"><strong>Problem:</strong> File not in project root or improperly formatted</p>
+                <p style="font-size: 0.95rem; margin-bottom: 12px;"><strong>Fix:</strong></p>
+                <div class="code-block" style="font-size: 0.85rem;">ls -la  # Check CLAUDE.md exists
+pwd     # Verify you're in project root
+# Ensure file is named exactly: CLAUDE.md</div>
+            </div>
+            
+            <div class="card" style="border-left: 4px solid var(--bad);">
+                <h3 style="color: var(--bad); margin-bottom: 12px; margin-top: 0;">❌ Changes not showing in browser</h3>
+                <p style="font-size: 0.95rem; margin-bottom: 12px;"><strong>Problem:</strong> Browser cache serving old files</p>
+                <p style="font-size: 0.95rem; margin-bottom: 12px;"><strong>Fix:</strong></p>
+                <ul style="font-size: 0.95rem; padding-left: 20px;">
+                    <li><strong>Windows:</strong> Ctrl + Shift + R</li>
+                    <li><strong>Mac:</strong> Cmd + Shift + R</li>
+                    <li>Or: DevTools → Network → Disable cache</li>
+                </ul>
+            </div>
+            
+            <div class="card" style="border-left: 4px solid var(--bad);">
+                <h3 style="color: var(--bad); margin-bottom: 12px; margin-top: 0;">❌ "Permission denied" errors</h3>
+                <p style="font-size: 0.95rem; margin-bottom: 12px;"><strong>Problem:</strong> File/folder permissions issue</p>
+                <p style="font-size: 0.95rem; margin-bottom: 12px;"><strong>Fix:</strong></p>
+                <div class="code-block" style="font-size: 0.85rem;"># Check permissions
+ls -la
+
+# Fix with (use carefully):
+sudo chmod -R 755 your-project-folder</div>
+            </div>
+        </div>
+        
+        <div style="background: var(--info-soft); padding: 24px; border-radius: 12px; border-left: 4px solid var(--info-color); margin-top: 32px;">
+            <h4 style="color: var(--info-color); margin-bottom: 12px; margin-top: 0;">🆘 Still Stuck? Follow This Debug Process</h4>
+            <ol style="font-size: 1rem; line-height: 1.8; padding-left: 20px;">
+                <li><strong>Read error messages carefully</strong> — They usually tell you exactly what's wrong</li>
+                <li><strong>Check your location:</strong> Run <code>pwd</code> to verify you're in the right directory</li>
+                <li><strong>Verify files exist:</strong> Use <code>ls -la</code> to see all files including hidden ones</li>
+                <li><strong>Enable verbose mode:</strong> Try <code>claude --verbose "your command"</code> for detailed output</li>
+                <li><strong>Check documentation:</strong> Visit <a href="https://docs.claude.com/en/docs/claude-code" target="_blank">docs.claude.com/claude-code</a></li>
+                <li><strong>GitHub issues:</strong> Search for your error at <a href="https://github.com/anthropics/claude-code/issues" target="_blank">github.com/anthropics/claude-code</a></li>
+            </ol>
+        </div>
+   </section>
+
    <section id="prompt-library">
         <h2>Complete Prompt Library - 30 Examples</h2>
         <p>Copy these prompts to master every aspect of the Claude Code workflow. Organized by the 6 key workflow steps:</p>
@@ -307,7 +621,7 @@ git push -u origin main
  </div>
 
  <footer class="site-footer">
-   <p>Created by Beyond Dictionary</p>
+   <p>Created by Beyond Dictionary | <a href="claude_code_mastery.html" style="color: #ced4da;">Explore Mastery System</a></p>
  </footer>
 
 <script>
