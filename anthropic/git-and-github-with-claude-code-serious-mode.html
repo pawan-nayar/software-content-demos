@@ -1,0 +1,2201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Git & GitHub with Claude Code: Serious Mode</title>
+    <meta name="description" content="Claude Code deterministic learning experience: Git state transitions, diff-based reasoning, and continuous execution context.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --text: #212529; --bg: #fff; --muted: #f8f9fa; --border: #e9ecef;
+            --accent: #d9480f; --accent-2: #c9400a; --header-bg: #212529; --header-fg: #f8f9fa;
+            --ok: #198754; --ok-soft: #d1e7dd; --bad: #dc3545; --bad-soft: #f8d7da;
+            --neutral: #6c757d; --neutral-soft: #e9ecef;
+            --code-bg: #2d2d2d; --code-text: #e2e8f0;
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 24px;
+            background: #fff;
+        }
+        
+        /* Header */
+        .site-header {
+            background: var(--header-bg);
+            color: var(--header-fg);
+            padding: 14px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .logo {
+            font-weight: 700;
+            font-size: 1.15rem;
+            color: #fff;
+            text-decoration: none;
+        }
+        
+        .site-header nav {
+            display: flex;
+            gap: 14px;
+        }
+        
+        .site-header nav a {
+            color: #ced4da;
+            text-decoration: none;
+        }
+        
+        .site-header nav a:hover {
+            color: #fff;
+        }
+        
+        /* Typography */
+        h1 {
+            font-size: clamp(2rem, 5vw, 2.8rem);
+            text-align: left;
+            margin-bottom: 8px;
+            color: var(--text);
+            line-height: 1.2;
+        }
+        
+        .byline {
+            font-size: clamp(1rem, 3vw, 1.25rem);
+            font-style: italic;
+            color: #4a5568;
+            margin-bottom: 24px;
+        }
+        
+        h2 {
+            font-size: clamp(1.5rem, 4vw, 2.2rem);
+            color: var(--text);
+            margin: 64px 0 24px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 12px;
+        }
+        
+        h3 {
+            font-size: clamp(1.2rem, 3vw, 1.6rem);
+            color: var(--text);
+            margin-top: 48px;
+            margin-bottom: 16px;
+        }
+        
+        p, ul, li {
+            font-size: 1.1rem;
+            max-width: 75ch;
+        }
+        
+        p {
+            margin-bottom: 20px;
+            word-wrap: break-word;
+            line-height: 1.9;
+        }
+        
+        ul {
+            margin-left: 24px;
+            margin-bottom: 24px;
+            padding-left: 1em;
+        }
+        
+        li {
+            margin-bottom: 16px;
+            padding-left: 0.5em;
+        }
+        
+        .breadcrumbs {
+            margin-bottom: 24px;
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        
+        .breadcrumbs a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+        
+        .article-meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #6c757d;
+            margin-bottom: 32px;
+            font-size: 0.95rem;
+        }
+        
+        .author-emoji {
+            font-size: 32px;
+            line-height: 1;
+        }
+        
+        .intro {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            background: var(--muted);
+            padding: 24px;
+            border-radius: 12px;
+            border-left: 4px solid var(--accent);
+            margin: 24px 0;
+        }
+        
+        /* Claude Trace */
+        .claude-trace {
+            background: var(--code-bg);
+            color: var(--code-text);
+            padding: 16px;
+            border-radius: 6px;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.85rem;
+            margin: 16px 0;
+            border-left: 4px solid var(--accent);
+        }
+        
+        .claude-trace .trace-header {
+            color: var(--accent);
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .claude-trace .trace-item {
+            margin: 4px 0;
+            padding-left: 8px;
+        }
+        
+        .claude-trace .trace-item::before {
+            content: "→ ";
+            color: var(--accent);
+        }
+        
+        /* State Machine Display */
+        .state-machine {
+            background: var(--muted);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 24px;
+            margin: 32px 0;
+        }
+        
+        .state-display {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .state-node {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        
+        .state-node.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent-2);
+        }
+        
+        .state-node.inactive {
+            background: var(--neutral-soft);
+            color: var(--neutral);
+        }
+        
+        .state-arrow {
+            color: var(--neutral);
+            font-weight: bold;
+        }
+        
+        /* Diff Display */
+        .diff-container {
+            background: var(--muted);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+        .diff-header {
+            background: var(--header-bg);
+            color: var(--header-fg);
+            padding: 12px 16px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .diff-content {
+            padding: 16px;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.85rem;
+        }
+        
+        .diff-line {
+            margin: 2px 0;
+            padding: 2px 8px;
+            border-radius: 3px;
+        }
+        
+        .diff-line.added {
+            background: var(--ok-soft);
+            color: var(--ok);
+        }
+        
+        .diff-line.removed {
+            background: var(--bad-soft);
+            color: var(--bad);
+        }
+        
+        .diff-line.context {
+            color: var(--neutral);
+        }
+        
+        .diff-line::before {
+            margin-right: 8px;
+            font-weight: bold;
+        }
+        
+        .diff-line.added::before { content: "+"; }
+        .diff-line.removed::before { content: "-"; }
+        .diff-line.context::before { content: " "; }
+        
+        /* Decision Tree */
+        .decision-tree {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 24px 0;
+        }
+        
+        .decision-node {
+            background: var(--muted);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 16px;
+            margin: 12px 0;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+        
+        .decision-node:hover {
+            border-color: var(--accent);
+            background: var(--accent);
+            color: white;
+        }
+        
+        .decision-node.selected {
+            border-color: var(--accent);
+            background: var(--accent);
+            color: white;
+        }
+        
+        .decision-label {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .decision-consequence {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        /* Dimension Cards */
+        .dimension-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin: 32px 0;
+        }
+        
+        .dimension-card {
+            background: var(--bg);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .dimension-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .dimension-card:hover .card-emoji {
+            transform: scale(1.1);
+        }
+        
+        .card-emoji {
+            font-size: 3rem;
+            margin-bottom: 16px;
+            display: block;
+            transition: transform 0.3s ease;
+        }
+        
+        .card-heading {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+        
+        .card-byline {
+            font-size: 0.9rem;
+            color: var(--accent);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 16px;
+        }
+        
+        .card-details {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: var(--neutral);
+        }
+        
+        .card-example {
+            background: var(--muted);
+            border-radius: 6px;
+            padding: 12px;
+            margin-top: 12px;
+            font-size: 0.85rem;
+            font-family: 'Roboto Mono', monospace;
+            border-left: 3px solid var(--accent);
+        }
+
+        /* Quiz Styles */
+        .quiz-container {
+            padding: 2rem;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-top: 2rem;
+            background: var(--muted);
+        }
+        
+        .quiz-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        
+        .btn:hover {
+            background-color: var(--accent-2);
+        }
+        
+        .btn:disabled {
+            background-color: #adb5bd;
+            cursor: not-allowed;
+        }
+        
+        .quiz-option {
+            margin-bottom: 10px;
+        }
+        
+        .quiz-option label {
+            display: flex;
+            align-items: center;
+            padding: 14px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            background: #fff;
+            margin-bottom: 10px;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        
+        .quiz-option label input[type="radio"] {
+            margin-right: 16px;
+            flex-shrink: 0;
+        }
+        
+        .quiz-option label:hover {
+            background-color: #f1f3f5;
+        }
+        
+        .quiz-option.selected.correct label {
+            background: var(--ok-soft);
+            border-color: var(--ok);
+        }
+        
+        .quiz-option.selected.wrong label {
+            background: var(--bad-soft);
+            border-color: var(--bad);
+        }
+        
+        .explanation {
+            display: none;
+            margin-top: 8px;
+            padding: 10px;
+            font-size: 0.9rem;
+            border-radius: 6px;
+        }
+        
+        .quiz-option.selected.correct .explanation {
+            display: block;
+            background: var(--ok-soft);
+        }
+        
+        .quiz-option.selected.wrong .explanation {
+            display: block;
+            background: var(--bad-soft);
+        }
+
+        /* Accordion Styles */
+        .accordion {
+            display: grid;
+            gap: 8px;
+        }
+        
+        .accordion-header {
+            width: 100%;
+            text-align: left;
+            background: var(--muted);
+            border: 1px solid var(--border);
+            padding: 16px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+        
+        .accordion-header .accordion-title {
+            margin-right: auto;
+            padding-right: 1rem;
+        }
+        
+        .accordion-header::after {
+            content: '+';
+            color: #6c757d;
+            font-size: 1.5rem;
+            transition: transform 0.2s;
+        }
+        
+        .accordion-header[aria-expanded="true"] {
+            background: #e9ecef;
+        }
+        
+        .accordion-header[aria-expanded="true"]::after {
+            transform: rotate(45deg);
+        }
+        
+        .accordion-content {
+            padding: 0 20px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+        }
+        
+        .accordion-content p {
+            color: #343a40;
+        }
+
+        /* Glossary Styles */
+        .glossary-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 24px;
+            justify-content: flex-start;
+            align-items: flex-start;
+        }
+        
+        .glossary-chip {
+            position: relative;
+            display: inline-block;
+            padding: 12px 16px;
+            border-radius: 25px;
+            background: #fff7ed;
+            border: 1px solid #ffd8a8;
+            color: var(--accent);
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(253, 126, 20, 0.12);
+            transition: all 0.2s ease;
+            text-align: center;
+            white-space: nowrap;
+            font-size: 0.9rem;
+            line-height: 1.2;
+            z-index: 1;
+            overflow: visible;
+        }
+        
+        .glossary-chip::before,
+        .glossary-chip::after {
+            display: none;
+        }
+        
+        .glossary-chip:hover,
+        .glossary-chip:focus {
+            background: #ffecde;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(253, 126, 20, 0.2);
+        }
+        
+        .chip-tip {
+            position: fixed;
+            z-index: 101;
+            min-width: 240px;
+            max-width: min(92vw, 420px);
+            background: var(--accent);
+            color: #fff;
+            padding: 12px 14px;
+            border-radius: 12px;
+            box-shadow: 0 12px 28px rgba(253, 126, 20, 0.35);
+            opacity: 0;
+            visibility: hidden;
+            transition: 0.15s;
+            line-height: 1.45;
+            pointer-events: none;
+        }
+        
+        .chip-tip.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        /* Comparative Output */
+        .output-comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 24px 0;
+        }
+        
+        .output-panel {
+            background: var(--muted);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .output-header {
+            background: var(--header-bg);
+            color: var(--header-fg);
+            padding: 12px 16px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .output-content {
+            padding: 16px;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.85rem;
+            min-height: 120px;
+        }
+        
+        /* Toggle Controls */
+        .toggle-controls {
+            display: flex;
+            gap: 12px;
+            margin: 16px 0;
+            flex-wrap: wrap;
+        }
+        
+        .toggle-btn {
+            background: var(--neutral-soft);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        
+        .toggle-btn.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+        
+        /* Progress tracker */
+        .progress-tracker {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 32px 0;
+            padding: 16px;
+            background: var(--muted);
+            border-radius: 8px;
+        }
+        
+        .progress-step {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--border);
+            color: #6c757d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .progress-step.completed {
+            background: var(--ok);
+            color: #fff;
+        }
+        
+        .progress-step.current {
+            background: var(--accent);
+            color: #fff;
+        }
+        
+        .progress-line {
+            flex: 1;
+            height: 2px;
+            background: var(--border);
+        }
+        
+        .progress-line.completed {
+            background: var(--ok);
+        }
+        
+        /* Continuous Console */
+        .continuous-console {
+            background: var(--code-bg);
+            color: var(--code-text);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 40px;
+            font-family: 'Roboto Mono', monospace;
+        }
+        
+        .console-header {
+            color: var(--accent);
+            font-weight: 600;
+            margin-bottom: 16px;
+            font-size: 1rem;
+        }
+        
+        .console-prompt {
+            display: flex;
+            align-items: center;
+            margin: 8px 0;
+        }
+        
+        .console-prompt::before {
+            content: "> ";
+            color: var(--accent);
+            margin-right: 8px;
+        }
+        
+        .console-cursor {
+            display: inline-block;
+            width: 8px;
+            height: 16px;
+            background: var(--accent);
+            margin-left: 4px;
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+        
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .output-comparison {
+                grid-template-columns: 1fr;
+            }
+            
+            .dimension-cards {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            
+            .dimension-card {
+                padding: 20px;
+            }
+            
+            .card-emoji {
+                font-size: 2.5rem;
+            }
+            
+            .state-display {
+                flex-wrap: wrap;
+            }
+            
+            .toggle-controls {
+                flex-wrap: wrap;
+            }
+            
+            .glossary-cloud {
+                justify-content: center;
+                gap: 8px;
+            }
+            
+            .glossary-chip {
+                font-size: 0.85rem;
+                padding: 10px 14px;
+                margin: 2px;
+            }
+            
+            .chip-tip {
+                max-width: 90vw;
+                font-size: 0.9rem;
+                padding: 10px 12px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .glossary-chip {
+                font-size: 0.8rem;
+                padding: 8px 12px;
+            }
+            
+            .chip-tip {
+                max-width: 95vw;
+                font-size: 0.85rem;
+                padding: 8px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <a href="#" class="logo">Beyond Dictionary</a>
+        <nav><a href="#">What's New</a><a href="#">Learning</a><a href="#">Games & Quizzes</a><a href="#">Blog</a></nav>
+    </header>
+
+    <div class="container">
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+            <a href="#">AI Tools</a> > <a href="#">Development</a> > <a href="#">Claude Code</a> > Git & GitHub Serious Mode
+        </nav>
+
+        <h1>Git & GitHub with Claude Code</h1>
+        <p class="byline">Deterministic Learning Experience</p>
+        <div class="article-meta">
+            <span class="author-emoji">🤖</span>
+            <span>Claude Code State Machine Learning | Diff-Based Reasoning</span>
+        </div>
+        
+        <p class="intro">
+            This learning experience demonstrates Git and GitHub through Claude Code's deterministic lens. Rather than explanations, you will observe state transitions, diff-based reasoning, and operational demonstrations. Learning occurs through change visibility and consequence modeling.
+        </p>
+
+        <!-- Progress Tracker -->
+        <div class="progress-tracker">
+            <div class="progress-step current">1</div>
+            <div class="progress-line"></div>
+            <div class="progress-step">2</div>
+            <div class="progress-line"></div>
+            <div class="progress-step">3</div>
+            <div class="progress-line"></div>
+            <div class="progress-step">4</div>
+            <div class="progress-line"></div>
+            <div class="progress-step">5</div>
+            <span style="margin-left:12px;font-size:0.9rem;color:#6c757d;">State → Diff → Decision → Comparison → Continuous</span>
+        </div>
+
+        <!-- Current State Display -->
+        <div class="state-machine">
+            <div class="state-display" id="state-display">
+                <div class="state-node active" data-state="untracked" onclick="transitionTo('untracked')">untracked</div>
+                <div class="state-arrow">→</div>
+                <div class="state-node inactive" data-state="staged" onclick="transitionTo('staged')">staged</div>
+                <div class="state-arrow">→</div>
+                <div class="state-node inactive" data-state="committed" onclick="transitionTo('committed')">committed</div>
+                <div class="state-arrow">→</div>
+                <div class="state-node inactive" data-state="pushed" onclick="transitionTo('pushed')">pushed</div>
+            </div>
+            
+            <div class="claude-trace">
+                <div class="trace-header">[Claude Trace]</div>
+                <div class="trace-item" id="current-trace">Repository state: untracked</div>
+                <div class="trace-item">Available transitions: stage</div>
+                <div class="trace-item">Risk assessment: minimal</div>
+            </div>
+        </div>
+
+        <section data-claude-phase="diff-reasoning">
+            <h2>The Foundation: Understanding Git Through Claude Code's Lens</h2>
+            <p>Before diving into the mechanics, let's establish what makes Claude Code fundamentally different from traditional Git workflows. This isn't just about automation - it's about a paradigm shift in how we think about version control, collaboration, imagination, and scale.</p>
+            
+            <h3>The Four Dimensions of Transformation</h3>
+            <p>Claude Code operates across four interconnected dimensions that traditional Git workflows cannot address:</p>
+            
+            <div class="dimension-cards">
+                <div class="dimension-card" data-decision="version-control">
+                    <div class="card-emoji">⚡</div>
+                    <div class="card-heading">Version Control Revolution</div>
+                    <div class="card-byline">From Commands to Intent</div>
+                    <div class="card-details">
+                        Traditional Git requires you to think in terms of commands and file states. Claude Code lets you think in terms of project outcomes and business goals.
+                        <div class="card-example">
+                            Traditional: "git checkout -b feature/auth"<br>
+                            Claude Code: "add user authentication with password reset"
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="dimension-card" data-decision="collaboration">
+                    <div class="card-emoji">🤝</div>
+                    <div class="card-heading">Collaboration Transformation</div>
+                    <div class="card-byline">From Code Review to Outcome Review</div>
+                    <div class="card-details">
+                        Traditional collaboration focuses on reviewing code syntax and implementation details. Claude Code shifts collaboration to reviewing business logic, user experience, and strategic decisions.
+                        <div class="card-example">
+                            Result: Team members contribute regardless of coding ability
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="dimension-card" data-decision="imagination">
+                    <div class="card-emoji">🚀</div>
+                    <div class="card-heading">Imagination Unleashed</div>
+                    <div class="card-byline">From "Can I Build?" to "Should I Build?"</div>
+                    <div class="card-details">
+                        Traditional development is constrained by technical knowledge - you can only build what you know how to implement. Claude Code removes implementation barriers.
+                        <div class="card-example">
+                            New constraint: Imagination, not technical skill
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="dimension-card" data-decision="scale">
+                    <div class="card-emoji">📈</div>
+                    <div class="card-heading">Exponential Scale</div>
+                    <div class="card-byline">From Linear to Ecosystem Amplification</div>
+                    <div class="card-details">
+                        Traditional Git scales linearly - more developers, more commits, more complexity. Claude Code scales exponentially with capability multiplication.
+                        <div class="card-example">
+                            1 person + Claude = Previous 5-person team output
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <h3>The Imagination Unleashed</h3>
+            <p>Consider what becomes possible when technical implementation is no longer the bottleneck:</p>
+            
+            <div class="output-comparison">
+                <div class="output-panel">
+                    <div class="output-header">Traditional Constraint Model</div>
+                    <div class="output-content">
+<strong>Idea Generation:</strong><br>
+"What can I realistically build with my current skills?"<br><br>
+
+<strong>Project Scope:</strong><br>
+Limited by team size and technical expertise<br><br>
+
+<strong>Innovation Bottleneck:</strong><br>
+Learning new technologies takes months<br>
+Complex features require specialized developers<br>
+Cross-platform development needs multiple skill sets<br><br>
+
+<strong>Collaboration Barriers:</strong><br>
+Non-technical stakeholders can't contribute to implementation<br>
+Domain experts need translators (developers)<br>
+Ideas get lost in technical translation<br><br>
+
+<strong>Example Limitation:</strong><br>
+A doctor wants to build a patient management system but needs to learn databases, web development, security protocols, and deployment - a 2-year journey before the first line of useful code.
+                    </div>
+                </div>
+                
+                <div class="output-panel">
+                    <div class="output-header">Claude Code Possibility Model</div>
+                    <div class="output-content">
+<strong>Idea Generation:</strong><br>
+"What should exist in the world to solve real problems?"<br><br>
+
+<strong>Project Scope:</strong><br>
+Limited only by imagination and strategic thinking<br><br>
+
+<strong>Innovation Acceleration:</strong><br>
+New technologies adopted instantly<br>
+Complex features implemented through natural language<br>
+Cross-platform development through single commands<br><br>
+
+<strong>Collaboration Expansion:</strong><br>
+Domain experts become direct contributors<br>
+Ideas flow directly from conception to implementation<br>
+Technical translation layer eliminated<br><br>
+
+<strong>Example Transformation:</strong><br>
+The same doctor describes their ideal patient management system in natural language: "Create a HIPAA-compliant system that tracks patient visits, sends automated reminders, integrates with insurance APIs, and generates treatment analytics." Claude builds it in hours, not years.
+                    </div>
+                </div>
+            </div>
+            
+            <h3>Scale: The Exponential Multiplier</h3>
+            <p>Traditional software development scales arithmetically. Claude Code scales geometrically:</p>
+            
+            <div class="claude-trace">
+                <div class="trace-header">[Scale Analysis: Traditional vs Claude Code]</div>
+                <div class="trace-item">Traditional Team: 5 developers × 8 hours = 40 productive hours/day</div>
+                <div class="trace-item">Claude Code Team: 5 people × Claude × 8 hours = 200+ productive hours equivalent/day</div>
+                <div class="trace-item">Scaling Factor: 5x immediate productivity gain</div>
+                <div class="trace-item">Quality Multiplier: Consistent standards, no human error variance</div>
+                <div class="trace-item">Knowledge Multiplier: Every team member has access to expert-level implementation</div>
+                <div class="trace-item">Innovation Multiplier: Ideas can be tested immediately, not after months of development</div>
+                <div class="trace-item">Result: 10-25x effective capability increase per team member</div>
+            </div>
+            
+            <p>This isn't theoretical. When implementation barriers disappear, the bottleneck shifts from "how to build" to "what to build" - and that's where human creativity, domain expertise, and strategic thinking become the primary value drivers.</p>
+            
+            <h3>The Traditional Problem: Git's Cognitive Overhead</h3>
+            <p>Git is powerful but cognitively demanding. Consider a typical workflow for fixing a bug:</p>
+            
+            <div class="output-comparison">
+                <div class="output-panel">
+                    <div class="output-header">Traditional Git Workflow</div>
+                    <div class="output-content">
+# Check current status<br>
+git status<br><br>
+# Create feature branch<br>
+git checkout -b fix/auth-bug<br><br>
+# Make changes to multiple files<br>
+# (manual editing, testing, debugging)<br><br>
+# Stage specific files<br>
+git add src/auth.js src/utils.js<br><br>
+# Write descriptive commit message<br>
+git commit -m "fix: resolve null pointer in auth validation<br><br>
+- Add null checks in validateUser()<br>
+- Update error handling in utils<br>
+- Add unit tests for edge cases"<br><br>
+# Push to remote<br>
+git push origin fix/auth-bug<br><br>
+# Create pull request via GitHub UI<br>
+# Wait for reviews, make changes<br>
+# Merge when approved
+                    </div>
+                </div>
+                
+                <div class="output-panel">
+                    <div class="output-header">Claude Code Workflow</div>
+                    <div class="output-content">
+# Single command with natural language<br>
+claude "fix the authentication bug where users with null emails crash the login"<br><br>
+# Claude automatically:<br>
+# - Analyzes codebase for auth-related files<br>
+# - Identifies the null pointer issue<br>
+# - Creates appropriate branch<br>
+# - Implements fix with proper error handling<br>
+# - Adds comprehensive unit tests<br>
+# - Writes detailed commit message<br>
+# - Creates pull request with description<br>
+# - Follows team's coding standards from CLAUDE.md<br><br>
+# You review and approve the changes<br>
+# Total time: 2 minutes vs 30+ minutes
+                    </div>
+                </div>
+            </div>
+            
+            <h3>Why This Matters: Cognitive Load Theory</h3>
+            <p>The human brain has limited working memory. Traditional Git requires you to juggle multiple concerns simultaneously:</p>
+            <ul>
+                <li><strong>Technical Implementation:</strong> How to fix the actual bug</li>
+                <li><strong>Git Mechanics:</strong> Branch naming, staging, commit messages</li>
+                <li><strong>Project Context:</strong> Coding standards, testing requirements</li>
+                <li><strong>Collaboration Protocol:</strong> PR descriptions, reviewer assignments</li>
+            </ul>
+            <p>Claude Code collapses this cognitive overhead into a single, natural language instruction. You focus on <em>what</em> needs to happen; Claude handles <em>how</em> it happens.</p>
+            
+            <div class="diff-container">
+                <div class="diff-header">Repository State Transition</div>
+                <div class="diff-content" id="diff-display">
+                    <div class="diff-line removed">- project: uninitialized</div>
+                    <div class="diff-line added">+ project: git repository</div>
+                    <div class="diff-line context">  .git/ directory created</div>
+                    <div class="diff-line context">  tracking enabled</div>
+                    <div class="diff-line context">  working directory: clean</div>
+                </div>
+            </div>
+            
+            <div class="claude-trace">
+                <div class="trace-header">[Claude Trace]</div>
+                <div class="trace-item">Delta computed</div>
+                <div class="trace-item">State transition validated</div>
+                <div class="trace-item">Change visibility enabled</div>
+            </div>
+
+            <h3>The Traditional Approach vs Claude Code Approach</h3>
+            <p>Traditional learning: "Git is a version control system that tracks changes to files over time."</p>
+            <p>Claude Code approach: Observe the state transition.</p>
+
+            <div class="output-comparison">
+                <div class="output-panel">
+                    <div class="output-header">Before: Untracked Files</div>
+                    <div class="output-content">
+working directory: clean<br>
+untracked files: 0<br>
+staged changes: 0<br>
+commits: 0<br>
+remote sync: none
+                    </div>
+                </div>
+                
+                <div class="output-panel">
+                    <div class="output-header">After: Git Repository</div>
+                    <div class="output-content">
+working directory: initialized<br>
+untracked files: detected<br>
+staged changes: 0<br>
+commits: 0<br>
+remote sync: available
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section data-claude-phase="state-model">
+            <h2>Deep Dive: Git as a State Machine</h2>
+            <p>Understanding Git through Claude Code requires thinking in terms of states rather than commands. This fundamental shift changes how you approach version control.</p>
+            
+            <h3>The Four Core States of Any Git Repository</h3>
+            <p>Every file in your project exists in one of four states at any given time. Claude Code thinks in these states, not in commands:</p>
+            
+            <div class="decision-tree">
+                <div class="decision-node" onclick="explainState('untracked')" data-state="untracked">
+                    <div class="decision-label">Untracked State</div>
+                    <div class="decision-consequence">Files exist in your working directory but Git doesn't know about them. They're invisible to version control.</div>
+                </div>
+                
+                <div class="decision-node" onclick="explainState('staged')" data-state="staged">
+                    <div class="decision-label">Staged State</div>
+                    <div class="decision-consequence">Files are marked for inclusion in the next commit. They're in Git's "staging area" or "index".</div>
+                </div>
+                
+                <div class="decision-node" onclick="explainState('committed')" data-state="committed">
+                    <div class="decision-label">Committed State</div>
+                    <div class="decision-consequence">Files are permanently stored in Git's database with a unique identifier (hash).</div>
+                </div>
+                
+                <div class="decision-node" onclick="explainState('pushed')" data-state="pushed">
+                    <div class="decision-label">Pushed State</div>
+                    <div class="decision-consequence">Files are synchronized with a remote repository (like GitHub) and available to collaborators.</div>
+                </div>
+            </div>
+            
+            <h3>Why State-Based Thinking Matters</h3>
+            <p>Traditional Git tutorials teach commands: "run git add, then git commit, then git push." Claude Code thinks in outcomes: "I need these changes to be in the committed state." This is profound because:</p>
+            
+            <ul>
+                <li><strong>Error Recovery:</strong> If something goes wrong, Claude knows exactly which state to return to</li>
+                <li><strong>Atomic Operations:</strong> Claude can ensure all related changes transition together</li>
+                <li><strong>Context Awareness:</strong> Claude understands what state your files should be in based on your intent</li>
+            </ul>
+            
+            <h3>Real Example: The CLAUDE.md File</h3>
+            <p>Let's see how Claude Code uses state-based thinking with a concrete example. You want to add project rules:</p>
+            
+            <div class="diff-container">
+                <div class="diff-header">CLAUDE.md Creation Process</div>
+                <div class="diff-content">
+                    <div class="diff-line context"># You say: "Create a CLAUDE.md file with our coding standards"</div>
+                    <div class="diff-line context"># Claude analyzes current repository state</div>
+                    <div class="diff-line removed">- CLAUDE.md: does not exist</div>
+                    <div class="diff-line added">+ CLAUDE.md: created with content</div>
+                    <div class="diff-line added">+ State transition: untracked → staged → committed</div>
+                    <div class="diff-line context"># Claude automatically stages and commits with descriptive message</div>
+                </div>
+            </div>
+            
+            <p>Here's what Claude might create in your CLAUDE.md file:</p>
+            
+            <div class="output-panel" style="margin: 20px 0;">
+                <div class="output-header">Generated CLAUDE.md</div>
+                <div class="output-content">
+# Project Rules for Claude Code<br><br>
+## Code Style<br>
+- Use TypeScript for all new JavaScript files<br>
+- Functions must have JSDoc comments<br>
+- Use async/await instead of .then() for promises<br>
+- No console.log in production code<br><br>
+## File Structure<br>
+- /src/components - React components<br>
+- /src/utils - Utility functions<br>
+- /src/types - TypeScript type definitions<br>
+- /tests - Test files (required for all new features)<br><br>
+## Commit Messages<br>
+- Follow Conventional Commits specification<br>
+- Examples: "feat:", "fix:", "docs:", "refactor:"<br><br>
+## Testing<br>
+- All new functions need unit tests<br>
+- Use Jest for testing framework<br>
+- Aim for 80%+ code coverage
+                </div>
+            </div>
+            
+            <div class="toggle-controls">
+                <button class="toggle-btn" onclick="simulateTransition('add')">git add</button>
+                <button class="toggle-btn" onclick="simulateTransition('commit')">git commit</button>
+                <button class="toggle-btn" onclick="simulateTransition('push')">git push</button>
+                <button class="toggle-btn" onclick="simulateTransition('reset')">git reset</button>
+            </div>
+            
+            <div class="claude-trace" id="transition-trace">
+                <div class="trace-header">[Claude Trace]</div>
+                <div class="trace-item">State machine ready</div>
+                <div class="trace-item">Valid transitions computed</div>
+                <div class="trace-item">Awaiting command</div>
+            </div>
+
+            <h3>State Transitions</h3>
+            <p>Each Git command represents a deterministic state transition. Claude Code models these as discrete cognitive steps rather than sequential instructions.</p>
+
+            <div class="diff-container" id="state-diff">
+                <div class="diff-header">Current State Analysis</div>
+                <div class="diff-content">
+                    <div class="diff-line context">Repository: project-example</div>
+                    <div class="diff-line context">Current state: untracked</div>
+                    <div class="diff-line context">Files detected: 3</div>
+                    <div class="diff-line context">Next valid states: staged</div>
+                </div>
+            </div>
+        </section>
+
+        <section data-claude-phase="decision-tree">
+            <h2>Workflow Decision Trees: The Strategy Behind Every Git Action</h2>
+            <p>Every Git workflow represents a strategic choice with long-term consequences. Claude Code doesn't just execute commands—it evaluates the implications of different approaches and chooses the most appropriate strategy for your context.</p>
+            
+            <h3>The Three Fundamental Collaboration Patterns</h3>
+            <p>When you ask Claude to make changes, it must choose between three fundamental approaches. Each has different risk profiles, collaboration implications, and time costs:</p>
+            
+            <div class="decision-tree">
+                <div class="decision-node" onclick="selectDecision('direct-commit')" data-decision="direct-commit">
+                    <div class="decision-label">[A] Direct Commit to Main Branch</div>
+                    <div class="decision-consequence">
+                        <strong>When Claude chooses this:</strong> Small fixes, solo projects, urgent hotfixes<br>
+                        <strong>Risk:</strong> No peer review, potential conflicts, immediate deployment<br>
+                        <strong>Speed:</strong> Fastest (30 seconds)<br>
+                        <strong>Safety:</strong> Lowest
+                    </div>
+                </div>
+                
+                <div class="decision-node" onclick="selectDecision('branch-pr')" data-decision="branch-pr">
+                    <div class="decision-label">[B] Feature Branch → Pull Request → Merge</div>
+                    <div class="decision-consequence">
+                        <strong>When Claude chooses this:</strong> Team projects, new features, complex changes<br>
+                        <strong>Benefit:</strong> Code review, CI/CD validation, discussion thread<br>
+                        <strong>Speed:</strong> Medium (5-30 minutes depending on review)<br>
+                        <strong>Safety:</strong> High
+                    </div>
+                </div>
+                
+                <div class="decision-node" onclick="selectDecision('fork-contribute')" data-decision="fork-contribute">
+                    <div class="decision-label">[C] Fork → Contribute → Upstream PR</div>
+                    <div class="decision-consequence">
+                        <strong>When Claude chooses this:</strong> Open source contributions, external repositories<br>
+                        <strong>Context:</strong> No direct write access, community guidelines<br>
+                        <strong>Speed:</strong> Slowest (hours to days for maintainer review)<br>
+                        <strong>Safety:</strong> Maximum (maintainer control)
+                    </div>
+                </div>
+            </div>
+            
+            <h3>How Claude Makes These Decisions</h3>
+            <p>Claude Code doesn't randomly pick a workflow. It analyzes several factors to determine the appropriate strategy:</p>
+            
+            <div class="output-comparison">
+                <div class="output-panel">
+                    <div class="output-header">Decision Factors Claude Evaluates</div>
+                    <div class="output-content">
+<strong>Repository Analysis:</strong><br>
+• Number of collaborators<br>
+• Branch protection rules<br>
+• CI/CD pipeline configuration<br>
+• Recent commit frequency<br><br>
+<strong>Change Complexity:</strong><br>
+• Number of files affected<br>
+• Lines of code changed<br>
+• Dependencies modified<br>
+• Test coverage impact<br><br>
+<strong>Project Context:</strong><br>
+• CLAUDE.md workflow preferences<br>
+• Time sensitivity indicators<br>
+• Risk tolerance settings<br>
+• Team availability
+                    </div>
+                </div>
+                
+                <div class="output-panel">
+                    <div class="output-header">Example Decision Logic</div>
+                    <div class="output-content">
+<strong>Scenario:</strong> "Fix typo in README"<br><br>
+<strong>Claude's Analysis:</strong><br>
+• Single file change: ✓<br>
+• Documentation only: ✓<br>
+• No code logic affected: ✓<br>
+• Low risk change: ✓<br><br>
+<strong>Decision:</strong> Direct commit to main<br>
+<strong>Reasoning:</strong> Minimal risk, no review needed<br><br>
+---<br><br>
+<strong>Scenario:</strong> "Add user authentication"<br><br>
+<strong>Claude's Analysis:</strong><br>
+• Multiple files affected: ⚠️<br>
+• Security implications: ⚠️<br>
+• Database changes: ⚠️<br>
+• High complexity: ⚠️<br><br>
+<strong>Decision:</strong> Feature branch + PR<br>
+<strong>Reasoning:</strong> Requires team review
+                    </div>
+                </div>
+            </div>
+            
+            <div class="claude-trace" id="decision-trace">
+                <div class="trace-header">[Claude Trace]</div>
+                <div class="trace-item">Decision matrix computed</div>
+                <div class="trace-item">Risk assessment pending</div>
+                <div class="trace-item">Awaiting selection</div>
+            </div>
+
+            <h3>Workflow Consequences</h3>
+            <p>Each workflow choice produces different outcomes. Claude Code evaluates these neutrally, showing variance rather than preference.</p>
+        </section>
+
+        <section data-claude-phase="comparative-outputs">
+            <h2>The Reality Check: Human vs Claude Code Workflows</h2>
+            <p>The best way to understand Claude Code's impact is to see it side-by-side with traditional workflows. These aren't theoretical examples—they're based on real development scenarios that happen daily in software teams.</p>
+            
+            <h3>Scenario: Adding a New Feature to an Existing Project</h3>
+            <p>Let's trace through a common task: adding a contact form to a website. This involves HTML, CSS, JavaScript, form validation, and proper Git workflow. Watch how the approaches differ:</p>
+            
+            <div class="toggle-controls">
+                <button class="toggle-btn active" onclick="toggleOutput('human')" id="toggle-human">Human Workflow</button>
+                <button class="toggle-btn" onclick="toggleOutput('claude')" id="toggle-claude">Claude Workflow</button>
+            </div>
+            
+            <div class="output-comparison">
+                <div class="output-panel">
+                    <div class="output-header">Traditional Human Workflow (45-90 minutes)</div>
+                    <div class="output-content" id="human-output">
+<strong>Step 1: Planning & Setup (10 min)</strong><br>
+$ git status<br>
+$ git checkout -b feature/contact-form<br>
+# Think about file structure<br>
+# Plan HTML structure<br>
+# Consider validation requirements<br><br>
+
+<strong>Step 2: HTML Development (15 min)</strong><br>
+# Create contact.html<br>
+# Write form markup manually<br>
+# Add proper labels and inputs<br>
+# Test in browser<br><br>
+
+<strong>Step 3: CSS Styling (20 min)</strong><br>
+# Create/modify styles.css<br>
+# Style form elements<br>
+# Make responsive<br>
+# Cross-browser testing<br><br>
+
+<strong>Step 4: JavaScript Validation (15 min)</strong><br>
+# Write validation functions<br>
+# Add event listeners<br>
+# Handle form submission<br>
+# Test edge cases<br><br>
+
+<strong>Step 5: Git Workflow (10 min)</strong><br>
+$ git add contact.html styles.css script.js<br>
+$ git commit -m "Add contact form with validation"<br>
+$ git push origin feature/contact-form<br>
+# Create PR manually in GitHub<br>
+# Write PR description<br><br>
+
+<strong>Common Issues:</strong><br>
+• Forgot to test on mobile<br>
+• Validation logic has edge case bugs<br>
+• Inconsistent styling with site theme<br>
+• Commit message too generic
+                    </div>
+                </div>
+                
+                <div class="output-panel">
+                    <div class="output-header">Claude Code Workflow (2-5 minutes)</div>
+                    <div class="output-content" id="claude-output">
+<strong>Single Command:</strong><br>
+$ claude "add a professional contact form with validation to the website"<br><br>
+
+<strong>Claude's Automatic Process:</strong><br>
+• Analyzes existing site structure<br>
+• Reads CLAUDE.md for styling guidelines<br>
+• Creates contact.html with semantic markup<br>
+• Generates responsive CSS matching site theme<br>
+• Implements comprehensive JavaScript validation<br>
+• Adds accessibility features (ARIA labels)<br>
+• Includes email regex validation<br>
+• Adds loading states and error handling<br>
+• Tests form functionality<br>
+• Creates feature branch automatically<br>
+• Commits with descriptive message:<br>
+  "feat: add contact form with validation<br>
+  <br>
+  - Responsive design matching site theme<br>
+  - Client-side validation for all fields<br>
+  - Accessibility compliant (WCAG 2.1)<br>
+  - Loading states and error handling<br>
+  - Email regex validation<br>
+  - Mobile-optimized layout"<br>
+• Creates pull request with detailed description<br>
+• Adds screenshots of form in PR<br><br>
+
+<strong>Quality Advantages:</strong><br>
+• Consistent with existing codebase<br>
+• Follows accessibility best practices<br>
+• Comprehensive edge case handling<br>
+• Professional commit message format<br>
+• Detailed PR documentation<br>
+• Cross-browser compatible code
+                    </div>
+                </div>
+            </div>
+            
+            <h3>The Deeper Implications</h3>
+            <p>This comparison reveals something profound about the nature of software development work:</p>
+            
+            <div class="decision-tree">
+                <div class="decision-node" data-decision="cognitive-load">
+                    <div class="decision-label">Cognitive Load Reduction</div>
+                    <div class="decision-consequence">
+                        Humans spend 70% of their time on mechanical tasks (file creation, syntax, Git commands) and only 30% on creative problem-solving. Claude Code inverts this ratio.
+                    </div>
+                </div>
+                
+                <div class="decision-node" data-decision="consistency">
+                    <div class="decision-label">Consistency at Scale</div>
+                    <div class="decision-consequence">
+                        Human developers have "good days" and "bad days." Claude Code maintains consistent quality, follows all project standards, and never forgets edge cases due to fatigue.
+                    </div>
+                </div>
+                
+                <div class="decision-node" data-decision="learning-curve">
+                    <div class="decision-label">Learning Curve Elimination</div>
+                    <div class="decision-consequence">
+                        New team members don't need to learn Git commands, project structure, or coding standards. They can contribute meaningfully from day one by focusing on business logic.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="claude-trace">
+                <div class="trace-header">[Claude Trace]</div>
+                <div class="trace-item">Both approaches represent valid states</div>
+                <div class="trace-item">Difference: cognitive load and precision</div>
+                <div class="trace-item">Human: manual verification required</div>
+                <div class="trace-item">Claude: deterministic execution with context</div>
+            </div>
+        </section>
+
+        <section data-claude-phase="operational-demo">
+            <h2>Under the Hood: How Claude Code Actually Works</h2>
+            <p>Let's strip away the abstractions and see exactly what happens when you run a Claude Code command. This is the actual sequence of operations, not a simplified explanation.</p>
+            
+            <h3>Real Execution Trace: Adding a Feature</h3>
+            <p>When you type <code>claude "add a dark mode toggle to the website"</code>, here's the precise sequence of operations that occurs:</p>
+            
+            <div class="claude-trace">
+                <div class="trace-header">[Claude Execution Log - Dark Mode Toggle Implementation]</div>
+                <div class="trace-item">00:00.123 - Command received: "add a dark mode toggle to the website"</div>
+                <div class="trace-item">00:00.156 - Repository scan initiated</div>
+                <div class="trace-item">00:00.234 - Analyzing file structure: 23 files, 4 directories</div>
+                <div class="trace-item">00:00.267 - CSS framework detected: Custom CSS + CSS variables</div>
+                <div class="trace-item">00:00.289 - JavaScript framework: Vanilla JS</div>
+                <div class="trace-item">00:00.312 - CLAUDE.md rules loaded: 12 guidelines found</div>
+                <div class="trace-item">00:00.445 - Existing color scheme analyzed</div>
+                <div class="trace-item">00:00.567 - Dark mode color palette generated</div>
+                <div class="trace-item">00:00.678 - Toggle component design planned</div>
+                <div class="trace-item">00:00.789 - File modifications calculated:</div>
+                <div class="trace-item">  → styles.css: +47 lines (dark mode variables)</div>
+                <div class="trace-item">  → script.js: +23 lines (toggle functionality)</div>
+                <div class="trace-item">  → index.html: +3 lines (toggle button)</div>
+                <div class="trace-item">00:01.234 - Code generation complete</div>
+                <div class="trace-item">00:01.345 - Accessibility compliance verified (WCAG 2.1)</div>
+                <div class="trace-item">00:01.456 - Browser compatibility checked (IE11+)</div>
+                <div class="trace-item">00:01.567 - Local storage persistence implemented</div>
+                <div class="trace-item">00:01.678 - Git branch created: feature/dark-mode-toggle</div>
+                <div class="trace-item">00:01.789 - Files staged for commit</div>
+                <div class="trace-item">00:01.890 - Commit message generated: "feat: add dark mode toggle with system preference detection"</div>
+                <div class="trace-item">00:01.945 - Pre-commit hooks executed successfully</div>
+                <div class="trace-item">00:02.123 - Push to remote repository complete</div>
+                <div class="trace-item">00:02.234 - Pull request created with description and screenshots</div>
+                <div class="trace-item">00:02.345 - Execution complete - Total time: 2.345 seconds</div>
+            </div>
+            
+            <h3>The Technical Architecture</h3>
+            <p>Claude Code operates through several integrated systems working in concert:</p>
+            
+            <div class="output-comparison">
+                <div class="output-panel">
+                    <div class="output-header">Analysis Engine</div>
+                    <div class="output-content">
+<strong>Repository Scanner:</strong><br>
+• File tree analysis<br>
+• Dependency mapping<br>
+• Framework detection<br>
+• Code pattern recognition<br><br>
+
+<strong>Context Builder:</strong><br>
+• CLAUDE.md rule parsing<br>
+• Existing code style analysis<br>
+• Project structure understanding<br>
+• Team workflow detection<br><br>
+
+<strong>Risk Assessor:</strong><br>
+• Change impact analysis<br>
+• Conflict probability calculation<br>
+• Breaking change detection<br>
+• Rollback strategy planning
+                    </div>
+                </div>
+                
+                <div class="output-panel">
+                    <div class="output-header">Execution Engine</div>
+                    <div class="output-content">
+<strong>Code Generator:</strong><br>
+• Multi-language code synthesis<br>
+• Style consistency enforcement<br>
+• Best practice implementation<br>
+• Performance optimization<br><br>
+
+<strong>Git Orchestrator:</strong><br>
+• Branch management<br>
+• Commit message generation<br>
+• Merge conflict resolution<br>
+• Remote synchronization<br><br>
+
+<strong>Quality Controller:</strong><br>
+• Automated testing<br>
+• Accessibility validation<br>
+• Security scanning<br>
+• Performance benchmarking
+                    </div>
+                </div>
+            </div>
+
+            <h3>GitHub Integration: API-Level Operations</h3>
+            <p>Claude Code interfaces with GitHub through deterministic API calls, bypassing the need for manual browser navigation. Here's what happens at the API level:</p>
+            
+            <div class="claude-trace">
+                <div class="trace-header">[GitHub API Integration Log]</div>
+                <div class="trace-item">POST /repos/user/project/git/refs - Create branch reference</div>
+                <div class="trace-item">PUT /repos/user/project/contents/styles.css - Update file content</div>
+                <div class="trace-item">PUT /repos/user/project/contents/script.js - Update file content</div>
+                <div class="trace-item">PUT /repos/user/project/contents/index.html - Update file content</div>
+                <div class="trace-item">POST /repos/user/project/git/commits - Create commit object</div>
+                <div class="trace-item">PATCH /repos/user/project/git/refs/heads/feature/dark-mode - Update branch pointer</div>
+                <div class="trace-item">POST /repos/user/project/pulls - Create pull request</div>
+                <div class="trace-item">POST /repos/user/project/issues/1/comments - Add PR description</div>
+                <div class="trace-item">POST /repos/user/project/pulls/1/requested_reviewers - Assign reviewers</div>
+                <div class="trace-item">POST /repos/user/project/issues/1/labels - Add labels: "enhancement", "frontend"</div>
+            </div>
+            
+            <div class="diff-container">
+                <div class="diff-header">Complete GitHub State Transition</div>
+                <div class="diff-content">
+                    <div class="diff-line context">Repository: user/website-project</div>
+                    <div class="diff-line removed">- Branch: main (clean working directory)</div>
+                    <div class="diff-line added">+ Branch: feature/dark-mode-toggle (3 files changed)</div>
+                    <div class="diff-line added">+ Commit: f4a7b2c "feat: add dark mode toggle with system preference detection"</div>
+                    <div class="diff-line context">Files modified: 3</div>
+                    <div class="diff-line context">Lines added: 73, removed: 0</div>
+                    <div class="diff-line added">+ Pull request #47: "Add Dark Mode Toggle"</div>
+                    <div class="diff-line added">+ PR description: Auto-generated with screenshots</div>
+                    <div class="diff-line added">+ Reviewers assigned: @team-lead, @ui-designer</div>
+                    <div class="diff-line added">+ Labels: enhancement, frontend, accessibility</div>
+                    <div class="diff-line added">+ CI/CD pipeline: triggered automatically</div>
+                </div>
+            </div>
+            
+            <h3>The Paradigm Shift</h3>
+            <p>This operational view reveals the fundamental transformation Claude Code brings to software development:</p>
+            
+            <div class="decision-tree">
+                <div class="decision-node" data-decision="abstraction-level">
+                    <div class="decision-label">Abstraction Level Elevation</div>
+                    <div class="decision-consequence">
+                        Developers work at the intent level ("add dark mode") rather than the implementation level ("modify CSS variables, add event listeners, update HTML"). This is similar to how high-level programming languages abstracted away assembly code.
+                    </div>
+                </div>
+                
+                <div class="decision-node" data-decision="error-elimination">
+                    <div class="decision-label">Systematic Error Elimination</div>
+                    <div class="decision-consequence">
+                        Common developer errors (typos, forgotten edge cases, inconsistent styling, poor commit messages) are eliminated through systematic code generation and validation.
+                    </div>
+                </div>
+                
+                <div class="decision-node" data-decision="knowledge-democratization">
+                    <div class="decision-label">Knowledge Democratization</div>
+                    <div class="decision-consequence">
+                        Domain experts (doctors, teachers, business owners) can directly implement their ideas without learning the technical implementation details of Git, HTML, CSS, or JavaScript.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Continuous Execution Context -->
+        <section data-claude-phase="continuous-context">
+            <h2>The Living System: Continuous Execution Context</h2>
+            <p>Unlike traditional tutorials that conclude with summaries and close, Claude Code operates in a continuous execution context. This represents a fundamental shift in how we think about learning and development environments.</p>
+            
+            <h3>Why Continuous Context Matters</h3>
+            <p>Traditional educational experiences follow a linear pattern: introduction → lessons → practice → conclusion. You "complete" the tutorial and move on. Claude Code serious mode reflects the reality of development work - it's not a series of discrete lessons but an ongoing conversation with your development environment.</p>
+            
+            <p>The console below demonstrates this principle. It never "finishes" or provides a final summary. Instead, it maintains an operational state, continuously monitoring repository conditions and remaining ready for the next command. This mirrors how Claude Code itself operates - always available, always contextually aware, always ready to act.</p>
+            
+            <div class="continuous-console">
+                <div class="console-header">Claude Code: Continuous Execution Context</div>
+                <div class="console-prompt">Repository state: <span id="console-state">untracked</span></div>
+                <div class="console-prompt">Available commands: stage, commit, push, branch, merge, reset</div>
+                <div class="console-prompt">Conflict probability: <span id="conflict-prob">0.00</span></div>
+                <div class="console-prompt">Last operation: <span id="last-operation">init</span></div>
+                <div class="console-prompt">GitHub sync: <span id="github-sync">ready</span></div>
+                <div class="console-prompt">Awaiting next command<span class="console-cursor"></span></div>
+                <div style="margin-top: 16px; color: var(--accent); font-size: 0.9rem;">
+                    Claude is listening.
+                </div>
+            </div>
+            
+            <div class="claude-trace">
+                <div class="trace-header">[Continuous Context Principles]</div>
+                <div class="trace-item">No artificial endpoints or conclusions</div>
+                <div class="trace-item">Persistent state awareness across sessions</div>
+                <div class="trace-item">Real-time adaptation to changing conditions</div>
+                <div class="trace-item">Always ready for the next interaction</div>
+                <div class="trace-item">Learning through ongoing operational experience</div>
+            </div>
+            
+            <p>This continuous context transforms learning from a consumable resource (something you "complete") into a persistent capability (something you "inhabit"). You don't finish learning Claude Code - you develop an ongoing relationship with it as a development partner.</p>
+        </section>
+
+        <!-- Knowledge Assessment -->
+        <section data-claude-phase="assessment">
+            <h2>Knowledge Validation: Claude Code Mastery Check</h2>
+            <p>Test your understanding of Claude Code concepts through these scenario-based questions.</p>
+            
+            <div class="quiz-container" id="quiz-container-serious">
+                <div class="quiz-navigation">
+                    <span id="quiz-progress-serious">Question 1 of 8</span>
+                    <button class="btn" id="quiz-next-serious" disabled>Next Question</button>
+                </div>
+                <div id="quiz-content-serious"></div>
+            </div>
+        </section>
+
+        <!-- Frequently Asked Questions -->
+        <section data-claude-phase="faqs">
+            <h2>Frequently Asked Questions</h2>
+            <p>Common questions about Claude Code implementation and best practices.</p>
+            
+            <div class="accordion" id="faq-accordion-serious"></div>
+        </section>
+
+        <!-- Technical Glossary -->
+        <section data-claude-phase="glossary">
+            <h2>Technical Glossary</h2>
+            <p>Essential terms for understanding Claude Code and modern development workflows.</p>
+            
+            <div class="glossary-cloud" id="glossary-cloud-serious"></div>
+        </section>
+    </div>
+
+    <script>
+        // State machine logic
+        const states = ['untracked', 'staged', 'committed', 'pushed'];
+        let currentState = 0;
+        let selectedDecision = null;
+
+        // Quiz Data - Claude Code Serious Mode
+        const quizDataSerious = [
+            { 
+                q: "Claude Code transforms development by shifting focus from ________ to ________.", 
+                correct: 2, 
+                options: [
+                    {text: "individual productivity to team collaboration", exp: "You chose team collaboration, which Claude Code certainly enhances. However, the deeper transformation is about moving from technical mechanics to strategic thinking - from 'how to implement' to 'what should exist.'"}, 
+                    {text: "manual coding to automated generation", exp: "You focused on the automation aspect, which is visible but not the core shift. Claude Code's real power lies in elevating your thinking from command-level operations to outcome-level intentions."}, 
+                    {text: "command-level operations to intent-level outcomes", exp: "Excellent! You recognized that Claude Code fundamentally changes how we interact with development - instead of memorizing Git commands, you express what you want to achieve and Claude handles the implementation details."}, 
+                    {text: "local development to cloud-based workflows", exp: "You thought about the infrastructure change, which isn't Claude Code's primary transformation. The real shift is cognitive - from thinking in technical steps to thinking in business outcomes."}
+                ] 
+            },
+            { 
+                q: "When Claude Code achieves 'exponential scaling,' it means ________.", 
+                correct: 1, 
+                options: [
+                    {text: "processing speed increases dramatically with each update", exp: "You focused on technical performance, which is natural when thinking about 'exponential.' But Claude Code's scaling is about human capability - how one person can now accomplish what once required entire teams."}, 
+                    {text: "individual capability multiplies beyond traditional team limits", exp: "Perfect! You understood that exponential scaling means removing implementation barriers so completely that a single person with Claude can achieve what previously required coordinated team effort."}, 
+                    {text: "project complexity can grow without additional resources", exp: "You're thinking about resource efficiency, which Claude Code does provide. However, exponential scaling specifically refers to how individual human capability is amplified, not just resource optimization."}, 
+                    {text: "development costs decrease as usage volume increases", exp: "You considered the economic scaling model, which is logical. But Claude Code's exponential scaling is about capability multiplication - how it transforms what one person can accomplish."}
+                ] 
+            },
+            { 
+                q: "Diff-based reasoning teaches by showing ________ instead of ________.", 
+                correct: 0, 
+                options: [
+                    {text: "actual state changes instead of abstract explanations", exp: "Brilliant! You grasped that diff-based reasoning lets you see the literal before/after transformations rather than reading theoretical descriptions about how systems work."}, 
+                    {text: "multiple solutions instead of single approaches", exp: "You're thinking about comprehensive learning, which is valuable. But diff-based reasoning specifically focuses on showing actual system changes rather than explaining concepts abstractly."}, 
+                    {text: "visual diagrams instead of written documentation", exp: "You considered the visual aspect, which diff displays certainly use. However, diff-based reasoning is about observing real state transitions rather than just changing the presentation format."}, 
+                    {text: "practical examples instead of theoretical concepts", exp: "You valued hands-on learning, which diff-based reasoning provides. But the key insight is showing actual system state changes rather than describing how things work in theory."}
+                ] 
+            },
+            { 
+                q: "Claude Code's most profound impact shifts the development bottleneck from ________ to ________.", 
+                correct: 3, 
+                options: [
+                    {text: "expensive resources to affordable alternatives", exp: "You considered the economic barrier, which technology often addresses. But Claude Code's deeper impact is shifting from technical constraints to creative ones - from implementation knowledge to strategic vision."}, 
+                    {text: "individual work to collaborative teamwork", exp: "You thought about the social transformation, which Claude Code certainly enables. However, the fundamental bottleneck shift is from technical 'how-to' knowledge to strategic 'what-should-be' thinking."}, 
+                    {text: "complex interfaces to simplified workflows", exp: "You focused on usability improvements, which Claude Code delivers. But the core bottleneck shift goes deeper - from needing technical implementation skills to needing creative and strategic judgment."}, 
+                    {text: "technical implementation to strategic imagination", exp: "Exactly! You recognized that when Claude Code removes implementation barriers, the constraint shifts from 'Do I know how to build this?' to 'Should this exist?' - from technical skill to creative vision."}
+                ] 
+            },
+            { 
+                q: "Claude Code's workflow decisions are primarily based on ________.", 
+                correct: 2, 
+                options: [
+                    {text: "user preferences and personal coding style", exp: "You thought about personalization, which Claude Code does consider through CLAUDE.md. But its workflow decisions are more systematic - analyzing risk, complexity, and collaboration patterns rather than just personal preferences."}, 
+                    {text: "file types and programming language requirements", exp: "You focused on technical file characteristics, which seem logical for workflow decisions. However, Claude Code evaluates broader factors like team structure, change impact, and project risk rather than just file properties."}, 
+                    {text: "repository structure, risk assessment, and collaboration context", exp: "Outstanding! You understood that Claude Code makes strategic workflow decisions by analyzing multiple dimensions - team size, change complexity, branch protection rules, and project context from CLAUDE.md."}, 
+                    {text: "development speed and performance optimization", exp: "You considered efficiency factors, which Claude Code certainly provides. But its workflow choices are based on risk management and collaboration patterns rather than just optimizing for speed."}
+                ] 
+            },
+            { 
+                q: "The 'continuous execution context' represents ________ rather than ________.", 
+                correct: 1, 
+                options: [
+                    {text: "automated processes rather than manual interventions", exp: "You thought about the automation aspect, which Claude Code provides. But continuous execution context is about the learning philosophy - maintaining an operational state rather than concluding with traditional summaries."}, 
+                    {text: "ongoing operational readiness rather than concluded lessons", exp: "Perfect! You understood that continuous execution context means the learning environment stays 'live' and ready for the next command, unlike traditional tutorials that end with a summary and close."}, 
+                    {text: "real-time monitoring rather than periodic check-ins", exp: "You considered the monitoring dimension, which relates to continuous systems. However, continuous execution context is about maintaining an open learning state rather than just monitoring system activity."}, 
+                    {text: "persistent memory rather than session-based storage", exp: "You focused on data persistence, which is important for continuous systems. But the continuous execution context is about keeping the learning experience operationally open rather than technical memory management."}
+                ] 
+            },
+            { 
+                q: "The 'imagination unleashed' dimension transforms development constraints from ________ to ________.", 
+                correct: 0, 
+                options: [
+                    {text: "technical capability limitations to strategic decision boundaries", exp: "Brilliant! You grasped that when Claude Code removes implementation barriers, the fundamental question shifts from 'Can I technically build this?' to 'Should this solution exist in the world?'"}, 
+                    {text: "individual skill gaps to collaborative team requirements", exp: "You considered the social aspect of constraints, which Claude Code does address. But 'imagination unleashed' specifically refers to shifting from technical 'how-to' limitations to strategic 'should-we' considerations."}, 
+                    {text: "resource scarcity issues to time management challenges", exp: "You thought about practical project constraints, which remain important. However, the imagination unleashed dimension specifically transforms the constraint from technical knowledge to creative and ethical judgment."}, 
+                    {text: "complex tool mastery to simplified interface navigation", exp: "You focused on usability improvements, which Claude Code certainly provides. But the deeper transformation is from needing technical implementation skills to needing strategic vision and creative thinking."}
+                ] 
+            },
+            { 
+                q: "Deterministic seriousness builds understanding through ________ rather than ________.", 
+                correct: 3, 
+                options: [
+                    {text: "automated consistency rather than human variability", exp: "You thought about system reliability, which deterministic systems provide. But deterministic seriousness is about the educational approach - building trust through demonstrated facts rather than persuasive language."}, 
+                    {text: "structured sequences rather than flexible exploration", exp: "You considered the methodical aspect, which serious learning often involves. However, deterministic seriousness specifically refers to neutral, factual presentation rather than emotional or motivational approaches."}, 
+                    {text: "predictable outcomes rather than experimental results", exp: "You focused on the predictability aspect of deterministic systems. But in the learning context, deterministic seriousness means showing only what is demonstrably true rather than using persuasive techniques."}, 
+                    {text: "demonstrated truth rather than persuasive motivation", exp: "Excellent! You understood that deterministic seriousness builds epistemic trust by showing factual system behavior without emotional language, letting learners observe reality rather than being convinced of it."}
+                ] 
+            }
+        ];
+
+        // FAQ Data - Claude Code Serious Mode
+        const faqDataSerious = [
+            {q: "How does Claude Code's state-based thinking differ from command-based Git workflows?", a: "State-based thinking focuses on desired outcomes rather than specific commands. Instead of memorizing 'git checkout -b feature/auth', you think 'I need these changes to be in a committed state on a feature branch.' Claude understands the current state, the desired state, and automatically executes the necessary sequence of commands to achieve the transition. This reduces cognitive load and allows you to focus on what you want to accomplish rather than how to accomplish it."},
+            {q: "What makes Claude Code's scaling 'exponential' rather than 'linear'?", a: "Traditional development scales linearly: more developers = more output, but also more coordination overhead. Claude Code scales exponentially because it amplifies individual capability. One person with Claude can achieve what previously required a team, while a team with Claude can tackle problems that were previously impossible. The scaling factor comes from removing implementation barriers, not just adding more hands to the work."},
+            {q: "How does the 'imagination unleashed' dimension actually work in practice?", a: "When technical implementation is no longer the bottleneck, domain experts can directly translate their ideas into working software. A doctor can describe their ideal patient management system in natural language, and Claude builds it. The constraint shifts from 'Do I know how to implement this?' to 'Is this the right solution for the problem?' This democratizes software creation and allows pure creative and strategic thinking to drive development."},
+            {q: "What is 'diff-based reasoning' and why is it more effective than traditional explanations?", a: "Diff-based reasoning shows you the actual changes happening to your system rather than explaining concepts abstractly. Instead of reading 'Git tracks changes over time,' you see the literal before/after state transitions. This mirrors how Claude Code itself thinks - in terms of state changes and deltas. It's more effective because you learn by observing actual system behavior rather than memorizing theoretical concepts."},
+            {q: "How does Claude Code's decision tree simulation help with real-world development choices?", a: "The decision tree teaches you to think like Claude Code does when choosing workflows. It evaluates repository structure, change complexity, team size, and risk tolerance to determine whether to use direct commits, feature branches, or fork-contribute patterns. Understanding this decision process helps you make better strategic choices and communicate more effectively with Claude about your preferred workflows."},
+            {q: "What does 'continuous execution context' mean for learning and development?", a: "Unlike traditional tutorials that end with a summary, Claude Code maintains an operational state where it's always ready for the next command. This reflects the reality of development work - it's not a series of discrete lessons but an ongoing conversation with your development environment. The continuous context helps you think of Claude as a persistent development partner rather than a one-off tool."},
+            {q: "How do the four dimensions of transformation work together in practice?", a: "The dimensions are interconnected: Version Control (intent-based commands) enables Collaboration (outcome-focused reviews), which unleashes Imagination (strategic thinking), which enables exponential Scale (capability multiplication). For example, when you can express complex Git workflows in natural language, your team can focus on business logic rather than technical mechanics, allowing non-technical stakeholders to contribute directly, which multiplies your team's effective capability."},
+            {q: "What is the practical difference between 'deterministic seriousness' and traditional educational approaches?", a: "Deterministic seriousness presents facts neutrally without emotional language or motivational content. Instead of 'Git is amazing and will revolutionize your workflow!', it shows you the actual operational differences between human and Claude Code approaches. This builds epistemic trust - you learn to rely on the system because it only shows you what is demonstrably true, not what someone wants you to believe."},
+            {q: "How does Claude Code handle the complexity of real-world development scenarios?", a: "Claude Code manages complexity through context awareness and systematic decision-making. It analyzes your entire codebase, reads your CLAUDE.md rules, evaluates change impact, and chooses appropriate workflows based on risk assessment. Complex scenarios are broken down into manageable state transitions, each validated before execution. The key is that complexity is handled systematically rather than through human intuition and experience."},
+            {q: "What are the limitations and boundaries of Claude Code's capabilities?", a: "Claude Code operates within defined boundaries: it requires clear instructions, works best with well-structured projects, and needs human oversight for strategic decisions. It cannot make business decisions, resolve complex logical conflicts that require domain expertise, or operate without proper authentication and permissions. Understanding these boundaries helps you use Claude Code effectively as a powerful tool rather than expecting it to replace human judgment entirely."},
+            {q: "How should teams transition from traditional Git workflows to Claude Code workflows?", a: "Transition gradually by starting with low-risk tasks like documentation updates and simple bug fixes. Establish clear CLAUDE.md guidelines that reflect your team's standards. Train team members to think in terms of outcomes rather than commands. Maintain your existing review processes - Claude Code should enhance your workflow, not bypass your quality controls. Most importantly, ensure all team members understand that Claude Code is a tool that amplifies human capability rather than replacing human oversight."},
+            {q: "What makes Claude Code's approach to collaboration fundamentally different from traditional code review?", a: "Traditional code review focuses on syntax, implementation details, and technical correctness. Claude Code shifts collaboration to outcome review - evaluating whether the business logic is correct, the user experience is appropriate, and the strategic decisions are sound. Team members can contribute meaningfully regardless of their coding ability because they're reviewing what the system does rather than how it's implemented. This democratizes the development process and allows domain experts to participate directly in technical decisions."}
+        ];
+
+        // Glossary Data - Claude Code Serious Mode
+        const glossaryDataSerious = [
+            {term: "🤖 Agentic AI", def: "An AI system that can perform multi-step tasks and take autonomous actions to achieve goals, rather than just providing suggestions or completions."},
+            {term: "⚡ State Machine", def: "A computational model that represents different states of a system and the transitions between them. In Git, files transition between untracked, staged, committed, and pushed states."},
+            {term: "🔄 Diff-Based Reasoning", def: "A learning approach that shows understanding through change visualization rather than traditional explanations. Shows before/after states instead of abstract concepts."},
+            {term: "🎯 Intent-Level Programming", def: "Programming at the level of desired outcomes rather than specific implementation commands. Expressing what you want rather than how to achieve it."},
+            {term: "📈 Exponential Scaling", def: "A scaling model where capability increases geometrically rather than arithmetically. One person with AI can achieve what previously required entire teams."},
+            {term: "🧠 Cognitive Load Theory", def: "The theory that human working memory has limited capacity. Claude Code reduces cognitive load by handling mechanical tasks, freeing mental resources for creative work."},
+            {term: "🔍 Context Awareness", def: "The ability of Claude Code to understand project structure, coding standards, and team preferences by analyzing the entire codebase and CLAUDE.md file."},
+            {term: "⚖️ Decision Tree Simulation", def: "A systematic approach to choosing between different workflows (direct commit, branch-PR, fork-contribute) based on risk assessment and project context."},
+            {term: "🔄 Continuous Execution Context", def: "A learning paradigm where the system remains operationally open and ready for the next command, rather than concluding with a summary."},
+            {term: "📋 CLAUDE.md", def: "A special configuration file that provides project-specific guidelines, coding standards, and contextual rules for Claude Code to follow."},
+            {term: "🎨 Imagination Unleashed", def: "The paradigm shift where technical implementation is no longer the bottleneck, allowing pure creative and strategic thinking to drive development."},
+            {term: "🔧 Deterministic Seriousness", def: "A presentation approach that uses neutral, factual language without emotional or motivational content, building trust through demonstrated truth."},
+            {term: "🌊 Workflow Amplification", def: "The process of enhancing existing development workflows rather than replacing them, maintaining quality controls while increasing capability."},
+            {term: "🎭 Paradigm Shift", def: "A fundamental change in approach from command-based to intent-based development, changing how we think about version control and collaboration."},
+            {term: "🔐 Epistemic Trust", def: "Trust built through consistent, factual demonstration rather than persuasion. The system earns trust by showing only what is demonstrably true."}
+        ];
+
+        // State transition mappings
+        const stateTransitions = {
+            untracked: {
+                next: 'staged',
+                command: 'git add',
+                trace: 'Files staged for commit',
+                diff: {
+                    removed: '- working directory: untracked files',
+                    added: '+ staging area: changes ready',
+                    context: '  index updated'
+                }
+            },
+            staged: {
+                next: 'committed',
+                command: 'git commit',
+                trace: 'Commit object created',
+                diff: {
+                    removed: '- staging area: uncommitted changes',
+                    added: '+ repository: new commit object',
+                    context: '  HEAD pointer updated'
+                }
+            },
+            committed: {
+                next: 'pushed',
+                command: 'git push',
+                trace: 'Changes synchronized with remote',
+                diff: {
+                    removed: '- local: ahead of remote',
+                    added: '+ remote: synchronized',
+                    context: '  origin/main updated'
+                }
+            },
+            pushed: {
+                next: 'untracked',
+                command: 'git reset',
+                trace: 'Repository reset to previous state',
+                diff: {
+                    removed: '- remote: synchronized',
+                    added: '+ local: working directory clean',
+                    context: '  ready for new changes'
+                }
+            }
+        };
+
+        // Initialize state display
+        function updateStateDisplay() {
+            const stateNodes = document.querySelectorAll('.state-node');
+            stateNodes.forEach((node, index) => {
+                if (index <= currentState) {
+                    node.classList.remove('inactive');
+                    node.classList.add('active');
+                } else {
+                    node.classList.remove('active');
+                    node.classList.add('inactive');
+                }
+            });
+            
+            // Update console state
+            document.getElementById('console-state').textContent = states[currentState];
+            updateTrace();
+        }
+
+        // Update Claude trace
+        function updateTrace() {
+            const traceElement = document.getElementById('current-trace');
+            const currentStateName = states[currentState];
+            const nextState = currentState < states.length - 1 ? states[currentState + 1] : states[0];
+            
+            traceElement.textContent = `Repository state: ${currentStateName}`;
+            
+            const availableTransitions = document.querySelector('#current-trace').nextElementSibling;
+            availableTransitions.textContent = `Available transitions: ${stateTransitions[currentStateName]?.next || 'reset'}`;
+        }
+
+        // Transition to specific state
+        function transitionTo(targetState) {
+            const targetIndex = states.indexOf(targetState);
+            if (targetIndex !== -1) {
+                currentState = targetIndex;
+                updateStateDisplay();
+                updateDiffDisplay(targetState);
+            }
+        }
+
+        // Simulate transition
+        function simulateTransition(action) {
+            const lastOperation = document.getElementById('last-operation');
+            const conflictProb = document.getElementById('conflict-prob');
+            
+            switch(action) {
+                case 'add':
+                    if (currentState === 0) {
+                        currentState = 1;
+                        lastOperation.textContent = 'git add';
+                        updateDiffDisplay('staging');
+                    }
+                    break;
+                case 'commit':
+                    if (currentState === 1) {
+                        currentState = 2;
+                        lastOperation.textContent = 'git commit';
+                        updateDiffDisplay('committing');
+                    }
+                    break;
+                case 'push':
+                    if (currentState === 2) {
+                        currentState = 3;
+                        lastOperation.textContent = 'git push';
+                        updateDiffDisplay('pushing');
+                        conflictProb.textContent = '0.00';
+                    }
+                    break;
+                case 'reset':
+                    if (currentState > 0) {
+                        currentState = Math.max(0, currentState - 1);
+                        lastOperation.textContent = 'git reset';
+                        updateDiffDisplay('resetting');
+                    }
+                    break;
+            }
+            
+            updateStateDisplay();
+            updateTransitionTrace(action);
+        }
+
+        // Update transition trace
+        function updateTransitionTrace(action) {
+            const transitionTrace = document.getElementById('transition-trace');
+            const currentStateName = states[currentState];
+            
+            transitionTrace.innerHTML = `
+                <div class="trace-header">[Claude Trace]</div>
+                <div class="trace-item">Command executed: ${action}</div>
+                <div class="trace-item">Current state: ${currentStateName}</div>
+                <div class="trace-item">State transition complete</div>
+            `;
+        }
+
+        // Update diff display
+        function updateDiffDisplay(operation) {
+            const diffDisplay = document.getElementById('diff-display');
+            
+            const diffs = {
+                staging: `
+                    <div class="diff-line removed">- working directory: modified files</div>
+                    <div class="diff-line added">+ staging area: changes ready</div>
+                    <div class="diff-line context">  index updated</div>
+                `,
+                committing: `
+                    <div class="diff-line removed">- staging area: uncommitted changes</div>
+                    <div class="diff-line added">+ repository: new commit object</div>
+                    <div class="diff-line context">  HEAD pointer updated</div>
+                `,
+                pushing: `
+                    <div class="diff-line removed">- local: ahead of remote</div>
+                    <div class="diff-line added">+ remote: synchronized</div>
+                    <div class="diff-line context">  origin/main updated</div>
+                `,
+                resetting: `
+                    <div class="diff-line removed">- current state: committed</div>
+                    <div class="diff-line added">+ reverted state: previous</div>
+                    <div class="diff-line context">  working directory preserved</div>
+                `
+            };
+            
+            if (diffs[operation]) {
+                diffDisplay.innerHTML = diffs[operation];
+            }
+        }
+
+        // Decision selection
+        function selectDecision(decision) {
+            // Remove previous selection
+            document.querySelectorAll('.decision-node').forEach(node => {
+                node.classList.remove('selected');
+            });
+            
+            // Add selection to clicked node
+            document.querySelector(`[data-decision="${decision}"]`).classList.add('selected');
+            
+            selectedDecision = decision;
+            
+            // Update decision trace
+            const decisionTrace = document.getElementById('decision-trace');
+            const consequences = {
+                'direct-commit': 'High velocity, increased risk, minimal oversight',
+                'branch-pr': 'Controlled velocity, reduced risk, collaborative review',
+                'fork-contribute': 'External contribution, permission-based, upstream dependency'
+            };
+            
+            decisionTrace.innerHTML = `
+                <div class="trace-header">[Claude Trace]</div>
+                <div class="trace-item">Decision selected: ${decision}</div>
+                <div class="trace-item">Consequence model: ${consequences[decision]}</div>
+                <div class="trace-item">Risk assessment complete</div>
+            `;
+        }
+
+        // Toggle output display
+        function toggleOutput(mode) {
+            // Update toggle buttons
+            document.querySelectorAll('.toggle-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.getElementById(`toggle-${mode}`).classList.add('active');
+        }
+
+        // Explain state function
+        function explainState(stateName) {
+            const stateExplanations = {
+                'untracked': 'Files in this state exist in your working directory but Git is not tracking their changes. They are invisible to version control.',
+                'staged': 'Files in this state are marked for inclusion in the next commit. They are in Git\'s "staging area" or "index".',
+                'committed': 'Files in this state are permanently stored in Git\'s database with a unique identifier (hash).',
+                'pushed': 'Files in this state are synchronized with a remote repository (like GitHub) and available to collaborators.'
+            };
+            
+            alert(`${stateName.toUpperCase()} STATE:\n\n${stateExplanations[stateName]}`);
+        }
+
+        // Quiz functionality
+        function setupQuiz(containerId, quizData) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+
+            let currentQuestion = 0;
+            let selectedAnswer = null;
+
+            function showQuestion() {
+                const question = quizData[currentQuestion];
+                const progressSpan = container.querySelector(`#quiz-progress-${containerId.split('-')[2]}`);
+                const nextBtn = container.querySelector(`#quiz-next-${containerId.split('-')[2]}`);
+                const contentDiv = container.querySelector(`#quiz-content-${containerId.split('-')[2]}`);
+
+                progressSpan.textContent = `Question ${currentQuestion + 1} of ${quizData.length}`;
+                
+                contentDiv.innerHTML = `
+                    <h3>${question.q}</h3>
+                    <div class="quiz-options">
+                        ${question.options.map((option, i) => `
+                            <div class="quiz-option" data-index="${i}">
+                                <label>
+                                    <input type="radio" name="quiz-${containerId}-${currentQuestion}" value="${i}">
+                                    ${option.text}
+                                </label>
+                                <div class="explanation">${option.exp}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+
+                // Add click handlers
+                contentDiv.querySelectorAll('.quiz-option').forEach(option => {
+                    option.addEventListener('click', () => {
+                        const index = parseInt(option.dataset.index);
+                        selectedAnswer = index;
+                        
+                        // Clear previous selections
+                        contentDiv.querySelectorAll('.quiz-option').forEach(opt => {
+                            opt.classList.remove('selected', 'correct', 'wrong');
+                        });
+                        
+                        // Mark selection
+                        option.classList.add('selected');
+                        option.classList.add(index === question.correct ? 'correct' : 'wrong');
+                        
+                        // Check the radio button
+                        option.querySelector('input').checked = true;
+                        
+                        // Enable next button
+                        nextBtn.disabled = false;
+                    });
+                });
+            }
+
+            function nextQuestion() {
+                if (currentQuestion < quizData.length - 1) {
+                    currentQuestion++;
+                    selectedAnswer = null;
+                    const nextBtn = container.querySelector(`#quiz-next-${containerId.split('-')[2]}`);
+                    nextBtn.disabled = true;
+                    showQuestion();
+                } else {
+                    // Quiz complete
+                    const contentDiv = container.querySelector(`#quiz-content-${containerId.split('-')[2]}`);
+                    contentDiv.innerHTML = `
+                        <div style="text-align: center; padding: 2rem;">
+                            <h3>Quiz Complete!</h3>
+                            <p>You've completed the Claude Code mastery assessment.</p>
+                        </div>
+                    `;
+                    const nextBtn = container.querySelector(`#quiz-next-${containerId.split('-')[2]}`);
+                    nextBtn.style.display = 'none';
+                }
+            }
+
+            // Setup event listeners
+            const nextBtn = container.querySelector(`#quiz-next-${containerId.split('-')[2]}`);
+            nextBtn.addEventListener('click', nextQuestion);
+
+            // Show first question
+            showQuestion();
+        }
+
+        // FAQ functionality
+        function setupFAQ(containerId, faqData) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+
+            container.innerHTML = faqData.map((faq, index) => `
+                <div class="accordion-item">
+                    <button class="accordion-header" aria-expanded="false" onclick="toggleFAQ(this)">
+                        <span class="accordion-title">${faq.q}</span>
+                    </button>
+                    <div class="accordion-content">
+                        <p>${faq.a}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function toggleFAQ(header) {
+            const isExpanded = header.getAttribute('aria-expanded') === 'true';
+            const content = header.nextElementSibling;
+            
+            if (isExpanded) {
+                header.setAttribute('aria-expanded', 'false');
+                content.style.maxHeight = '0';
+                content.style.padding = '0 20px';
+            } else {
+                header.setAttribute('aria-expanded', 'true');
+                content.style.maxHeight = content.scrollHeight + 'px';
+                content.style.padding = '20px';
+            }
+        }
+
+        // Glossary functionality
+        function setupGlossary(containerId, glossaryData) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+
+            container.innerHTML = glossaryData.map(item => `
+                <div class="glossary-chip" data-term="${item.term}" data-def="${item.def.replace(/"/g, '&quot;')}">
+                    ${item.term}
+                </div>
+            `).join('');
+
+            // Add tooltip functionality
+            let currentTip = null;
+
+            container.querySelectorAll('.glossary-chip').forEach(chip => {
+                // Handle both mouse and touch events for mobile
+                const showTooltip = (e) => {
+                    const rect = chip.getBoundingClientRect();
+                    const def = chip.dataset.def;
+                    
+                    // Remove existing tooltip
+                    if (currentTip) {
+                        currentTip.remove();
+                    }
+                    
+                    // Create new tooltip
+                    currentTip = document.createElement('div');
+                    currentTip.className = 'chip-tip show';
+                    currentTip.textContent = def;
+                    
+                    document.body.appendChild(currentTip);
+                    
+                    // Better positioning logic for mobile
+                    const tipRect = currentTip.getBoundingClientRect();
+                    const viewportWidth = window.innerWidth;
+                    const viewportHeight = window.innerHeight;
+                    
+                    let left = rect.left + (rect.width / 2) - (tipRect.width / 2);
+                    let top = rect.top - tipRect.height - 10;
+                    
+                    // Adjust for viewport boundaries
+                    if (left < 10) left = 10;
+                    if (left + tipRect.width > viewportWidth - 10) {
+                        left = viewportWidth - tipRect.width - 10;
+                    }
+                    
+                    // If tooltip would go above viewport, show below
+                    if (top < 10) {
+                        top = rect.bottom + 10;
+                    }
+                    
+                    currentTip.style.left = left + 'px';
+                    currentTip.style.top = top + 'px';
+                };
+
+                const hideTooltip = () => {
+                    if (currentTip) {
+                        currentTip.classList.remove('show');
+                        setTimeout(() => {
+                            if (currentTip) {
+                                currentTip.remove();
+                                currentTip = null;
+                            }
+                        }, 150);
+                    }
+                };
+
+                // Mouse events for desktop
+                chip.addEventListener('mouseenter', showTooltip);
+                chip.addEventListener('mouseleave', hideTooltip);
+                
+                // Touch events for mobile
+                chip.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    showTooltip(e);
+                });
+                
+                // Hide tooltip when touching elsewhere
+                document.addEventListener('touchstart', (e) => {
+                    if (!chip.contains(e.target) && currentTip) {
+                        hideTooltip();
+                    }
+                });
+            });
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateStateDisplay();
+            
+            // Setup quiz, FAQ, and glossary
+            setupQuiz('quiz-container-serious', quizDataSerious);
+            setupFAQ('faq-accordion-serious', faqDataSerious);
+            setupGlossary('glossary-cloud-serious', glossaryDataSerious);
+            
+            // Simulate continuous execution
+            setInterval(() => {
+                const conflictProb = document.getElementById('conflict-prob');
+                const currentProb = parseFloat(conflictProb.textContent);
+                const newProb = Math.max(0, currentProb + (Math.random() - 0.5) * 0.01);
+                conflictProb.textContent = newProb.toFixed(2);
+            }, 5000);
+        });
+    </script>
+</body>
+</html>
