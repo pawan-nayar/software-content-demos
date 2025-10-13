@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Audio Slideshow Case Study: Which Claude Tool? | Developer Economics [v2.2-FIXED]</title>
+  <meta name="description" content="Interactive case study: You're adding a 26-slide audio-narrated slideshow to your docs. Which Claude tool should you use? Walk through the real decision process.">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --text:#212529; --bg:#fff; --muted:#f8f9fa; --border:#e9ecef;
+      --accent:#fd7e14; --accent-2:#e87312; --header-bg:#212529; --header-fg:#f8f9fa;
+      --ok:#16a34a; --ok-soft:#dcfce7; --bad:#dc2626; --bad-soft:#fee2e2;
+      --warning:#eab308; --warning-soft:#fef3c7;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;scroll-behavior:smooth}
+    .container{max-width:980px;margin:auto;padding:14px;background:#fff}
+    a{color:var(--accent);text-decoration:none}
+    a:hover{text-decoration:underline}
+
+    .site-header{background:var(--header-bg);color:var(--header-fg);padding:16px 20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;position:sticky;top:0;z-index:100;transition:all .2s ease}
+    .site-header.shrink{padding:6px 16px;box-shadow:0 2px 10px rgba(0,0,0,0.15)}
+    .logo{font-weight:700;font-size:1.15rem;color:#fff;text-decoration:none;transition:font-size .2s ease}
+    .site-header.shrink .logo{font-size:1rem}
+    .site-header nav{display:flex;align-items:center;gap:20px}
+    .site-header nav a{color:#ced4da;text-decoration:none;padding:10px 14px;border-radius:6px;transition:all 0.2s ease}
+    .site-header.shrink nav a{padding:6px 10px}
+    .site-header nav a:hover{color:#fff;background:rgba(255,255,255,0.1)}
+
+    .site-footer{background:var(--header-bg);color:var(--header-fg);text-align:center;margin-top:50px;padding:40px}
+
+    section[id]{scroll-margin-top:80px}
+    .breadcrumbs{margin-bottom:24px;font-size:0.9rem;color:#6c757d}
+    .breadcrumbs a{color:var(--accent)}
+
+    h1{font-size:clamp(1.8rem,4.5vw,2.2rem);margin-bottom:6px;color:var(--text);line-height:1.15}
+    .byline{font-size:clamp(0.95rem,2.8vw,1.05rem);font-style:italic;color:#6c757d;margin-bottom:16px}
+    h2{font-size:clamp(1.35rem,3.6vw,1.75rem);color:var(--text);margin:24px 0 10px;border-bottom:2px solid var(--border);padding-bottom:5px}
+    h3{font-size:clamp(1.05rem,2.8vw,1.3rem);color:var(--text);margin-top:20px;margin-bottom:10px}
+    p{margin-bottom:12px}
+
+    .article-meta{display:flex;align-items:center;gap:12px;color:#6c757d;margin-bottom:32px;font-size:0.95rem}
+    .author-emoji{font-size:32px;line-height:1}
+    .intro{font-size:1rem;line-height:1.6;background:var(--muted);padding:14px;border-radius:12px;border-left:3px solid var(--accent);margin:14px 0}
+    
+    .hero{text-align:center;padding:8px 0 14px}
+    
+    .btn{background:var(--accent);color:#fff;border:none;padding:14px 28px;border-radius:10px;font-weight:700;cursor:pointer;transition:all 0.2s ease;font-size:1.05rem;display:inline-block}
+    .btn:hover{background-color:var(--accent-2);text-decoration:none;transform:translateY(-2px)}
+
+    .audio-tour{background:linear-gradient(135deg,#fff7ed 0%,#ffedd5 100%);border:2px solid var(--accent);border-radius:14px;padding:18px;margin:18px 0}
+    .tour-header{text-align:center;margin-bottom:18px}
+    .tour-header h2{border:none;margin:0 0 6px 0;font-size:1.6rem}
+    .tour-controls{background:#fff;border-radius:10px;padding:10px;margin-bottom:14px;box-shadow:0 3px 10px rgba(0,0,0,0.06)}
+    .control-row{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
+    .play-controls{display:flex;gap:10px;align-items:center}
+    .control-btn{width:38px;height:38px;border-radius:50%;border:none;background:var(--accent);color:#fff;font-size:1.1rem;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center}
+    .control-btn:hover{background:var(--accent-2);transform:scale(1.06)}
+    .slide-counter{font-size:0.95rem;font-weight:600;color:var(--text)}
+    .speed-select{padding:6px 10px;border-radius:8px;border:1px solid var(--border);font-size:0.9rem;cursor:pointer}
+
+    .slide-display{background:#fff;border-radius:14px;padding:22px 40px 16px;min-height:260px;box-shadow:0 8px 24px rgba(0,0,0,0.08);position:relative;text-align:center}
+    .slide-emoji{font-size:2.2rem;margin-bottom:8px;display:block}
+    .slide-title{font-size:1.45rem;color:var(--text);margin-bottom:8px;font-weight:700}
+    .slide-desc{font-size:0.98rem;color:#6c757d;margin-bottom:12px;line-height:1.45}
+    .slide-example{background:var(--muted);padding:10px;border-radius:10px;border-left:3px solid var(--accent);font-size:0.95rem;margin:12px auto;max-width:600px;text-align:left}
+    .slide-script{background:#f8f9fa;padding:10px;border-radius:10px;margin-top:12px;text-align:left;max-width:680px;margin-left:auto;margin-right:auto;font-size:0.9rem;line-height:1.45;color:#495057}
+
+    .nav-arrows{position:absolute;top:50%;left:0;right:0;transform:translateY(-50%);display:flex;justify-content:space-between;padding:0 14px;pointer-events:none}
+    .nav-arrow{width:36px;height:36px;border-radius:50%;background:var(--accent);color:#fff;border:none;font-size:1.2rem;cursor:pointer;pointer-events:all;transition:all 0.2s;display:flex;align-items:center;justify-content:center}
+    .nav-arrow:hover{background:var(--accent-2);transform:scale(1.1)}
+    .nav-arrow:disabled{opacity:0.3;cursor:not-allowed}
+
+    .slide-nav-dots{display:flex;justify-content:center;gap:6px;margin-top:10px;flex-wrap:wrap}
+    .nav-dot{width:10px;height:10px;border-radius:50%;background:#ddd;cursor:pointer;transition:all 0.3s;border:none;padding:0}
+    .nav-dot.active{background:var(--accent);transform:scale(1.4)}
+    .nav-dot:hover{background:var(--accent-2)}
+
+    .decision-tools{margin-top:24px}
+    .tool-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-top:12px}
+    .tool-card{background:#fff;border:2px solid var(--border);border-radius:10px;padding:16px;text-align:center;transition:all 0.3s}
+    .tool-card:hover{border-color:var(--accent);transform:translateY(-3px);box-shadow:0 6px 16px rgba(253,126,20,0.12)}
+    .tool-icon{font-size:2.2rem;margin-bottom:10px;display:block}
+    .tool-card h3{margin-bottom:8px}
+    .tool-card p{color:#6c757d;margin-bottom:12px}
+    .tool-card .btn{width:100%}
+
+    .pricing-note{background:var(--warning-soft);border:2px solid var(--warning);border-radius:10px;padding:15px;margin-top:30px;text-align:center}
+    .pricing-note strong{color:var(--warning);font-size:0.9rem}
+
+    .faq-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-top:20px}
+    .faq-item{background:#fff;border:2px solid var(--border);border-radius:10px;padding:20px;transition:all 0.3s}
+    .faq-item:hover{border-color:var(--accent);box-shadow:0 4px 12px rgba(253,126,20,0.1)}
+    .faq-item h3{font-size:1.1rem;margin-bottom:12px;color:var(--text);border:none}
+    .faq-item p{font-size:0.95rem;line-height:1.5;margin-bottom:8px}
+    .faq-item p:last-child{margin-bottom:0}
+    .faq-item strong{color:var(--accent)}
+
+    .decision-tree-container{background:#fff;border:2px solid var(--border);border-radius:14px;padding:30px;margin-top:20px}
+    .tree-node{display:none;text-align:center}
+    .tree-node.active{display:block}
+    .tree-node h3{font-size:1.4rem;margin-bottom:20px;color:var(--text)}
+    .tree-choices{display:flex;flex-direction:column;gap:12px;max-width:500px;margin:0 auto}
+    .tree-btn{background:var(--accent);color:#fff;border:none;padding:16px 24px;border-radius:10px;font-size:1rem;font-weight:600;cursor:pointer;transition:all 0.2s;text-align:left}
+    .tree-btn:hover{background:var(--accent-2);transform:translateY(-2px)}
+    .tree-result{background:linear-gradient(135deg,#fff7ed 0%,#ffedd5 100%);border-radius:12px;padding:30px;margin-top:10px}
+    .result-icon{font-size:4rem;margin-bottom:16px}
+    .tree-result h3{font-size:1.8rem;margin-bottom:12px}
+    .tree-result p{font-size:1rem;margin-bottom:10px;text-align:center}
+    .tree-btn-reset{background:var(--header-bg);color:#fff;border:none;padding:12px 24px;border-radius:8px;font-size:0.95rem;cursor:pointer;margin-top:20px;transition:all 0.2s}
+    .tree-btn-reset:hover{background:#343a40}
+
+    .calculator-container{display:grid;grid-template-columns:1fr 1fr;gap:30px;margin-top:20px}
+    .calc-inputs{background:#fff;border:2px solid var(--border);border-radius:14px;padding:30px}
+    .calc-row{margin-bottom:20px}
+    .calc-row label{display:block;font-weight:600;margin-bottom:8px;color:var(--text)}
+    .calc-row input{width:100%;padding:12px;border:2px solid var(--border);border-radius:8px;font-size:1rem;transition:all 0.2s}
+    .calc-row input:focus{outline:none;border-color:var(--accent)}
+    .calc-row select{width:100%;padding:12px;border:2px solid var(--border);border-radius:8px;font-size:1rem;cursor:pointer}
+    .calc-explanation{background:var(--muted);border-left:3px solid var(--accent);padding:16px;border-radius:8px;margin-top:24px}
+    .calc-explanation strong{display:block;margin-bottom:8px;color:var(--text)}
+    .calc-explanation p{margin:4px 0;font-size:0.9rem;color:#6c757d}
+    .calc-meta-note{background:linear-gradient(135deg,#fff7ed 0%,#ffedd5 100%);border:2px solid var(--accent);border-radius:10px;padding:14px;margin:16px 0;font-size:0.95rem;line-height:1.5}
+    .calc-meta-note strong{color:var(--accent)}
+    .calc-meta-note em{color:#6c757d;font-style:italic}
+    .calc-results{background:#fff;border:2px solid var(--border);border-radius:14px;padding:30px}
+    .calc-results h3{margin-bottom:20px;text-align:center}
+    .ai-cost-summary{background:linear-gradient(135deg,#fff7ed 0%,#ffedd5 100%);border:2px solid var(--accent);border-radius:12px;padding:20px;display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:30px}
+    .ai-metric{text-align:center}
+    .metric-label{display:block;font-size:0.9rem;color:#6c757d;margin-bottom:6px}
+    .metric-value{display:block;font-size:1.5rem;font-weight:700;color:var(--text)}
+    .metric-value.highlight{color:var(--accent);font-size:1.8rem}
+    .calc-result-grid{display:grid;gap:16px;margin-bottom:24px}
+    .calc-card{background:var(--muted);border-left:4px solid var(--accent);padding:16px;border-radius:8px}
+    .calc-tool-name{font-weight:700;font-size:1.1rem;margin-bottom:8px}
+    .calc-cost{font-size:2rem;font-weight:700;color:var(--accent);margin-bottom:6px}
+    .calc-breakdown{font-size:0.9rem;color:#495057;margin-bottom:4px;font-weight:600}
+    .calc-ai-cost{font-size:0.85rem;color:#6c757d;margin-bottom:6px}
+    .calc-note{font-size:0.85rem;color:#6c757d;font-style:italic}
+    .calc-recommendation{background:var(--ok-soft);border:2px solid var(--ok);border-radius:10px;padding:16px;text-align:center}
+    .calc-recommendation strong{color:var(--ok)}
+
+    .business-case-content{margin-top:20px}
+    .case-section{background:#fff;border:2px solid var(--border);border-radius:12px;padding:24px;margin-bottom:20px}
+    .case-section.critical{background:var(--warning-soft);border-color:var(--warning);border-width:3px}
+    .case-section.critical h3{color:var(--warning)}
+    .case-section h3{color:var(--accent);margin-bottom:16px;border:none;font-size:1.3rem}
+    .case-section p{margin-bottom:14px;line-height:1.6}
+    .case-section ul{margin-left:24px;margin-bottom:14px}
+    .case-section li{margin-bottom:8px;line-height:1.6}
+    .case-section strong{color:var(--text)}
+
+    @media(max-width:768px){
+      .audio-tour{padding:14px}
+      .slide-display{padding:16px 12px 12px;min-height:260px}
+      .control-row{flex-direction:column;gap:12px}
+      .nav-arrows{position:static;transform:none;padding:0;margin-top:6px;justify-content:space-between}
+      .nav-arrow{width:34px;height:34px;font-size:1.05rem}
+      .faq-grid{grid-template-columns:1fr}
+      .calculator-container{grid-template-columns:1fr}
+      .tree-choices{max-width:100%}
+      .tree-btn{font-size:0.95rem;padding:14px 18px}
+      .ai-cost-summary{grid-template-columns:1fr;gap:12px}
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <a href="index.html" class="logo">Claude Economics</a>
+    <nav>
+      <a href="#audio-tour">Case Study</a>
+      <a href="#tools">Tools Comparison</a>
+      <a href="#real-learnings">Real Learnings</a>
+      <a href="#decision-tree">Decision Tree</a>
+      <a href="#roi-calculator">ROI Calculator</a>
+      <a href="#business-case">Business Case</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <nav class="breadcrumbs">
+      <a href="../index.html">← Back to Main Guide</a> &gt; Case Study
+    </nav>
+
+    <section class="hero">
+      <h1>The Audio Slideshow Case Study</h1>
+      <p class="byline">You need to add a 26-slide audio-narrated slideshow to your documentation. Which Claude tool should you use?</p>
+      
+      <div class="article-meta">
+        <span class="author-emoji">🎬</span>
+        <span>Real Development Scenario • Updated October 2025</span>
+      </div>
+    </section>
+
+    <p class="intro">
+      <strong>The Scenario:</strong> You're enhancing a technical documentation site with an interactive audio-narrated slideshow—26 slides with synchronized content, browser TTS integration, ~500 lines of code. You'll iterate 2-3 times to get it right. <strong>This case study walks you through the actual decision process, slide by slide, showing real costs and trade-offs.</strong> <em>Total build time: 7 hours (6 for core features + 1 for the ROI calculator you'll use below).</em>
+    </p>
+
+    <section id="audio-tour" class="audio-tour">
+      <div class="tour-header">
+        <h2>🎧 Interactive Audio Tour</h2>
+        <p>Experience the actual slideshow you'd be building—with working audio narration in multiple languages</p>
+      </div>
+
+      <div class="tour-controls">
+        <div class="control-row">
+          <div class="play-controls">
+            <button class="control-btn" id="play-btn" onclick="toggleAudio()">▶️</button>
+            <select class="speed-select" id="speed-select" onchange="changeSpeed()">
+              <option value="0.75">0.75x</option>
+              <option value="1" selected>1.0x</option>
+              <option value="1.25">1.25x</option>
+              <option value="1.5">1.5x</option>
+            </select>
+            <select id="locale-select" class="speed-select" onchange="changeLocale()">
+              <option value="en">🇺🇸 EN</option>
+              <option value="pt">🇧🇷 PT</option>
+              <option value="hi">🇮🇳 HI</option>
+              <option value="es">🇪🇸 ES</option>
+              <option value="zh">🇨🇳 ZH</option>
+            </select>
+          </div>
+          <div class="slide-counter">
+            Slide <span id="current-slide">1</span> of <span id="total-slides">26</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-display">
+        <div id="slide-content">
+          <!-- Populated by JavaScript -->
+        </div>
+        <div class="nav-arrows">
+          <button class="nav-arrow" id="prev-btn" onclick="prevSlide()">‹</button>
+          <button class="nav-arrow" id="next-btn" onclick="nextSlide()">›</button>
+        </div>
+      </div>
+
+      <div class="slide-nav-dots" id="slide-dots">
+        <!-- Populated by JavaScript -->
+      </div>
+    </section>
+
+    <section id="tools" class="decision-tools">
+      <h2>💼 Now You Decide: Which Tool for This Project?</h2>
+      <p>Based on what you just experienced, here's how each Claude tool handles this exact scenario:</p>
+
+      <div class="tool-grid">
+        <div class="tool-card">
+          <span class="tool-icon">💬</span>
+          <h3>Claude Pro</h3>
+          <p><strong>$20/month</strong> subscription</p>
+          <p><strong>Reality:</strong> Message limits exist (varies by tier). Context loss can happen on long projects. Hit limits 3x during this build.</p>
+          <p><strong>Time:</strong> Promised 2.5hrs, actually took 7hrs (including calculator)</p>
+          <a href="#" class="btn">Best for Exploration</a>
+        </div>
+
+        <div class="tool-card">
+          <span class="tool-icon">⚡</span>
+          <h3>Claude Code</h3>
+          <p><strong>~$0.92</strong> for this specific project</p>
+          <p><strong>Reality:</strong> Direct file editing saves huge time. No copy-paste errors. Works best when you know what you want.</p>
+          <p><strong>Time:</strong> ~1.5 hours for implementation</p>
+          <a href="#" class="btn">Best for Efficiency</a>
+        </div>
+
+        <div class="tool-card">
+          <span class="tool-icon">🔧</span>
+          <h3>Claude API</h3>
+          <p><strong>~$0.92</strong> for this specific project</p>
+          <p><strong>Reality:</strong> Requires setup and programming skills. Best for automation and scale. One-time cost vs monthly.</p>
+          <p><strong>Time:</strong> ~1 hour if infrastructure exists</p>
+          <a href="#" class="btn">Best for Speed</a>
+        </div>
+      </div>
+
+      <div class="pricing-note">
+        <strong>⚠️ Honest Comparison:</strong> Pro's $20/month covers ALL your work that month (with limits). Code/API's $0.92 is ONLY this project. They're not directly comparable—monthly subscription vs per-project cost. Pro for exploration, Code/Cursor for implementation, API for scale.
+      </div>
+    </section>
+
+    <section id="real-learnings" class="decision-tools">
+      <h2>🎓 What We Actually Learned Building This</h2>
+      <p>Real insights from 7 hours of productive development with Claude (6 core + 1 calculator debugging). The truth about what works, what doesn't, and why you'd still use it:</p>
+
+      <div class="faq-grid">
+        <div class="faq-item">
+          <h3>✨ Why This Actually Works</h3>
+          <p><strong>The Reality:</strong> Despite bumps, Claude helped plan, iterate through 20+ file versions, and solve complex problems you wouldn't tackle alone.</p>
+          <p><strong>The Value:</strong> Having a thinking partner for architecture, logic, and rapid prototyping is worth the friction.</p>
+        </div>
+
+        <div class="faq-item">
+          <h3>🔄 Context Management is Key</h3>
+          <p><strong>What Happened:</strong> Hit context limits 3 times during long sessions.</p>
+          <p><strong>The Lesson:</strong> Keep your own notes. Break big projects into phases. Context limits aren't bugs—they're reminders to organize your thinking.</p>
+        </div>
+
+        <div class="faq-item">
+          <h3>⏰ Time Reality vs Estimates</h3>
+          <p><strong>Estimated:</strong> 2.5 hours<br><strong>Actual:</strong> 7 hours with iterations, refinements, learning, debugging</p>
+          <p><strong>The Truth:</strong> Extra time was exploration, improvement, and making it better (including the ROI calculator). Not wasted—invested in understanding.</p>
+        </div>
+
+        <div class="faq-item">
+          <h3>🎪 Phase-Based Selection Wins</h3>
+          <p><strong>Best Practice:</strong> Pro for exploration → Code/Cursor for implementation → API for automation</p>
+          <p><strong>Why It Works:</strong> Each tool excels at different phases. Pro's conversation style is perfect for figuring out what you want.</p>
+        </div>
+
+        <div class="faq-item">
+          <h3>📏 Project Size Sweet Spots</h3>
+          <p><strong>Small (1-6hr):</strong> Pro shines for exploration and iteration<br><strong>Medium (7-20hr):</strong> This project—combination of tools works well<br><strong>Large (100hr):</strong> Must combine multiple tools strategically</p>
+          <p><strong>This Project:</strong> 7 hours total (planning, cycles, improvements, debugging across 20+ file versions). Pro was the right choice for the exploration phase.</p>
+        </div>
+
+        <div class="faq-item">
+          <h3>💪 AI Strengths: Partner, Not Replacement</h3>
+          <p><strong>Excellent:</strong> Math, logic, data processing, code generation, brainstorming<br><strong>Needs Guidance:</strong> Visual design, novel architectures, aesthetics</p>
+          <p><strong>Strategy:</strong> You provide vision and references, Claude handles implementation and iteration.</p>
+        </div>
+
+        <div class="faq-item">
+          <h3>🔁 Iteration is the Superpower</h3>
+          <p><strong>Observation:</strong> Sometimes needed 3-5 reminders to perfect a pattern</p>
+          <p><strong>Why That's Good:</strong> Each iteration improved the design. The ability to iterate freely (Pro) or cheaply (API) is the real value.</p>
+        </div>
+
+        <div class="faq-item">
+          <h3>💎 Message Limits Are Real</h3>
+          <p><strong>Reality:</strong> Even Pro has limits (varies by tier). Not truly "unlimited"</p>
+          <p><strong>The Truth:</strong> Limits encourage focused work. Higher tiers give more capacity. Plan accordingly.</p>
+        </div>
+
+        <div class="faq-item">
+          <h3>🎯 Your Time is the Real Cost</h3>
+          <p><strong>The Math:</strong> (Your hourly rate × hours) + tool cost = true project cost</p>
+          <p><strong>Insight:</strong> Claude saved hours of searching docs, debugging syntax, and trial-and-error. Worth it.</p>
+        </div>
+
+        <div class="faq-item">
+          <h3>🚀 When Code/Cursor Wins</h3>
+          <p><strong>Best For:</strong> Implementation when requirements are clear. File editing 5x faster than copy-paste.</p>
+          <p><strong>Perfect Combo:</strong> Explore in Pro, implement in Code/Cursor. Best of both worlds.</p>
+        </div>
+
+        <div class="faq-item">
+          <h3>🤖 When API Wins</h3>
+          <p><strong>Best For:</strong> Automation, scale, repetitive tasks<br><strong>Example:</strong> Generate 1,000 variations programmatically</p>
+          <p><strong>Threshold:</strong> If doing it 10+ times, automate it with API.</p>
+        </div>
+
+        <div class="faq-item">
+          <h3>📊 The Real Breakeven Math</h3>
+          <p><strong>Simple Math:</strong> Pro ($20/month) vs API ($0.92/project) = ~22 projects</p>
+          <p><strong>Real Math:</strong> Include your time saved, learning value, and iteration freedom. Pro wins for exploration.</p>
+        </div>
+
+        <div class="faq-item">
+          <h3>🎨 Pattern Library Strategy</h3>
+          <p><strong>Fresh Code:</strong> Takes longer, needs more guidance<br><strong>Familiar Patterns:</strong> Claude excels, very fast</p>
+          <p><strong>Strategy:</strong> Build reusable patterns. Reference previous work. Speed compounds over time.</p>
+        </div>
+
+        <div class="faq-item">
+          <h3>🔮 Future-Proofing</h3>
+          <p><strong>As Models Improve:</strong> Everything gets faster and cheaper<br><strong>Skills That Transfer:</strong> Prompt engineering, architecture thinking, iteration strategy</p>
+          <p><strong>Investment:</strong> Learning to work with AI tools pays dividends as they improve.</p>
+        </div>
+
+        <div class="faq-item">
+          <h3>💡 The Meta Truth</h3>
+          <p><strong>This Very Project:</strong> Built collaboratively over 6 hours with planning, cycles, improvements</p>
+          <p><strong>Proof:</strong> You'd use Claude again for complex projects because the partnership works, even with friction.</p>
+        </div>
+
+        <div class="faq-item">
+          <h3>⚡ Multiplexing for Speed</h3>
+          <p><strong>The Strategy:</strong> Work in VS Code/Cursor simultaneously while using Claude Pro for planning</p>
+          <p><strong>Reality:</strong> With proper planning and parallel work, you can reduce 6 hours to 3-4 hours. Claude generates, you implement in real-time.</p>
+        </div>
+
+        <div class="faq-item">
+          <h3>🎨 Experience + Logic = The Real Test</h3>
+          <p><strong>Math & Code:</strong> Claude is blazingly fast—algorithms, data structures, logic work in seconds</p>
+          <p><strong>Experience & Layout:</strong> The real time sink. Getting visual design, spacing, user experience right requires iteration and human judgment.</p>
+          <p><strong>Truth:</strong> Code is 20% of the work. Making it feel right is 80%.</p>
+        </div>
+
+        <div class="faq-item">
+          <h3>🔄 Real-Time Changes for Perfection</h3>
+          <p><strong>When Layout Matters:</strong> You want everything to come together perfectly—spacing, colors, animations, flow</p>
+          <p><strong>The Process:</strong> Live preview while Claude suggests, you tweak, instant feedback loop. This is where Claude + your taste creates magic.</p>
+          <p><strong>Why It Works:</strong> Claude handles tedious code changes, you focus on aesthetic decisions.</p>
+        </div>
+
+        <div class="faq-item">
+          <h3>✅ Action Steps</h3>
+          <p><strong>Your Homework:</strong> Take a project. Try Pro for exploration, Code for implementation. Experience it yourself.</p>
+          <p><strong>Why:</strong> Direct experience beats any guide. You'll discover your own workflow preferences.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="decision-tree" class="decision-tools">
+      <h2>🌳 Interactive Decision Tree</h2>
+      <p>Answer a few questions to find the best Claude tool for your project:</p>
+      
+      <div class="decision-tree-container">
+        <div class="tree-node active" id="node-start">
+          <h3>Do you know exactly what you want to build?</h3>
+          <div class="tree-choices">
+            <button class="tree-btn" onclick="navigateTree('node-clear')">✅ Yes, crystal clear requirements</button>
+            <button class="tree-btn" onclick="navigateTree('node-exploring')">🤔 No, still exploring and learning</button>
+          </div>
+        </div>
+
+        <div class="tree-node" id="node-exploring">
+          <h3>How much iteration do you expect?</h3>
+          <div class="tree-choices">
+            <button class="tree-btn" onclick="navigateTree('result-pro')">🔄 Lots - trying different approaches</button>
+            <button class="tree-btn" onclick="navigateTree('node-clear')">📋 Some - refining a clear concept</button>
+          </div>
+        </div>
+
+        <div class="tree-node" id="node-clear">
+          <h3>How many similar projects will you build?</h3>
+          <div class="tree-choices">
+            <button class="tree-btn" onclick="navigateTree('result-code')">1️⃣ Just this one project</button>
+            <button class="tree-btn" onclick="navigateTree('node-scale')">🔁 Multiple similar projects (3-10)</button>
+            <button class="tree-btn" onclick="navigateTree('result-api')">♾️ Many variations (10+) - need automation</button>
+          </div>
+        </div>
+
+        <div class="tree-node" id="node-scale">
+          <h3>Do you have API integration experience?</h3>
+          <div class="tree-choices">
+            <button class="tree-btn" onclick="navigateTree('result-api')">💻 Yes, comfortable with APIs</button>
+            <button class="tree-btn" onclick="navigateTree('result-code')">🎓 No, prefer VS Code extension</button>
+          </div>
+        </div>
+
+        <div class="tree-node tree-result" id="result-pro">
+          <div class="result-icon">💬</div>
+          <h3>Use Claude Pro</h3>
+          <p><strong>Best for:</strong> Exploration, learning, heavy iteration</p>
+          <p><strong>Cost:</strong> $20/month (covers all your work)</p>
+          <p><strong>Why:</strong> You need the freedom to experiment without counting iterations. The conversation style helps you think through complex problems.</p>
+          <button class="tree-btn-reset" onclick="resetTree()">🔄 Start Over</button>
+        </div>
+
+        <div class="tree-node tree-result" id="result-code">
+          <div class="result-icon">⚡</div>
+          <h3>Use Claude Code</h3>
+          <p><strong>Best for:</strong> Implementation with clear requirements</p>
+          <p><strong>Cost:</strong> ~$0.92 for a project like this</p>
+          <p><strong>Why:</strong> Direct file editing is 5x faster than copy-paste. Pay only for what you use. Perfect for 1-10 similar projects.</p>
+          <button class="tree-btn-reset" onclick="resetTree()">🔄 Start Over</button>
+        </div>
+
+        <div class="tree-node tree-result" id="result-api">
+          <div class="result-icon">🔧</div>
+          <h3>Use Claude API</h3>
+          <p><strong>Best for:</strong> Automation, scale, programmatic generation</p>
+          <p><strong>Cost:</strong> Same as Code (~$0.92/project), but scales infinitely</p>
+          <p><strong>Why:</strong> When you're generating 10+ variations or need full programmatic control, the API is the only sane choice. Automate and never touch it manually again.</p>
+          <button class="tree-btn-reset" onclick="resetTree()">🔄 Start Over</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="roi-calculator" class="decision-tools">
+      <h2>💰 AI Cost Calculator</h2>
+      <p>Calculate AI code costs based on your project parameters</p>
+
+      <div class="calc-meta-note">
+        <strong>📝 Meta Note:</strong> Building and debugging this calculator added 1 hour to the case study project. That's the reality of software development—features always take longer than estimated. But now you have a reusable tool that helps make informed decisions. <em>The time invested compounds.</em>
+      </div>
+
+      <div class="calculator-container">
+        <div class="calc-inputs">
+          <div class="calc-row">
+            <label for="lines-of-code">Estimated Lines of Code</label>
+            <input type="number" id="lines-of-code" value="500" min="10" step="50" oninput="calculateROI()">
+          </div>
+
+          <div class="calc-row">
+            <label for="complexity">Code Complexity</label>
+            <select id="complexity" onchange="calculateROI()">
+              <option value="1">Simple (HTML/CSS/basic JS)</option>
+              <option value="1.5" selected>Medium (Interactive features)</option>
+              <option value="2.5">Complex (Algorithms, data processing)</option>
+            </select>
+          </div>
+
+          <div class="calc-row">
+            <label for="iterations">Expected Iterations</label>
+            <input type="number" id="iterations" value="3" min="1" max="20" oninput="calculateROI()">
+          </div>
+
+          <div class="calc-row">
+            <label for="similar-projects">Similar Projects This Month</label>
+            <input type="number" id="similar-projects" value="1" min="1" max="50" oninput="calculateROI()">
+          </div>
+
+          <div class="calc-explanation">
+            <strong>💡 How This Works:</strong>
+            <p><strong>AI cost:</strong> Based on tokens (code lines × complexity × iterations).</p>
+            <p><strong>Tokens:</strong> Estimated based on project complexity and iteration count.</p>
+            <p><strong>Per-project vs monthly:</strong> Code/API charge per project, Pro is a monthly subscription.</p>
+          </div>
+        </div>
+
+        <div class="calc-results" id="calc-results">
+          <h3>AI Cost Summary:</h3>
+          <div class="ai-cost-summary" id="ai-summary">
+            <div class="ai-metric">
+              <span class="metric-label">Total Tokens:</span>
+              <span class="metric-value" id="total-tokens">120k</span>
+            </div>
+            <div class="ai-metric">
+              <span class="metric-label">Cost Per Project:</span>
+              <span class="metric-value" id="cost-per-project">$0.36</span>
+            </div>
+            <div class="ai-metric">
+              <span class="metric-label">Total AI Cost:</span>
+              <span class="metric-value highlight" id="total-ai-cost">$0.36</span>
+            </div>
+          </div>
+
+          <h3 style="margin-top:30px">Tool Costs Comparison:</h3>
+          <div class="calc-result-grid">
+            <div class="calc-card">
+              <div class="calc-tool-name">💬 Claude Pro</div>
+              <div class="calc-cost" id="pro-cost">$20</div>
+              <div class="calc-breakdown" id="pro-breakdown">
+                Monthly subscription
+              </div>
+              <div class="calc-ai-cost" id="pro-ai">AI: Unlimited usage (within limits)</div>
+              <div class="calc-note" id="pro-note">Covers all projects this month</div>
+            </div>
+
+            <div class="calc-card">
+              <div class="calc-tool-name">⚡ Claude Code</div>
+              <div class="calc-cost" id="code-cost">$0.92</div>
+              <div class="calc-breakdown" id="code-breakdown">
+                Pay-per-use AI cost
+              </div>
+              <div class="calc-ai-cost" id="code-ai">Based on tokens used</div>
+              <div class="calc-note" id="code-note">Direct editing, pay per project</div>
+            </div>
+
+            <div class="calc-card">
+              <div class="calc-tool-name">🔧 Claude API</div>
+              <div class="calc-cost" id="api-cost">$0.92</div>
+              <div class="calc-breakdown" id="api-breakdown">
+                Pay-per-use AI cost
+              </div>
+              <div class="calc-ai-cost" id="api-ai">Based on tokens used</div>
+              <div class="calc-note" id="api-note">Same token cost as Code</div>
+            </div>
+          </div>
+
+          <div class="calc-recommendation" id="recommendation">
+            <strong>💡 Recommendation:</strong> <span id="rec-text">Calculating...</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="business-case" class="decision-tools">
+      <h2>💼 Making the Business Case at Your Firm</h2>
+      <p><em>You're a developer who hasn't worked with Anthropic. Based on this case study, here's how to pitch Claude to your management:</em></p>
+
+      <div class="business-case-content">
+        <div class="case-section critical">
+          <h3>⚠️ The Critical Assumption This Case Study Makes</h3>
+          <p><strong>I (the author) had massive advantages you won't have on day one:</strong></p>
+          <ul>
+            <li><strong>Crystal clear vision:</strong> I knew exactly what I wanted - data structure, control layers, layout hierarchy, where to start, how to extend, what to play with</li>
+            <li><strong>API comfort:</strong> Experience with different APIs, understood token flows, knew cost implications</li>
+            <li><strong>Patience through iteration:</strong> When Claude had ups and downs, I knew how to guide it back. We created this TOGETHER - not me dictating, not Claude solo</li>
+            <li><strong>Pattern recognition:</strong> I've built similar features before, knew what worked, what to avoid</li>
+            <li><strong>Prompting expertise:</strong> Understood how to communicate architecture, when to provide examples, when to let Claude explore</li>
+          </ul>
+          <p><strong>Your first project won't take 6 hours. It'll take 18-24 hours.</strong> And that's okay - you're building two things: the feature AND the skill to work with AI.</p>
+        </div>
+
+        <div class="case-section">
+          <h3>The Real Learning Curve (Be Honest with Your Manager)</h3>
+          <p><strong>Month 1 (Projects 1-3):</strong> You'll be 3x slower than this case study suggests. You're learning Claude's strengths/weaknesses, how to structure prompts, when to use which tool. Budget extra time. Expect frustration.</p>
+          <p><strong>Month 2 (Projects 4-8):</strong> You'll be 2x slower. Patterns emerge. You understand the back-and-forth dance. You know when Claude is hallucinating vs genuinely helping.</p>
+          <p><strong>Month 3+ (Projects 9+):</strong> You approach the speeds in this case study. You've built your pattern library. You know exactly how to decompose problems for AI assistance.</p>
+          <p><strong>The Math:</strong> First project takes 21hrs instead of 7hrs. But by project 10, you're at 7hrs. Average across 10 projects: ~12hrs each. Still 40% faster than without Claude.</p>
+        </div>
+
+        <div class="case-section">
+          <h3>The Partnership Model: Together > Individually</h3>
+          <p>This case study was NOT me telling Claude what to do, or Claude doing it alone. It was a collaboration:</p>
+          <p><strong>I brought:</strong> Vision (data-control-layers-layout architecture), taste (when designs felt right), patience (through Claude's ups and downs), domain knowledge (what users actually need)</p>
+          <p><strong>Claude brought:</strong> Implementation speed, code generation, alternative approaches I hadn't considered, tireless iteration without ego</p>
+          <p><strong>Together we created something neither could alone.</strong> I couldn't have coded this in 6 hours solo. Claude couldn't have made good decisions about UX and architecture solo. The partnership is the product.</p>
+          <p>When pitching to your manager, emphasize: "We're not replacing developers. We're giving developers a thinking partner that handles tedious implementation while they focus on architecture and user experience."</p>
+        </div>
+
+        <div class="case-section">
+          <h3>Start with the Numbers They Care About</h3>
+          <p>Managers think in dollars and deadlines. This case study gave you a 26-slide interactive audio slideshow in 7 hours for $20-$0.92 depending on the tool. A junior developer would take 20+ hours. A contractor would cost $1,500+. Show them the ROI calculator above with YOUR team's hourly rates and project complexity.</p>
+          <p><strong>The Honest Pitch:</strong> "For a typical feature, an experienced developer with Claude takes 7-10 hours. Our team learning Claude will take 21-30 hours for the first few projects. By month 3, we'll be at 8-12 hours per feature. Without Claude, same features take 20-30 hours. The learning investment pays back in 3 months, then compounds forever."</p>
+        </div>
+
+        <div class="case-section">
+          <h3>Address the Three Objections Up Front</h3>
+          <p><strong>1. "AI can't write production code"</strong> - True, but that's not the value. Claude accelerates the iteration cycle. You still review, test, and own the code. It's a force multiplier, not a replacement.</p>
+          <p><strong>2. "We'd be dependent on Anthropic"</strong> - You're already dependent on GitHub, AWS, npm, dozens of services. Claude is a development tool, not your production infrastructure. Code it generates is yours.</p>
+          <p><strong>3. "Security/IP concerns"</strong> - Start with Claude Pro (data not used for training) or API with your own infrastructure. Test with non-sensitive projects first. Anthropic has enterprise agreements for serious deployments.</p>
+        </div>
+
+        <div class="case-section">
+          <h3>Propose a Pilot Program (With Realistic Expectations)</h3>
+          <p>Don't ask for a company-wide rollout. Request a 90-day pilot (not 30—you need the learning curve) with 2-3 developers on non-critical projects. Track metrics they care about:</p>
+          <ul>
+            <li><strong>Month 1:</strong> Baseline speed (expect slower), document learning curve</li>
+            <li><strong>Month 2:</strong> Measure improvement (should see 2x speedup from month 1)</li>
+            <li><strong>Month 3:</strong> Compare to baseline without AI (should see net positive ROI)</li>
+            <li><strong>Developer satisfaction:</strong> Team morale, learning, skill development</li>
+            <li><strong>Quality metrics:</strong> Bug rates, code review feedback (should stay same or improve)</li>
+          </ul>
+          <p>After 90 days, present data. Show the learning curve honestly. Demonstrate the investment paid off.</p>
+        </div>
+
+        <div class="case-section">
+          <h3>Show Them This Case Study (But Explain the Context)</h3>
+          <p>Walk your manager through the interactive audio tour. Let them see working code, hear the multi-language TTS, play with the decision tree and ROI calculator. Then explain:</p>
+          <p><strong>"This was built by someone with Claude expertise. Our first attempts will be messier, slower, more frustrated. But this shows what's POSSIBLE after we learn. And the learning curve is measured in weeks, not years."</strong></p>
+          <p>The fact that this case study itself was built using the tools it describes is proof the methodology works—when you know how to use it.</p>
+        </div>
+
+        <div class="case-section">
+          <h3>Position It as Competitive Advantage</h3>
+          <p>Your competitors are already using AI tools. The question isn't "should we use AI?" but "how quickly can we learn to use it effectively?" Teams that master AI-assisted development ship faster, iterate more, and attract better talent who want to work with modern tools.</p>
+          <p>Frame it as future-proofing: "We can spend the next 3-6 months learning how to work with AI tools while shipping faster, or spend the next 3-6 months falling behind competitors who are already doing it. The learning curve exists either way. Better to start now."</p>
+        </div>
+
+        <div class="case-section">
+          <h3>The Real Lesson from This Case Study</h3>
+          <p>What you experienced in the slideshow wasn't just about choosing Pro vs Code vs API. It was about a new way of working: <strong>human vision + AI execution + patience through collaboration.</strong></p>
+          <p>You bring: clear architecture (data-control-layers-layout), domain expertise, taste, patience when AI struggles.</p>
+          <p>Claude brings: tireless implementation, alternative approaches, rapid iteration, no ego in revision.</p>
+          <p>Together: something neither could build alone, in timeframes impossible before.</p>
+          <p>The firms that learn this collaboration model will dominate. The firms that wait will spend years catching up.</p>
+          <p><strong>Your job isn't to convince your manager AI is perfect, or that you'll be expert immediately. Your job is to convince them the 90-day learning investment will pay compounding returns for years.</strong> Show them this case study. Run the pilot. Track the learning curve honestly. Let the results do the talking.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <footer class="site-footer">
+    <p>© 2025 Claude Economics Case Study. A real-world example for developers.</p>
+    <p><small>Built collaboratively over 7 hours with Claude Pro. Features always take longer than estimated—that's the lesson.</small></p>
+    <p><small style="color:#6c757d;">Calculator v2.2-FIXED - Check browser console for detailed calculations</small></p>
+  </footer>
+
+  <script>
+    // Shrink header on scroll
+    (function(){
+      const header = document.querySelector('.site-header');
+      let lastY = 0;
+      window.addEventListener('scroll', () => {
+        const y = window.scrollY || document.documentElement.scrollTop;
+        if (y > 40 && y >= lastY) {
+          header.classList.add('shrink');
+        } else if (y < 20) {
+          header.classList.remove('shrink');
+        }
+        lastY = y;
+      }, {passive:true});
+    })();
+
+    // STATE
+    let currentSlide = 0;
+    let isPlaying = false;
+    let currentUtterance = null;
+    let currentLocale = 'en';
+    let SLIDES = []; // Will be loaded from JSON
+    const synth = window.speechSynthesis;
+
+    // Load locale JSON
+    async function loadLocale(locale) {
+      try {
+        const response = await fetch(`assets/locales/${locale}.json`);
+        if (!response.ok) {
+          throw new Error(`Failed to load ${locale}.json`);
+        }
+        const data = await response.json();
+        SLIDES = data.slides;
+        renderSlide(currentSlide);
+        renderDots();
+        updateSlideCounter();
+      } catch (error) {
+        console.error('Error loading locale:', error);
+        // Fallback to English if locale fails
+        if (locale !== 'en') {
+          console.log('Falling back to English');
+          loadLocale('en');
+        }
+      }
+    }
+
+    // INIT
+    document.addEventListener('DOMContentLoaded', () => {
+      loadLocale('en'); // Start with English
+    });
+
+    function changeLocale() {
+      const newLocale = document.getElementById('locale-select').value;
+      if (newLocale !== currentLocale) {
+        stopAudio();
+        currentLocale = newLocale;
+        loadLocale(newLocale);
+      }
+    }
+
+    function renderSlide(index) {
+      if (!SLIDES || SLIDES.length === 0) return;
+      
+      const slide = SLIDES[index];
+      const content = document.getElementById('slide-content');
+      
+      content.innerHTML = `
+        <span class="slide-emoji">${slide.emoji}</span>
+        <h3 class="slide-title">${slide.title}</h3>
+        <p class="slide-desc">${slide.desc}</p>
+        <div class="slide-example">
+          <strong>Example:</strong> ${slide.example}
+        </div>
+        <div class="slide-script">
+          <strong>Audio Script:</strong><br>${slide.script}
+        </div>
+      `;
+      
+      updateDots();
+      updateNavButtons();
+      updateSlideCounter();
+    }
+
+    function renderDots() {
+      if (!SLIDES || SLIDES.length === 0) return;
+      
+      const container = document.getElementById('slide-dots');
+      container.innerHTML = SLIDES.map((_, i) => 
+        `<button class="nav-dot ${i === currentSlide ? 'active' : ''}" onclick="goToSlide(${i})"></button>`
+      ).join('');
+    }
+
+    function updateDots() {
+      document.querySelectorAll('.nav-dot').forEach((dot, i) => {
+        dot.classList.toggle('active', i === currentSlide);
+      });
+    }
+
+    function updateNavButtons() {
+      document.getElementById('prev-btn').disabled = currentSlide === 0;
+      document.getElementById('next-btn').disabled = currentSlide === SLIDES.length - 1;
+    }
+
+    function updateSlideCounter() {
+      document.getElementById('current-slide').textContent = currentSlide + 1;
+      document.getElementById('total-slides').textContent = SLIDES.length;
+    }
+
+    function prevSlide() {
+      if (currentSlide > 0) {
+        stopAudio();
+        currentSlide--;
+        renderSlide(currentSlide);
+      }
+    }
+
+    function nextSlide() {
+      if (currentSlide < SLIDES.length - 1) {
+        stopAudio();
+        currentSlide++;
+        renderSlide(currentSlide);
+      }
+    }
+
+    function goToSlide(index) {
+      stopAudio();
+      currentSlide = index;
+      renderSlide(currentSlide);
+    }
+
+    function toggleAudio() {
+      if (isPlaying) {
+        stopAudio();
+      } else {
+        playAudio();
+      }
+    }
+
+    function playAudio() {
+      if (!SLIDES || SLIDES.length === 0) return;
+      
+      const slide = SLIDES[currentSlide];
+      const text = slide.script;
+      
+      currentUtterance = new SpeechSynthesisUtterance(text);
+      currentUtterance.rate = parseFloat(document.getElementById('speed-select').value);
+      
+      // Select voice based on locale
+      const voices = synth.getVoices();
+      const localeMap = {
+        en: 'en-US', 
+        pt: 'pt-BR', 
+        hi: 'hi-IN',
+        es: 'es-ES',
+        zh: 'zh-CN'
+      };
+      const preferredLang = localeMap[currentLocale];
+      const voice = voices.find(v => v.lang.startsWith(preferredLang.split('-')[0])) || voices[0];
+      if (voice) currentUtterance.voice = voice;
+      
+      currentUtterance.onend = () => {
+        isPlaying = false;
+        updatePlayButton();
+      };
+      
+      synth.speak(currentUtterance);
+      isPlaying = true;
+      updatePlayButton();
+    }
+
+    function stopAudio() {
+      if (synth.speaking) {
+        synth.cancel();
+      }
+      isPlaying = false;
+      updatePlayButton();
+    }
+
+    function updatePlayButton() {
+      const btn = document.getElementById('play-btn');
+      btn.textContent = isPlaying ? '⏸️' : '▶️';
+    }
+
+    function changeSpeed() {
+      if (isPlaying && currentUtterance) {
+        currentUtterance.rate = parseFloat(document.getElementById('speed-select').value);
+      }
+    }
+
+    // Decision Tree Navigation
+    function navigateTree(nodeId) {
+      document.querySelectorAll('.tree-node').forEach(node => {
+        node.classList.remove('active');
+      });
+      document.getElementById(nodeId).classList.add('active');
+    }
+
+    function resetTree() {
+      navigateTree('node-start');
+    }
+
+    // AI Cost Calculator
+    function calculateROI() {
+      const linesOfCode = parseInt(document.getElementById('lines-of-code').value) || 0;
+      const complexity = parseFloat(document.getElementById('complexity').value) || 1;
+      const iterations = parseInt(document.getElementById('iterations').value) || 1;
+      const similarProjects = parseInt(document.getElementById('similar-projects').value) || 1;
+
+      // Token estimation: ~4 tokens per line of code (input + output)
+      // Multiply by complexity and iterations
+      const tokensPerProject = linesOfCode * 4 * complexity * iterations;
+      const totalTokens = tokensPerProject * similarProjects;
+
+      // Claude API pricing (approximate)
+      // Input: $3 per million tokens, Output: $15 per million tokens
+      // Simplified: ~$0.003 per 1k tokens average
+      const costPerProject = (tokensPerProject / 1000) * 0.003;
+      const totalAICost = costPerProject * similarProjects;
+
+      // Update AI cost summary
+      document.getElementById('total-tokens').textContent =
+        totalTokens >= 1000000 ? `${(totalTokens / 1000000).toFixed(1)}M` : `${(totalTokens / 1000).toFixed(0)}k`;
+      document.getElementById('cost-per-project').textContent = `$${costPerProject.toFixed(2)}`;
+      document.getElementById('total-ai-cost').textContent = `$${totalAICost.toFixed(2)}`;
+
+      // Tool costs
+      const proSubscription = 20;
+      const codeApiCost = totalAICost;
+      const apiApiCost = totalAICost;
+
+      // Update display
+      document.getElementById('pro-cost').textContent = `$${proSubscription.toFixed(2)}`;
+      document.getElementById('pro-breakdown').textContent = 'Monthly subscription';
+      document.getElementById('pro-note').textContent =
+        `Covers all ${similarProjects} project${similarProjects > 1 ? 's' : ''} this month`;
+
+      document.getElementById('code-cost').textContent = `$${codeApiCost.toFixed(2)}`;
+      document.getElementById('code-breakdown').textContent = 'Pay-per-use AI cost';
+      document.getElementById('code-note').textContent =
+        similarProjects > 1 ? `$${costPerProject.toFixed(2)} × ${similarProjects} projects` : 'Single project cost';
+
+      document.getElementById('api-cost').textContent = `$${apiApiCost.toFixed(2)}`;
+      document.getElementById('api-breakdown').textContent = 'Pay-per-use AI cost';
+      document.getElementById('api-note').textContent =
+        similarProjects > 1 ? `$${costPerProject.toFixed(2)} × ${similarProjects} projects` : 'Same cost as Code';
+
+      // Determine recommendation
+      let recText = '';
+
+      // Calculate breakeven point
+      const breakevenProjects = Math.ceil(proSubscription / costPerProject);
+
+      if (similarProjects === 1) {
+        if (totalAICost < proSubscription) {
+          recText = `For 1 project, Code/API wins at $${totalAICost.toFixed(2)} vs Pro's $${proSubscription}. Breakeven at ${breakevenProjects} projects/month.`;
+        } else {
+          recText = `For 1 project, Pro wins with unlimited usage for $${proSubscription} vs $${totalAICost.toFixed(2)}.`;
+        }
+      } else if (similarProjects < breakevenProjects) {
+        const savings = (proSubscription - totalAICost).toFixed(2);
+        recText = `For ${similarProjects} projects, Code/API wins by $${savings}. Breakeven at ${breakevenProjects} projects/month.`;
+      } else {
+        const savings = (totalAICost - proSubscription).toFixed(2);
+        recText = `For ${similarProjects} projects, Pro wins by $${savings}. You've exceeded the breakeven point of ${breakevenProjects} projects.`;
+      }
+
+      // Add context-specific advice
+      if (iterations > 5) {
+        recText += ' High iterations favor Pro for unlimited experimentation.';
+      } else if (similarProjects > 15) {
+        recText += ' At this scale, consider API for automation.';
+      }
+
+      document.getElementById('rec-text').textContent = recText;
+    }
+
+    // Initialize calculator on load
+    window.addEventListener('DOMContentLoaded', () => {
+      // Wait a moment for voices to load
+      setTimeout(() => {
+        if (synth.getVoices().length === 0) {
+          synth.addEventListener('voiceschanged', () => {
+            loadLocale('en');
+          });
+        } else {
+          loadLocale('en');
+        }
+      }, 100);
+      
+      // Initialize calculator
+      calculateROI();
+    });
+  </script>
+</body>
+</html>
