@@ -1,0 +1,3897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Claude Code Mastery: The Complete Developer's Guide</title>
+  <meta name="description" content="Learn to use Claude Code effectively. Avoid the top 20 pitfalls, write better prompts, and generate production-ready code with confidence.">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --text:#212529; --bg:#fff; --muted:#f8f9fa; --border:#e9ecef;
+      --accent:#fd7e14; --accent-2:#e87312; --header-bg:#212529; --header-fg:#f8f9fa;
+      --ok:#16a34a; --ok-soft:#dcfce7; --bad:#dc2626; --bad-soft:#fee2e2;
+      --warning:#eab308; --warning-soft:#fef3c7;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;}
+    .container{max-width:900px;margin:auto;padding:24px;background:#fff}
+    a{color:var(--accent);text-decoration:none}
+    a:hover{text-decoration:underline}
+
+    .site-header,.site-footer{background:var(--header-bg);color:var(--header-fg);padding:14px 24px}
+    .site-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;position:sticky;top:0;z-index:100;padding:12px 20px}
+    .logo{font-weight:700;font-size:1.15rem;color:#fff}
+    .site-header nav{display:flex;align-items:center;gap:20px}
+    .site-header nav a{color:#ced4da;text-decoration:none;padding:8px 12px;border-radius:6px;transition:all 0.2s ease}
+    .site-header nav a:hover{color:#fff;background:rgba(255,255,255,0.1)}
+    .progress-badge{padding:8px 16px;background:rgba(255,255,255,0.15);border-radius:20px;font-size:0.85rem;color:#fff;font-weight:500;border:1px solid rgba(255,255,255,0.2)}
+    .site-footer{text-align:center;margin-top:50px;padding:40px}
+    /* Ensure anchor targets are not hidden behind sticky header */
+    section[id]{scroll-margin-top:80px}
+    html{scroll-behavior:smooth}
+    .breadcrumbs{margin-bottom:24px;font-size:0.9rem;color:#6c757d}
+    .breadcrumbs a{color:var(--accent)}
+
+    h1{font-size:clamp(2rem,5vw,2.6rem);text-align:left;margin-bottom:8px;color:var(--text);line-height:1.2}
+    .byline{font-size:clamp(1rem,3vw,1.2rem);font-style:italic;color:#6c757d;margin-bottom:24px}
+    h2{font-size:clamp(1.5rem,4vw,2rem);color:var(--text);margin:48px 0 16px;border-bottom:2px solid var(--border);padding-bottom:8px}
+    h3{font-size:clamp(1.2rem,3vw,1.5rem);color:var(--text);margin-top:32px;margin-bottom:12px}
+    h4{font-size:clamp(1rem,2.5vw,1.2rem);font-weight:bold;color:var(--accent-2);margin-bottom:10px}
+    p{margin-bottom:16px;word-wrap:break-word}
+    ul{margin-left:24px;margin-bottom:24px;list-style-type:'🔹';padding-left:1em}
+    li{margin-bottom:12px;padding-left:0.5em}
+    .article-meta{display:flex;align-items:center;gap:12px;color:#6c757d;margin-bottom:32px;font-size:0.95rem}
+    .author-emoji{font-size:32px;line-height:1}
+    .intro{font-size:1.1rem;line-height:1.8;background:var(--muted);padding:20px;border-radius:12px;border-left:4px solid var(--accent);margin:24px 0}
+    .img-frame{position:relative;width:100%;padding-top:50%;overflow:hidden;border-radius:12px;margin:16px 0 24px;box-shadow:0 4px 15px rgba(0,0,0,0.1)}
+    .img-frame img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover}
+    .btn{background:var(--accent);color:#fff;border:none;padding:10px 14px;border-radius:10px;font-weight:700;cursor:pointer;transition:background-color 0.2s ease;font-size:0.95rem;}
+    .btn:hover{background-color:var(--accent-2);}
+    .btn:disabled{opacity:0.5;cursor:not-allowed;}
+
+    .interactive-box{background:#f8f9fa;border:1px solid var(--border);border-radius:12px;padding:24px;margin:24px 0}
+    .table-wrap{position:relative;border:1px solid var(--border);border-radius:12px;background:#fff;margin:24px 0;overflow:hidden}
+    .table-scroll{position:relative;overflow-x:auto}
+    table.data-table{width:100%;border-collapse:collapse;}
+    table.data-table th,table.data-table td{padding:12px 15px;border:1px solid var(--border);text-align:left;vertical-align:top;}
+    table.data-table thead th{background:var(--muted);font-weight:600;}
+    table.data-table tbody tr:nth-child(even){background:#f8f9fa;}
+    table.data-table tbody tr:hover{background:#fff7ed;}
+    .table-actions{display:flex;gap:6px;}
+    .table-actions button{padding:4px 8px;font-size:0.85rem;border-radius:6px;border:1px solid var(--accent);background:#fff;color:var(--accent);cursor:pointer;font-weight:600;}
+    .table-actions button:hover{background:#fff7ed;}
+
+    .accordion{display:grid;gap:8px}
+    .accordion-header{width:100%;text-align:left;background:var(--muted);border:1px solid var(--border);padding:16px 20px;border-radius:8px;cursor:pointer;font-size:1.05rem;font-weight:bold;display:flex;align-items:center}
+    .accordion-header .accordion-title{margin-right:auto;padding-right:1rem;}
+    .accordion-header::after{content:'+';color:#6c757d;font-size:1.5rem}
+    .accordion-header[aria-expanded="true"]{background:#e9ecef;border-bottom-left-radius:0;border-bottom-right-radius:0}
+    .accordion-header[aria-expanded="true"]::after{content:'−'}
+    .accordion-content{padding:20px;display:none;border:1px solid var(--border);border-top:none;border-radius:0 0 8px 8px}
+
+    .code-wrapper{margin:16px 0;}
+    pre{margin:0;}
+    .code-block{background:#2d2d2d;color:#f8f8f2;font-family:'Courier New',Courier,monospace;padding:1.2em;border-radius:8px;overflow-x:auto;font-size:0.9rem;line-height:1.6;}
+    .code-block .comment{color:#75715e;}
+    .code-block .keyword{color:#f92672;}
+    .code-block .string{color:#e6db74;}
+    .code-block .function{color:#a6e22e;}
+    .code-block .number{color:#ae81ff;}
+    .code-output{background:#f0f0f0;border:1px solid #e0e0e0;padding:1em;border-radius:8px;margin-top:8px;font-family:'Courier New',Courier,monospace;color:#495057;white-space:pre-wrap;font-size:0.9rem;}
+
+    .pitfall-card{background:#fff;border-radius:12px;border-top:4px solid var(--bad);box-shadow:0 4px 15px rgba(0,0,0,0.05);margin-bottom:20px}
+    .pitfall-header{padding:16px;border-bottom:1px solid var(--border);}
+    .pitfall-header h4{color:var(--bad);margin:0;font-size:1.1rem;}
+    .pitfall-body{padding:16px;}
+    .wrong-right-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin:16px 0}
+    .wrong-right-grid h5{font-size:0.9rem;text-align:center;margin-bottom:8px;}
+    .wrong-code{border-left:3px solid var(--bad);}
+    .right-code{border-left:3px solid var(--ok);}
+
+    .carousel-container{perspective:1000px;position:relative;padding:0 50px;}
+    .flip-card{width:100%;height:380px;background-color:transparent;display:none;}
+    .flip-card.active{display:block;}
+    .flip-card-inner{position:relative;width:100%;height:100%;text-align:center;transition:transform 0.6s;transform-style:preserve-3d;cursor:pointer;border:1px solid var(--border);border-radius:12px;}
+    .flip-card.flipped .flip-card-inner{transform:rotateY(180deg);}
+    .flip-card-front,.flip-card-back{position:absolute;width:100%;height:100%;backface-visibility:hidden;display:flex;flex-direction:column;justify-content:center;padding:20px;border-radius:12px;}
+    .flip-card-front{background-color:#fff;color:var(--text);}
+    .flip-card-back{background-color:#2d2d2d;color:white;transform:rotateY(180deg);text-align:left;overflow-y:auto;}
+    .flip-card-front h4{border-bottom:2px solid var(--accent);padding-bottom:10px;margin-bottom:15px;}
+    .flip-card-front p{font-size:0.95rem;line-height:1.6}
+    .carousel-nav{position:absolute;top:50%;transform:translateY(-50%);background-color:var(--accent);color:white;border:none;border-radius:50%;width:40px;height:40px;font-size:24px;cursor:pointer;z-index:10;display:flex;align-items:center;justify-content:center;}
+    .carousel-nav:hover{background-color:var(--accent-2);}
+    #carousel-prev{left:0;}
+    #carousel-next{right:0;}
+    .carousel-footer{text-align:center;margin-top:15px;}
+    #carousel-counter{font-weight:600;color:#6c757d;margin-bottom:10px;}
+    #carousel-copy-btn{background:#6c757d;color:white;border:none;border-radius:8px;padding:8px 16px;cursor:pointer;font-size:0.9rem;font-weight:600;transition:background-color 0.2s ease;display:inline-flex;align-items:center;gap:6px;}
+    #carousel-copy-btn:hover{background:#495057;}
+
+    .wizard-steps{display:flex;justify-content:center;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+    .wizard-dot{width:12px;height:12px;border-radius:50%;background:#ddd;transition:all 0.3s}
+    .wizard-dot.active{background:var(--accent);transform:scale(1.3)}
+    .wizard-dot.completed{background:var(--ok)}
+    .wizard-content{min-height:300px;background:#fff;padding:20px;border-radius:8px;border:1px solid var(--border)}
+    .wizard-nav{display:flex;justify-content:space-between;margin-top:20px}
+
+    .slider-container{position:relative;width:100%;height:400px;overflow:hidden;border-radius:12px;border:1px solid var(--border)}
+    .slider-content{display:flex;height:100%;transition:transform 0.3s ease}
+    .slider-side{flex:0 0 50%;padding:20px;overflow-y:auto}
+    .slider-side.bad{background:var(--bad-soft);border-right:2px solid var(--bad)}
+    .slider-side.good{background:var(--ok-soft)}
+    .slider-handle{position:absolute;top:0;left:50%;width:4px;height:100%;background:var(--accent);cursor:ew-resize;z-index:10}
+
+    .game-container{background:#fff;border-radius:12px;padding:24px;border:2px solid var(--accent)}
+    .game-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:15px;border-bottom:2px solid var(--border)}
+    .game-score{font-weight:700;color:var(--accent)}
+    .game-code{background:#2d2d2d;color:#fff;padding:20px;border-radius:8px;margin:20px 0;font-family:monospace;font-size:0.95rem;line-height:1.6}
+    .game-options{display:grid;gap:10px}
+    .game-option{padding:12px;border:2px solid var(--border);border-radius:8px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:10px}
+    .game-option:hover{background:var(--muted)}
+    .game-option.selected{border-color:var(--accent);background:#fff7ed}
+    .game-option.correct{border-color:var(--ok);background:var(--ok-soft)}
+    .game-option.wrong{border-color:var(--bad);background:var(--bad-soft)}
+    .game-feedback{margin-top:20px;padding:15px;border-radius:8px;font-weight:600;text-align:center}
+
+    .glossary-cloud{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px;justify-content:center}
+    .glossary-chip{position:relative;display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:999px;background:#fff7ed;border:1px solid #ffd8a8;color:#d9480f;font-weight:600;cursor:pointer;box-shadow:0 2px 6px rgba(253,126,20,.12);transition:all 0.2s}
+    .glossary-chip:hover,.glossary-chip:focus{background:#ffecde;transform:translateY(-2px)}
+    .chip-tip{position:fixed;z-index:101;min-width:240px;max-width:min(92vw,420px);background:var(--accent);color:#fff;padding:12px 14px;border-radius:12px;box-shadow:0 12px 28px rgba(253,126,20,.35);opacity:0;visibility:hidden;transition:.15s;line-height:1.45}
+    .chip-tip.show{opacity:1;visibility:visible}
+    .chip-tip .arrow{position:absolute;width:12px;height:12px;background:var(--accent);transform:rotate(45deg)}
+
+    .prompt-builder{background:#fff;border-radius:12px;padding:24px}
+    .builder-section{margin-bottom:24px}
+    .builder-section label{display:block;font-weight:600;margin-bottom:8px;color:var(--text)}
+    .builder-section input,.builder-section select,.builder-section textarea{width:100%;padding:10px;border:1px solid var(--border);border-radius:6px;font-family:inherit;font-size:1rem}
+    .builder-section textarea{min-height:100px;resize:vertical}
+    .checkbox-group{display:grid;gap:8px}
+    .checkbox-item{display:flex;align-items:center;gap:8px}
+    .generated-prompt{background:var(--muted);padding:16px;border-radius:8px;border-left:4px solid var(--accent);margin-top:16px}
+    .quality-bar{height:24px;background:#e0e0e0;border-radius:12px;overflow:hidden;margin:10px 0}
+    .quality-fill{height:100%;background:linear-gradient(90deg,var(--bad),var(--warning),var(--ok));transition:width 0.3s}
+
+    .learning-goals{background:linear-gradient(135deg,#fff7ed 0%,#ffedd5 100%);border:2px solid var(--accent);border-radius:12px;padding:24px;margin:24px 0}
+    .learning-goals h4{color:var(--accent-2);margin:0 0 20px 0;font-size:1.2rem}
+    .goals-grid{display:grid;gap:16px}
+    .goal-item{display:flex;gap:15px;align-items:start}
+    .goal-icon{font-size:2rem;flex-shrink:0}
+    .goal-item strong{display:block;color:var(--text);margin-bottom:4px}
+    .goal-item p{margin:0;color:#6c757d;font-size:0.95rem}
+
+
+    .reflection-section{background:linear-gradient(135deg,#f0f9ff 0%,#e0f2fe 100%);border:2px solid #0ea5e9;border-radius:12px;padding:24px;margin:48px 0}
+    .reflection-section h3{color:#0369a1;margin:0 0 16px 0}
+    .reflection-question{background:#fff;border-radius:8px;padding:16px;margin:16px 0}
+    .reflection-question label{display:block;font-weight:600;margin-bottom:10px;color:var(--text)}
+    .reflection-question textarea{width:100%;min-height:80px;padding:12px;border:1px solid var(--border);border-radius:6px;font-family:inherit;resize:vertical}
+    .reflection-insights{background:#fff;border-radius:8px;padding:16px;margin-top:16px;display:none}
+    .reflection-insights h4{color:#0369a1;margin:0 0 10px 0;font-size:1rem}
+
+    .language-switcher{background:var(--muted);border-radius:8px;padding:16px;margin:20px 0;text-align:center}
+    .language-switcher p{margin:0 0 12px 0;font-weight:600}
+    .lang-buttons{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+    .lang-btn{padding:10px 20px;border:2px solid var(--accent);border-radius:8px;background:#fff;color:var(--accent);cursor:pointer;font-weight:600;transition:all 0.2s}
+    .lang-btn:hover{background:#fff7ed}
+    .lang-btn.active{background:var(--accent);color:#fff}
+
+    @media(max-width:768px){
+      .carousel-container{padding:0 30px}
+      .carousel-nav{width:30px;height:30px;font-size:18px}
+      .wrong-right-grid{grid-template-columns:1fr;gap:10px}
+      .slider-container{height:auto}
+      .slider-content{flex-direction:column}
+      .slider-side{flex:0 0 auto;min-height:200px}
+      .slider-handle{display:none}
+      .goals-grid{grid-template-columns:1fr}
+      .site-header{padding:8px 15px;flex-wrap:wrap}
+      .site-header nav{gap:12px;flex-wrap:wrap}
+      .site-header nav a{padding:6px 10px;font-size:0.9rem}
+      .progress-badge{padding:6px 12px;font-size:0.8rem}
+    }
+
+    /* ============================================
+       AUDIO TOUR STYLES
+       ============================================ */
+
+    /* Tour Introduction */
+    .audio-tour-intro {
+      text-align: center;
+      padding: 40px 20px;
+    }
+
+    .audio-tour-intro h3 {
+      color: var(--accent);
+      margin-bottom: 15px;
+    }
+
+    .tour-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin-top: 30px;
+    }
+
+    .tour-option {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      padding: 25px;
+      background: var(--muted);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      transition: all 0.3s ease;
+    }
+
+    .tour-option:hover {
+      border-color: var(--accent);
+      transform: translateY(-3px);
+      box-shadow: 0 4px 12px rgba(253, 126, 20, 0.15);
+    }
+
+    .option-icon {
+      font-size: 3rem;
+      line-height: 1;
+    }
+
+    /* Tour Controls */
+    .tour-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px;
+      background: var(--muted);
+      border-radius: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .control-group {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .control-btn {
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .control-btn:hover {
+      background: var(--accent-2);
+      transform: scale(1.05);
+    }
+
+    .control-btn:active {
+      transform: scale(0.95);
+    }
+
+    .progress-container {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .progress-bar {
+      height: 8px;
+      background: #e0e0e0;
+      border-radius: 4px;
+      overflow: hidden;
+      cursor: pointer;
+      margin-bottom: 5px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--ok));
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .progress-time {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      color: #6c757d;
+    }
+
+    .speed-control {
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: white;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+
+    /* Chapter Navigation */
+    .chapter-nav {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .chapter-dots {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .chapter-dot {
+      width: 40px;
+      height: 8px;
+      background: #e0e0e0;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .chapter-dot.active {
+      background: var(--accent);
+      height: 10px;
+    }
+
+    .chapter-dot.completed {
+      background: var(--ok);
+    }
+
+    .chapter-info {
+      font-size: 0.95rem;
+      color: #6c757d;
+      font-weight: 500;
+    }
+
+    /* Slide Container */
+    .slide-container {
+      position: relative;
+      min-height: 340px;
+      background: white;
+      border-radius: 12px;
+      border: 2px solid var(--border);
+      padding: 30px;
+      margin-bottom: 15px;
+    }
+
+    .slide-content {
+      text-align: center;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .slide-emoji {
+      font-size: 3.2rem;
+      line-height: 1;
+      margin-bottom: 15px;
+      display: block;
+      animation: slideEmoji 0.5s ease;
+    }
+
+    @keyframes slideEmoji {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .slide-title {
+      font-size: clamp(1.6rem, 4vw, 2.2rem);
+      color: var(--text);
+      margin-bottom: 12px;
+      animation: slideTitle 0.5s ease 0.1s backwards;
+    }
+
+    @keyframes slideTitle {
+      from {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .slide-byline {
+      font-size: clamp(1.0rem, 2.5vw, 1.25rem);
+      color: #6c757d;
+      margin-bottom: 20px;
+      font-weight: 500;
+      animation: slideByline 0.5s ease 0.2s backwards;
+    }
+
+    @keyframes slideByline {
+      from {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .slide-example {
+      background: var(--muted);
+      padding: 15px;
+      border-radius: 8px;
+      border-left: 4px solid var(--accent);
+      font-size: 1.0rem;
+      animation: slideExample 0.5s ease 0.3s backwards;
+    }
+
+    /* Slide Audio Button */
+    .slide-audio-btn {
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      font-size: 1.3rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 20px auto 0;
+      box-shadow: 0 4px 12px rgba(253, 126, 20, 0.3);
+    }
+
+    .slide-audio-btn:hover {
+      background: var(--accent-2);
+      transform: scale(1.05);
+      box-shadow: 0 6px 16px rgba(253, 126, 20, 0.4);
+    }
+
+    .slide-audio-btn:active {
+      transform: scale(0.95);
+    }
+
+    .slide-audio-btn.playing {
+      background: var(--ok);
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    @keyframes slideExample {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Sentence Highlighting (for audio sync) */
+    .slide-sentence {
+      transition: all 0.3s ease;
+    }
+
+    .slide-sentence.active {
+      background: linear-gradient(120deg, #fff7ed 0%, #ffedd5 100%);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    /* Navigation Arrows */
+    .slide-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: var(--accent);
+      color: white;
+      border: none;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      font-size: 2rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+    }
+
+    .slide-nav:hover {
+      background: var(--accent-2);
+      transform: translateY(-50%) scale(1.1);
+    }
+
+    .slide-nav.prev {
+      left: -25px;
+    }
+
+    .slide-nav.next {
+      right: -25px;
+    }
+
+    /* Transcript Panel */
+    #transcript-panel {
+      background: var(--muted);
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 20px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .transcript-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .transcript-header h4 {
+      margin: 0;
+      color: var(--text);
+    }
+
+    .transcript-header button {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #6c757d;
+      padding: 0;
+      width: 30px;
+      height: 30px;
+    }
+
+    .transcript-content {
+      line-height: 1.8;
+      color: var(--text);
+    }
+
+    .transcript-sentence {
+      cursor: pointer;
+      transition: all 0.2s ease;
+      padding: 2px 4px;
+      border-radius: 3px;
+    }
+
+    .transcript-sentence:hover {
+      background: #fff7ed;
+    }
+
+    .transcript-sentence.active {
+      background: var(--accent);
+      color: white;
+      font-weight: 600;
+    }
+
+    /* Slide Navigation Buttons */
+    .slide-navigation {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 2px solid var(--border);
+    }
+
+    .slide-counter {
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    /* Dimensions Grid */
+    .dimensions-grid {
+      margin-top: 30px;
+      padding-top: 25px;
+      border-top: 2px solid var(--border);
+    }
+
+    .dimensions-grid h3 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: var(--text);
+      font-size: 1.4rem;
+    }
+
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 10px;
+    }
+
+    .dimension-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 12px 10px;
+      background: var(--muted);
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .dimension-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-3px);
+      box-shadow: 0 4px 12px rgba(253, 126, 20, 0.1);
+    }
+
+    .dimension-card.active {
+      border-color: var(--accent);
+      background: #fff7ed;
+    }
+
+    .dim-emoji {
+      font-size: 1.8rem;
+      line-height: 1;
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .dimension-card strong {
+      display: block;
+      margin-bottom: 3px;
+      font-size: 0.85rem;
+      color: var(--text);
+    }
+
+    .dimension-card small {
+      font-size: 0.7rem;
+      color: #6c757d;
+      line-height: 1.2;
+    }
+
+    /* Loading State */
+    .tour-loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 300px;
+      color: #6c757d;
+    }
+
+    .tour-loading .spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid var(--muted);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 15px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Accessibility */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border-width: 0;
+    }
+
+    /* Responsive Adjustments for Audio Tour */
+    @media (max-width: 768px) {
+      .slide-container {
+        padding: 15px;
+        min-height: 280px;
+      }
+      
+      .slide-nav {
+        width: 35px;
+        height: 35px;
+        font-size: 1.3rem;
+      }
+      
+      .slide-nav.prev {
+        left: -17px;
+      }
+      
+      .slide-nav.next {
+        right: -17px;
+      }
+      
+      .tour-controls {
+        flex-direction: column;
+      }
+      
+      .grid-container {
+        grid-template-columns: repeat(auto-fill, minmax(95px, 1fr));
+        gap: 8px;
+      }
+
+      .dimension-card {
+        padding: 8px 6px;
+      }
+
+      .dim-emoji {
+        font-size: 1.5rem;
+        margin-bottom: 4px;
+      }
+
+      .dimension-card strong {
+        font-size: 0.75rem;
+        margin-bottom: 2px;
+      }
+
+      .dimension-card small {
+        font-size: 0.65rem;
+      }
+      
+      .tour-options {
+        grid-template-columns: 1fr;
+      }
+
+      .slide-audio-btn {
+        width: 45px;
+        height: 45px;
+        font-size: 1.1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <a href="#" class="logo">Claude Code Mastery</a>
+    <nav>
+      <a href="#playground">Try Live</a>
+      <a href="#pitfalls-deep">Top 20 Pitfalls</a>
+      <a href="#wizard">🎬 Full Tour</a>
+      <a href="#examples">Learn</a>
+      <a href="#quiz">Quiz</a>
+      <span class="progress-badge" id="header-progress">0% Complete</span>
+    </nav>
+  </header>
+
+
+  <div class="container">
+    <nav class="breadcrumbs"><a href="#">Home</a> &gt; <a href="#">AI Development</a> &gt; Claude Code Guide</nav>
+    
+    <h1>Claude Code Mastery: The Complete Developer's Guide</h1>
+    <p class="byline">How to choose, test, and deploy AI-assisted code responsibly</p>
+    <div class="article-meta"><span class="author-emoji">🤖</span><span>AI Development Expert &nbsp;|&nbsp; Updated October 2025</span></div>
+    
+    <p class="intro">Welcome to your journey with Claude Code! Think of it as having an incredibly smart coding partner who never gets tired, never judges your questions, and can help you write better code faster. But here's the thing: like any powerful tool, it works best when you know how to use it properly. In this guide, you'll learn the 20 most important lessons that will save you hours of frustration, help you avoid common mistakes, and turn you into a Claude Code expert. Whether you're writing your first API or architecting complex systems, these principles will help you get the most out of AI-assisted development.</p>
+
+    <div class="learning-goals">
+      <h4>📖 What You'll Learn Today</h4>
+      <div class="goals-grid">
+        <div class="goal-item">
+          <span class="goal-icon">🔍</span>
+          <div>
+            <strong>Identify Critical Pitfalls</strong>
+            <p>Recognize the 20 most common mistakes that trip up developers using AI code generation</p>
+          </div>
+        </div>
+        <div class="goal-item">
+          <span class="goal-icon">✍️</span>
+          <div>
+            <strong>Master Prompt Engineering</strong>
+            <p>Craft specific, effective prompts that generate production-ready code consistently</p>
+          </div>
+        </div>
+        <div class="goal-item">
+          <span class="goal-icon">✅</span>
+          <div>
+            <strong>Evaluate AI-Generated Code</strong>
+            <p>Develop critical thinking skills to review, test, and improve code from Claude</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="img-frame"><img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1470&auto=format&fit=crop" alt="Developer coding with AI assistance" onerror="this.onerror=null;this.src='https://placehold.co/1470x735/212529/FFFFFF?text=Claude+Code';"></div>
+
+
+    <section id="intro">
+      <h2>🎯 What is Claude Code?</h2>
+      <p>Imagine having a senior developer sitting next to you, ready to help anytime. That's essentially what Claude Code is—an AI assistant that can:</p>
+      <ul>
+        <li><strong>Generate code</strong> from natural language descriptions</li>
+        <li><strong>Debug issues</strong> by analyzing your code and suggesting fixes</li>
+        <li><strong>Explain concepts</strong> in plain English when you're stuck</li>
+        <li><strong>Refactor code</strong> to make it cleaner and more efficient</li>
+        <li><strong>Write tests</strong> to ensure your code works correctly</li>
+      </ul>
+      <p>But here's what makes it different from just googling answers: Claude Code understands <em>context</em>. You can have a conversation, ask follow-up questions, and gradually build your solution together. It's a sophisticated language model trained on diverse text and code datasets, designed to assist with software development tasks.</p>
+      
+      <h3>The Big Picture: How It Works</h3>
+      <div class="interactive-box" style="text-align:center;padding:40px">
+        <div style="font-size:3rem;margin-bottom:20px">💭 → 🤖 → 💻 → ✅</div>
+        <p style="font-size:1.1rem;max-width:600px;margin:0 auto">
+          <strong>You think it</strong> (write a prompt) → <strong>Claude processes</strong> (understands intent) → <strong>Code appears</strong> (generated solution) → <strong>You review</strong> (quality check)
+        </p>
+      </div>
+    </section>
+
+    <section id="models">
+      <h2>🎯 Quick Start: Which Model Should You Use?</h2>
+      <p>Claude Code comes in different "sizes," and picking the right one is like choosing between a sports car and a family sedan. Both get you there, but one might be overkill for your trip to the grocery store!</p>
+      
+      <div class="language-switcher">
+        <p>👋 What's your primary focus?</p>
+        <div class="lang-buttons">
+          <button class="lang-btn active" onclick="setLanguageFocus('backend')">Backend/API Development</button>
+          <button class="lang-btn" onclick="setLanguageFocus('frontend')">Frontend/UI Development</button>
+          <button class="lang-btn" onclick="setLanguageFocus('data')">Data & Analytics</button>
+        </div>
+      </div>
+      
+      <div class="interactive-box">
+        <h4 style="text-align:center;margin-bottom:20px">Decision Tree: Find Your Perfect Model</h4>
+        <div id="decision-tree" style="max-width:600px;margin:0 auto">
+          <div id="dt-question" style="background:#fff;padding:20px;border-radius:8px;margin-bottom:15px;min-height:150px">
+            <p style="font-weight:600;margin-bottom:15px">What are you building?</p>
+            <div style="display:grid;gap:10px">
+              <button class="btn" style="width:100%" onclick="dtAnswer(1)">Simple CRUD app or API</button>
+              <button class="btn" style="width:100%" onclick="dtAnswer(2)">Data processing or automation</button>
+              <button class="btn" style="width:100%" onclick="dtAnswer(3)">Complex architecture or system design</button>
+            </div>
+          </div>
+          <div id="dt-result" style="display:none;background:var(--ok-soft);padding:20px;border-radius:8px;border-left:4px solid var(--ok)">
+            <h4 style="color:var(--ok);margin-bottom:10px">Recommendation: Claude Sonnet 4.5</h4>
+            <p><strong>Why?</strong> <span id="dt-reason"></span></p>
+            <p style="margin-top:10px">
+              <strong>💰 Pricing:</strong> $3 per million input tokens, $15 per million output tokens<br>
+              <strong>⚡ Speed:</strong> ~2 seconds average response time<br>
+              <strong>📊 Real estimate:</strong> A typical 50-line function costs ~$0.01-0.02 to generate
+            </p>
+            <button class="btn" onclick="resetDT()" style="margin-top:15px">Try Again</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-wrap" style="margin-top:30px">
+        <div class="table-scroll">
+          <table class="data-table">
+            <thead>
+              <tr><th>Model</th><th>Best For</th><th>Speed</th><th>Pricing</th><th>When to Use</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Sonnet 4.5</strong></td>
+                <td>90% of coding tasks</td>
+                <td>⚡⚡⚡ Fast</td>
+                <td>💰 $3 per million input tokens<br>$15 per million output tokens</td>
+                <td>Standard development, APIs, CRUD, automation, testing</td>
+              </tr>
+              <tr>
+                <td><strong>Opus 4.1</strong></td>
+                <td>Complex architecture</td>
+                <td>⚡⚡ Slower</td>
+                <td>💰💰💰 $15 per million input tokens<br>$75 per million output tokens</td>
+                <td>System design, complex algorithms, critical business logic</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="text-align:center;margin-top:12px;font-size:0.9rem;color:#6c757d">
+          💡 <strong>Estimate:</strong> 1000 lines of code ≈ 50-80k tokens. A typical function (50 lines) costs $0.01-0.02 with Sonnet.<br>
+          📊 <a href="https://docs.anthropic.com/en/docs/about-claude/models" target="_blank" rel="noopener">View latest pricing & model details →</a>
+        </p>
+      </div>
+    </section>
+
+    <section id="pitfalls-table">
+      <h2>📊 The Top 20 Pitfalls: Quick Reference</h2>
+      <p>This table is your cheat sheet. Bookmark this page! Each pitfall shows the impact level, a quick fix, and links to dive deeper. Use the search to find specific topics.</p>
+      
+      <div class="interactive-box">
+        <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap">
+          <input type="text" id="table-search" placeholder="🔍 Search pitfalls..." style="flex:1;min-width:200px;padding:10px;border:1px solid var(--border);border-radius:6px">
+          <select id="table-filter" style="padding:10px;border:1px solid var(--border);border-radius:6px">
+            <option value="all">All Levels</option>
+            <option value="critical">🔴 Critical Only</option>
+            <option value="high">🟡 High Impact</option>
+            <option value="important">🟢 Important</option>
+          </select>
+        </div>
+        
+        <div class="table-wrap">
+          <div class="table-scroll">
+            <table class="data-table" id="pitfalls-table-data">
+              <thead>
+                <tr><th>#</th><th>Pitfall</th><th>Impact</th><th>Quick Fix</th><th>Actions</th></tr>
+              </thead>
+              <tbody id="table-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="pitfalls-deep">
+      <h2>🔍 Deep Dive: Understanding Each Pitfall</h2>
+      <p>Click any section below to expand and see real examples, explanations, and solutions. These aren't just theoretical—every one of these has tripped up real developers (including the experts!).</p>
+      
+      <div class="accordion" id="pitfalls-accordion"></div>
+    </section>
+
+    <section id="comparison">
+      <h2>👁️ Before & After: See the Difference</h2>
+      <p>Sometimes the best way to learn is to see good and bad examples side by side. Drag the slider to compare how different prompts produce wildly different results.</p>
+      
+      <div class="interactive-box">
+        <div id="comparison-selector" style="text-align:center;margin-bottom:20px">
+          <button class="btn" onclick="loadComparison(0)" style="margin:5px">Login System</button>
+          <button class="btn" onclick="loadComparison(1)" style="margin:5px">Email Validation</button>
+          <button class="btn" onclick="loadComparison(2)" style="margin:5px">API Error Handling</button>
+        </div>
+        
+        <div class="slider-container" id="comparison-container">
+          <div class="slider-content">
+            <div class="slider-side bad">
+              <h4 style="color:var(--bad);text-align:center">❌ Vague Prompt</h4>
+              <div id="bad-content"></div>
+            </div>
+            <div class="slider-side good">
+              <h4 style="color:var(--ok);text-align:center">✅ Specific Prompt</h4>
+              <div id="good-content"></div>
+            </div>
+          </div>
+        </div>
+        
+        <div style="text-align:center;margin-top:15px;color:#6c757d">
+          <small>💡 Notice how being specific about framework, security, and testing requirements produces production-ready code</small>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- AUDIO TOUR: The Full Picture Beyond Code Generation -->
+    <!-- ============================================ -->
+    <section id="beyond-code">
+      <h2>🎬 The Full Picture: Beyond Code Generation</h2>
+      <p class="intro">
+        You've mastered the 20 pitfalls. But here's what surprises most developers: 
+        <strong>coding is only 30-40% of what senior developers actually do.</strong> 
+        The rest? Architecture decisions, cost optimization, customer communication, 
+        team leadership, and 22 other critical dimensions.
+      </p>
+      
+      <div class="interactive-box">
+        <div class="audio-tour-intro">
+          <h3>Take the Interactive Tour</h3>
+          <p>Explore 26 real dimensions of senior development work—each with examples 
+          showing how Claude Code becomes your thinking partner, not just a code generator.</p>
+          
+          <div class="tour-options">
+            <div class="tour-option">
+              <span class="option-icon">🎧</span>
+              <div>
+                <strong>Audio Tour</strong>
+                <p>15-minute guided experience with narration</p>
+              </div>
+              <button class="btn" onclick="startAudioTour()">Start Audio Tour</button>
+            </div>
+            
+            <div class="tour-option">
+              <span class="option-icon">📖</span>
+              <div>
+                <strong>Read Only</strong>
+                <p>Browse slides at your own happy pace. Reflect as needed.</p>
+              </div>
+              <button class="btn" onclick="startVisualTour()">Browse Slides</button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Audio Tour Container (hidden until activated) -->
+        <div id="audio-tour-container" style="display:none">
+          
+          <!-- Tour Controls -->
+          <div class="tour-controls">
+            <div class="control-group">
+              <button id="tour-play-pause" class="control-btn" aria-label="Play/Pause">
+                <span class="play-icon">▶️</span>
+              </button>
+              <div class="progress-container">
+                <div class="progress-bar">
+                  <div class="progress-fill" id="audio-progress"></div>
+                </div>
+                <div class="progress-time">
+                  <span id="current-time">0:00</span> / <span id="total-time">15:00</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="control-group">
+              <select id="playback-speed" class="speed-control">
+                <option value="0.75">0.75x</option>
+                <option value="1.0" selected>1.0x</option>
+                <option value="1.25">1.25x</option>
+                <option value="1.5">1.5x</option>
+              </select>
+              
+              <button id="toggle-transcript" class="control-btn" aria-label="Show Transcript">
+                📝
+              </button>
+            </div>
+          </div>
+          
+          <!-- Chapter Navigation -->
+          <div class="chapter-nav">
+            <div class="chapter-dots" id="chapter-dots">
+              <!-- Generated dynamically -->
+            </div>
+            <div class="chapter-info">
+              <span id="current-chapter">Chapter 1 of 6</span>: 
+              <span id="chapter-title">Technical Core</span>
+            </div>
+          </div>
+          
+          <!-- Slide Display Area -->
+          <div class="slide-container">
+            <div class="slide-content" id="current-slide">
+              <!-- Slide content populated by JS -->
+            </div>
+            
+            <!-- Navigation Arrows -->
+            <button class="slide-nav prev" onclick="stopAudio(); previousSlide()">‹</button>
+            <button class="slide-nav next" onclick="stopAudio(); nextSlide()">›</button>
+          </div>
+          
+          <!-- Transcript Panel (toggleable) -->
+          <div id="transcript-panel" style="display:none">
+            <div class="transcript-header">
+              <h4>Full Transcript</h4>
+              <button onclick="closeTranscript()">✕</button>
+            </div>
+            <div class="transcript-content" id="transcript-content">
+              <!-- Populated dynamically with sentence highlighting -->
+            </div>
+          </div>
+          
+          <!-- Navigation Controls -->
+          <div class="slide-navigation">
+            <button class="btn" onclick="stopAudio(); previousSlide()" id="btn-prev">← Previous</button>
+            <span class="slide-counter">
+              Dimension <span id="current-dimension">1</span> of 26
+            </span>
+            <button class="btn" onclick="stopAudio(); nextSlide()" id="btn-next">Next →</button>
+          </div>
+          
+        </div>
+      </div>
+      
+      <!-- Quick Reference Grid (always visible) -->
+      <div class="dimensions-grid">
+        <h3>All 26 Dimensions at a Glance</h3>
+        <div class="grid-container">
+          <!-- Each dimension as a clickable card -->
+          <div class="dimension-card" data-dimension="1" onclick="stopAudio(); jumpToDimension(1)">
+            <span class="dim-emoji">🏗️</span>
+            <strong>Architecture</strong>
+            <small>System design decisions</small>
+          </div>
+          <div class="dimension-card" data-dimension="2" onclick="stopAudio(); jumpToDimension(2)">
+            <span class="dim-emoji">🔧</span>
+            <strong>Infrastructure</strong>
+            <small>Deployment & DevOps</small>
+          </div>
+          <div class="dimension-card" data-dimension="3" onclick="stopAudio(); jumpToDimension(3)">
+            <span class="dim-emoji">🔒</span>
+            <strong>Security</strong>
+            <small>Threat modeling & protection</small>
+          </div>
+          <div class="dimension-card" data-dimension="4" onclick="stopAudio(); jumpToDimension(4)">
+            <span class="dim-emoji">⚡</span>
+            <strong>Performance</strong>
+            <small>Optimization & scaling</small>
+          </div>
+          <div class="dimension-card" data-dimension="5" onclick="stopAudio(); jumpToDimension(5)">
+            <span class="dim-emoji">🧪</span>
+            <strong>Testing Strategy</strong>
+            <small>Quality assurance approach</small>
+          </div>
+          <div class="dimension-card" data-dimension="6" onclick="stopAudio(); jumpToDimension(6)">
+            <span class="dim-emoji">📊</span>
+            <strong>Monitoring</strong>
+            <small>Observability & alerts</small>
+          </div>
+          <div class="dimension-card" data-dimension="7" onclick="stopAudio(); jumpToDimension(7)">
+            <span class="dim-emoji">📚</span>
+            <strong>Documentation</strong>
+            <small>Knowledge management</small>
+          </div>
+          <div class="dimension-card" data-dimension="8" onclick="stopAudio(); jumpToDimension(8)">
+            <span class="dim-emoji">🔄</span>
+            <strong>Technical Debt</strong>
+            <small>Maintenance & refactoring</small>
+          </div>
+          <div class="dimension-card" data-dimension="9" onclick="stopAudio(); jumpToDimension(9)">
+            <span class="dim-emoji">💰</span>
+            <strong>Cost Optimization</strong>
+            <small>Budget & resource efficiency</small>
+          </div>
+          <div class="dimension-card" data-dimension="10" onclick="stopAudio(); jumpToDimension(10)">
+            <span class="dim-emoji">📈</span>
+            <strong>Business Metrics</strong>
+            <small>KPIs & success measurement</small>
+          </div>
+          <div class="dimension-card" data-dimension="11" onclick="stopAudio(); jumpToDimension(11)">
+            <span class="dim-emoji">⏰</span>
+            <strong>Timeline Management</strong>
+            <small>Estimation & delivery</small>
+          </div>
+          <div class="dimension-card" data-dimension="12" onclick="stopAudio(); jumpToDimension(12)">
+            <span class="dim-emoji">👥</span>
+            <strong>User Research</strong>
+            <small>Understanding customer needs</small>
+          </div>
+          <div class="dimension-card" data-dimension="13" onclick="stopAudio(); jumpToDimension(13)">
+            <span class="dim-emoji">🎨</span>
+            <strong>UX Design</strong>
+            <small>Interface & experience design</small>
+          </div>
+          <div class="dimension-card" data-dimension="14" onclick="stopAudio(); jumpToDimension(14)">
+            <span class="dim-emoji">📞</span>
+            <strong>Customer Support</strong>
+            <small>Issue resolution & feedback</small>
+          </div>
+          <div class="dimension-card" data-dimension="15" onclick="stopAudio(); jumpToDimension(15)">
+            <span class="dim-emoji">🚀</span>
+            <strong>Release Management</strong>
+            <small>Deployment coordination</small>
+          </div>
+          <div class="dimension-card" data-dimension="16" onclick="stopAudio(); jumpToDimension(16)">
+            <span class="dim-emoji">🔍</span>
+            <strong>Incident Response</strong>
+            <small>Crisis management & postmortems</small>
+          </div>
+          <div class="dimension-card" data-dimension="17" onclick="stopAudio(); jumpToDimension(17)">
+            <span class="dim-emoji">📋</span>
+            <strong>Process Design</strong>
+            <small>Workflow optimization</small>
+          </div>
+          <div class="dimension-card" data-dimension="18" onclick="stopAudio(); jumpToDimension(18)">
+            <span class="dim-emoji">🤝</span>
+            <strong>Cross-team Collaboration</strong>
+            <small>Working with other departments</small>
+          </div>
+          <div class="dimension-card" data-dimension="19" onclick="stopAudio(); jumpToDimension(19)">
+            <span class="dim-emoji">📢</span>
+            <strong>Technical Communication</strong>
+            <small>Explaining complex concepts</small>
+          </div>
+          <div class="dimension-card" data-dimension="20" onclick="stopAudio(); jumpToDimension(20)">
+            <span class="dim-emoji">🎯</span>
+            <strong>Code Reviews</strong>
+            <small>Quality gates & mentoring</small>
+          </div>
+          <div class="dimension-card" data-dimension="21" onclick="stopAudio(); jumpToDimension(21)">
+            <span class="dim-emoji">🧭</span>
+            <strong>Technical Vision</strong>
+            <small>Long-term strategy</small>
+          </div>
+          <div class="dimension-card" data-dimension="22" onclick="stopAudio(); jumpToDimension(22)">
+            <span class="dim-emoji">👨‍🏫</span>
+            <strong>Mentoring</strong>
+            <small>Developing junior developers</small>
+          </div>
+          <div class="dimension-card" data-dimension="23" onclick="stopAudio(); jumpToDimension(23)">
+            <span class="dim-emoji">🏆</span>
+            <strong>Team Building</strong>
+            <small>Culture & motivation</small>
+          </div>
+          <div class="dimension-card" data-dimension="24" onclick="stopAudio(); jumpToDimension(24)">
+            <span class="dim-emoji">⚖️</span>
+            <strong>Decision Making</strong>
+            <small>Weighing tradeoffs</small>
+          </div>
+          <div class="dimension-card" data-dimension="25" onclick="stopAudio(); jumpToDimension(25)">
+            <span class="dim-emoji">🎪</span>
+            <strong>Stakeholder Management</strong>
+            <small>Managing expectations</small>
+          </div>
+          <div class="dimension-card" data-dimension="26" onclick="stopAudio(); jumpToDimension(26)">
+            <span class="dim-emoji">🌟</span>
+            <strong>Innovation Leadership</strong>
+            <small>Driving technical excellence</small>
+          </div>
+        </div>
+      </div>
+      
+    </section>
+
+    <section id="game">
+      <h2>🎮 Pitfall Detective: Test Your Knowledge</h2>
+      <p>Time to put your learning into action! Review each code snippet and identify the issues. This isn't about memorization—it's about developing your "code smell" detector.</p>
+      
+      <div class="game-container">
+        <div class="game-header">
+          <div>
+            <div class="game-score">Score: <span id="game-score">0</span>/20</div>
+            <div style="color:#6c757d;font-size:0.9rem">Streak: <span id="game-streak">0</span> 🔥</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-weight:600">Case <span id="game-current">1</span>/20</div>
+            <div style="color:#6c757d;font-size:0.9rem">Level: <span id="game-level">Beginner</span></div>
+          </div>
+        </div>
+        
+        <div id="game-question"></div>
+        <div id="game-options" class="game-options"></div>
+        <div id="game-feedback" class="game-feedback" style="display:none"></div>
+        
+        <div style="text-align:center;margin-top:20px">
+          <button class="btn" id="game-next" onclick="nextGameQuestion()" style="display:none">Next Case →</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="wizard">
+      <h2>🧙 The Journey: Build Your First Project</h2>
+      <p>Let's walk through creating a real project together. This 10-step wizard will guide you from choosing a model to deploying production-ready code. By the end, you'll have a personalized checklist for your workflow.</p>
+      
+      <div class="interactive-box">
+        <div class="wizard-steps" id="wizard-dots"></div>
+        <div style="text-align:center;margin-bottom:20px;font-weight:600;color:#6c757d">
+          Step <span id="wizard-step-num">1</span> of 10: <span id="wizard-step-name">Getting Started</span>
+        </div>
+        
+        <div class="wizard-content" id="wizard-content"></div>
+        
+        <div class="wizard-nav">
+          <button class="btn" id="wizard-prev" onclick="wizardPrev()" style="background:#6c757d" disabled>← Previous</button>
+          <button class="btn" id="wizard-skip" onclick="wizardNext()" style="background:#6c757d">Skip Step</button>
+          <button class="btn" id="wizard-next" onclick="wizardNext()">Next Step →</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="wizard-reflect">
+      <div style="background:linear-gradient(135deg,#fff7ed 0%,#ffe4cc 100%);border:2px solid var(--accent);border-radius:12px;padding:24px;margin:24px 0">
+        <h2 style="margin:0 0 16px 0;color:var(--accent-2)">🪞 Reflect & Apply</h2>
+        <p>Before you move on, take a minute to think:</p>
+        <ul style="margin:16px 0 16px 24px;line-height:1.8">
+          <li><strong>Which step of the wizard felt hardest — and why?</strong></li>
+          <li><strong>What would you change in your next Claude prompt?</strong></li>
+          <li><strong>How could this process improve your team's workflow?</strong></li>
+        </ul>
+        <p style="background:var(--muted);padding:16px;border-radius:8px;border-left:4px solid var(--accent);margin-top:20px">
+          💡 <em><strong>Tip:</strong> Jot your answers in a note or journal. Reflection turns practice into mastery. Even 2 minutes of thinking deeply about what you learned makes the knowledge stick 10× better.</em>
+        </p>
+        <details style="margin-top:16px;cursor:pointer">
+          <summary style="font-weight:600;padding:12px;background:var(--muted);border-radius:6px">📝 Want to write it down? Click here for a reflection template</summary>
+          <div style="padding:16px;background:#fff;border:1px solid var(--border);border-radius:0 0 8px 8px;margin-top:-1px">
+            <textarea id="wizard-reflection" style="width:100%;min-height:120px;padding:12px;border:1px solid var(--border);border-radius:6px;font-family:inherit;resize:vertical" placeholder="My reflections on the wizard:
+
+Hardest step: 
+Why it was challenging:
+What I'll improve in my next prompt:
+How my team could benefit:"></textarea>
+            <button class="btn" onclick="saveWizardReflection()" style="margin-top:12px">💾 Save My Notes</button>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <section id="builder">
+      <h2>👨‍🍳 Prompt Recipe Builder</h2>
+      <p>Think of this like cooking. You need the right ingredients in the right proportions. This tool helps you build prompts that produce great code every time.</p>
+      
+      <div class="prompt-builder">
+        <div class="builder-section">
+          <label>1️⃣ What are you building? (Required)</label>
+          <input type="text" id="pb-base" placeholder="e.g., A user registration system" oninput="updatePrompt()">
+        </div>
+        
+        <div class="builder-section">
+          <label>2️⃣ Framework/Language (Required)</label>
+          <select id="pb-framework" onchange="updatePrompt()">
+            <option value="">Select...</option>
+            <option value="Python/FastAPI">Python/FastAPI</option>
+            <option value="Node.js/Express">Node.js/Express</option>
+            <option value="Python/Django">Python/Django</option>
+            <option value="React">React</option>
+            <option value="Next.js">Next.js</option>
+          </select>
+        </div>
+        
+        <div class="builder-section">
+          <label>3️⃣ Special Requirements (Recommended)</label>
+          <div class="checkbox-group">
+            <label class="checkbox-item"><input type="checkbox" onchange="updatePrompt()" value="JWT authentication"> JWT authentication</label>
+            <label class="checkbox-item"><input type="checkbox" onchange="updatePrompt()" value="Input validation"> Input validation</label>
+            <label class="checkbox-item"><input type="checkbox" onchange="updatePrompt()" value="Error handling"> Error handling</label>
+            <label class="checkbox-item"><input type="checkbox" onchange="updatePrompt()" value="Rate limiting"> Rate limiting</label>
+          </div>
+        </div>
+        
+        <div class="builder-section">
+          <label>4️⃣ Code Style (Optional)</label>
+          <div class="checkbox-group">
+            <label class="checkbox-item"><input type="checkbox" onchange="updatePrompt()" value="Include docstrings"> Include docstrings</label>
+            <label class="checkbox-item"><input type="checkbox" onchange="updatePrompt()" value="Type hints"> Type hints</label>
+            <label class="checkbox-item"><input type="checkbox" onchange="updatePrompt()" value="Follow style guide"> Follow style guide (PEP 8/ESLint)</label>
+          </div>
+        </div>
+        
+        <div class="builder-section">
+          <label>5️⃣ Testing (Recommended)</label>
+          <div class="checkbox-group">
+            <label class="checkbox-item"><input type="checkbox" onchange="updatePrompt()" value="Unit tests"> Unit tests</label>
+            <label class="checkbox-item"><input type="checkbox" onchange="updatePrompt()" value="Integration tests"> Integration tests</label>
+          </div>
+        </div>
+        
+        <div class="generated-prompt">
+          <strong>Your Generated Prompt:</strong>
+          <p id="generated-prompt-text" style="margin-top:10px;font-family:monospace;white-space:pre-wrap">Fill in the fields above to build your prompt...</p>
+        </div>
+        
+        <div style="margin-top:15px">
+          <div style="font-weight:600;margin-bottom:5px">Prompt Quality Score:</div>
+          <div class="quality-bar">
+            <div class="quality-fill" id="quality-fill" style="width:0%"></div>
+          </div>
+          <div style="text-align:center;margin-top:5px;color:#6c757d;font-size:0.9rem" id="quality-text">0/10</div>
+        </div>
+        
+        <div style="display:flex;gap:10px;margin-top:20px">
+          <button class="btn" onclick="copyPrompt()">📋 Copy Prompt</button>
+          <button class="btn" onclick="sendToPlayground()" style="background:var(--ok)">⚡ Try in Playground</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="playground">
+      <h2>⚡ Live Playground: Try It Yourself</h2>
+      <p>This is where theory meets practice. Write a prompt, see real code generated (simulated), and get instant feedback on how to improve. No judgment, no consequences—just learning!</p>
+      
+      <div class="interactive-box">
+        <div style="margin-bottom:15px">
+          <label style="font-weight:600;display:block;margin-bottom:8px">Your Prompt:</label>
+          <textarea id="playground-prompt" style="width:100%;min-height:120px;padding:12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:1rem" placeholder="Example: Create a FastAPI endpoint for user login with JWT tokens and rate limiting"></textarea>
+        </div>
+        
+        <div style="display:flex;gap:10px;margin-bottom:20px">
+          <button class="btn" onclick="generateCode()">⚡ Generate Code</button>
+          <button class="btn" onclick="analyzePrompt()" style="background:#6c757d">🔍 Analyze My Prompt</button>
+        </div>
+        
+        <div id="playground-analysis" style="display:none;background:var(--warning-soft);padding:15px;border-radius:8px;border-left:4px solid var(--warning);margin-bottom:20px"></div>
+        
+        <div id="playground-result" style="display:none">
+          <div style="font-weight:600;margin-bottom:10px">Generated Code:</div>
+          <pre class="code-block" id="playground-code"></pre>
+          
+          <div style="margin-top:15px;padding:15px;background:var(--muted);border-radius:8px">
+            <div style="font-weight:600;margin-bottom:10px">Quality Analysis:</div>
+            <div id="quality-checks"></div>
+          </div>
+          
+          <div style="margin-top:15px">
+            <button class="btn" onclick="improvePrompt()" style="background:var(--ok)">✨ Show Me How to Improve This</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="examples">
+      <h2>💡 Real-World Examples</h2>
+      <p>These aren't toy examples—these are the actual scenarios developers face every day. Each card shows a common task, the right way to prompt for it, and what you'll get back.</p>
+      
+      <div class="interactive-box">
+        <div class="carousel-container">
+          <button id="carousel-prev" class="carousel-nav" onclick="prevCard()">‹</button>
+          <div id="carousel-deck"></div>
+          <button id="carousel-next" class="carousel-nav" onclick="nextCard()">›</button>
+        </div>
+        <div class="carousel-footer">
+          <div id="carousel-counter">Example 1 of 20</div>
+          <button id="carousel-copy-btn" onclick="copyCardCode()">📋 Copy Code</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="faq">
+      <h2>❓ Frequently Asked Questions</h2>
+      <p>Got questions? You're not alone. These are the questions every developer asks when starting with Claude Code.</p>
+      
+      <h3>For Beginners</h3>
+      <div class="accordion" id="faq-beginner"></div>
+      
+      <h3 style="margin-top:40px">For Practitioners</h3>
+      <div class="accordion" id="faq-intermediate"></div>
+      
+      <h3 style="margin-top:40px">For Architects</h3>
+      <div class="accordion" id="faq-advanced"></div>
+    </section>
+
+    <section id="glossary">
+      <h2>📚 Essential Terms</h2>
+      <p>Hover over any term to see what it means. These are the concepts that come up again and again when working with Claude Code.</p>
+      
+      <div class="glossary-cloud" id="glossary-cloud"></div>
+    </section>
+
+    <section id="quiz">
+      <h2>🎓 Final Mastery Quiz</h2>
+      <p>Ready to test everything you've learned? This 25-question quiz covers all the key concepts. You'll get instant feedback and a certificate at the end!</p>
+      
+      <div class="interactive-box">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:15px;border-bottom:2px solid var(--border)">
+          <button class="btn" id="quiz-prev" onclick="quizPrev()">←</button>
+          <span style="font-weight:600">Question <span id="quiz-current">1</span> of <span id="quiz-total">25</span></span>
+          <button class="btn" id="quiz-next" onclick="quizNext()">→</button>
+        </div>
+        
+        <div id="quiz-body"></div>
+      </div>
+    </section>
+
+    <section id="next-steps">
+      <h2>🚀 What's Next?</h2>
+      <p>You've learned the essentials. Here's how to continue your journey and stay ahead of the curve.</p>
+      
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;margin-top:30px">
+        <div style="background:var(--muted);padding:20px;border-radius:12px;border-top:4px solid var(--accent)">
+          <h4>📖 Keep Learning</h4>
+          <p>Practice with real projects. The more you use Claude Code, the better you'll get at crafting effective prompts.</p>
+        </div>
+        <div style="background:var(--muted);padding:20px;border-radius:12px;border-top:4px solid var(--ok)">
+          <h4>🔄 Share Feedback</h4>
+          <p>When Claude generates something wrong, share that feedback. It helps improve the model for everyone.</p>
+        </div>
+        <div style="background:var(--muted);padding:20px;border-radius:12px;border-top:4px solid var(--warning)">
+          <h4>🛡️ Stay Secure</h4>
+          <p>Always review generated code for security issues. Never paste production secrets into prompts.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <footer class="site-footer">
+    <p>© 2025 Claude Code Mastery. Built with ❤️ for developers everywhere.</p>
+  </footer>
+
+  <div class="chip-tip"><div class="arrow"></div><div class="tip-content"></div></div>
+
+  <script>
+    // Utility Functions
+    function escapeHtml(unsafe) {
+      const div = document.createElement('div');
+      div.textContent = unsafe;
+      return div.innerHTML;
+    }
+
+    // All notification systems removed - will rebuild clean system
+
+    // Progress Tracking - Based on Actual Interactions
+    const progressState = {
+      quizScore: 0,
+      gameScore: 0,
+      wizardComplete: false,
+      audioTourStarted: false,
+      interactionsCount: 0
+    };
+
+    function updateProgress() {
+      // Calculate progress based on meaningful interactions, not just scrolling
+      let progress = 0;
+      progress += (progressState.quizScore / 10) * 40; // Quiz (40%)
+      progress += (progressState.gameScore / 20) * 30; // Game (30%)
+      if (progressState.wizardComplete) progress += 20; // Wizard (20%)
+      if (progressState.audioTourStarted) progress += 10; // Audio (10%)
+      progress = Math.min(100, Math.round(progress));
+
+      // Do NOT overwrite header text (header shows reading time now)
+
+      // Analytics hook
+      if(window.trackProgress) {
+        window.trackProgress({
+          progress: progress,
+          quizScore: progressState.quizScore,
+          gameScore: progressState.gameScore,
+          wizardComplete: progressState.wizardComplete,
+          audioTourStarted: progressState.audioTourStarted
+        });
+      }
+    }
+
+    // Remove the broken section observer that was giving fake progress
+    // Progress now only updates through real interactions
+
+    // Language/Focus Switching
+    let currentFocus = 'backend';
+    const focusExamples = {
+      backend: {
+        frameworks: ['Python/FastAPI', 'Node.js/Express', 'Python/Django', 'Go/Gin', 'Ruby/Rails'],
+        tasks: ['REST APIs', 'Authentication', 'Database queries', 'Background jobs']
+      },
+      frontend: {
+        frameworks: ['React', 'Vue.js', 'Next.js', 'Svelte', 'Angular'],
+        tasks: ['Component design', 'State management', 'API integration', 'Responsive layouts']
+      },
+      data: {
+        frameworks: ['Python/Pandas', 'Python/NumPy', 'R', 'SQL', 'Apache Spark'],
+        tasks: ['Data cleaning', 'Analysis', 'Visualization', 'ML pipelines']
+      }
+    };
+
+    function setLanguageFocus(focus) {
+      currentFocus = focus;
+      document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      
+      // Removed info notification - less disturbing for users
+      updateExamplesForFocus();
+    }
+
+    function updateExamplesForFocus() {
+      // Update prompt builder defaults
+      const frameworkSelect = document.getElementById('pb-framework');
+      if(frameworkSelect) {
+        frameworkSelect.innerHTML = '<option value="">Select...</option>' + 
+          focusExamples[currentFocus].frameworks.map(f => `<option value="${f}">${f}</option>`).join('');
+      }
+    }
+
+    // Data
+    const pitfallsData = [
+      {id:1,title:"Hardcoded Secrets",level:"critical",desc:"Never paste API keys, passwords, or tokens in prompts",fix:"Use environment variables",example:{bad:"password = 'admin123'",good:"password = os.getenv('DB_PASS')"}},
+      {id:2,title:"Vague Prompts",level:"critical",desc:"'Make an API' → unclear requirements",fix:"Be specific: framework, endpoints, auth, error handling",example:{bad:"create an api",good:"Create a FastAPI REST endpoint for user auth with JWT tokens"}},
+      {id:3,title:"No Input Validation",level:"critical",desc:"Accepting user input without sanitization",fix:"Always validate and sanitize all inputs",example:{bad:"user_id = input()",good:"user_id = int(input()) if input().isdigit() else None"}},
+      {id:4,title:"Type Confusion",level:"critical",desc:"Forgetting input() returns strings",fix:"Convert types explicitly: int(), float()",example:{bad:"age = input('Age: ')\nage + 5",good:"age = int(input('Age: '))\nage + 5"}},
+      {id:5,title:"Missing Error Handling",level:"critical",desc:"No try/except blocks for failures",fix:"Wrap risky operations in try/except",example:{bad:"data = json.loads(text)",good:"try:\n  data = json.loads(text)\nexcept:\n  data = {}"}},
+      {id:6,title:"Wrong Temperature",level:"high",desc:"Using high temperature (>0.5) for code",fix:"Set temperature to 0.0-0.2 for deterministic code",example:{bad:"temperature: 0.9",good:"temperature: 0.1"}},
+      {id:7,title:"Ignoring RAG",level:"high",desc:"Not providing documentation or context",fix:"Include relevant docs, schemas, examples",example:{bad:"make database",good:"[paste schema] Create queries following this schema"}},
+      {id:8,title:"No Testing",level:"high",desc:"Deploying without tests",fix:"Request unit tests in your prompt",example:{bad:"create function",good:"create function with pytest unit tests"}},
+      {id:9,title:"Hallucinated Functions",level:"high",desc:"Claude invents non-existent APIs",fix:"Verify all functions/methods exist in docs",example:{bad:"Trust blindly",good:"Check official documentation"}},
+      {id:10,title:"Copy-Paste Without Review",level:"high",desc:"Using code without understanding it",fix:"Read and understand before using",example:{bad:"Paste and run",good:"Review, test, then deploy"}},
+      {id:11,title:"No Documentation",level:"high",desc:"Code without comments or docstrings",fix:"Request detailed comments in prompt",example:{bad:"create function",good:"create function with docstrings and inline comments"}},
+      {id:12,title:"No Version Control",level:"high",desc:"Not tracking AI-generated code",fix:"Commit all code with clear messages",example:{bad:"Save locally",good:"git commit -m 'feat: add auth (AI-generated)'"}},
+      {id:13,title:"Missing Security Scans",level:"high",desc:"No vulnerability checks",fix:"Run security linters on generated code",example:{bad:"Deploy directly",good:"Run bandit/eslint security checks"}},
+      {id:14,title:"Wrong Model Choice",level:"important",desc:"Using Opus for simple tasks",fix:"Sonnet for 90% of tasks, Opus for complex only",example:{bad:"Opus for CRUD",good:"Sonnet for standard development"}},
+      {id:15,title:"No Cost Monitoring",level:"important",desc:"Not tracking API usage",fix:"Monitor costs and set budgets",example:{bad:"Unlimited usage",good:"Track monthly spend"}},
+      {id:16,title:"Missing Stop Tokens",level:"important",desc:"Code generation runs too long",fix:"Define clear output boundaries",example:{bad:"No limits",good:"Generate only the login function"}},
+      {id:17,title:"Inconsistent Style",level:"important",desc:"Code doesn't match project conventions",fix:"Provide style guide or linter config",example:{bad:"No style specified",good:"Follow PEP 8, use Black formatter"}},
+      {id:18,title:"No Human Oversight",level:"important",desc:"Trusting critical code without review",fix:"Always review auth, payments, data processing",example:{bad:"Auto-deploy",good:"Manual review for critical paths"}},
+      {id:19,title:"Ignoring Edge Cases",level:"important",desc:"Only handling happy path",fix:"Request comprehensive error scenarios",example:{bad:"basic validation",good:"handle null, empty, malformed, overflow"}},
+      {id:20,title:"No Feedback Loop",level:"important",desc:"Not learning from errors",fix:"Share mistakes back to improve prompts",example:{bad:"Repeat errors",good:"Document learnings, refine prompts"}}
+    ];
+
+    const comparisons = [
+      {
+        title:"Login System",
+        bad:{prompt:"make login",result:"15 lines, no security, no tests",issues:["Hardcoded password","No encryption","No rate limiting","Missing tests"]},
+        good:{prompt:"Create secure login with FastAPI, JWT tokens, bcrypt hashing, rate limiting, input validation, and unit tests",result:"85 lines, production-ready, fully tested",features:["JWT authentication","bcrypt password hashing","Rate limiting (10/min)","Comprehensive validation","Full test coverage"]}
+      },
+      {
+        title:"Email Validation",
+        bad:{prompt:"validate email",result:"Basic regex, no edge cases",issues:["Accepts invalid TLDs","No normalization","Missing error messages"]},
+        good:{prompt:"Create email validator with RFC 5322 compliance, check valid TLDs, normalize case, return detailed error messages",result:"Robust validation with detailed feedback",features:["RFC compliant","TLD verification","Case normalization","Descriptive errors"]}
+      },
+      {
+        title:"API Error Handling",
+        bad:{prompt:"add error handling",result:"Generic 500 errors",issues:["No status codes","No logging","No user feedback"]},
+        good:{prompt:"Implement error handling with proper HTTP status codes, structured JSON responses, logging, and user-friendly messages",result:"Professional error system",features:["Proper status codes","Structured responses","Comprehensive logging","Clear user messages"]}
+      }
+    ];
+
+    const gameQuestions = [
+      {code:"password = 'admin123'\nif password == user_input:\n  grant_access()",issues:["Hardcoded password","No encryption","No rate limiting"],correct:["Hardcoded password"]},
+      {code:"data = input('Enter data: ')\nprocess(data)",issues:["No input validation","Missing type conversion","No error handling"],correct:["No input validation"]},
+      {code:"# Generated by Claude\nuser.delete()",issues:["No confirmation","Missing error handling","No logging"],correct:["No confirmation","No logging"]},
+      {code:"result = 10 / user_input",issues:["Division by zero risk","No type checking","No error handling"],correct:["Division by zero risk","No error handling"]},
+      {code:"import magic_library\nmagic_library.solve_all()",issues:["Hallucinated library","No verification","Blind trust"],correct:["Hallucinated library","No verification"]}
+    ];
+
+    const wizardSteps = [
+      {title:"Getting Started",content:"<p>Welcome! We're going to build a simple user registration API together. By the end, you'll have working code and a checklist for future projects.</p><p>First question: <strong>Have you used Claude Code before?</strong></p><div style='display:flex;gap:10px;margin-top:15px'><button class='btn' onclick='wizardSetExperience(\"new\")'>No, I'm new</button><button class='btn' onclick='wizardSetExperience(\"some\")'>A little bit</button></div>"},
+      {title:"Choose Your Model",content:"<p>For a user registration API, which model should we use?</p><div style='display:grid;gap:10px;margin-top:15px'><label style='padding:12px;border:2px solid var(--border);border-radius:8px;cursor:pointer'><input type='radio' name='model' value='sonnet'> <strong>Claude Sonnet 4.5</strong> - Fast, cost-effective, perfect for standard APIs</label><label style='padding:12px;border:2px solid var(--border);border-radius:8px;cursor:pointer'><input type='radio' name='model' value='opus'> <strong>Claude Opus 4.1</strong> - Powerful but slower and more expensive</label></div><p style='margin-top:15px;color:var(--ok)'><strong>💡 Hint:</strong> Registration is a standard feature. Sonnet handles it perfectly!</p>"},
+      {title:"Write Your Prompt",content:"<p>Now let's write a clear prompt. Fill in what you want:</p><textarea id='wizard-prompt' style='width:100%;min-height:100px;padding:10px;border:1px solid var(--border);border-radius:6px;margin:15px 0' placeholder='Example: Create a FastAPI user registration endpoint with...'></textarea><p><strong>Include:</strong></p><ul style='margin-left:20px'><li>Framework (FastAPI, Express, etc.)</li><li>What fields to collect</li><li>Security requirements</li><li>Validation needs</li></ul>"},
+      {title:"Add Context",content:"<p>Great prompt! Now let's give Claude more context about your project.</p><p>What should Claude know? (Check all that apply)</p><div style='display:grid;gap:10px;margin:15px 0'><label class='checkbox-item'><input type='checkbox'> Your coding style preferences</label><label class='checkbox-item'><input type='checkbox'> Existing database schema</label><label class='checkbox-item'><input type='checkbox'> Similar code examples</label><label class='checkbox-item'><input type='checkbox'> API documentation format</label></div><p style='background:var(--muted);padding:12px;border-radius:6px;margin-top:15px'><strong>💡 Pro Tip:</strong> The more context you provide, the better Claude understands your needs!</p>"},
+      {title:"Generate & Review",content:"<p>Perfect! Here's what Claude would generate based on your prompt:</p><pre class='code-block' style='margin:15px 0'>from fastapi import FastAPI, HTTPException\nfrom pydantic import BaseModel, EmailStr\nimport bcrypt\n\napp = FastAPI()\n\nclass UserRegistration(BaseModel):\n    email: EmailStr\n    password: str\n    name: str\n\n@app.post(\"/register\")\nasync def register(user: UserRegistration):\n    # Hash password\n    hashed = bcrypt.hashpw(\n        user.password.encode(),\n        bcrypt.gensalt()\n    )\n    # Save to database\n    return {\"message\": \"User registered\"}</pre><p><strong>Review checklist:</strong></p><ul style='margin-left:20px'><li>✅ Uses FastAPI as requested</li><li>✅ Validates email format</li><li>✅ Hashes passwords (bcrypt)</li><li>⚠️ Missing: Input validation</li><li>⚠️ Missing: Error handling</li></ul>"},
+      {title:"Improve the Code",content:"<p>You spotted the issues! Let's ask Claude to fix them.</p><p><strong>Improved prompt:</strong></p><pre class='code-block' style='margin:15px 0'>Improve the registration code:\n- Add input validation (min/max lengths)\n- Add comprehensive error handling\n- Add rate limiting\n- Include detailed comments</pre><p style='margin-top:15px;background:var(--ok-soft);padding:12px;border-radius:6px;border-left:4px solid var(--ok)'><strong>Key Learning:</strong> Don't accept the first version. Iterate to make it production-ready!</p>"},
+      {title:"Add Tests",content:"<p>Never deploy without tests! Let's add them.</p><p><strong>Testing prompt:</strong></p><pre class='code-block' style='margin:15px 0'>Create pytest unit tests for the registration endpoint:\n- Test successful registration\n- Test duplicate email\n- Test invalid email format\n- Test weak password\n- Test missing fields</pre><p style='margin-top:15px'><strong>Why testing matters:</strong> Tests catch bugs before users do. Always request tests when generating code!</p>"},
+      {title:"Security Check",content:"<p>Time to think like a hacker. What could go wrong?</p><p><strong>Security checklist:</strong></p><ul style='margin-left:20px'><li>✅ Passwords are hashed (never stored plain text)</li><li>✅ Email validation prevents injection</li><li>❓ Rate limiting? <span style='color:var(--bad)'>Add it!</span></li><li>❓ HTTPS only? <span style='color:var(--bad)'>Enforce it!</span></li><li>❓ SQL injection safe? <span style='color:var(--ok)'>Using ORM ✓</span></li></ul><p style='margin-top:15px;background:var(--warning-soft);padding:12px;border-radius:6px;border-left:4px solid var(--warning)'><strong>⚠️ Remember:</strong> Claude doesn't know your security requirements unless you tell it!</p>"},
+      {title:"Version Control",content:"<p>Let's save this code properly.</p><p><strong>Good commit message:</strong></p><pre class='code-block' style='margin:15px 0'>git add .\ngit commit -m \"feat: add user registration endpoint\n\n- FastAPI with email/password validation\n- bcrypt password hashing\n- Rate limiting (10 requests/min)\n- Full test coverage\n- Generated with Claude Code assistance\"</pre><p style='margin-top:15px'><strong>Why document AI help?</strong> Your team knows the code might need extra review, and you can track what was AI-generated vs. human-written.</p>"},
+      {title:"Congratulations!",content:"<div style='text-align:center'><div style='font-size:4rem;margin-bottom:20px'>🎉</div><h3 style='color:var(--ok);margin-bottom:15px'>You Did It!</h3><p>You've successfully built a production-ready registration system with Claude Code. Here's what you learned:</p><ul style='text-align:left;margin:20px auto;max-width:400px'><li>Choose the right model</li><li>Write specific prompts</li><li>Provide context</li><li>Review critically</li><li>Iterate to improve</li><li>Always test</li><li>Check security</li><li>Track in version control</li></ul><button class='btn' onclick='downloadChecklist()' style='margin-top:20px'>📥 Download Your Checklist</button></div>"}
+    ];
+
+    const exampleCards = [
+      {title:"1. User Authentication",prompt:"Create FastAPI login with JWT, bcrypt, rate limiting",code:"from fastapi import FastAPI, HTTPException\nfrom jose import jwt\nimport bcrypt\n\n@app.post('/login')\nasync def login(creds: LoginCreds):\n    # Verify password\n    # Generate JWT token\n    # Return token"},
+      {title:"2. Email Validator",prompt:"RFC 5322 email validator with detailed errors",code:"import re\nfrom email_validator import validate_email\n\ndef validate(email: str) -> dict:\n    try:\n        valid = validate_email(email)\n        return {'valid': True}\n    except:\n        return {'valid': False, 'error': 'Invalid format'}"},
+      {title:"3. CSV Parser",prompt:"Parse CSV with Pandas, handle errors, validate columns",code:"import pandas as pd\n\ndef parse_csv(file_path):\n    try:\n        df = pd.read_csv(file_path)\n        required = ['name', 'email']\n        if not all(c in df.columns for c in required):\n            raise ValueError('Missing columns')\n        return df\n    except Exception as e:\n        return None"},
+      {title:"4. API Rate Limiter",prompt:"Implement token bucket rate limiter with Redis",code:"from redis import Redis\nimport time\n\nclass RateLimiter:\n    def __init__(self, max_requests=10, window=60):\n        self.redis = Redis()\n        self.max = max_requests\n        self.window = window\n    \n    def allow(self, key):\n        # Token bucket algorithm\n        pass"},
+      {title:"5. Database Connection Pool",prompt:"PostgreSQL connection pool with retry logic",code:"import psycopg2.pool\n\npool = psycopg2.pool.SimpleConnectionPool(\n    1, 20,\n    host='localhost',\n    database='mydb',\n    user=os.getenv('DB_USER'),\n    password=os.getenv('DB_PASS')\n)"}
+    ];
+
+    const faqData = {
+      beginner: [
+        {q:"Do I need to know how to code to use Claude Code?",a:"You should understand basic programming concepts. Claude Code is a tool that helps you write code faster and better, but you still need to understand what the code does, review it for correctness, and test it properly."},
+        {q:"Is my code private and secure?",a:"When using the API, your prompts are processed by Claude but Anthropic doesn't train on your data without permission. However, never include production secrets, API keys, or sensitive customer data in your prompts."},
+        {q:"How much does it cost?",a:"Pricing varies by model. Sonnet 4.5 costs significantly less than Opus. For typical development tasks, expect $0.10-$0.50 per 1000 lines of generated code. Monitor your usage to track actual costs."},
+        {q:"Can Claude Code write an entire app for me?",a:"Claude can help with individual components, functions, and features. But building a complete app requires architecture decisions, integration work, testing, and deployment—all things you need to guide and review."}
+      ],
+      intermediate: [
+        {q:"How do I integrate Claude Code into my CI/CD pipeline?",a:"You can call the API from your build scripts to generate tests, documentation, or even review code. Always have human review for critical paths and never auto-deploy AI-generated code without testing."},
+        {q:"What's the best way to handle sensitive data?",a:"Never include actual secrets in prompts. Instead, use placeholder environment variables and explain the pattern you want. Example: 'Use os.getenv(\"API_KEY\") for the API key.'"},
+        {q:"How do I prevent hallucinations?",a:"Provide documentation, specify exact library versions, and always verify that suggested functions/methods actually exist. Test generated code thoroughly before deploying."},
+        {q:"When should I use Opus instead of Sonnet?",a:"Use Opus only for complex system architecture, intricate algorithms, or when Sonnet's output isn't meeting your needs. For 90% of development tasks, Sonnet is faster and more cost-effective."}
+      ],
+      advanced: [
+        {q:"How do I implement custom RAG for domain-specific code?",a:"Include your internal documentation, code style guides, and example implementations in your prompts. For larger contexts, consider building a retrieval system that finds relevant docs based on the task and includes them automatically."},
+        {q:"What's the optimal context window strategy for large codebases?",a:"Break tasks into focused components. Include only relevant files and documentation. Use reference-style prompts where you describe the broader architecture but only include code snippets for the immediate task."},
+        {q:"Can I fine-tune Claude for my organization's coding style?",a:"Claude doesn't support traditional fine-tuning, but you can create prompt templates that include your style guide, linting rules, and example code. This acts as 'prompt engineering at scale.'"},
+        {q:"How do I orchestrate multiple models for specialized tasks?",a:"Use Sonnet for standard code generation, and call Opus for complex architecture decisions. You can also use task-specific tools (linters, formatters, security scanners) alongside Claude for a comprehensive workflow."}
+      ]
+    };
+
+    const glossaryTerms = [
+      {term:"Temperature",emoji:"🌡️",def:"The 'creativity dial' for responses. 0.0 = deterministic (same output every time), 1.0 = creative (varied output). For code, use 0.0-0.2."},
+      {term:"Stop Tokens",emoji:"🛑",def:"Sequences that tell Claude when to stop generating. Prevents runaway output. Example: Stop after generating one function."},
+      {term:"RAG",emoji:"📚",def:"Retrieval-Augmented Generation. Providing relevant documents or context to Claude so it can generate better, more accurate responses."},
+      {term:"Hallucination",emoji:"👻",def:"When AI confidently generates incorrect information, like non-existent functions or APIs. Always verify outputs."},
+      {term:"Context Window",emoji:"🪟",def:"The amount of text (input + output) Claude can process at once. Think of it as short-term memory. Typical limit: ~200,000 tokens."},
+      {term:"Prompt Engineering",emoji:"🎯",def:"The art and science of writing prompts that get you the results you want. Specificity is key!"},
+      {term:"Token",emoji:"🎫",def:"The unit of text Claude processes. Roughly ~4 characters or 0.75 words. Used for pricing and context limits."},
+      {term:"Type Casting",emoji:"🔄",def:"Converting data from one type to another. Example: int('25') converts string '25' to integer 25."},
+      {term:"API Quota",emoji:"📊",def:"Limits on how many requests you can make. Monitor usage to avoid unexpected costs or service interruptions."},
+      {term:"Linter",emoji:"🔍",def:"A tool that analyzes code for errors, style issues, and potential bugs. Examples: ESLint, Pylint, Black."},
+      {term:"Inference",emoji:"⚡",def:"The process of generating output from Claude. Each API call is an inference request."},
+      {term:"Model Bias",emoji:"⚖️",def:"Tendencies in AI outputs based on training data. Claude may favor certain languages or frameworks. Be explicit about your needs."}
+    ];
+
+    const quizQuestions = [
+      {q:"What's the recommended temperature setting for code generation?",correct:0,options:[{text:"0.0-0.2",exp:"✅ Correct! Low temperature ensures consistent, deterministic code output."},{text:"0.5",exp:"Too high. This introduces unnecessary randomness into code generation."},{text:"0.8-1.0",exp:"Way too high! This setting is for creative writing, not code."},{text:"It doesn't matter",exp:"It matters a lot! Temperature controls consistency vs. creativity."}]},
+      {q:"A colleague's prompt is 'make login'. What's wrong?",correct:2,options:[{text:"Nothing, it's clear",exp:"Too vague! No framework, no security requirements, no specifics."},{text:"Should say 'please'",exp:"Politeness doesn't matter. Specificity does!"},{text:"Too vague, missing framework/security/details",exp:"✅ Correct! Good prompts specify framework, authentication method, security requirements, and more."},{text:"Should use all caps",exp:"Formatting doesn't matter. Content and specificity do."}]},
+      {q:"You receive generated code with a function you've never heard of. What should you do first?",correct:1,options:[{text:"Use it, Claude knows best",exp:"Dangerous! Always verify before using generated code."},{text:"Check official documentation to verify it exists",exp:"✅ Correct! Claude sometimes hallucinates non-existent functions. Always verify."},{text:"Delete it immediately",exp:"Don't panic. Just verify if it's real or not."},{text:"Ask a coworker",exp:"Better to check official docs first for definitive answers."}]},
+      {q:"Which model should you use for a standard CRUD API?",correct:0,options:[{text:"Claude Sonnet 4.5",exp:"✅ Correct! Sonnet handles 90% of coding tasks efficiently and cost-effectively."},{text:"Claude Opus 4.1",exp:"Overkill! Opus is for complex architecture, not standard CRUD."},{text:"Always use the most powerful model",exp:"Not cost-effective. Match the model to task complexity."},{text:"It doesn't matter",exp:"It matters for both cost and speed!"}]},
+      {q:"What's the security risk in: password = 'admin123'",correct:3,options:[{text:"Password is too short",exp:"That's a problem, but not the main security issue here."},{text:"Should use more special characters",exp:"Missing the bigger issue: it's hardcoded!"},{text:"Should be stored in a database",exp:"Even in a database, never hardcode credentials."},{text:"Hardcoded secret, should use environment variables",exp:"✅ Correct! Never hardcode secrets. Use os.getenv('PASSWORD') instead."}]},
+      {q:"Why should you request tests when generating code?",correct:0,options:[{text:"Tests catch bugs before users do",exp:"✅ Correct! Tests ensure code works as expected and catches regressions."},{text:"Tests make code look more professional",exp:"They do, but that's not the main reason."},{text:"Tests are required by law",exp:"Not legally required, but definitely best practice."},{text:"Claude can't generate code without tests",exp:"Claude can generate code without tests, but you shouldn't use it without them!"}]},
+      {q:"What does 'RAG' stand for and why does it matter?",correct:1,options:[{text:"Random Algorithm Generator",exp:"Not correct. RAG is about providing context."},{text:"Retrieval-Augmented Generation - providing docs/context",exp:"✅ Correct! RAG means giving Claude relevant documentation and context for better results."},{text:"Rapid API Gateway",exp:"Not a real thing in this context."},{text:"Rate-limiting And Gating",exp:"Not what RAG means, though rate limiting is important separately."}]},
+      {q:"You're deploying code to production. What's the MINIMUM you must do?",correct:2,options:[{text:"Nothing, Claude's code is production-ready",exp:"Dangerous assumption! Always review and test."},{text:"Just run it once to see if it crashes",exp:"Not enough. Need comprehensive testing."},{text:"Review code, run tests, security scan, then deploy",exp:"✅ Correct! Never deploy AI-generated code without thorough review and testing."},{text:"Wait 24 hours before deploying",exp:"Time doesn't make code safer. Review and testing do."}]},
+      {q:"What's the danger of setting temperature to 0.9 for code generation?",correct:0,options:[{text:"Unpredictable, inconsistent output each time",exp:"✅ Correct! High temperature means varied, creative outputs. Not good for code that needs to work consistently."},{text:"Code will be too creative",exp:"'Creative code' sounds fun but means unpredictable and potentially buggy."},{text:"It will cost more money",exp:"Temperature doesn't affect cost, but consistency matters."},{text:"There is no danger",exp:"High temperature for code is definitely problematic!"}]},
+      {q:"Input validation is missing from generated code. What should you do?",correct:1,options:[{text:"Add it yourself manually",exp:"You could, but better to ask Claude to add it with proper error handling."},{text:"Ask Claude to add comprehensive input validation",exp:"✅ Correct! Iterate on the code. Request validation with specific requirements."},{text:"Deploy without it, it's probably fine",exp:"Never skip validation! This is a security risk."},{text:"File a bug report with Anthropic",exp:"Not a bug. You need to request it in your prompt."}]}
+    ];
+
+    // Initialize
+    let currentCard = 0;
+    let currentComparison = 0;
+    let wizardStep = 0;
+    let gameIndex = 0;
+    let gameScore = 0;
+    let gameStreak = 0;
+    let quizIndex = 0;
+
+    // Populate pitfalls table
+    function populateTable() {
+      const tbody = document.getElementById('table-body');
+      const filtered = filterPitfalls();
+      tbody.innerHTML = filtered.map(p => `
+        <tr>
+          <td>${p.id}</td>
+          <td><strong>${p.title}</strong><br><small style="color:#6c757d">${p.desc}</small></td>
+          <td><span style="padding:4px 8px;border-radius:4px;font-size:0.85rem;font-weight:600;background:${p.level==='critical'?'var(--bad-soft)':p.level==='high'?'var(--warning-soft)':'var(--ok-soft)'};color:${p.level==='critical'?'var(--bad)':p.level==='high'?'var(--warning)':'var(--ok)'}">${p.level==='critical'?'🔴 CRITICAL':p.level==='high'?'🟡 HIGH':'🟢 IMPORTANT'}</span></td>
+          <td>${p.fix}</td>
+          <td class="table-actions"><button onclick="expandPitfall(${p.id})">View</button><button onclick="tryPitfall(${p.id})">Try</button></td>
+        </tr>
+      `).join('');
+    }
+
+    function filterPitfalls() {
+      const search = document.getElementById('table-search').value.toLowerCase();
+      const filter = document.getElementById('table-filter').value;
+      return pitfallsData.filter(p => {
+        const matchSearch = !search || p.title.toLowerCase().includes(search) || p.desc.toLowerCase().includes(search);
+        const matchFilter = filter === 'all' || p.level === filter;
+        return matchSearch && matchFilter;
+      });
+    }
+
+    document.getElementById('table-search')?.addEventListener('input', populateTable);
+    document.getElementById('table-filter')?.addEventListener('change', populateTable);
+
+    function expandPitfall(id) {
+      const acc = document.getElementById('pitfalls-accordion');
+      const item = acc.querySelector(`[data-id="${id}"]`);
+      if(item) {
+        item.scrollIntoView({behavior:'smooth',block:'center'});
+        const header = item.querySelector('.accordion-header');
+        header.click();
+      }
+    }
+
+    // Populate accordion
+    function populateAccordion() {
+      const acc = document.getElementById('pitfalls-accordion');
+      acc.innerHTML = pitfallsData.map(p => `
+        <div class="accordion-item" data-id="${p.id}">
+          <button class="accordion-header" aria-expanded="false">
+            <span class="accordion-title"><strong>${p.id}. ${p.title}</strong></span>
+          </button>
+          <div class="accordion-content">
+            <p style="font-size:1.05rem;margin-bottom:15px">${p.desc}</p>
+            <div class="wrong-right-grid">
+              <div>
+                <h5 style="color:var(--bad)">❌ Wrong</h5>
+                <pre class="code-block wrong-code"><code>${p.example.bad}</code></pre>
+              </div>
+              <div>
+                <h5 style="color:var(--ok)">✅ Right</h5>
+                <pre class="code-block right-code"><code>${p.example.good}</code></pre>
+              </div>
+            </div>
+            <div style="background:var(--ok-soft);padding:15px;border-radius:8px;border-left:4px solid var(--ok);margin-top:15px">
+              <strong style="color:var(--ok)">The Fix:</strong> ${p.fix}
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+      // Add click handlers
+      acc.querySelectorAll('.accordion-header').forEach(h => {
+        h.addEventListener('click', () => {
+          const expanded = h.getAttribute('aria-expanded') === 'true';
+          h.setAttribute('aria-expanded', !expanded);
+          h.nextElementSibling.style.display = expanded ? 'none' : 'block';
+        });
+      });
+    }
+
+    // Comparison slider
+    function loadComparison(index) {
+      currentComparison = index;
+      const c = comparisons[index];
+      document.getElementById('bad-content').innerHTML = `
+        <p style="font-weight:600;margin-bottom:10px">Prompt:</p>
+        <pre class="code-block" style="font-size:0.85rem">${c.bad.prompt}</pre>
+        <p style="font-weight:600;margin:15px 0 10px">Result:</p>
+        <p>${c.bad.result}</p>
+        <p style="font-weight:600;margin:15px 0 10px">Issues:</p>
+        <ul style="margin-left:20px">${c.bad.issues.map(i => '<li>'+i+'</li>').join('')}</ul>
+      `;
+      document.getElementById('good-content').innerHTML = `
+        <p style="font-weight:600;margin-bottom:10px">Prompt:</p>
+        <pre class="code-block" style="font-size:0.85rem">${c.good.prompt}</pre>
+        <p style="font-weight:600;margin:15px 0 10px">Result:</p>
+        <p>${c.good.result}</p>
+        <p style="font-weight:600;margin:15px 0 10px">Features:</p>
+        <ul style="margin-left:20px">${c.good.features.map(f => '<li>'+f+'</li>').join('')}</ul>
+      `;
+    }
+
+    // Game
+    function loadGameQuestion() {
+      if(gameIndex >= gameQuestions.length) {
+        document.getElementById('game-question').innerHTML = `
+          <div style="text-align:center;padding:40px">
+            <div style="font-size:4rem;margin-bottom:20px">🎉</div>
+            <h3>Game Complete!</h3>
+            <p>Final Score: ${gameScore}/${gameQuestions.length}</p>
+            <button class="btn" onclick="resetGame()" style="margin-top:20px">Play Again</button>
+          </div>
+        `;
+        document.getElementById('game-options').style.display = 'none';
+        return;
+      }
+
+      const q = gameQuestions[gameIndex];
+      document.getElementById('game-question').innerHTML = `
+        <p style="font-weight:600;margin-bottom:10px">Review this code and spot the issues:</p>
+        <pre class="code-block">${q.code}</pre>
+      `;
+      
+      document.getElementById('game-options').innerHTML = q.issues.map((issue, i) => `
+        <label class="game-option" data-issue="${issue}">
+          <input type="checkbox" value="${issue}">
+          <span>${issue}</span>
+        </label>
+      `).join('');
+      
+      document.getElementById('game-current').textContent = gameIndex + 1;
+      document.getElementById('game-feedback').style.display = 'none';
+      document.getElementById('game-next').style.display = 'none';
+
+      // Add handler
+      document.getElementById('game-options').querySelectorAll('input').forEach(inp => {
+        inp.addEventListener('change', checkGameAnswer);
+      });
+    }
+
+    function checkGameAnswer() {
+      const q = gameQuestions[gameIndex];
+      const selected = Array.from(document.querySelectorAll('#game-options input:checked')).map(i => i.value);
+      const allCorrect = q.correct.every(c => selected.includes(c));
+      const noExtra = selected.every(s => q.correct.includes(s));
+      
+      if(allCorrect && noExtra && selected.length > 0) {
+        gameScore++;
+        gameStreak++;
+        document.getElementById('game-feedback').innerHTML = `<strong style="color:var(--ok)">✅ Correct!</strong> You found all ${q.correct.length} issue(s).`;
+        document.getElementById('game-feedback').style.background = 'var(--ok-soft)';
+        document.querySelectorAll('.game-option').forEach(opt => {
+          if(q.correct.includes(opt.dataset.issue)) opt.classList.add('correct');
+        });
+      } else {
+        gameStreak = 0;
+        document.getElementById('game-feedback').innerHTML = `<strong style="color:var(--bad)">Not quite!</strong> The correct issues are: ${q.correct.join(', ')}`;
+        document.getElementById('game-feedback').style.background = 'var(--bad-soft)';
+        document.querySelectorAll('.game-option').forEach(opt => {
+          if(q.correct.includes(opt.dataset.issue)) opt.classList.add('correct');
+          else if(opt.querySelector('input').checked) opt.classList.add('wrong');
+        });
+      }
+      
+      document.getElementById('game-score').textContent = gameScore;
+      document.getElementById('game-streak').textContent = gameStreak;
+      document.getElementById('game-feedback').style.display = 'block';
+      document.getElementById('game-next').style.display = 'block';
+      document.querySelectorAll('#game-options input').forEach(i => i.disabled = true);
+    }
+
+    function nextGameQuestion() {
+      gameIndex++;
+      loadGameQuestion();
+    }
+
+    function resetGame() {
+      gameIndex = 0;
+      gameScore = 0;
+      gameStreak = 0;
+      loadGameQuestion();
+    }
+
+    // Wizard
+    function loadWizardStep() {
+      const step = wizardSteps[wizardStep];
+      document.getElementById('wizard-step-num').textContent = wizardStep + 1;
+      document.getElementById('wizard-step-name').textContent = step.title;
+      document.getElementById('wizard-content').innerHTML = step.content;
+      
+      // Update dots
+      document.querySelectorAll('.wizard-dot').forEach((dot, i) => {
+        dot.classList.remove('active', 'completed');
+        if(i < wizardStep) dot.classList.add('completed');
+        if(i === wizardStep) dot.classList.add('active');
+      });
+      
+      document.getElementById('wizard-prev').disabled = wizardStep === 0;
+      document.getElementById('wizard-next').textContent = wizardStep === wizardSteps.length - 1 ? 'Finish' : 'Next Step →';
+    }
+
+    function wizardNext() {
+      if(wizardStep < wizardSteps.length - 1) {
+        wizardStep++;
+        loadWizardStep();
+      } else {
+        progressState.wizardComplete = true;
+        updateProgress();
+        showNotification('🎉 Wizard complete! You\'ve built your first project!', 'success');
+      }
+    }
+
+    function wizardPrev() {
+      if(wizardStep > 0) {
+        wizardStep--;
+        loadWizardStep();
+      }
+    }
+
+    function wizardSetExperience(level) {
+      wizardNext();
+    }
+
+    function downloadChecklist() {
+      const text = `Claude Code Development Checklist\n\n✅ Choose appropriate model (Sonnet for 90% of tasks)\n✅ Write specific prompts with framework, security, validation requirements\n✅ Provide context: documentation, schemas, examples\n✅ Review generated code critically\n✅ Iterate to improve quality\n✅ Request and run tests\n✅ Perform security checks\n✅ Use version control with clear commit messages\n✅ Monitor costs and usage\n✅ Never hardcode secrets\n✅ Always validate inputs\n✅ Document AI assistance in commits\n\nPricing Reference (check latest at https://docs.anthropic.com/en/docs/about-claude/models):\n- Sonnet 4.5: $3/M input tokens, $15/M output tokens\n- Opus 4.1: $15/M input tokens, $75/M output tokens\n- Estimate: 1000 lines ≈ 50-80k tokens\n\nGenerated from Claude Code Mastery Guide`;
+      const blob = new Blob([text], {type: 'text/plain'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'claude-code-checklist.txt';
+      a.click();
+      showToast('Checklist downloaded!', 'success');
+    }
+
+    function saveWizardReflection() {
+      const reflection = document.getElementById('wizard-reflection').value;
+      if(!reflection || reflection.trim().length < 20) {
+        showToast('Please write at least a few sentences!', 'warning');
+        return;
+      }
+      
+      localStorage.setItem('wizard-reflection', reflection);
+      const blob = new Blob([reflection], {type: 'text/plain'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'wizard-reflection.txt';
+      a.click();
+      showToast('Reflection saved and downloaded!', 'success');
+    }
+
+    // Prompt builder
+    function updatePrompt() {
+      const base = document.getElementById('pb-base').value;
+      const framework = document.getElementById('pb-framework').value;
+      const requirements = Array.from(document.querySelectorAll('.builder-section input[type="checkbox"]:checked')).map(i => i.value);
+      
+      let quality = 0;
+      let prompt = '';
+      
+      if(base) {
+        prompt += base;
+        quality += 2;
+      } else {
+        prompt = 'Fill in the fields above to build your prompt...';
+        document.getElementById('generated-prompt-text').textContent = prompt;
+        document.getElementById('quality-fill').style.width = '0%';
+        document.getElementById('quality-text').textContent = '0/10';
+        return;
+      }
+      
+      if(framework) {
+        prompt += ` using ${framework}`;
+        quality += 2;
+      }
+      
+      if(requirements.length > 0) {
+        prompt += ' with:\n- ' + requirements.join('\n- ');
+        quality += requirements.length;
+      }
+      
+      quality = Math.min(10, quality);
+      document.getElementById('generated-prompt-text').textContent = prompt;
+      document.getElementById('quality-fill').style.width = (quality * 10) + '%';
+      document.getElementById('quality-text').textContent = quality + '/10';
+    }
+
+    function copyPrompt() {
+      const text = document.getElementById('generated-prompt-text').textContent;
+      if(text && text !== 'Fill in the fields above to build your prompt...') {
+        navigator.clipboard.writeText(text).then(() => {
+          showToast('Prompt copied to clipboard!', 'success');
+        }).catch(() => {
+          showToast('Failed to copy. Please try again.', 'error');
+        });
+      } else {
+        showToast('Please build a prompt first!', 'warning');
+      }
+    }
+
+    function sendToPlayground() {
+      const text = document.getElementById('generated-prompt-text').textContent;
+      if(text && text !== 'Fill in the fields above to build your prompt...') {
+        document.getElementById('playground-prompt').value = text;
+        document.getElementById('playground').scrollIntoView({behavior: 'smooth'});
+        showToast('Prompt sent to playground!', 'success');
+      } else {
+        showToast('Please build a prompt first!', 'warning');
+      }
+    }
+
+    // Playground
+    function analyzePrompt() {
+      const prompt = document.getElementById('playground-prompt').value;
+      const analysis = document.getElementById('playground-analysis');
+      
+      if(!prompt) {
+        analysis.innerHTML = escapeHtml('⚠️ Please enter a prompt first!');
+        analysis.style.display = 'block';
+        return;
+      }
+      
+      const issues = [];
+      if(prompt.length < 20) issues.push('Too vague - add more details');
+      if(!/(python|javascript|node|react|fastapi|express|django|vue|angular|go|ruby)/i.test(prompt)) issues.push('Missing framework/language specification');
+      if(!/(auth|valid|error|test|secur)/i.test(prompt)) issues.push('Consider adding security/validation/testing requirements');
+      
+      if(issues.length === 0) {
+        analysis.innerHTML = escapeHtml('✅ Good prompt! Clear and specific. Ready to generate.');
+        analysis.style.background = 'var(--ok-soft)';
+        analysis.style.borderLeftColor = 'var(--ok)';
+      } else {
+        analysis.innerHTML = '<strong>Suggestions to improve:</strong><ul style="margin:10px 0 0 20px">' + 
+          issues.map(i => '<li>' + escapeHtml(i) + '</li>').join('') + '</ul>';
+        analysis.style.background = 'var(--warning-soft)';
+        analysis.style.borderLeftColor = 'var(--warning)';
+      }
+      
+      analysis.style.display = 'block';
+    }
+
+    function generateCode() {
+      const prompt = document.getElementById('playground-prompt').value;
+      if(!prompt) {
+        showToast('Please enter a prompt first!', 'warning');
+        return;
+      }
+      
+      // Removed info notification - users don't need to be told it's a simulation
+      
+      // Simulate code generation with focus-specific examples
+      const codeTemplates = {
+        backend: `# Generated from your prompt\n\nfrom fastapi import FastAPI, HTTPException\nfrom pydantic import BaseModel\n\napp = FastAPI()\n\nclass Item(BaseModel):\n    name: str\n    value: int\n\n@app.post("/items")\nasync def create_item(item: Item):\n    # Your logic here\n    return {"message": "Item created", "item": item}`,
+        frontend: `// Generated from your prompt\n\nimport React, { useState } from 'react';\n\nfunction ItemForm() {\n  const [name, setName] = useState('');\n  const [value, setValue] = useState(0);\n  \n  const handleSubmit = (e) => {\n    e.preventDefault();\n    // Your logic here\n  };\n  \n  return (\n    <form onSubmit={handleSubmit}>\n      <input value={name} onChange={e => setName(e.target.value)} />\n      <input type="number" value={value} onChange={e => setValue(e.target.value)} />\n      <button type="submit">Submit</button>\n    </form>\n  );\n}`,
+        data: `# Generated from your prompt\n\nimport pandas as pd\nimport numpy as np\n\ndef process_data(df):\n    # Clean data\n    df = df.dropna()\n    \n    # Transform\n    df['normalized'] = (df['value'] - df['value'].mean()) / df['value'].std()\n    \n    # Analyze\n    summary = df.describe()\n    \n    return df, summary`
+      };
+      
+      setTimeout(() => {
+        const code = codeTemplates[currentFocus] || codeTemplates.backend;
+        document.getElementById('playground-code').textContent = code;
+        document.getElementById('playground-result').style.display = 'block';
+        
+        const checks = [];
+        if(/test/i.test(prompt)) checks.push('✅ Includes tests as requested');
+        else checks.push('⚠️ No tests included - consider adding them');
+        
+        if(/valid/i.test(prompt)) checks.push('✅ Input validation present');
+        else checks.push('⚠️ Missing input validation - important for security');
+        
+        if(/error/i.test(prompt)) checks.push('✅ Error handling implemented');
+        else checks.push('⚠️ Limited error handling - add try/catch blocks');
+        
+        document.getElementById('quality-checks').innerHTML = checks.join('<br>');
+        showToast('Code generated successfully!', 'success');
+      }, 1000);
+    }
+
+    function improvePrompt() {
+      const current = document.getElementById('playground-prompt').value;
+      const improved = current + '\n\nPlease also include:\n- Comprehensive input validation\n- Detailed error handling with HTTP status codes\n- Unit tests with pytest\n- Docstrings and inline comments';
+      document.getElementById('playground-prompt').value = improved;
+      showToast('Prompt improved! Try generating again.', 'success');
+    }
+
+    // Cards
+    function populateCards() {
+      const deck = document.getElementById('carousel-deck');
+      deck.innerHTML = exampleCards.map((card, i) => `
+        <div class="flip-card ${i === 0 ? 'active' : ''}" data-index="${i}">
+          <div class="flip-card-inner">
+            <div class="flip-card-front">
+              <h4>${card.title}</h4>
+              <p><strong>Prompt:</strong></p>
+              <p style="font-size:0.9rem;font-style:italic">"${card.prompt}"</p>
+              <p style="margin-top:20px;color:var(--accent);font-size:0.9rem">👆 Click to see the code</p>
+            </div>
+            <div class="flip-card-back">
+              <pre style="margin:0;font-size:0.85rem;line-height:1.5;white-space:pre-wrap">${card.code}</pre>
+            </div>
+          </div>
+        </div>
+      `).join('');
+      
+      deck.querySelectorAll('.flip-card').forEach(card => {
+        card.addEventListener('click', () => card.classList.toggle('flipped'));
+      });
+    }
+
+    function prevCard() {
+      if(currentCard > 0) {
+        currentCard--;
+        showCard();
+      }
+    }
+
+    function nextCard() {
+      if(currentCard < exampleCards.length - 1) {
+        currentCard++;
+        showCard();
+      }
+    }
+
+    function showCard() {
+      document.querySelectorAll('.flip-card').forEach((card, i) => {
+        card.classList.toggle('active', i === currentCard);
+        if(i !== currentCard) card.classList.remove('flipped');
+      });
+      document.getElementById('carousel-counter').textContent = `Example ${currentCard + 1} of ${exampleCards.length}`;
+    }
+
+    function copyCardCode() {
+      const code = exampleCards[currentCard].code;
+      navigator.clipboard.writeText(code).then(() => {
+        const btn = document.getElementById('carousel-copy-btn');
+        const orig = btn.innerHTML;
+        btn.innerHTML = '✅ Copied!';
+        btn.style.background = 'var(--ok)';
+        setTimeout(() => {
+          btn.innerHTML = orig;
+          btn.style.background = '#6c757d';
+        }, 2000);
+        showToast('Code example copied!', 'success', 2000);
+      });
+    }
+
+    // Reflection & Insights
+    function saveReflections() {
+      const r1 = document.getElementById('reflect-1').value;
+      const r2 = document.getElementById('reflect-2').value;
+      const r3 = document.getElementById('reflect-3').value;
+      
+      if(!r1 && !r2 && !r3) {
+        showToast('Please answer at least one reflection question', 'warning');
+        return;
+      }
+      
+      const reflections = {r1, r2, r3, date: new Date().toISOString()};
+      localStorage.setItem('claude-code-reflections', JSON.stringify(reflections));
+      
+      showToast('Your reflections have been saved locally!', 'success');
+      
+      // Download option
+      const text = `My Claude Code Learning Reflections\nDate: ${new Date().toLocaleDateString()}\n\n1. What surprised me:\n${r1}\n\n2. How I'll adapt this to my workflow:\n${r2}\n\n3. Changed assumptions:\n${r3}`;
+      const blob = new Blob([text], {type: 'text/plain'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'my-reflections.txt';
+      a.click();
+    }
+
+    function showReflectionInsights() {
+      const r1 = document.getElementById('reflect-1').value;
+      const r2 = document.getElementById('reflect-2').value;
+      const r3 = document.getElementById('reflect-3').value;
+      
+      if(!r1 && !r2 && !r3) {
+        showToast('Please write some reflections first!', 'warning');
+        return;
+      }
+      
+      const insights = [];
+      
+      if(r1.toLowerCase().includes('specific') || r1.toLowerCase().includes('detail')) {
+        insights.push('💡 You\'ve discovered the power of specificity! The more detailed your prompts, the better the results.');
+      }
+      
+      if(r2.toLowerCase().includes('review') || r2.toLowerCase().includes('test')) {
+        insights.push('🔍 Great insight on code review! Always make human review a mandatory step in your workflow.');
+      }
+      
+      if(r2.toLowerCase().includes('team') || r2.toLowerCase().includes('collab')) {
+        insights.push('👥 Thinking about team collaboration shows maturity. Consider creating shared prompt templates for your team.');
+      }
+      
+      if(r3.toLowerCase().includes('replace') || r3.toLowerCase().includes('automatic')) {
+        insights.push('🎯 Important realization: AI augments developers, it doesn\'t replace them. You\'re the architect, Claude is the assistant.');
+      }
+      
+      if(insights.length === 0) {
+        insights.push('🌟 Thank you for reflecting! Key takeaway: AI is most powerful when combined with human judgment and domain expertise.');
+      }
+      
+      insights.push('📚 Next step: Try applying one insight to your next project this week!');
+      
+      document.getElementById('insights-content').innerHTML = insights.map(i => '<p style="margin:8px 0">' + escapeHtml(i) + '</p>').join('');
+      document.getElementById('reflection-insights').style.display = 'block';
+      showToast('Insights generated based on your reflections!', 'success');
+    }
+
+    // FAQ
+    function populateFAQ() {
+      ['beginner', 'intermediate', 'advanced'].forEach(level => {
+        const container = document.getElementById(`faq-${level}`);
+        container.innerHTML = faqData[level].map(faq => `
+          <div class="accordion-item">
+            <button class="accordion-header" aria-expanded="false">
+              <span class="accordion-title"><strong>Q:</strong> ${faq.q}</span>
+            </button>
+            <div class="accordion-content">
+              <p><strong>A:</strong> ${faq.a}</p>
+            </div>
+          </div>
+        `).join('');
+        
+        container.querySelectorAll('.accordion-header').forEach(h => {
+          h.addEventListener('click', () => {
+            const expanded = h.getAttribute('aria-expanded') === 'true';
+            h.setAttribute('aria-expanded', !expanded);
+            h.nextElementSibling.style.display = expanded ? 'none' : 'block';
+          });
+        });
+      });
+    }
+
+    // Glossary
+    function populateGlossary() {
+      const cloud = document.getElementById('glossary-cloud');
+      cloud.innerHTML = glossaryTerms.map(term => `
+        <button class="glossary-chip" data-def="${term.def.replace(/"/g, '&quot;')}">
+          <span>${term.emoji}</span>
+          <span>${term.term}</span>
+        </button>
+      `).join('');
+      
+      const tip = document.querySelector('.chip-tip');
+      const tipContent = tip.querySelector('.tip-content');
+      const tipArrow = tip.querySelector('.arrow');
+      
+      cloud.querySelectorAll('.glossary-chip').forEach(chip => {
+        chip.addEventListener('mouseenter', (e) => {
+          tipContent.innerHTML = chip.dataset.def;
+          tip.classList.add('show');
+          const rect = chip.getBoundingClientRect();
+          tip.style.top = (rect.bottom + 10) + 'px';
+          tip.style.left = Math.max(10, rect.left - 100) + 'px';
+        });
+        chip.addEventListener('mouseleave', () => {
+          tip.classList.remove('show');
+        });
+      });
+    }
+
+    // Quiz
+    function loadQuiz() {
+      const q = quizQuestions[quizIndex];
+      const qb = document.getElementById('quiz-body');
+      
+      qb.innerHTML = `
+        <p style="font-weight:600;font-size:1.05rem;margin-bottom:20px">${escapeHtml(q.q)}</p>
+        <div style="display:grid;gap:12px">
+          ${q.options.map((opt, i) => `
+            <label style="padding:14px;border:2px solid var(--border);border-radius:8px;cursor:pointer;display:flex;align-items:start;gap:12px;transition:all 0.2s" class="quiz-opt" data-index="${i}">
+              <input type="radio" name="quiz${quizIndex}" value="${i}" style="margin-top:2px">
+              <div>
+                <div>${escapeHtml(opt.text)}</div>
+                <div class="quiz-exp" style="display:none;margin-top:10px;padding:10px;background:var(--muted);border-radius:6px;font-size:0.9rem">${escapeHtml(opt.exp)}</div>
+              </div>
+            </label>
+          `).join('')}
+        </div>
+      `;
+      
+      document.getElementById('quiz-current').textContent = quizIndex + 1;
+      document.getElementById('quiz-total').textContent = quizQuestions.length;
+      
+      qb.querySelectorAll('input[type="radio"]').forEach(radio => {
+        radio.addEventListener('change', (e) => {
+          const selected = parseInt(e.target.value);
+          const correct = q.correct;
+          
+          if(selected === correct) {
+            progressState.quizScore++;
+            updateProgress();
+            showNotification('Correct answer!', 'success');
+          } else {
+            // Removed info notification - feedback is already shown in the UI
+          }
+          
+          qb.querySelectorAll('.quiz-opt').forEach((opt, i) => {
+            opt.style.borderColor = i === selected ? 
+              (i === correct ? 'var(--ok)' : 'var(--bad)') :
+              (i === correct ? 'var(--ok)' : 'var(--border)');
+            opt.style.background = i === selected ?
+              (i === correct ? 'var(--ok-soft)' : 'var(--bad-soft)') :
+              (i === correct ? 'var(--ok-soft)' : '#fff');
+            opt.querySelector('.quiz-exp').style.display = i === selected || i === correct ? 'block' : 'none';
+          });
+        });
+      });
+      
+      document.getElementById('quiz-prev').disabled = quizIndex === 0;
+      document.getElementById('quiz-next').disabled = quizIndex === quizQuestions.length - 1;
+    }
+
+    function quizPrev() {
+      if(quizIndex > 0) {
+        quizIndex--;
+        loadQuiz();
+      }
+    }
+
+    function quizNext() {
+      if(quizIndex < quizQuestions.length - 1) {
+        quizIndex++;
+        loadQuiz();
+      } else {
+        showToast(`Quiz complete! Your score: ${progressState.quizScore}/${quizQuestions.length}`, 'success', 5000, 'normal');
+      }
+    }
+
+    // Decision tree
+    function dtAnswer(choice) {
+      const reasons = [
+        "Standard CRUD is perfect for Sonnet 4.5. It's fast, reliable, and costs 5x less than Opus.",
+        "Data processing is straightforward logic. Sonnet handles it efficiently without needing Opus's power.",
+        "For complex architecture, consider Opus 4.1. It excels at system design and intricate patterns. But try Sonnet first—it often surprises you!"
+      ];
+      document.getElementById('dt-question').style.display = 'none';
+      document.getElementById('dt-result').style.display = 'block';
+      document.getElementById('dt-reason').textContent = reasons[choice - 1];
+    }
+
+    function resetDT() {
+      document.getElementById('dt-question').style.display = 'block';
+      document.getElementById('dt-result').style.display = 'none';
+    }
+
+    // Initialize everything
+    populateTable();
+    populateAccordion();
+    loadComparison(0);
+    loadGameQuestion();
+    
+    // Create wizard dots
+    const wizardDots = document.getElementById('wizard-dots');
+    wizardDots.innerHTML = wizardSteps.map((_, i) => `<div class="wizard-dot"></div>`).join('');
+    loadWizardStep();
+    
+    populateCards();
+    populateFAQ();
+    populateGlossary();
+    loadQuiz();
+
+    // ============================================
+    // AUDIO TOUR: Data & Configuration
+    // ============================================
+
+    const TOUR_DATA = {
+      chapters: [
+        {
+          id: 1,
+          title: "Technical Core",
+          dimensions: [
+            {
+              id: 1,
+              emoji: "🏗️",
+              title: "Architecture Decisions",
+              byline: "Choosing between microservices, monolith and serverless patterns",
+              example: "Should we split this into separate services now?",
+              audioScript: [
+                "Architecture decisions shape your entire system.",
+                "Junior developers ask: What's the coolest tech?",
+                "Senior developers ask: What fits our team and scale?",
+                "They tell Claude: Analyze tradeoffs for our specific context.",
+                "They're architecting for reality, not just building."
+              ]
+            },
+            {
+              id: 2,
+              emoji: "🔧",
+              title: "Infrastructure Decisions",
+              byline: "Deployment strategies, monitoring and DevOps pipeline design",
+              example: "Blue-green deployment or rolling updates for this service?",
+              audioScript: [
+                "Infrastructure is where code meets reality.",
+                "Blue-green? Canary? Rolling updates?",
+                "Each choice has tradeoffs.",
+                "Senior developers ask Claude: Compare strategies for our risk profile.",
+                "They're thinking beyond code."
+              ]
+            },
+            {
+              id: 3,
+              emoji: "🔒",
+              title: "Security Architecture",
+              byline: "Threat modeling, authentication and data protection strategies",
+              example: "OAuth2 vs JWT vs session cookies for this API?",
+              audioScript: [
+                "Security isn't an afterthought.",
+                "It's a fundamental design constraint.",
+                "Every senior developer thinks like an attacker.",
+                "They ask: Where are the weak points?",
+                "Authentication, authorization, data encryption.",
+                "Each layer needs a strategy.",
+                "A junior might ask Claude: How do I hash passwords?",
+                "A senior asks: Design a complete authentication system for a healthcare app.",
+                "Include threat modeling, compliance requirements, and incident response.",
+                "They're not just securing code.",
+                "They're securing entire systems."
+              ]
+            },
+            {
+              id: 4,
+              emoji: "⚡",
+              title: "Performance Engineering",
+              byline: "Optimization strategies, caching and scaling decisions",
+              example: "Redis vs Memcached vs CDN for this workload?",
+              audioScript: [
+                "Performance is about user experience.",
+                "Every millisecond matters.",
+                "But optimization without measurement is guessing.",
+                "Senior developers profile first, optimize second.",
+                "They understand the performance pyramid.",
+                "Database queries, network calls, CPU-bound operations.",
+                "Each layer has different solutions.",
+                "They ask Claude: Analyze this performance profile.",
+                "Suggest optimizations ranked by impact versus effort.",
+                "Include monitoring strategies to prevent regression.",
+                "They're not just making code fast.",
+                "They're building systems that stay fast."
+              ]
+            },
+            {
+              id: 5,
+              emoji: "🧪",
+              title: "Testing Strategy",
+              byline: "Test pyramid, coverage goals and quality assurance approach",
+              example: "Unit tests vs integration tests vs E2E for this feature?",
+              audioScript: [
+                "Testing isn't about coverage percentages.",
+                "It's about confidence in your system.",
+                "Senior developers think in risk management.",
+                "What could break? What would hurt most?",
+                "They design test strategies, not just write tests.",
+                "Unit tests for logic, integration tests for workflows, E2E tests for critical paths.",
+                "They ask Claude: Design a testing strategy for a payment processing system.",
+                "Include test types, coverage goals, and CI/CD integration.",
+                "Prioritize by business risk and development velocity.",
+                "They're not just preventing bugs.",
+                "They're enabling confident deployment."
+              ]
+            },
+            {
+              id: 6,
+              emoji: "📊",
+              title: "Observability Design",
+              byline: "Monitoring, logging and alerting for production systems",
+              example: "What metrics matter most for this microservice?",
+              audioScript: [
+                "You can't improve what you can't measure.",
+                "Observability is your window into production.",
+                "Logs tell you what happened.",
+                "Metrics tell you how things are performing.",
+                "Traces tell you where time is spent.",
+                "Senior developers design observability from day one.",
+                "They ask Claude: Design an observability strategy for this distributed system.",
+                "Include key metrics, alerting thresholds, and dashboard design.",
+                "Focus on actionable insights, not vanity metrics.",
+                "They're not just collecting data.",
+                "They're building operational intelligence."
+              ]
+            },
+            {
+              id: 7,
+              emoji: "📚",
+              title: "Documentation Strategy",
+              byline: "Knowledge management and team communication",
+              example: "ADRs, runbooks, or API docs - what do we need first?",
+              audioScript: [
+                "Code is written once, read many times.",
+                "Documentation is your team's memory.",
+                "But not all documentation is equal.",
+                "Architecture Decision Records for big choices.",
+                "Runbooks for operational procedures.",
+                "API docs for integration.",
+                "Senior developers document decisions, not just code.",
+                "They ask Claude: Create a documentation strategy for our team.",
+                "Include templates, maintenance processes, and tooling recommendations.",
+                "Balance thoroughness with maintainability.",
+                "They're not just writing docs.",
+                "They're preserving institutional knowledge."
+              ]
+            },
+            {
+              id: 8,
+              emoji: "🔄",
+              title: "Technical Debt Management",
+              byline: "Balancing speed with maintainability",
+              example: "Refactor now or ship fast - how do we decide?",
+              audioScript: [
+                "Technical debt is like financial debt.",
+                "Sometimes it's strategic, sometimes it's dangerous.",
+                "Senior developers manage debt portfolios.",
+                "They track it, measure it, and pay it down strategically.",
+                "Not all debt is bad debt.",
+                "Shipping fast can be worth the interest payments.",
+                "They ask Claude: Analyze this codebase for technical debt.",
+                "Prioritize refactoring opportunities by business impact.",
+                "Include effort estimates and risk assessments.",
+                "They're not just cleaning code.",
+                "They're managing technical investment."
+              ]
+            }
+          ]
+        },
+        {
+          id: 2,
+          title: "Business Reality",
+          dimensions: [
+            {
+              id: 9,
+              emoji: "💰",
+              title: "Cost Optimization",
+              byline: "Making smart tradeoffs between performance and budget",
+              example: "Redis versus CloudFlare for caching this data",
+              audioScript: [
+                "Your AWS bill jumped 40 percent.",
+                "Senior developers think in dollars, not just milliseconds.",
+                "They ask Claude: Analyze costs and suggest optimizations.",
+                "Include ROI estimates for each change.",
+                "Smart tradeoffs between performance and budget."
+              ]
+            },
+            {
+              id: 10,
+              emoji: "📈",
+              title: "Business Metrics",
+              byline: "Understanding KPIs and measuring success",
+              example: "Which metrics actually predict customer churn?",
+              audioScript: [
+                "Code doesn't exist in a vacuum.",
+                "Every feature impacts business metrics.",
+                "Senior developers speak the language of business.",
+                "Conversion rates, customer lifetime value, churn prediction.",
+                "They understand which metrics matter.",
+                "And more importantly, which metrics lie.",
+                "They ask Claude: Design A/B tests for this feature.",
+                "Include success metrics, statistical significance, and business impact projections.",
+                "Connect technical changes to business outcomes.",
+                "They're not just shipping features.",
+                "They're driving business results."
+              ]
+            },
+            {
+              id: 11,
+              emoji: "⏰",
+              title: "Timeline Management",
+              byline: "Realistic estimation and delivery planning",
+              example: "Can we ship this feature in 2 weeks?",
+              audioScript: [
+                "Estimation is part art, part science.",
+                "Senior developers have learned the hard way.",
+                "Every estimate is a probability distribution.",
+                "Not a single number.",
+                "They factor in unknowns, dependencies, and Murphy's Law.",
+                "They ask Claude: Break down this feature into estimatable tasks.",
+                "Include risk factors, dependencies, and buffer time.",
+                "Provide best case, worst case, and most likely scenarios.",
+                "They're not just guessing timelines.",
+                "They're managing expectations and risk."
+              ]
+            }
+          ]
+        },
+        {
+          id: 3,
+          title: "Customer Interface",
+          dimensions: [
+            {
+              id: 12,
+              emoji: "👥",
+              title: "User Research",
+              byline: "Understanding customer needs and pain points",
+              example: "Why are users abandoning the checkout flow?",
+              audioScript: [
+                "The best code solves real problems.",
+                "But how do you know what problems to solve?",
+                "Senior developers are customer obsessed.",
+                "They read support tickets, analyze user behavior, and talk to customers.",
+                "They understand the difference between what users say and what they do.",
+                "They ask Claude: Analyze these user interview transcripts.",
+                "Identify pain points, feature requests, and behavioral patterns.",
+                "Prioritize by frequency and business impact.",
+                "They're not just building features.",
+                "They're solving customer problems."
+              ]
+            },
+            {
+              id: 13,
+              emoji: "🎨",
+              title: "UX Engineering",
+              byline: "Bridging design and development",
+              example: "How do we make this complex workflow feel simple?",
+              audioScript: [
+                "Great UX isn't just pretty interfaces.",
+                "It's about reducing cognitive load.",
+                "Senior developers think like users.",
+                "They understand information architecture, interaction design, and accessibility.",
+                "They know that the best interface is often no interface.",
+                "They ask Claude: Redesign this user flow for better usability.",
+                "Include accessibility considerations, mobile optimization, and error states.",
+                "Focus on task completion, not feature showcase.",
+                "They're not just implementing designs.",
+                "They're crafting user experiences."
+              ]
+            },
+            {
+              id: 14,
+              emoji: "📞",
+              title: "Customer Support Engineering",
+              byline: "Building systems that support can actually use",
+              example: "How can we help support debug user issues faster?",
+              audioScript: [
+                "Every bug report is a learning opportunity.",
+                "Senior developers build with support in mind.",
+                "They create admin tools, debugging interfaces, and clear error messages.",
+                "They understand that support team efficiency directly impacts customer satisfaction.",
+                "They ask Claude: Design an admin interface for customer support.",
+                "Include user lookup, transaction history, and debugging tools.",
+                "Prioritize common support workflows and edge case handling.",
+                "They're not just fixing bugs.",
+                "They're empowering support teams."
+              ]
+            }
+          ]
+        },
+        {
+          id: 4,
+          title: "Operations",
+          dimensions: [
+            {
+              id: 15,
+              emoji: "🚀",
+              title: "Release Engineering",
+              byline: "Coordinating deployments and managing rollouts",
+              example: "How do we deploy this without breaking anything?",
+              audioScript: [
+                "Deployment is where theory meets reality.",
+                "Senior developers orchestrate releases like conductors.",
+                "They coordinate multiple teams, manage dependencies, and plan rollbacks.",
+                "They understand that deployment is a product feature.",
+                "Feature flags, canary releases, blue-green deployments.",
+                "Each strategy serves different risk profiles.",
+                "They ask Claude: Design a release strategy for this multi-service update.",
+                "Include rollback procedures, monitoring checkpoints, and communication plans.",
+                "Minimize blast radius while maximizing deployment velocity.",
+                "They're not just pushing code.",
+                "They're managing organizational risk."
+              ]
+            },
+            {
+              id: 16,
+              emoji: "🔍",
+              title: "Incident Response",
+              byline: "Crisis management and post-mortem analysis",
+              example: "The site is down - what's our response protocol?",
+              audioScript: [
+                "When systems fail, leadership emerges.",
+                "Senior developers are calm in the storm.",
+                "They follow runbooks, coordinate teams, and communicate clearly.",
+                "But the real work happens after the fire is out.",
+                "Post-mortems, root cause analysis, and prevention strategies.",
+                "They ask Claude: Analyze this incident timeline.",
+                "Identify root causes, contributing factors, and prevention opportunities.",
+                "Focus on system improvements, not individual blame.",
+                "They're not just fixing problems.",
+                "They're building resilient systems."
+              ]
+            },
+            {
+              id: 17,
+              emoji: "📋",
+              title: "Process Engineering",
+              byline: "Designing workflows that scale with teams",
+              example: "How do we review code without slowing down delivery?",
+              audioScript: [
+                "Process is the difference between chaos and productivity.",
+                "Senior developers design workflows, not just follow them.",
+                "They understand that process should serve people, not the other way around.",
+                "Code review, testing, deployment, incident response.",
+                "Each process needs clear owners, success metrics, and improvement cycles.",
+                "They ask Claude: Design a code review process for our team.",
+                "Include review criteria, escalation procedures, and quality gates.",
+                "Balance thoroughness with velocity.",
+                "They're not just following process.",
+                "They're optimizing team effectiveness."
+              ]
+            }
+          ]
+        },
+        {
+          id: 5,
+          title: "Collaboration",
+          dimensions: [
+            {
+              id: 18,
+              emoji: "🤝",
+              title: "Cross-functional Partnership",
+              byline: "Working effectively with product, design, and business teams",
+              example: "How do we align engineering priorities with business goals?",
+              audioScript: [
+                "Engineering doesn't exist in isolation.",
+                "Senior developers are translators between worlds.",
+                "They speak business to executives, design to designers, and technical to engineers.",
+                "They understand that alignment is more valuable than perfection.",
+                "They ask Claude: Translate this technical proposal into business terms.",
+                "Include cost-benefit analysis, risk assessment, and timeline implications.",
+                "Focus on outcomes, not implementation details.",
+                "They're not just building software.",
+                "They're building organizational capability."
+              ]
+            },
+            {
+              id: 19,
+              emoji: "📢",
+              title: "Technical Communication",
+              byline: "Explaining complex concepts clearly",
+              example: "How do we explain microservices to the marketing team?",
+              audioScript: [
+                "The best technical solution is worthless if nobody understands it.",
+                "Senior developers are master communicators.",
+                "They adapt their message to their audience.",
+                "Technical deep-dives for engineers, business cases for executives, user stories for product managers.",
+                "They ask Claude: Explain this architecture decision to different stakeholders.",
+                "Include technical details for engineers, business impact for executives, and user benefits for product.",
+                "Tailor complexity to audience expertise.",
+                "They're not just sharing information.",
+                "They're building understanding and buy-in."
+              ]
+            },
+            {
+              id: 20,
+              emoji: "🎯",
+              title: "Code Review Leadership",
+              byline: "Mentoring through feedback and quality gates",
+              example: "How do we give feedback that actually improves code quality?",
+              audioScript: [
+                "Code review is teaching at scale.",
+                "Senior developers use reviews to spread knowledge, not just catch bugs.",
+                "They balance nitpicks with big picture feedback.",
+                "They explain the why, not just the what.",
+                "They ask Claude: Review this pull request for a junior developer.",
+                "Include specific feedback, learning opportunities, and positive reinforcement.",
+                "Focus on patterns and principles, not just syntax.",
+                "They're not just checking code.",
+                "They're developing people."
+              ]
+            }
+          ]
+        },
+        {
+          id: 6,
+          title: "Leadership",
+          dimensions: [
+            {
+              id: 21,
+              emoji: "🧭",
+              title: "Technical Vision",
+              byline: "Setting long-term technical strategy",
+              example: "Where should our architecture be in 3 years?",
+              audioScript: [
+                "Senior developers think in years, not sprints.",
+                "They see around corners, anticipate trends, and plan for scale.",
+                "They balance innovation with stability.",
+                "They ask Claude: Analyze emerging technology trends.",
+                "Assess relevance to our domain and recommend adoption strategies.",
+                "Include risk factors, learning curves, and migration paths.",
+                "They're not just following trends.",
+                "They're shaping technical futures."
+              ]
+            },
+            {
+              id: 22,
+              emoji: "👨‍🏫",
+              title: "Mentoring Excellence",
+              byline: "Developing the next generation of developers",
+              example: "How do we help junior developers grow faster?",
+              audioScript: [
+                "Great developers multiply their impact through others.",
+                "Senior developers are force multipliers.",
+                "They create learning opportunities, provide safe spaces for failure, and celebrate growth.",
+                "They understand that mentoring is an investment in team capability.",
+                "They ask Claude: Design a mentoring program for junior developers.",
+                "Include skill assessments, learning paths, and progress tracking.",
+                "Focus on practical skills and career development.",
+                "They're not just writing code.",
+                "They're building teams."
+              ]
+            },
+            {
+              id: 23,
+              emoji: "🏆",
+              title: "Culture Building",
+              byline: "Creating environments where teams thrive",
+              example: "How do we build a culture of continuous learning?",
+              audioScript: [
+                "Culture eats strategy for breakfast.",
+                "Senior developers shape the environment around them.",
+                "They model behaviors, celebrate successes, and learn from failures.",
+                "They understand that psychological safety is the foundation of high performance.",
+                "They ask Claude: Design initiatives to improve team culture.",
+                "Include learning opportunities, recognition programs, and feedback mechanisms.",
+                "Focus on sustainable practices and intrinsic motivation.",
+                "They're not just managing tasks.",
+                "They're cultivating excellence."
+              ]
+            },
+            {
+              id: 24,
+              emoji: "⚖️",
+              title: "Decision Architecture",
+              byline: "Making good choices under uncertainty",
+              example: "Build vs buy vs partner - how do we decide?",
+              audioScript: [
+                "Every decision is a bet on the future.",
+                "Senior developers are decision architects.",
+                "They gather information, weigh tradeoffs, and make choices with incomplete data.",
+                "They understand that reversible decisions should be made quickly, irreversible decisions carefully.",
+                "They ask Claude: Analyze this technical decision using a decision framework.",
+                "Include criteria weighting, option evaluation, and risk assessment.",
+                "Document assumptions and review triggers.",
+                "They're not just making choices.",
+                "They're designing decision processes."
+              ]
+            },
+            {
+              id: 25,
+              emoji: "🎪",
+              title: "Stakeholder Orchestration",
+              byline: "Managing expectations across the organization",
+              example: "How do we align 5 different teams on this initiative?",
+              audioScript: [
+                "Technology serves people, not the other way around.",
+                "Senior developers are stakeholder whisperers.",
+                "They understand different perspectives, manage competing priorities, and find win-win solutions.",
+                "They know that technical excellence without organizational alignment is just expensive art.",
+                "They ask Claude: Create a stakeholder alignment plan for this project.",
+                "Include communication strategies, success metrics, and conflict resolution approaches.",
+                "Focus on shared outcomes and mutual benefit.",
+                "They're not just delivering software.",
+                "They're orchestrating organizational success."
+              ]
+            },
+            {
+              id: 26,
+              emoji: "🌟",
+              title: "Innovation Leadership",
+              byline: "Driving technical excellence and breakthrough thinking",
+              example: "How do we stay ahead of the competition technically?",
+              audioScript: [
+                "Innovation isn't just new technology.",
+                "It's new ways of solving old problems.",
+                "Senior developers create space for experimentation.",
+                "They ask Claude: Design our innovation process.",
+                "They're advancing the state of the art.",
+                "That's all 26 dimensions.",
+                "Claude Code is your thinking partner across them all."
+              ]
+            }
+          ]
+        }
+      ]
+    };
+
+    // ============================================
+    // AUDIO TOUR: State Management
+    // ============================================
+
+    const tourState = {
+      isActive: false,
+      audioEnabled: false,
+      currentChapter: 0,
+      currentDimension: 0,
+      currentSentence: 0,
+      isPlaying: false,
+      playbackRate: 1.0,
+      transcriptVisible: false,
+      
+      // Speech Synthesis
+      synth: window.speechSynthesis,
+      utterance: null,
+      currentScript: null,
+      
+      // Preferences (persist to localStorage)
+      userPreferences: {
+        speed: 1.0,
+        autoAdvance: true,
+        preferredVoice: null
+      }
+    };
+
+    // ============================================
+    // AUDIO TOUR: Core Functions
+    // ============================================
+
+    /**
+     * Initialize the audio tour
+     */
+    function initAudioTour() {
+      // Load user preferences
+      loadPreferences();
+      
+      // Populate chapter dots
+      renderChapterDots();
+      
+      // Check browser compatibility
+      if (!('speechSynthesis' in window)) {
+        console.warn('Speech synthesis not supported');
+        showFallbackMessage();
+      }
+      
+      // Setup keyboard shortcuts
+      setupKeyboardShortcuts();
+    }
+
+    /**
+     * Start the audio tour
+     */
+    function startAudioTour() {
+      tourState.isActive = true;
+      tourState.audioEnabled = true;
+      
+      // Track audio tour engagement for progress
+      if (!progressState.audioTourStarted) {
+        progressState.audioTourStarted = true;
+        updateProgress();
+      }
+      
+      // Hide intro, show tour container
+      document.querySelector('.audio-tour-intro').style.display = 'none';
+      document.getElementById('audio-tour-container').style.display = 'block';
+      
+      // Hide main tour controls for cleaner experience
+      document.querySelector('.tour-controls').style.display = 'none';
+      
+      // Load first slide
+      loadSlide(0, 0);
+      
+      // Track analytics
+      trackEvent('audio_tour_started');
+    }
+
+    /**
+     * Start visual-only tour
+     */
+    function startVisualTour() {
+      tourState.isActive = true;
+      tourState.audioEnabled = false;
+      
+      // Hide intro, show tour container
+      document.querySelector('.audio-tour-intro').style.display = 'none';
+      document.getElementById('audio-tour-container').style.display = 'block';
+      
+      // Hide audio controls
+      document.querySelector('.tour-controls').style.display = 'none';
+      
+      // Load first slide
+      loadSlide(0, 0);
+      
+      // Track analytics
+      trackEvent('visual_tour_started');
+    }
+
+    /**
+     * Load a specific slide
+     */
+    function loadSlide(chapterIndex, dimensionIndex) {
+      const chapter = TOUR_DATA.chapters[chapterIndex];
+      const dimension = chapter.dimensions[dimensionIndex];
+      
+      tourState.currentChapter = chapterIndex;
+      tourState.currentDimension = dimensionIndex;
+      tourState.currentSentence = 0;
+      
+      // Update chapter info
+      document.getElementById('current-chapter').textContent = `Chapter ${chapterIndex + 1} of ${TOUR_DATA.chapters.length}`;
+      document.getElementById('chapter-title').textContent = chapter.title;
+      
+      // Update dimension counter
+      const totalDimensions = TOUR_DATA.chapters.reduce((sum, ch) => sum + ch.dimensions.length, 0);
+      const currentDimensionNumber = TOUR_DATA.chapters
+        .slice(0, chapterIndex)
+        .reduce((sum, ch) => sum + ch.dimensions.length, 0) + dimensionIndex + 1;
+      document.getElementById('current-dimension').textContent = currentDimensionNumber;
+      
+      // Render slide content
+      const slideHTML = `
+        <span class="slide-emoji">${dimension.emoji}</span>
+        <h3 class="slide-title">${dimension.title}</h3>
+        <p class="slide-byline">${dimension.byline}</p>
+        <div class="slide-example">
+          <strong>Example:</strong> ${dimension.example}
+        </div>
+        ${tourState.audioEnabled ? `
+          <button class="slide-audio-btn" onclick="toggleSlideAudio()" aria-label="Play audio for this slide">
+            <span class="audio-icon">🎵</span>
+          </button>
+        ` : ''}
+      `;
+      
+      document.getElementById('current-slide').innerHTML = slideHTML;
+      
+      // Update chapter dots
+      updateChapterDots();
+      
+      // Update dimension grid
+      updateDimensionGrid(currentDimensionNumber - 1);
+      
+      // Update navigation buttons
+      updateNavigationButtons();
+      
+      // Load audio if enabled (but don't auto-play)
+      if (tourState.audioEnabled) {
+        tourState.currentScript = dimension.audioScript;
+        tourState.currentSentence = 0;
+        // Don't auto-play - user must click the audio button
+      }
+      
+      // Scroll to top of slide
+      document.querySelector('.slide-container').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    /**
+     * Load audio for current dimension
+     */
+    function loadAudio(scriptArray) {
+      // Stop any currently playing audio
+      stopAudio();
+      
+      // Store sentences for sentence-by-sentence playback
+      tourState.currentScript = scriptArray;
+      tourState.currentSentence = 0;
+      
+      // Start playing first sentence
+      playCurrentSentence();
+    }
+
+    /**
+     * Play current sentence
+     */
+    function playCurrentSentence() {
+      // Safety check - don't play if not supposed to be playing
+      if (!tourState.isPlaying) {
+        return;
+      }
+      
+      if (!tourState.currentScript || tourState.currentSentence >= tourState.currentScript.length) {
+        // End of script - auto advance or stop
+        tourState.isPlaying = false;
+        updatePlayButton();
+        
+        if (tourState.userPreferences.autoAdvance) {
+          setTimeout(nextSlide, 1500);
+        }
+        return;
+      }
+
+      // Ensure no other speech is playing
+      if (tourState.synth.speaking) {
+        tourState.synth.cancel();
+      }
+
+      const sentence = tourState.currentScript[tourState.currentSentence];
+      
+      // Create utterance for single sentence
+      tourState.utterance = new SpeechSynthesisUtterance(sentence);
+      
+      // Configure utterance
+      tourState.utterance.rate = tourState.playbackRate;
+      tourState.utterance.pitch = 1.0;
+      tourState.utterance.volume = 1.0;
+      
+      // Select voice
+      const voices = tourState.synth.getVoices();
+      tourState.utterance.voice = selectBestVoice(voices);
+      
+      // Event handlers
+      tourState.utterance.onstart = () => {
+        if (tourState.isPlaying) {
+          updatePlayButton();
+          highlightCurrentSentence();
+        }
+      };
+      
+      tourState.utterance.onend = () => {
+        // Only continue if still supposed to be playing
+        if (!tourState.isPlaying) {
+          return;
+        }
+        
+        // Move to next sentence after a brief pause
+        tourState.currentSentence++;
+        updateAudioProgress();
+        
+        // Pause between sentences
+        setTimeout(() => {
+          if (tourState.isPlaying) {
+            playCurrentSentence();
+          }
+        }, 600);
+      };
+      
+      tourState.utterance.onerror = (event) => {
+        console.error('Speech synthesis error:', event);
+        
+        // Don't show error if user navigated away
+        if (tourState.isPlaying) {
+          // Removed info notification - automatic recovery doesn't need notification
+          
+          // Try to continue with next sentence
+          setTimeout(() => {
+            if (tourState.isPlaying) {
+              tourState.currentSentence++;
+              if (tourState.currentSentence < tourState.currentScript.length) {
+                playCurrentSentence();
+              } else {
+                tourState.isPlaying = false;
+                updatePlayButton();
+              }
+            }
+          }, 500);
+        }
+      };
+      
+      // Start playing only if still supposed to be playing
+      if (tourState.isPlaying) {
+        try {
+          tourState.synth.speak(tourState.utterance);
+        } catch (error) {
+          console.error('Failed to start speech:', error);
+          tourState.isPlaying = false;
+          updatePlayButton();
+          showToast('Audio not available in this browser', 'warning', 3000, 'high');
+        }
+      }
+    }
+
+    /**
+     * Select best available voice
+     */
+    function selectBestVoice(voices) {
+      // Prefer user's saved preference
+      if (tourState.userPreferences.preferredVoice) {
+        const preferred = voices.find(v => v.name === tourState.userPreferences.preferredVoice);
+        if (preferred) return preferred;
+      }
+      
+      // Prefer natural-sounding voices
+      const natural = voices.find(v => 
+        v.name.toLowerCase().includes('natural') || 
+        v.name.toLowerCase().includes('enhanced')
+      );
+      if (natural) return natural;
+      
+      // Prefer English voices
+      const english = voices.find(v => v.lang.startsWith('en'));
+      if (english) return english;
+      
+      // Fallback to first available
+      return voices[0];
+    }
+
+    /**
+     * Play audio
+     */
+    function playAudio() {
+      if (!tourState.isPlaying && tourState.currentScript) {
+        tourState.isPlaying = true;
+        playCurrentSentence();
+        updatePlayButton();
+      }
+    }
+
+    /**
+     * Pause audio
+     */
+    function pauseAudio() {
+      if (tourState.isPlaying) {
+        tourState.isPlaying = false;
+        if (tourState.synth.speaking) {
+          tourState.synth.cancel();
+        }
+        updatePlayButton();
+      }
+    }
+
+    /**
+     * Stop audio
+     */
+    function stopAudio() {
+      tourState.isPlaying = false;
+      if (tourState.synth.speaking) {
+        tourState.synth.cancel();
+      }
+      tourState.currentSentence = 0;
+      tourState.currentScript = null;
+      updatePlayButton();
+    }
+
+    /**
+     * Toggle play/pause
+     */
+    function togglePlayPause() {
+      if (tourState.isPlaying) {
+        pauseAudio();
+      } else {
+        playAudio();
+      }
+    }
+
+    /**
+     * Toggle slide audio (for the slide button)
+     */
+    function toggleSlideAudio() {
+      if (tourState.isPlaying) {
+        pauseAudio();
+      } else {
+        playAudio();
+      }
+      updateSlideAudioButton();
+    }
+
+    /**
+     * Update play button UI
+     */
+    function updatePlayButton() {
+      const btn = document.getElementById('tour-play-pause');
+      if (!btn) return;
+      
+      const icon = btn.querySelector('.play-icon');
+      if (!icon) return;
+      
+      if (tourState.isPlaying) {
+        icon.textContent = '⏸️';
+        btn.setAttribute('aria-label', 'Pause');
+      } else {
+        icon.textContent = '▶️';
+        btn.setAttribute('aria-label', 'Play');
+      }
+      
+      // Also update slide audio button
+      updateSlideAudioButton();
+    }
+
+    /**
+     * Update slide audio button UI
+     */
+    function updateSlideAudioButton() {
+      const btn = document.querySelector('.slide-audio-btn');
+      if (!btn) return;
+      
+      const icon = btn.querySelector('.audio-icon');
+      if (!icon) return;
+      
+      if (tourState.isPlaying) {
+        btn.classList.add('playing');
+        icon.textContent = '⏸️';
+        btn.setAttribute('aria-label', 'Pause audio');
+      } else {
+        btn.classList.remove('playing');
+        icon.textContent = '🎵';
+        btn.setAttribute('aria-label', 'Play audio for this slide');
+      }
+    }
+
+    /**
+     * Change playback speed
+     */
+    function changePlaybackSpeed(speed) {
+      tourState.playbackRate = parseFloat(speed);
+      tourState.userPreferences.speed = tourState.playbackRate;
+      savePreferences();
+      
+      // Update current utterance if playing
+      if (tourState.utterance) {
+        tourState.utterance.rate = tourState.playbackRate;
+      }
+      
+      // Removed info notification - speed change is visible in UI
+    }
+
+    /**
+     * Highlight current sentence in slide
+     */
+    function highlightCurrentSentence() {
+      tourState.currentSentence++;
+      
+      // This would require sentence-by-sentence markup in HTML
+      // For simplicity, we'll just update a progress indicator
+      updateAudioProgress();
+    }
+
+    /**
+     * Update audio progress bar
+     */
+    function updateAudioProgress() {
+      const chapter = TOUR_DATA.chapters[tourState.currentChapter];
+      const dimension = chapter.dimensions[tourState.currentDimension];
+      const totalSentences = dimension.audioScript.length;
+      
+      const progress = (tourState.currentSentence / totalSentences) * 100;
+      const progressElement = document.getElementById('audio-progress');
+      if (progressElement) {
+        progressElement.style.width = `${progress}%`;
+      }
+    }
+
+    /**
+     * Navigate to previous slide
+     */
+    function previousSlide() {
+      // Always stop audio first
+      stopAudio();
+      
+      // Small delay to ensure audio stops
+      setTimeout(() => {
+        const chapter = TOUR_DATA.chapters[tourState.currentChapter];
+        
+        if (tourState.currentDimension > 0) {
+          // Previous dimension in same chapter
+          loadSlide(tourState.currentChapter, tourState.currentDimension - 1);
+        } else if (tourState.currentChapter > 0) {
+          // Last dimension of previous chapter
+          const prevChapter = TOUR_DATA.chapters[tourState.currentChapter - 1];
+          loadSlide(tourState.currentChapter - 1, prevChapter.dimensions.length - 1);
+        } else {
+          // Removed info notification - users can see they're at the first dimension
+        }
+      }, 100);
+    }
+
+    /**
+     * Navigate to next slide
+     */
+    function nextSlide() {
+      // Always stop audio first
+      stopAudio();
+      
+      // Small delay to ensure audio stops
+      setTimeout(() => {
+        const chapter = TOUR_DATA.chapters[tourState.currentChapter];
+        
+        if (tourState.currentDimension < chapter.dimensions.length - 1) {
+          // Next dimension in same chapter
+          loadSlide(tourState.currentChapter, tourState.currentDimension + 1);
+        } else if (tourState.currentChapter < TOUR_DATA.chapters.length - 1) {
+          // First dimension of next chapter
+          loadSlide(tourState.currentChapter + 1, 0);
+        } else {
+          // Tour complete
+          completeTour();
+        }
+      }, 100);
+    }
+
+    /**
+     * Complete the tour
+     */
+    function completeTour() {
+      stopAudio();
+      
+      const slideContent = `
+        <div style="text-align:center;padding:40px">
+          <span class="slide-emoji">🎉</span>
+          <h3 class="slide-title">Tour Complete!</h3>
+          <p class="slide-byline">You've explored all 26 dimensions of senior development</p>
+          <div class="slide-example" style="background:var(--ok-soft);border-left-color:var(--ok)">
+            <strong>Key Takeaway:</strong> Claude Code isn't just a code generator—it's your 
+            thinking partner across architecture, business, operations, and leadership decisions.
+          </div>
+          <div style="margin-top:30px;display:flex;gap:15px;justify-content:center;flex-wrap:wrap">
+            <button class="btn" onclick="restartTour()">🔄 Take Tour Again</button>
+            <button class="btn" onclick="exitTour()" style="background:#6c757d">Exit Tour</button>
+          </div>
+        </div>
+      `;
+      
+      document.getElementById('current-slide').innerHTML = slideContent;
+      const nextBtn = document.getElementById('btn-next');
+      if (nextBtn) nextBtn.style.display = 'none';
+      
+      // Track completion
+      trackEvent('audio_tour_completed');
+      showToast('🎉 Congratulations on completing the tour!', 'success', 4000, 'normal');
+      
+      // Show progress tracker for tour completion
+      setTimeout(() => showProgressTracker(4000), 1000);
+    }
+
+    /**
+     * Restart the tour
+     */
+    function restartTour() {
+      loadSlide(0, 0);
+      const nextBtn = document.getElementById('btn-next');
+      if (nextBtn) nextBtn.style.display = 'block';
+    }
+
+    /**
+     * Exit the tour
+     */
+    function exitTour() {
+      stopAudio();
+      tourState.isActive = false;
+      
+      document.getElementById('audio-tour-container').style.display = 'none';
+      document.querySelector('.audio-tour-intro').style.display = 'block';
+    }
+
+    /**
+     * Jump to specific dimension
+     */
+    function jumpToDimension(dimensionNumber) {
+      // Always stop audio first
+      stopAudio();
+      
+      setTimeout(() => {
+        let chapterIndex = 0;
+        let dimensionIndex = dimensionNumber - 1;
+        
+        // Find which chapter this dimension belongs to
+        for (let i = 0; i < TOUR_DATA.chapters.length; i++) {
+          const chapter = TOUR_DATA.chapters[i];
+          if (dimensionIndex < chapter.dimensions.length) {
+            chapterIndex = i;
+            break;
+          }
+          dimensionIndex -= chapter.dimensions.length;
+        }
+        
+        loadSlide(chapterIndex, dimensionIndex);
+      }, 100);
+    }
+
+    /**
+     * Toggle transcript visibility
+     */
+    function toggleTranscript() {
+      tourState.transcriptVisible = !tourState.transcriptVisible;
+      const panel = document.getElementById('transcript-panel');
+      
+      if (tourState.transcriptVisible) {
+        panel.style.display = 'block';
+        renderTranscript();
+      } else {
+        panel.style.display = 'none';
+      }
+    }
+
+    /**
+     * Close transcript
+     */
+    function closeTranscript() {
+      tourState.transcriptVisible = false;
+      document.getElementById('transcript-panel').style.display = 'none';
+    }
+
+    /**
+     * Render transcript for current dimension
+     */
+    function renderTranscript() {
+      const chapter = TOUR_DATA.chapters[tourState.currentChapter];
+      const dimension = chapter.dimensions[tourState.currentDimension];
+      
+      const transcriptHTML = dimension.audioScript
+        .map((sentence, index) => `
+          <span class="transcript-sentence ${index === tourState.currentSentence ? 'active' : ''}" 
+                onclick="jumpToSentence(${index})">
+            ${sentence}
+          </span>
+        `)
+        .join(' ');
+      
+      document.getElementById('transcript-content').innerHTML = transcriptHTML;
+    }
+
+    /**
+     * Jump to specific sentence in audio
+     */
+    function jumpToSentence(sentenceIndex) {
+      // This is complex with Web Speech API as it doesn't support
+      // precise time seeking. For now, just restart from beginning.
+      stopAudio();
+      tourState.currentSentence = sentenceIndex;
+      playAudio();
+    }
+
+    // ============================================
+    // AUDIO TOUR: UI Helpers
+    // ============================================
+
+    /**
+     * Render chapter navigation dots
+     */
+    function renderChapterDots() {
+      const container = document.getElementById('chapter-dots');
+      if (!container) return;
+      
+      const dots = TOUR_DATA.chapters.map((chapter, index) => 
+        `<div class="chapter-dot" data-chapter="${index}" onclick="jumpToChapter(${index})"></div>`
+      ).join('');
+      container.innerHTML = dots;
+    }
+
+    /**
+     * Update chapter dots to show progress
+     */
+    function updateChapterDots() {
+      const dots = document.querySelectorAll('.chapter-dot');
+      dots.forEach((dot, index) => {
+        dot.classList.remove('active', 'completed');
+        if (index < tourState.currentChapter) {
+          dot.classList.add('completed');
+        } else if (index === tourState.currentChapter) {
+          dot.classList.add('active');
+        }
+      });
+    }
+
+    /**
+     * Jump to specific chapter
+     */
+    function jumpToChapter(chapterIndex) {
+      loadSlide(chapterIndex, 0);
+    }
+
+    /**
+     * Update dimension grid to highlight current
+     */
+    function updateDimensionGrid(currentNumber) {
+      const cards = document.querySelectorAll('.dimension-card');
+      cards.forEach((card, index) => {
+        card.classList.toggle('active', index === currentNumber);
+      });
+    }
+
+    /**
+     * Update navigation button states
+     */
+    function updateNavigationButtons() {
+      const prevBtn = document.getElementById('btn-prev');
+      const nextBtn = document.getElementById('btn-next');
+      
+      if (!prevBtn || !nextBtn) return;
+      
+      // Disable prev if at first slide
+      const isFirst = tourState.currentChapter === 0 && tourState.currentDimension === 0;
+      prevBtn.disabled = isFirst;
+      
+      // Change next button text if at last slide
+      const chapter = TOUR_DATA.chapters[tourState.currentChapter];
+      const isLast = 
+        tourState.currentChapter === TOUR_DATA.chapters.length - 1 &&
+        tourState.currentDimension === chapter.dimensions.length - 1;
+      
+      nextBtn.textContent = isLast ? 'Complete Tour 🎉' : 'Next →';
+    }
+
+    // ============================================
+    // AUDIO TOUR: Keyboard Shortcuts
+    // ============================================
+
+    function setupKeyboardShortcuts() {
+      document.addEventListener('keydown', (e) => {
+        // Only handle shortcuts when tour is active
+        if (!tourState.isActive) return;
+        
+        // Ignore if user is typing in an input
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+        
+        switch(e.key) {
+          case ' ':
+          case 'k':
+            e.preventDefault();
+            togglePlayPause();
+            break;
+            
+          case 'ArrowLeft':
+          case 'h':
+            e.preventDefault();
+            previousSlide();
+            break;
+            
+          case 'ArrowRight':
+          case 'l':
+            e.preventDefault();
+            nextSlide();
+            break;
+            
+          case 'ArrowUp':
+            e.preventDefault();
+            const currentSpeed = tourState.playbackRate;
+            const newSpeed = Math.min(2.0, currentSpeed + 0.25);
+            changePlaybackSpeed(newSpeed);
+            const speedControl = document.getElementById('playback-speed');
+            if (speedControl) speedControl.value = newSpeed;
+            break;
+            
+          case 'ArrowDown':
+            e.preventDefault();
+            const currSpeed = tourState.playbackRate;
+            const slower = Math.max(0.5, currSpeed - 0.25);
+            changePlaybackSpeed(slower);
+            const speedCtrl = document.getElementById('playback-speed');
+            if (speedCtrl) speedCtrl.value = slower;
+            break;
+            
+          case 't':
+            e.preventDefault();
+            toggleTranscript();
+            break;
+            
+          case 'Escape':
+            e.preventDefault();
+            if (tourState.transcriptVisible) {
+              closeTranscript();
+            } else {
+              exitTour();
+            }
+            break;
+        }
+      });
+    }
+
+    // ============================================
+    // AUDIO TOUR: Preferences & Storage
+    // ============================================
+
+    function loadPreferences() {
+      const saved = localStorage.getItem('claudeCodeTourPreferences');
+      if (saved) {
+        try {
+          tourState.userPreferences = JSON.parse(saved);
+        } catch (e) {
+          console.error('Failed to load preferences:', e);
+        }
+      }
+      
+      // Apply loaded preferences
+      if (tourState.userPreferences.speed) {
+        tourState.playbackRate = tourState.userPreferences.speed;
+        const speedControl = document.getElementById('playback-speed');
+        if (speedControl) speedControl.value = tourState.playbackRate;
+      }
+    }
+
+    function savePreferences() {
+      localStorage.setItem('claudeCodeTourPreferences', JSON.stringify(tourState.userPreferences));
+    }
+
+    // ============================================
+    // AUDIO TOUR: Fallback for Unsupported Browsers
+    // ============================================
+
+    function showFallbackMessage() {
+      const container = document.getElementById('audio-tour-container');
+      if (!container) return;
+      
+      container.innerHTML = `
+        <div style="text-align:center;padding:40px;background:var(--warning-soft);border-radius:12px">
+          <h3 style="color:var(--warning);margin-bottom:15px">⚠️ Audio Not Available</h3>
+          <p>Your browser doesn't support text-to-speech audio narration.</p>
+          <p style="margin-top:15px">You can still browse the slides in visual mode!</p>
+          <button class="btn" onclick="startVisualTour()" style="margin-top:20px">
+            Continue with Visual Tour
+          </button>
+        </div>
+      `;
+    }
+
+    // ============================================
+    // AUDIO TOUR: Analytics
+    // ============================================
+
+    function trackEvent(eventName, data = {}) {
+      // Hook for analytics tracking
+      if (window.trackProgress) {
+        window.trackProgress({
+          event: eventName,
+          chapter: tourState.currentChapter,
+          dimension: tourState.currentDimension,
+          audioEnabled: tourState.audioEnabled,
+          ...data
+        });
+      }
+      
+      // Console log for development
+      console.log('Tour Event:', eventName, data);
+    }
+
+    // ============================================
+    // AUDIO TOUR: Event Listeners
+    // ============================================
+
+    // Setup event listeners when DOM is ready
+    document.addEventListener('DOMContentLoaded', () => {
+      // Initialize tour data
+      initAudioTour();
+      // Guarantee a first notification after 5s so users see it working
+      setTimeout(() => {
+        showNotification('🎉 Welcome! Progress updates after quiz, wizard, or tour.', 'success');
+      }, 5000);
+      
+      // Play/Pause button
+      const playPauseBtn = document.getElementById('tour-play-pause');
+      if (playPauseBtn) {
+        playPauseBtn.addEventListener('click', togglePlayPause);
+      }
+      
+      // Speed control
+      const speedControl = document.getElementById('playback-speed');
+      if (speedControl) {
+        speedControl.addEventListener('change', (e) => {
+          changePlaybackSpeed(e.target.value);
+        });
+      }
+      
+      // Transcript toggle
+      const transcriptBtn = document.getElementById('toggle-transcript');
+      if (transcriptBtn) {
+        transcriptBtn.addEventListener('click', toggleTranscript);
+      }
+      
+      // Navigation buttons
+      const prevBtn = document.getElementById('btn-prev');
+      const nextBtn = document.getElementById('btn-next');
+      if (prevBtn) prevBtn.addEventListener('click', previousSlide);
+      if (nextBtn) nextBtn.addEventListener('click', nextSlide);
+      
+      // Progress bar seeking (optional advanced feature)
+      const progressBar = document.querySelector('.progress-bar');
+      if (progressBar) {
+        progressBar.addEventListener('click', (e) => {
+          // Calculate which dimension to jump to based on click position
+          const rect = e.target.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const percent = x / rect.width;
+          
+          const totalDimensions = TOUR_DATA.chapters.reduce((sum, ch) => sum + ch.dimensions.length, 0);
+          const targetDimension = Math.floor(percent * totalDimensions) + 1;
+          
+          jumpToDimension(targetDimension);
+        });
+      }
+    });
+
+    // Cleanup when leaving page
+    window.addEventListener('beforeunload', () => {
+      stopAudio();
+    });
+
+    // ============================================
+    // SIMPLE NOTIFICATION SYSTEM
+    // ============================================
+    
+    let lastNotificationTime = Date.now() - 55000; // Allow first notification after 5 seconds
+    const NOTIFICATION_COOLDOWN = 30000; // 30 seconds between notifications
+    
+    function showNotification(message, type = 'success') {
+      // Only allow critical notifications
+      const isCritical = (
+        type === 'error' || 
+        (type === 'success' && (
+          message.includes('🎉') || message.includes('complete') || message.includes('Correct') || message.includes('Reading')
+        ))
+      );
+      
+      if (!isCritical) return; // Block all non-critical notifications
+      
+      // Enforce rate limiting - max 1 per minute
+      const now = Date.now();
+      if (now - lastNotificationTime < NOTIFICATION_COOLDOWN) return;
+      
+      lastNotificationTime = now;
+      
+      // Create notification container if it doesn't exist
+      let container = document.getElementById('notification-container');
+      if (!container) {
+        container = document.createElement('div');
+        container.id = 'notification-container';
+        container.style.cssText = `
+          position: fixed;
+          bottom: 20px;
+          right: 20px;
+          z-index: 1000;
+          max-width: 350px;
+        `;
+        document.body.appendChild(container);
+      }
+      
+      // Clear any existing notifications
+      container.innerHTML = '';
+      
+      // Create notification
+      const notification = document.createElement('div');
+      notification.style.cssText = `
+        background: white;
+        border: 2px solid ${type === 'error' ? '#dc3545' : '#28a745'};
+        border-radius: 8px;
+        padding: 16px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        font-size: 14px;
+        opacity: 0;
+        transform: translateX(100px);
+        transition: all 0.3s ease;
+      `;
+      
+      notification.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span>${type === 'error' ? '❌' : '✅'} ${message}</span>
+          <button onclick="this.parentElement.parentElement.remove()" style="background: none; border: none; font-size: 18px; cursor: pointer; padding: 0; margin-left: 10px;">×</button>
+        </div>
+      `;
+      
+      container.appendChild(notification);
+      
+      // Animate in
+      setTimeout(() => {
+        notification.style.opacity = '1';
+        notification.style.transform = 'translateX(0)';
+      }, 10);
+      
+      // Auto-remove after exactly 3 seconds
+      setTimeout(() => {
+        notification.style.opacity = '0';
+        notification.style.transform = 'translateX(100px)';
+        setTimeout(() => notification.remove(), 300);
+      }, 3000);
+    }
+    
+    // Mobile responsive positioning
+    if (window.innerWidth <= 768) {
+      const style = document.createElement('style');
+      style.textContent = `
+        #notification-container {
+          left: 10px !important;
+          right: 10px !important;
+          max-width: none !important;
+        }
+      `;
+      document.head.appendChild(style);
+    }
+
+    // ============================================
+    // READING TIME TRACKER (Header) + MILESTONE TOASTS
+    // ============================================
+    (function setupReadingTimeTracker(){
+      const headerProgressEl = document.getElementById('header-progress');
+      if (headerProgressEl) headerProgressEl.textContent = 'Reading 00:00';
+
+      let timeSpentMs = 0;
+      let lastActivityTs = Date.now();
+      let lastScrollTs = 0;
+      let nextMilestoneMs = 30000; // 30s milestones
+
+      const onActivity = () => { lastActivityTs = Date.now(); };
+      const onScroll = () => { lastScrollTs = Date.now(); lastActivityTs = lastScrollTs; };
+
+      ['mousemove','keydown','click','touchstart'].forEach(evt => window.addEventListener(evt, onActivity, {passive:true}));
+      window.addEventListener('scroll', onScroll, {passive:true});
+
+      function formatTime(ms){
+        const totalSec = Math.floor(ms/1000);
+        const m = String(Math.floor(totalSec/60)).padStart(2,'0');
+        const s = String(totalSec%60).padStart(2,'0');
+        return `${m}:${s}`;
+      }
+
+      setInterval(() => {
+        const now = Date.now();
+        const settled = (now - lastScrollTs) > 3000; // wait 3s after scroll
+        const active = (now - lastActivityTs) < 10000; // some motion in last 10s
+        const visible = document.visibilityState === 'visible';
+
+        if (visible && active && settled) {
+          timeSpentMs += 1000;
+          if (headerProgressEl) headerProgressEl.textContent = `Reading ${formatTime(timeSpentMs)}`;
+
+          // Milestone toasts every 30s if rate limit allows
+          if (timeSpentMs >= nextMilestoneMs && (now - lastNotificationTime) >= NOTIFICATION_COOLDOWN) {
+            showNotification(`Reading ${formatTime(timeSpentMs)}`, 'success');
+            nextMilestoneMs += 30000;
+          }
+        }
+      }, 1000);
+    })();
+  </script>
+</body>
+</html>
