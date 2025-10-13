@@ -10,14 +10,20 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --text: #212529; --bg: #fff; --muted: #f8f9fa; --border: #e9ecef;
+            --accent: #fd7e14; --accent-2: #e87312; --accent-soft: #fef3e7; --header-bg: #212529; --header-fg: #f8f9fa;
+            --ok: #16a34a; --ok-soft: #dcfce7; --bad: #dc2626; --bad-soft: #fee2e2;
+        }
+        
         /* --- General Styles --- */
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f8fafc; /* slate-50 */
-            color: #374151; /* slate-700 */
+            background-color: var(--bg);
+            color: var(--text);
         }
         /* Custom prose styles for consistent typography */
-        .prose-custom h1, .prose-custom h2, .prose-custom h3 { color: #111827; } /* slate-900 */
+        .prose-custom h1, .prose-custom h2, .prose-custom h3 { color: var(--text); }
         .prose-custom p, .prose-custom li { line-height: 1.75; }
 
         /* --- Mock Terminal --- */
@@ -70,7 +76,18 @@
         .file-explorer-svg .file-icon { fill: #6b7280; } /* slate-500 */
         
         /* SVG Element States */
-        .file-explorer-svg .node { transition: all 0.2s ease-in-out; }
+        .file-explorer-svg .node { 
+            transition: all 0.2s ease-in-out; 
+            cursor: pointer;
+        }
+        .file-explorer-svg .node:hover > rect {
+            stroke: var(--accent);
+            stroke-width: 1.5px;
+            fill: #3a4553;
+        }
+        .file-explorer-svg .node:hover text {
+            fill: #f1f5f9;
+        }
         .file-explorer-svg .hidden-file { opacity: 0.4; }
         .file-explorer-svg .current-location > rect {
             stroke: #60a5fa; /* blue-400 */
@@ -78,8 +95,12 @@
             fill: #334155; /* slate-700 */
         }
         .file-explorer-svg .highlight > rect {
-            stroke: #34d399; /* emerald-400 */
-            stroke-width: 2px;
+            stroke: var(--accent) !important;
+            stroke-width: 2.5px !important;
+            fill: #3a4553 !important;
+        }
+        .file-explorer-svg .highlight text {
+            fill: #f1f5f9 !important;
         }
         .file-explorer-svg .find-highlight > rect {
             stroke: #f59e0b; /* amber-500 */
@@ -135,8 +156,22 @@
             </header>
 
             <section class="mb-12 prose-custom max-w-4xl mx-auto">
-                <h2 class="text-3xl font-bold mb-4 border-b pb-2">Welcome to the Command Line</h2>
+                <h2 class="text-3xl font-bold mb-4 border-b pb-2">Before We Begin: What is a Terminal?</h2>
+                <p>A <strong>terminal</strong> (also called "command line" or "console") is a text-based interface where you type commands instead of clicking buttons. Think of it as having a conversation with your computer using precise instructions.</p>
+                
+                <div style="background: var(--muted); border-left: 4px solid var(--accent); padding: 1.5rem; margin: 1.5rem 0; border-radius: 8px;">
+                    <h3 class="text-lg font-semibold mb-2" style="color: var(--text);">How to Open Your Terminal</h3>
+                    <ul class="space-y-1" style="color: var(--text);">
+                        <li><strong>Windows:</strong> Press <code style="background: var(--accent-soft); padding: 0.25rem 0.5rem; border-radius: 4px; color: var(--accent-2);">Win + R</code>, type <code style="background: var(--accent-soft); padding: 0.25rem 0.5rem; border-radius: 4px; color: var(--accent-2);">cmd</code> or <code style="background: var(--accent-soft); padding: 0.25rem 0.5rem; border-radius: 4px; color: var(--accent-2);">powershell</code></li>
+                        <li><strong>Mac:</strong> Press <code style="background: var(--accent-soft); padding: 0.25rem 0.5rem; border-radius: 4px; color: var(--accent-2);">Cmd + Space</code>, type <code style="background: var(--accent-soft); padding: 0.25rem 0.5rem; border-radius: 4px; color: var(--accent-2);">Terminal</code></li>
+                        <li><strong>Linux:</strong> Press <code style="background: var(--accent-soft); padding: 0.25rem 0.5rem; border-radius: 4px; color: var(--accent-2);">Ctrl + Alt + T</code></li>
+                    </ul>
+                </div>
+
+                <h2 class="text-3xl font-bold mb-4 border-b pb-2 mt-8">Welcome to the Command Line</h2>
                 <p>Instead of clicking on folders, a Command-Line Interface (CLI) lets you give your computer precise, written instructions. It's a powerful and fast way to manage files. To help you learn, we've created a safe playground: a "Digital Hospital Records" system. The commands you select below will directly manipulate the file explorer you see here.</p>
+                
+                <p class="text-sm text-gray-600 mt-4"><strong>Note:</strong> These are the same commands that Claude Code uses behind the scenes. Once you understand these basics, you can let Claude Code handle them automatically while you focus on your goals.</p>
             </section>
 
             <section class="mb-12 grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
@@ -147,14 +182,16 @@
                 </div>
                 <div class="sticky top-8">
                     <div id="explanation-box" class="bg-white p-6 rounded-lg shadow-md border border-gray-200 mb-4 min-h-[100px] transition-all duration-300">
-                        <p id="explanation-text" class="text-lg text-gray-700 transition-opacity duration-300">Select a command below to begin.</p>
+                        <p id="explanation-text" class="text-lg text-gray-700 transition-opacity duration-300">
+                            👆 <strong>Click on any folder or file</strong> in the explorer above to learn what it is and which commands work with it. Then try the commands below!
+                        </p>
                     </div>
-                    <div class="mock-terminal rounded-lg shadow-lg p-4 text-sm text-gray-300 overflow-hidden">
+                    <div class="mock-terminal rounded-lg shadow-lg p-4 text-sm text-gray-300 overflow-hidden max-w-md">
                         <div class="flex items-center">
                             <span class="prompt-char mr-2 font-bold">&gt;</span>
                             <span id="command-input" class="flex-1"></span>
                         </div>
-                        <div id="command-output" class="mt-2 whitespace-pre-wrap"></div>
+                        <div id="command-output" class="mt-2 whitespace-pre-wrap break-words"></div>
                     </div>
                 </div>
             </section>
@@ -181,6 +218,27 @@
                     <li><strong>Wildcards (<code>*</code>):</strong> A placeholder. <code>*.txt</code> means "any file that ends with .txt".</li>
                     <li><strong>Flags (<code>-l</code>, <code>-a</code>):</strong> Options that change how a command works, like showing more details or revealing hidden items.</li>
                 </ul>
+            </section>
+
+            <section class="max-w-4xl mx-auto prose-custom mt-12">
+                <div style="background: linear-gradient(135deg, var(--accent-soft) 0%, #fff 100%); border: 2px solid var(--border); border-radius: 12px; padding: 2rem; position: relative; overflow: hidden;">
+                    <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--accent), var(--accent-2));"></div>
+                    <h2 class="text-2xl font-bold mb-4" style="color: var(--text);">🚀 Ready for Claude Code?</h2>
+                    <p class="mb-4" style="color: var(--text);">Now that you understand how terminal commands work, you're ready to let <strong>Claude Code</strong> handle these operations automatically. Instead of typing <code>ls</code>, <code>cd</code>, and <code>mkdir</code> manually, you can simply tell Claude what you want to accomplish.</p>
+                    
+                    <div style="background: var(--bg); border-radius: 8px; padding: 1.5rem; border: 1px solid var(--border); margin-bottom: 1.5rem;">
+                        <p class="text-sm mb-2" style="color: #6b7280;"><strong>Example:</strong></p>
+                        <p class="font-mono text-sm p-2 rounded" style="background: var(--muted); color: var(--text);">$ claude "organize my project files into src, tests, and docs folders"</p>
+                        <p class="text-sm mt-2" style="color: #6b7280;">Claude Code will use <code>mkdir</code>, <code>mv</code>, and other commands you just learned—but you focus on the goal, not the syntax.</p>
+                    </div>
+                    
+                    <div class="text-center">
+                        <a href="claude_code_mastery.html" class="inline-flex items-center px-6 py-3 font-semibold rounded-lg transition-colors" style="background: var(--accent); color: #fff; text-decoration: none;" onmouseover="this.style.background='var(--accent-2)'" onmouseout="this.style.background='var(--accent)'">
+                            Continue to Claude Code Mastery →
+                        </a>
+                        <p class="text-sm mt-2" style="color: var(--accent-2);">Learn terminal commands, Claude Code workflows, and hands-on scenarios</p>
+                    </div>
+                </div>
             </section>
 
         </main>
@@ -527,6 +585,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     function addSVGListeners() {
+        // Hover tooltips
         svgContainer.addEventListener('mouseover', e => {
             const node = e.target.closest('.node');
             if (node) tooltipEl.classList.add('visible');
@@ -546,6 +605,56 @@ document.addEventListener('DOMContentLoaded', () => {
             const { clientX: x, clientY: y } = e;
             tooltipEl.style.left = `${x + 15}px`;
             tooltipEl.style.top = `${y + 15}px`;
+        });
+
+        // Click interactions for educational experience
+        svgContainer.addEventListener('click', e => {
+            const node = e.target.closest('.node');
+            if (!node) return;
+            
+            const path = node.dataset.path;
+            const data = fileSystemData[path];
+            if (!data) return;
+
+            // Remove previous highlights
+            document.querySelectorAll('.node').forEach(n => n.classList.remove('highlight'));
+            node.classList.add('highlight');
+
+            // Update explanation based on what was clicked
+            let explanation = '';
+            let terminalCommand = '';
+            
+            if (data.type === 'folder') {
+                if (path === state.currentPath) {
+                    explanation = `📁 You clicked on "${path.split('/').pop() || 'root'}" - this is your current location! This is like standing in a room and looking around. Try the "ls" command to see what's inside.`;
+                    terminalCommand = 'ls';
+                } else {
+                    explanation = `📁 You clicked on "${path.split('/').pop()}" folder. To explore this folder, you would use "cd" to change directory, or "ls" to peek inside without moving there.`;
+                    terminalCommand = `ls ${path.replace(state.currentPath, '.').replace(/^\//, './')}`;
+                }
+            } else {
+                explanation = `📄 You clicked on "${path.split('/').pop()}" - this is a file. Files contain data and can't be "entered" like folders. You could view, copy, or move this file using various commands.`;
+                terminalCommand = `ls -l ${path.replace(state.currentPath, '.').replace(/^\//, './')}`;
+            }
+
+            // Update the explanation box
+            explanationTextEl.style.opacity = 0;
+            setTimeout(() => {
+                explanationTextEl.innerHTML = explanation;
+                explanationTextEl.style.opacity = 1;
+            }, 200);
+
+            // Show what command would be used
+            commandInputEl.textContent = `claude ${terminalCommand}`;
+            
+            // Simulate the command output
+            setTimeout(() => {
+                if (data.type === 'folder' && path === state.currentPath) {
+                    runCommand('ls');
+                } else {
+                    commandOutputEl.textContent = `💡 Click a command below to actually run it and see the results!`;
+                }
+            }, 500);
         });
     }
 
