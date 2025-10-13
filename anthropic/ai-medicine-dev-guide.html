@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Building AI Tools for Medicine: A Developer Guide</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Base Colors - Minimal but Professional */
+            --text: #212529; --bg: #ffffff; --muted: #f8f9fa; --border: #dee2e6;
+            --accent: #fd7e14; --accent-2: #e87312; --accent-soft: #fff7ed;
+            --header-bg: #212529; --header-fg: #f8f9fa;
+            
+            /* Callout System */
+            --info-bg: #eff6ff; --info-border: #3b82f6; --info-text: #1e40af;
+            --success-bg: #f0fdf4; --success-border: #22c55e; --success-text: #15803d;
+            --warning-bg: #fef3c7; --warning-border: #f59e0b; --warning-text: #92400e;
+            --error-bg: #fef2f2; --error-border: #ef4444; --error-text: #991b1b;
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            padding: 40px 20px;
+        }
+        
+        .container { 
+            max-width: 1000px; 
+            margin: 0 auto; 
+            background: #fff; 
+            padding: 60px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Typography with proper spacing */
+        h1 { 
+            font-size: clamp(2.2rem, 4vw, 3rem); 
+            margin-bottom: 12px; 
+            color: var(--header-bg); 
+            font-weight: 700; 
+            line-height: 1.2;
+        }
+        
+        .byline { 
+            font-size: clamp(1.1rem, 3vw, 1.3rem); 
+            margin-bottom: 40px; 
+            color: #6c757d; 
+            font-weight: 500;
+        }
+        
+        h2 { 
+            font-size: clamp(1.6rem, 4vw, 2.2rem); 
+            margin: 60px 0 30px; 
+            color: var(--header-bg); 
+            font-weight: 600;
+            border-bottom: 3px solid var(--accent);
+            padding-bottom: 12px;
+        }
+        
+        h3 { 
+            font-size: clamp(1.3rem, 3vw, 1.7rem); 
+            margin: 40px 0 20px; 
+            color: var(--header-bg); 
+            font-weight: 600;
+        }
+        
+        h4 { 
+            color: var(--text); 
+            font-weight: 600; 
+            font-size: 1.2rem; 
+            margin: 24px 0 12px;
+        }
+        
+        p { 
+            margin-bottom: 20px; 
+            font-size: 1.05rem;
+            line-height: 1.7;
+        }
+        
+        ul, ol { 
+            padding-left: 24px; 
+            margin-bottom: 24px; 
+        }
+        
+        li { 
+            margin-bottom: 8px; 
+            line-height: 1.6;
+        }
+
+        /* Professional callout boxes */
+        .callout {
+            padding: 24px;
+            margin: 32px 0;
+            border-radius: 8px;
+            border-left: 5px solid;
+        }
+        
+        .callout-info {
+            background: var(--info-bg);
+            border-left-color: var(--info-border);
+            color: var(--info-text);
+        }
+        
+        .callout-success {
+            background: var(--success-bg);
+            border-left-color: var(--success-border);
+            color: var(--success-text);
+        }
+        
+        .callout-warning {
+            background: var(--warning-bg);
+            border-left-color: var(--warning-border);
+            color: var(--warning-text);
+        }
+
+        /* Two-column layout for environment comparison */
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin: 40px 0;
+        }
+        
+        .column-card {
+            background: var(--muted);
+            padding: 30px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+        
+        .column-card h3 {
+            margin-top: 0;
+            color: var(--accent);
+        }
+
+        /* Table styling */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 24px 0;
+            background: var(--muted);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .comparison-table th {
+            background: var(--header-bg);
+            color: var(--header-fg);
+            padding: 16px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        .comparison-table td {
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Brain SVG container */
+        .brain-container {
+            background: var(--muted);
+            padding: 40px;
+            border-radius: 12px;
+            text-align: center;
+            margin: 40px 0;
+            border: 1px solid var(--border);
+        }
+
+        /* Slider styling */
+        .comparison-slider { 
+            position: relative; 
+            width: 100%; 
+            height: 450px;
+            overflow: hidden; 
+            border-radius: 12px;
+            margin: 40px 0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .comparison-slider .comparison-item { 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            height: 100%; 
+            overflow: hidden; 
+            width: 50%; 
+        }
+        
+        .comparison-slider .handle { 
+            position: absolute; 
+            top: 0; 
+            left: 50%; 
+            width: 4px; 
+            height: 100%; 
+            background-color: rgba(255, 255, 255, 0.9); 
+            cursor: ew-resize; 
+            transform: translateX(-50%); 
+            z-index: 40; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+        }
+        
+        .comparison-slider .handle-icon { 
+            width: 40px; 
+            height: 40px; 
+            background-color: rgba(255, 255, 255, 0.95); 
+            border: 2px solid #e5e7eb; 
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1); 
+        }
+
+        /* Workbench SVG container */
+        .workbench-container {
+            background: #282828;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 40px 0;
+            box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        /* Chat interface styling */
+        .chat-interface {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin: 40px 0;
+        }
+
+        /* FAQ Accordion */
+        .faq-container {
+            margin-top: 40px;
+        }
+        
+        .faq-item {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 12px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        }
+        
+        .faq-button {
+            width: 100%;
+            padding: 20px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text);
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.05rem;
+            transition: background-color 0.2s;
+        }
+        
+        .faq-button:hover {
+            background: var(--muted);
+        }
+        
+        .faq-icon {
+            color: var(--accent);
+            font-size: 20px;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+        
+        .faq-content {
+            padding: 0 20px 20px;
+            color: var(--text);
+            line-height: 1.7;
+            font-size: 1rem;
+        }
+
+        /* Tooltip styles */
+        .tooltip {
+            position: fixed;
+            display: none;
+            padding: 12px 16px;
+            background-color: #1f2937;
+            color: white;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.5;
+            pointer-events: none;
+            max-width: 280px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            z-index: 100;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        
+        .tooltip.visible {
+            display: block;
+            opacity: 1;
+        }
+        
+        .tooltip-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #60a5fa;
+        }
+        
+        .tooltip-section-title {
+            font-weight: 500;
+            color: #9ca3af;
+            margin-top: 0.75rem;
+            margin-bottom: 0.25rem;
+            font-size: 12px;
+        }
+
+        /* SVG hotspot styles */
+        .svg-hotspot {
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+            stroke-width: 1.5;
+            stroke: #4b5563;
+            pointer-events: all;
+        }
+        
+        .svg-hotspot:hover {
+            opacity: 0.85;
+            stroke-width: 3;
+            stroke: #3b82f6;
+        }
+
+        /* Workbench SVG styles */
+        .workbench-svg .clickable, .workbench-svg .info-hotspot { 
+            cursor: pointer; 
+            transition: opacity 0.2s ease-in-out; 
+        }
+        
+        .workbench-svg .clickable:hover, .workbench-svg .info-hotspot:hover { 
+            opacity: 0.8; 
+        }
+        
+        .workbench-svg .sidebar-text { 
+            fill: #a0a0a0; 
+            font-size: 14px; 
+        }
+        
+        .workbench-svg .sidebar-text:hover { 
+            fill: #ffffff; 
+        }
+        
+        .workbench-svg .sidebar-active-text { 
+            fill: #ffffff; 
+            font-weight: 500; 
+        }
+        
+        .workbench-svg .run-button:hover rect { 
+            filter: brightness(1.1); 
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            body { padding: 20px 10px; }
+            .container { padding: 30px 20px; }
+            .two-column { grid-template-columns: 1fr; gap: 20px; }
+            .comparison-slider { height: 350px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Tooltip for Brain SVG -->
+    <div id="brain-tooltip" class="tooltip"></div>
+    <!-- Tooltip for Workbench SVG -->
+    <div id="workbench-tooltip" class="tooltip"></div>
+
+    <div class="container">
+        <main>
+            
+            <header>
+                <h1>Building AI Tools for Medicine: A Developer Guide</h1>
+                <p class="byline">Prototyping and deploying clinical workflows with Anthropic Workbench and Claude Chat</p>
+                
+                <div class="callout callout-info">
+                    <h4 style="margin-top: 0;">🧑‍💻 For Developers</h4>
+                    <p style="margin-bottom: 0;">
+                        This guide shows how developers can use Claude Workbench to prototype structured medical summarization tools that clinicians later access through Claude Chat or EMR integrations. You're learning to build systems <em>for</em> clinicians, not how to use them as a clinician.
+                    </p>
+                </div>
+            </header>
+
+            <!-- Understanding the Two Environments -->
+            <section>
+                <h2>🔄 Understanding the Two Environments</h2>
+                
+                <div class="two-column">
+                    <div class="column-card">
+                        <h3>🧑‍💻 Claude Workbench</h3>
+                        <p><strong>Audience:</strong> Developers and engineers</p>
+                        <p><strong>Purpose:</strong> Sandbox for prompt engineering and prototype testing</p>
+                        <p><strong>Environment:</strong> Anthropic Console → Workbench</p>
+                        <p><strong>Capabilities:</strong></p>
+                        <ul>
+                            <li>Define and iterate on system and user prompts</li>
+                            <li>Choose models (e.g., Claude 3.5 Sonnet, Haiku)</li>
+                            <li>Evaluate consistency and accuracy using test inputs</li>
+                            <li>Export prompt logic for embedding in applications</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="column-card">
+                        <h3>👩‍⚕️ Claude Chat (claude.ai)</h3>
+                        <p><strong>Audience:</strong> Clinicians, educators, professionals, end-users</p>
+                        <p><strong>Purpose:</strong> Natural-language interface where AI executes predefined logic</p>
+                        <p><strong>Environment:</strong> Public web app (claude.ai) or integrated EMR chat module</p>
+                        <p><strong>Characteristics:</strong></p>
+                        <ul>
+                            <li>Simplified chat-based workflow</li>
+                            <li>No system prompt visibility</li>
+                            <li>Developers' prototype logic runs behind the scenes</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="callout callout-success">
+                    <h4>🔄 Relationship Between Them</h4>
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Role</th>
+                                <th>Tool</th>
+                                <th>Function</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Developer</td>
+                                <td>Claude Workbench</td>
+                                <td>Build and refine structured prompts and logic</td>
+                            </tr>
+                            <tr>
+                                <td>Clinician</td>
+                                <td>Claude Chat</td>
+                                <td>Use the deployed version through chat interface or EMR plugin</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p style="margin-top: 20px; font-style: italic;">
+                        <strong>Analogy:</strong> Think of Claude Workbench as the lab and Claude Chat as the clinic. Developers experiment and tune in the lab; clinicians use the result in real patient workflows.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Development Workflow -->
+            <section>
+                <h2>Development Workflow</h2>
+                
+                <h3>Part 1: Clinical Reference Data</h3>
+                <p>Understanding the patient scenario and medical context that your AI tool needs to process effectively.</p>
+                
+                <h3>Part 2: Prompt Engineering Process</h3>
+                <p>Using the Workbench to iterate on prompts until you achieve consistent, accurate medical note structuring.</p>
+                
+                <h3>Part 3: Developer's Workbench</h3>
+                <p>Exploring the interactive Workbench interface where you prototype and test your medical AI workflows.</p>
+            </section>
+
+            <!-- Section 1: Clinical Reference Data -->
+            <section>
+                <h2>Part 1: Clinical Reference Data</h2>
+                <p>As a developer, you need to understand the clinical context your AI tool will handle. This realistic case serves as your reference dataset for testing and validation. The brain regions shown below represent the medical complexity your system needs to process accurately.</p>
+                
+                <p>A 68-year-old male presents with a 3-month history of progressive word-finding difficulties and intermittent confusion. His family reports recent episodes of getting lost in familiar places and difficulty managing his finances. His past medical history is significant for hypertension and hyperlipidemia, both well-controlled on medication. He has no history of stroke or traumatic brain injury.</p>
+                
+                <div class="brain-container">
+                    <svg 
+                      id="brain-svg" 
+                      class="w-64 h-auto" 
+                      viewBox="20 35 135 120" 
+                      xmlns="http://www.w3.org/2000/svg"
+                      style="max-width: 300px; height: auto;"
+                    >
+                      <g id="brain-regions">
+                        <path class="svg-hotspot" id="frontal-lobe" fill="#81e6d9" d="M 94,44 C 42,60 48,114 24,133 C 40,146 81,148 94,136 C 105,124 100,64 94,44 Z" />
+                        <path class="svg-hotspot" id="parietal-lobe" fill="#f6e05e" d="M 94,44 C 100,64 105,124 94,136 C 120,138 140,119 146,104 C 160,70 142,40 94,44 Z" />
+                        <path class="svg-hotspot" id="temporal-lobe" fill="#f6ad5e" d="M 94,136 C 81,148 40,146 24,133 C 28,144 48,160 74,158 C 90,157 100,146 94,136 Z" />
+                        <path class="svg-hotspot" id="occipital-lobe" fill="#a78bfa" d="M 94,142 C 120,144 140,125 146,110 C 160,76 142,46 94,50 C 100,70 105,130 94,142 Z" />
+                        <path class="svg-hotspot" id="cerebellum" fill="#f472b6" d="M 74,158 C 48,160 28,144 24,133 C 20,138 20,150 28,162 C 40,175 90,175 110,162 C 114,158 100,156 74,158 Z" />
+                      </g>
+                    </svg>
+                    <p style="margin-top: 20px; color: #6c757d; font-size: 0.9rem;">Hover over regions for clinical details relevant to your AI development.</p>
+                </div>
+            </section>
+
+            <!-- Section 2: Prompt Engineering Process -->
+            <section>
+                <h2>Part 2: Prompt Engineering Process</h2>
+                <p>This section demonstrates the transformation your AI system needs to achieve. As a developer, you'll use the Workbench to iterate prompts until you achieve consistent terminology and sectioning (e.g., Chief Complaint, HPI). The before/after comparison below shows your target output quality.</p>
+                
+                <div id="slider-container" class="comparison-slider">
+                    <div class="comparison-item">
+                        <div style="padding: 30px; height: 100%; background: #eff6ff; color: #1e40af;">
+                            <h4 style="font-size: 1.3rem; margin-bottom: 20px; color: #1e40af;">Target AI Output (Your Goal)</h4>
+                            <div style="line-height: 1.6;">
+                                <p><strong>Patient:</strong> 68-Year-Old Male</p>
+                                <p><strong>Chief Complaint:</strong> Cognitive Decline</p>
+                                <p><strong>History of Present Illness:</strong> Patient presents with a 3-month history of progressive cognitive decline, characterized by:</p>
+                                <ul style="margin: 12px 0; padding-left: 20px;">
+                                    <li>Anomic aphasia (word-finding difficulty)</li>
+                                    <li>Visuospatial disorientation (getting lost in familiar locations)</li>
+                                    <li>Executive dysfunction (difficulty with financial management)</li>
+                                </ul>
+                                <p><strong>Past Medical History:</strong> Hypertension, Hyperlipidemia (well-controlled)</p>
+                                <p><strong>Review of Systems:</strong> No history of CVA or TBI. Neurological exam within normal limits except for cognitive deficits noted above.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="padding: 30px; height: 100%; background: #fef2f2; color: #991b1b;">
+                        <h4 style="font-size: 1.3rem; margin-bottom: 20px; color: #991b1b;">Raw Clinical Input (What You'll Process)</h4>
+                        <p style="line-height: 1.6; white-space: pre-line;">pt is a 68yo man here w/ family. they say he's been having trouble finding his words for maybe 3 mo. also getting confused. wife says he got lost driving home from the grocery store last week, a trip he's made for 20 yrs. can't handle the bills anymore. hx of htn and high chol, but takes meds for it. denies any weakness or numbness. no head trauma. i checked him out, neuro exam is pretty much normal, cn ii-xii intact, 5/5 strength throughout. but his mmse score was low and he couldn't draw the clock right. seems like something's going on with his thinking. maybe alzheimers? need to investigate further.</p>
+                    </div>
+                    <div class="handle">
+                        <div class="handle-icon">
+                            <svg style="width: 24px; height: 24px; color: #6b7280;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 3: The Developer's Workbench -->
+            <section>
+                <h2>Part 3: The Developer's Workbench</h2>
+                <p>This is where you prototype and refine your medical AI workflows. The interactive Workbench below shows the actual development environment where you'll build the logic that powers the clinician-facing chat interface. Hover over elements to understand the developer workflow.</p>
+                
+                <div class="workbench-container">
+                    <svg class="workbench-svg" id="workbench-svg" width="100%" viewBox="0 0 1200 675" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="1200" height="675" rx="12" fill="#282828"/><g id="left-sidebar"><rect width="220" height="675" rx="12" fill="#1f1f1f"/><g id="company-logo" class="info-hotspot"><text x="24" y="45" font-family="Inter, sans-serif" font-size="16" font-weight="bold" fill="white">ANTHROP\C</text><path d="M190 35 L200 40 L190 45 Z" fill="#a0a0a0"/></g><g id="build-section" class="info-hotspot"><text x="24" y="90" font-family="Inter, sans-serif" font-size="12" font-weight="bold" fill="#7a7a7a">BUILD</text></g><g id="btn-dashboard" class="clickable"><rect x="16" y="105" width="188" height="30" rx="6" fill="transparent"/><text x="24" y="124" class="sidebar-text">Dashboard</text></g><g id="btn-workbench" class="clickable"><rect x="16" y="135" width="188" height="30" rx="6" fill="#333333"/><text x="24" y="154" class="sidebar-active-text">Workbench</text></g><g id="btn-files" class="clickable"><rect x="16" y="165" width="188" height="30" rx="6" fill="transparent"/><text x="24" y="184" class="sidebar-text">Files</text></g><g id="analytics-section" class="info-hotspot"><text x="24" y="230" font-family="Inter, sans-serif" font-size="12" font-weight="bold" fill="#7a7a7a">ANALYTICS</text></g><g id="btn-usage" class="clickable"><rect x="16" y="245" width="188" height="30" rx="6" fill="transparent"/><text x="24" y="264" class="sidebar-text">Usage</text></g><g id="btn-cost" class="clickable"><rect x="16" y="275" width="188" height="30" rx="6" fill="transparent"/><text x="24" y="294" class="sidebar-text">Cost</text></g><g id="btn-logs" class="clickable"><rect x="16" y="305" width="188" height="30" rx="6" fill="transparent"/><text x="24" y="324" class="sidebar-text">Logs</text></g><g id="user-profile" class="info-hotspot"><rect x="16" y="610" width="188" height="50" rx="8" fill="#111111"/><circle cx="40" cy="635" r="12" fill="#4a90e2"/><text x="35" y="640" font-family="Inter, sans-serif" font-size="14" fill="white">PN</text><text x="64" y="630" font-family="Inter, sans-serif" font-size="12" font-weight="500" fill="white">Pawan Nayar</text><text x="64" y="648" font-family="Inter, sans-serif" font-size="10" fill="#a0a0a0">CRETORIAL MEDIA S...</text><path d="M188 630 L193 635 L188 640 Z" fill="#a0a0a0" transform="rotate(90 190.5 635)"/></g></g><g id="main-content">
+                            <!-- NEW: Top Bar Elements -->
+                            <g id="top-bar-menu" class="info-hotspot"><rect x="240" y="30" width="40" height="40" rx="8" fill="#3a3a3a"/><path d="M251 43 H261 M251 47 H261 M251 51 H261" stroke="white" stroke-width="1.5" stroke-linecap="round"/></g>
+                            <g id="top-bar-default" class="info-hotspot"><rect x="290" y="30" width="100" height="40" rx="8" fill="#3a3a3a"/><text x="300" y="55" font-family="Inter, sans-serif" font-size="14" fill="white">Default</text><path d="M365 52 L370 57 L375 52" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round"/></g>
+                            <g id="prompt-evaluate-toggle" class="info-hotspot"><rect x="500" y="110" width="180" height="34" rx="8" fill="#1f1f1f"/><rect x="502" y="112" width="88" height="30" rx="6" fill="#3a3a3a"/><text x="522" y="133" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="white">Prompt</text><text x="605" y="133" font-family="Inter, sans-serif" font-size="14" fill="#a0a0a0">Evaluate</text></g>
+                            
+                            <g id="main-title-group" class="info-hotspot"><text id="main-title" x="250" y="90" font-family="Inter, sans-serif" font-size="24" font-weight="bold" fill="white">Medical Note Structurer</text><text x="250" y="115" font-family="Inter, sans-serif" font-size="12" fill="#a0a0a0">Last saved Aug 31 at 11:50 PM</text></g>
+                            
+                            <!-- NEW: Model Selector Bar -->
+                             <g id="model-selector-bar" class="info-hotspot"><text x="250" y="135" font-family="Inter, sans-serif" font-size="14" fill="#a0a0a0">claude-sonnet-4-20250514</text><text x="470" y="135" font-family="monospace" font-size="16" fill="#a0a0a0">{ }</text><text x="500" y="135" font-family="Inter, sans-serif" font-size="14" fill="#a0a0a0">Examples</text></g>
+                            
+                            <g id="btn-get-code" class="clickable"><rect x="900" y="45" width="100" height="40" rx="8" fill="#3a3a3a"/><text x="923" y="70" font-family="Inter, sans-serif" font-size="14" fill="white">Get Code</text></g>
+                            <g id="btn-run" class="clickable run-button"><rect x="1010" y="45" width="160" height="40" rx="8" fill="#4a90e2"/><text x="1065" y="70" font-family="Inter, sans-serif" font-size="14" font-weight="bold" fill="white">Run</text><text x="1125" y="70" font-family="Inter, sans-serif" font-size="12" fill="#d0e0f8">Ctrl+⮐</text><path d="M1030 62.5 L1040 67.5 L1030 72.5 Z" fill="white"/></g>
+                            
+                            <rect x="250" y="150" width="550" height="450" rx="8" fill="#1f1f1f" style="pointer-events:none;"/>
+                            <g id="system-prompt-area" class="info-hotspot"><rect x="255" y="155" width="540" height="70" fill="transparent"/><text x="270" y="180" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="white">System Prompt</text><text x="270" y="200" font-family="Inter, sans-serif" font-size="12" fill="#a0a0a0">Define role, constraints, and safety filters</text></g>
+                            <line x1="270" y1="230" x2="780" y2="230" stroke="#3a3a3a" stroke-width="1"/>
+                            
+                            <g id="user-prompt-area" class="info-hotspot"><rect x="255" y="235" width="540" height="310" fill="transparent" /><text x="270" y="260" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="white">User</text><g id="generate-prompt-button" class="clickable"><rect x="270" y="280" width="130" height="30" rx="6" fill="#3a3a3a"/><text x="280" y="300" font-family="Inter, sans-serif" font-size="13" fill="white">✨ Generate Prompt</text></g><text x="410" y="300" font-family="Inter, sans-serif" font-size="14" fill="#a0a0a0">or enter test clinical notes...</text></g>
+
+                            <!-- NEW: Bottom controls -->
+                            <g id="pre-fill-response" class="info-hotspot"><rect x="270" y="550" width="16" height="16" rx="4" stroke="#a0a0a0" stroke-width="1.5" fill="none"/><text x="295" y="563" font-family="Inter, sans-serif" font-size="13" fill="#a0a0a0">Pre-fill response</text></g>
+                            <g id="add-message-pair" class="info-hotspot"><text x="420" y="563" font-family="Inter, sans-serif" font-size="13" fill="#a0a0a0">Add message pair</text></g>
+                        </g><g id="right-sidebar"><g id="output-panel" class="info-hotspot"><rect x="830" y="150" width="340" height="450" rx="8" fill="#1f1f1f"/><text x="850" y="180" font-family="Inter, sans-serif" font-size="16" font-weight="bold" fill="white">Model Output Validation</text><g class="info-text"><text x="850" y="220" font-family="Inter, sans-serif" font-size="13" fill="#e0e0e0"><tspan x="850" dy="0">→ Test your prompts with real clinical data</tspan><tspan x="850" dy="1.4em">   and validate structured output quality</tspan></text><text x="850" y="270" font-family="Inter, sans-serif" font-size="13" fill="#e0e0e0"><tspan x="850" dy="0">→ Iterate until terminology and formatting</tspan><tspan x="850" dy="1.4em">   meet clinical standards consistently</tspan></text><text x="850" y="320" font-family="Inter, sans-serif" font-size="13" fill="#e0e0e0"><tspan x="850" dy="0">→ Export finalized prompts for</tspan><tspan x="850" dy="1.4em">   integration into production systems</tspan></text></g></g></g>
+                    </svg>
+                </div>
+                
+                <h3>Developer Workflow Components</h3>
+                <p>Understanding each component of the Workbench is crucial for effective medical AI development. The interactive diagram above shows your development environment.</p>
+                
+                <ul>
+                    <li><strong>System Prompt:</strong> This defines role, constraints, and safety filters for your medical AI. Example: <em>"You are a medical documentation assistant. Structure clinical notes into standard formats using proper medical terminology. Never add clinical information not present in the original note. Always maintain HIPAA compliance."</em></li>
+                    <li><strong>User Prompt Area:</strong> Where you input test clinical notes to validate your system's performance. Use real examples like the case above to ensure consistent output quality.</li>
+                    <li><strong>Run Button:</strong> Executes your prompt with defined parameters. This is where you test iterations and validate that your logic produces the desired structured output.</li>
+                    <li><strong>Output Panel:</strong> Shows model output for validation. This is where you verify that your prompts consistently produce properly formatted medical notes that meet clinical standards.</li>
+                    <li><strong>Get Code Button:</strong> Exports your finalized prompt logic for integration into production applications, EMR systems, or API endpoints.</li>
+                </ul>
+            </section>
+
+            <!-- Section 4: What the Doctor Sees -->
+            <section>
+                <h2>Part 4: What the Doctor Sees</h2>
+                <p>Once you've perfected your prompts in the Workbench, this is how clinicians will interact with your deployed system. The chat interface below demonstrates the end-user experience powered by your Workbench logic.</p>
+                
+                <div class="chat-interface">
+                    <div style="background: #f8f9fa; padding: 16px; border-bottom: 1px solid #dee2e6;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div style="width: 12px; height: 12px; background: #dc3545; border-radius: 50%;"></div>
+                            <div style="width: 12px; height: 12px; background: #ffc107; border-radius: 50%;"></div>
+                            <div style="width: 12px; height: 12px; background: #28a745; border-radius: 50%;"></div>
+                            <span style="margin-left: 16px; font-size: 14px; color: #6c757d;">Claude Chat - Medical Note Assistant (End-User Interface)</span>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; height: 400px;">
+                        <!-- Left Side: Doctor's Input -->
+                        <div style="width: 50%; border-right: 1px solid #dee2e6; background: #eff6ff; padding: 24px;">
+                            <div style="display: flex; align-items: center; margin-bottom: 16px;">
+                                <div style="width: 32px; height: 32px; background: #3b82f6; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 14px;">Dr</div>
+                                <span style="margin-left: 12px; font-weight: 500; color: #374151;">Dr. Sarah Chen</span>
+                            </div>
+                            <div style="background: white; padding: 20px; border-radius: 8px; border: 1px solid #d1d5db; height: 300px; overflow-y: auto;">
+                                <p style="font-size: 14px; line-height: 1.6; margin: 0;">
+                                    <strong>Please structure this patient note:</strong><br><br>
+                                    pt is a 68yo man here w/ family. they say he's been having trouble finding his words for maybe 3 mo. also getting confused. wife says he got lost driving home from the grocery store last week, a trip he's made for 20 yrs. can't handle the bills anymore. hx of htn and high chol, but takes meds for it. denies any weakness or numbness. no head trauma. i checked him out, neuro exam is pretty much normal, cn ii-xii intact, 5/5 strength throughout. but his mmse score was low and he couldn't draw the clock right. seems like something's going on with his thinking. maybe alzheimers? need to investigate further.
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <!-- Right Side: Claude's Response -->
+                        <div style="width: 50%; background: #f0fdf4; padding: 24px;">
+                            <div style="display: flex; align-items: center; margin-bottom: 16px;">
+                                <div style="width: 32px; height: 32px; background: #22c55e; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 14px;">C</div>
+                                <span style="margin-left: 12px; font-weight: 500; color: #374151;">Claude (Your AI System)</span>
+                            </div>
+                            <div style="background: white; padding: 20px; border-radius: 8px; border: 1px solid #d1d5db; height: 300px; overflow-y: auto;">
+                                <div style="font-size: 14px; line-height: 1.6;">
+                                    <p><strong>Patient:</strong> 68-Year-Old Male</p>
+                                    <p><strong>Chief Complaint:</strong> Cognitive Decline</p>
+                                    <p><strong>History of Present Illness:</strong> Patient presents with a 3-month history of progressive cognitive decline, characterized by:</p>
+                                    <ul style="margin: 8px 0; padding-left: 20px;">
+                                        <li>Anomic aphasia (word-finding difficulty)</li>
+                                        <li>Visuospatial disorientation (getting lost in familiar locations)</li>
+                                        <li>Executive dysfunction (difficulty with financial management)</li>
+                                    </ul>
+                                    <p><strong>Past Medical History:</strong> Hypertension, Hyperlipidemia (well-controlled)</p>
+                                    <p><strong>Review of Systems:</strong> No history of CVA or TBI. Neurological exam within normal limits except for cognitive deficits noted above.</p>
+                                    <p><strong>Assessment:</strong> Cognitive decline concerning for possible dementia. Recommend further evaluation including neuropsychological testing and imaging.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Bottom Action Bar -->
+                    <div style="background: #f8f9fa; padding: 16px; border-top: 1px solid #dee2e6; display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 14px; color: #6c757d;">Powered by your Workbench logic</span>
+                        <button style="background: #22c55e; color: white; padding: 10px 20px; border: none; border-radius: 6px; font-weight: 500; cursor: pointer;">
+                            📋 Copy to EMR
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="callout callout-info">
+                    <h4>🔗 From Development to Deployment</h4>
+                    <p style="margin-bottom: 0;">
+                        This is the interface your end-users will see once your Workbench logic is integrated into a clinical system. The structured output they receive is generated by the prompts you refined in the development environment. Your role as a developer is to ensure this experience is consistent, accurate, and clinically useful.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Developer Notes and Disclaimers -->
+            <section>
+                <h2>⚠️ Important Developer Notes</h2>
+                
+                <div class="callout callout-warning">
+                    <h4>🚨 Clinical Responsibility Disclaimer</h4>
+                    <p style="margin-bottom: 0;">
+                        <strong>This prototype is for educational purposes only and should not replace clinical judgment.</strong> Any medical AI system you develop must be validated by clinical professionals and comply with all relevant medical device regulations before deployment in healthcare settings.
+                    </p>
+                </div>
+                
+                <div class="callout callout-info">
+                    <h4>🔒 Technical Implementation Requirements</h4>
+                    <p style="margin-bottom: 0;">
+                        <strong>All clinical tools using LLMs must comply with privacy, audit, and institutional data governance standards.</strong> This includes HIPAA compliance, data encryption, audit logging, and integration with existing clinical workflows. Consider partnering with healthcare IT professionals and legal teams for production deployments.
+                    </p>
+                </div>
+                
+                <div class="callout callout-success">
+                    <h4>🛠️ Development Best Practices</h4>
+                    <ul style="margin-bottom: 0;">
+                        <li><strong>Test extensively:</strong> Use diverse clinical cases to validate prompt consistency</li>
+                        <li><strong>Version control:</strong> Track prompt iterations and performance metrics</li>
+                        <li><strong>Clinical validation:</strong> Have medical professionals review outputs</li>
+                        <li><strong>Error handling:</strong> Plan for edge cases and unexpected inputs</li>
+                        <li><strong>Performance monitoring:</strong> Implement logging and analytics for production systems</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- FAQ Section -->
+            <section>
+                <h2>❓ Frequently Asked Questions</h2>
+                <p>Common questions about developing medical AI tools with Claude Workbench, answered for developers.</p>
+                
+                <div class="faq-container" id="faq-accordion">
+                    <div class="faq-item">
+                        <button class="faq-button" onclick="toggleFAQ(1)">
+                            <span>How do I validate that my medical AI prompts are working correctly?</span>
+                            <span class="faq-icon" id="faq-icon-1">+</span>
+                        </button>
+                        <div class="faq-content" id="faq-content-1" style="display: none;">
+                            Test your prompts with diverse clinical cases, validate outputs with medical professionals, and use consistent terminology checks. Create a test suite with edge cases, abbreviations, and different documentation styles to ensure robust performance across real-world scenarios.
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <button class="faq-button" onclick="toggleFAQ(2)">
+                            <span>What's the difference between developing for Claude Workbench vs. direct API integration?</span>
+                            <span class="faq-icon" id="faq-icon-2">−</span>
+                        </button>
+                        <div class="faq-content" id="faq-content-2">
+                            Workbench is ideal for prompt prototyping and testing with a visual interface, while direct API integration is for production deployment. Use Workbench to perfect your prompts, then export the logic for API implementation. Workbench provides easier iteration, while API gives you full control over the user experience.
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <button class="faq-button" onclick="toggleFAQ(3)">
+                            <span>How do I ensure HIPAA compliance when developing medical AI tools?</span>
+                            <span class="faq-icon" id="faq-icon-3">+</span>
+                        </button>
+                        <div class="faq-content" id="faq-content-3" style="display: none;">
+                            Never include patient identifiers in prompts, use de-identified test data, ensure your deployment environment has proper encryption and access controls, and work with your legal/compliance team. Consider using synthetic medical data for development and testing phases.
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <button class="faq-button" onclick="toggleFAQ(4)">
+                            <span>What medical terminology standards should my AI system follow?</span>
+                            <span class="faq-icon" id="faq-icon-4">+</span>
+                        </button>
+                        <div class="faq-content" id="faq-content-4" style="display: none;">
+                            Follow standard medical documentation formats like SOAP notes, use proper medical abbreviations, and ensure consistency with institutional guidelines. Consider integrating with medical coding systems like ICD-10 or SNOMED CT if your application requires structured data output.
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <button class="faq-button" onclick="toggleFAQ(5)">
+                            <span>How do I handle errors and edge cases in medical AI applications?</span>
+                            <span class="faq-icon" id="faq-icon-5">+</span>
+                        </button>
+                        <div class="faq-content" id="faq-content-5" style="display: none;">
+                            Implement robust error handling, provide fallback options when AI confidence is low, log all interactions for review, and always include human oversight mechanisms. Design your system to gracefully handle incomplete information and provide clear indicators when manual review is needed.
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <button class="faq-button" onclick="toggleFAQ(6)">
+                            <span>What's the best way to integrate medical AI tools with existing EMR systems?</span>
+                            <span class="faq-icon" id="faq-icon-6">+</span>
+                        </button>
+                        <div class="faq-content" id="faq-content-6" style="display: none;">
+                            Work with EMR vendors' APIs, follow HL7 FHIR standards for data exchange, and design your integration to fit existing clinical workflows. Consider building as plugins or add-ons rather than standalone systems to minimize workflow disruption for clinicians.
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <button class="faq-button" onclick="toggleFAQ(7)">
+                            <span>How do I measure the performance and accuracy of my medical AI system?</span>
+                            <span class="faq-icon" id="faq-icon-7">+</span>
+                        </button>
+                        <div class="faq-content" id="faq-content-7" style="display: none;">
+                            Establish metrics like accuracy of medical term extraction, consistency of formatting, and clinical relevance scores. Create gold standard test sets reviewed by medical professionals, track user satisfaction, and monitor for clinical outcomes when possible.
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <button class="faq-button" onclick="toggleFAQ(8)">
+                            <span>What are the key considerations for scaling medical AI tools in healthcare organizations?</span>
+                            <span class="faq-icon" id="faq-icon-8">+</span>
+                        </button>
+                        <div class="faq-content" id="faq-content-8" style="display: none;">
+                            Plan for high availability, implement proper monitoring and alerting, ensure your system can handle peak loads, and design for easy updates without downtime. Consider multi-tenancy for different departments, and build comprehensive audit trails for compliance requirements.
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <button class="faq-button" onclick="toggleFAQ(9)">
+                            <span>How do I stay updated with medical AI regulations and best practices?</span>
+                            <span class="faq-icon" id="faq-icon-9">+</span>
+                        </button>
+                        <div class="faq-content" id="faq-content-9" style="display: none;">
+                            Follow FDA guidance on AI/ML medical devices, join healthcare AI professional organizations, attend medical informatics conferences, and maintain relationships with clinical partners. Subscribe to regulatory updates and participate in industry working groups for emerging standards.
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <button class="faq-button" onclick="toggleFAQ(10)">
+                            <span>What's the best approach for user training and adoption of medical AI tools?</span>
+                            <span class="faq-icon" id="faq-icon-10">+</span>
+                        </button>
+                        <div class="faq-content" id="faq-content-10" style="display: none;">
+                            Design intuitive interfaces that fit existing workflows, provide comprehensive training materials, implement gradual rollouts with champion users, and gather continuous feedback. Focus on demonstrating clear value and time savings to encourage adoption among busy clinicians.
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // --- Generic Tooltip Positioning Function ---
+    function updateTooltipPosition(e, tooltipEl) {
+        const xOffset = 15;
+        const yOffset = 15;
+        const body = document.body;
+        const tooltipRect = tooltipEl.getBoundingClientRect();
+
+        let x = e.clientX + xOffset;
+        let y = e.clientY + yOffset;
+
+        if (x + tooltipRect.width > body.clientWidth) {
+            x = e.clientX - tooltipRect.width - xOffset;
+        }
+        if (y + tooltipRect.height > body.clientHeight) {
+            y = e.clientY - tooltipRect.height - yOffset;
+        }
+
+        tooltipEl.style.left = `${x}px`;
+        tooltipEl.style.top = `${y}px`;
+    }
+
+    // --- Brain SVG Tooltip Logic ---
+    const brainTooltip = document.getElementById('brain-tooltip');
+    const brainHotspots = document.querySelectorAll('#brain-svg .svg-hotspot');
+    const brainTooltipContent = {
+        'frontal-lobe': { title: 'Frontal Lobe', text: 'Executive functions like planning and problem-solving. Your AI needs to identify executive dysfunction symptoms in clinical notes.' },
+        'parietal-lobe': { title: 'Parietal Lobe', text: 'Processes sensory information and spatial awareness. Important for identifying visuospatial symptoms in patient presentations.' },
+        'temporal-lobe': { title: 'Temporal Lobe', text: 'Key for memory and language processing. Critical for identifying anomic aphasia and memory-related symptoms.' },
+        'occipital-lobe': { title: 'Occipital Lobe', text: 'Primary visual processing center. Less relevant to this cognitive case but important for comprehensive neurological assessment.' },
+        'cerebellum': { title: 'Cerebellum', text: 'Coordinates movement and balance. Your AI should distinguish between cognitive and motor symptoms in clinical notes.' }
+    };
+
+    brainHotspots.forEach(hotspot => {
+        hotspot.addEventListener('mouseenter', (e) => {
+            const content = brainTooltipContent[hotspot.id];
+            if (content) {
+                brainTooltip.innerHTML = `<div class="tooltip-title">${content.title}</div><p>${content.text}</p>`;
+                brainTooltip.classList.add('visible');
+                updateTooltipPosition(e, brainTooltip);
+            }
+        });
+        hotspot.addEventListener('mouseleave', () => {
+            brainTooltip.classList.remove('visible');
+        });
+        hotspot.addEventListener('mousemove', (e) => {
+            if (brainTooltip.classList.contains('visible')) {
+                updateTooltipPosition(e, brainTooltip);
+            }
+        });
+    });
+    
+    // --- Workbench SVG Tooltip Logic (Developer-focused) ---
+    const workbenchTooltip = document.getElementById('workbench-tooltip');
+    const allWorkbenchHotspots = document.querySelectorAll('#workbench-svg .clickable, #workbench-svg .info-hotspot');
+    const workbenchTooltipsContent = {
+        'btn-run': { title: 'Run Button', whatItIs: 'Executes your prompt with defined parameters to test medical note structuring logic.', impact: 'Critical for validating that your prompts produce consistent, clinically accurate outputs.' },
+        'btn-get-code': { title: 'Get Code Button', whatItIs: 'Exports your finalized prompt logic for integration into production applications or EMR systems.', impact: 'Enables deployment of your tested medical AI workflows into real clinical environments.' },
+        'btn-dashboard': { title: 'Dashboard', whatItIs: 'Overview of your development projects, usage metrics, and system performance.', impact: 'Helps track development progress and monitor deployed medical AI systems.' },
+        'btn-workbench': { title: 'Workbench', whatItIs: 'Your primary development environment for creating and testing medical AI prompts and workflows.', impact: 'Where you iterate on prompts until they meet clinical accuracy and consistency standards.' },
+        'btn-files': { title: 'Files', whatItIs: 'Storage for test datasets, clinical examples, and prompt templates for medical AI development.', impact: 'Organizes your development assets and enables systematic testing with diverse clinical cases.' },
+        'btn-usage': { title: 'Usage Analytics', whatItIs: 'Detailed metrics on API calls, model performance, and system utilization.', impact: 'Essential for optimizing costs and performance in production medical AI deployments.'},
+        'btn-cost': { title: 'Cost Tracking', whatItIs: 'Monitors API usage costs and helps optimize model selection for medical applications.', impact: 'Critical for budgeting and scaling medical AI systems in healthcare environments.'},
+        'btn-logs': { title: 'System Logs', whatItIs: 'Technical logs of all interactions, errors, and system events for debugging.', impact: 'Essential for maintaining and troubleshooting production medical AI systems.'},
+        'system-prompt-area': { title: 'System Prompt', whatItIs: 'Defines role, constraints, and safety filters for your medical AI. Sets clinical standards and compliance requirements.', impact: 'Ensures consistent, safe, and clinically appropriate outputs across all medical note processing.' },
+        'user-prompt-area': { title: 'Test Input Area', whatItIs: 'Where you input real clinical notes to test and validate your medical AI system performance.', impact: 'Critical for ensuring your prompts work consistently with diverse clinical documentation styles.'},
+        'output-panel': { title: 'Model Output Validation', whatItIs: 'Shows structured medical notes generated by your AI for quality assessment and clinical review.', impact: 'Where you verify outputs meet clinical standards before deploying to healthcare environments.'},
+        'user-profile': { title: 'Developer Profile', whatItIs: 'Your account settings, API keys, and development environment configuration.', impact: 'Manages access credentials and development preferences for medical AI projects.'},
+        'build-section': { title: 'Build Tools', whatItIs: 'Development tools for creating, testing, and deploying medical AI workflows.', impact: 'Primary workspace for medical AI development and clinical workflow automation.'},
+        'analytics-section': { title: 'Analytics Suite', whatItIs: 'Performance monitoring, usage tracking, and system optimization tools for medical AI.', impact: 'Essential for maintaining quality and compliance in production healthcare environments.'},
+        'main-title-group': { title: 'Project Name', whatItIs: 'Title and metadata for your current medical AI development project.', impact: 'Helps organize multiple medical AI workflows and track development versions.'},
+        'top-bar-default': { title: 'Project Selector', whatItIs: 'Switch between different medical AI projects and clinical workflow prototypes.', impact: 'Enables parallel development of multiple medical AI tools and specializations.'},
+        'prompt-evaluate-toggle': { title: 'Development Mode', whatItIs: 'Switch between single prompt testing and comparative evaluation of multiple medical AI approaches.', impact: 'Evaluate mode helps optimize medical AI performance by comparing different prompt strategies.' },
+        'model-selector-bar': { title: 'Model Configuration', whatItIs: 'Select AI models, configure parameters, and manage variables for medical applications.', impact: 'Critical for optimizing performance, cost, and accuracy for specific medical use cases.' },
+        'generate-prompt-button': { title: 'Prompt Assistant', whatItIs: 'AI-powered tool to help generate effective prompts for medical documentation tasks.', impact: 'Accelerates development of clinically appropriate prompts for medical AI systems.'},
+        'pre-fill-response': { title: 'Response Template', whatItIs: 'Pre-structure the AI response format to ensure consistent medical documentation output.', impact: 'Ensures medical notes follow institutional standards and clinical documentation requirements.'},
+        'add-message-pair': { title: 'Conversation Flow', whatItIs: 'Create multi-turn conversations to simulate complex clinical documentation scenarios.', impact: 'Essential for testing medical AI systems with realistic clinical workflow interactions.'}
+    };
+
+    allWorkbenchHotspots.forEach(el => {
+        el.addEventListener('mouseenter', (e) => {
+            const content = workbenchTooltipsContent[el.id];
+            if (content) {
+                workbenchTooltip.innerHTML = `<div class="tooltip-title">${content.title}</div><div class="tooltip-section-title">Development Function</div><p>${content.whatItIs}</p><div class="tooltip-section-title">Clinical Impact</div><p>${content.impact}</p>`;
+                workbenchTooltip.classList.add('visible');
+                updateTooltipPosition(e, workbenchTooltip);
+            }
+        });
+        el.addEventListener('mouseleave', () => {
+            workbenchTooltip.classList.remove('visible');
+        });
+        el.addEventListener('mousemove', (e) => {
+             if (workbenchTooltip.classList.contains('visible')) {
+                updateTooltipPosition(e, workbenchTooltip);
+            }
+        });
+    });
+
+    // --- Before/After Slider Logic ---
+    const sliderContainer = document.getElementById('slider-container');
+    if (sliderContainer) {
+        const comparisonItem = sliderContainer.querySelector('.comparison-item');
+        const handle = sliderContainer.querySelector('.handle');
+        let isDragging = false;
+        const startDrag = () => { isDragging = true; };
+        const stopDrag = () => { isDragging = false; };
+        const onDrag = (e) => {
+            if (!isDragging) return;
+            e.preventDefault();
+            const clientX = e.clientX || e.touches[0].clientX;
+            const rect = sliderContainer.getBoundingClientRect();
+            let x = Math.max(0, Math.min(clientX - rect.left, rect.width));
+            const percent = (x / rect.width) * 100;
+            handle.style.left = `${percent}%`;
+            comparisonItem.style.width = `${percent}%`;
+        };
+        handle.addEventListener('mousedown', startDrag);
+        document.addEventListener('mouseup', stopDrag);
+        document.addEventListener('mousemove', onDrag);
+        handle.addEventListener('touchstart', startDrag, { passive: true });
+        document.addEventListener('touchend', stopDrag);
+        document.addEventListener('touchmove', onDrag);
+    }
+});
+
+// FAQ Accordion Functionality
+function toggleFAQ(faqNumber) {
+    const content = document.getElementById(`faq-content-${faqNumber}`);
+    const icon = document.getElementById(`faq-icon-${faqNumber}`);
+    
+    if (content.style.display === 'none' || content.style.display === '') {
+        // Show content
+        content.style.display = 'block';
+        icon.textContent = '−';
+    } else {
+        // Hide content
+        content.style.display = 'none';
+        icon.textContent = '+';
+    }
+}
+</script>
+
+</body>
+</html>
