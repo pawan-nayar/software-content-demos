@@ -34,6 +34,8 @@
         .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: var(--accent); transform: scaleX(0); transition: transform 0.3s ease; }
         .card:hover { transform: translateY(-8px); box-shadow: 0 12px 24px rgba(0,0,0,0.15); border-color: var(--accent); }
         .card:hover::before { transform: scaleX(1); }
+        .card.selected { border-color: var(--accent); background: var(--accent-soft); transform: translateY(-4px); box-shadow: 0 8px 20px rgba(253, 126, 20, 0.2); }
+        .card.selected::before { transform: scaleX(1); }
         
         /* Carousel & Flip Card Base Styles */
         .carousel-nav { position: absolute; top: 50%; transform: translateY(-50%); background-color: var(--accent); color: white; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 24px; cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.2); transition: all 0.3s ease; }
@@ -155,10 +157,113 @@
             <p class="byline">Learn through real projects, master through practice, grow through collaboration</p>
         </div>
 
+        <!-- Installation Check Section -->
+        <section id="installation-check" style="margin-bottom: 32px;">
+            <h2>🔧 Setup Check</h2>
+            <div class="card" style="background: linear-gradient(135deg, var(--muted) 0%, #fff 100%); border-left: 4px solid var(--accent);">
+                <h3 style="color: var(--accent); margin-bottom: 16px;">Before You Start: Verify Your Setup</h3>
+                <p style="margin-bottom: 16px;">Let's make sure you have everything needed to use Claude Code effectively.</p>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 20px;">
+                    <div style="background: #fff; padding: 16px; border-radius: 8px; border: 2px solid var(--border);">
+                        <h4 style="color: var(--text); margin-bottom: 8px;">✅ Node.js</h4>
+                        <p style="font-size: 0.9rem; color: #6b7280; margin-bottom: 8px;">Required for Claude Code CLI</p>
+                        <button onclick="checkNode()" class="btn" style="font-size: 0.9rem; padding: 8px 16px;">Check Node.js</button>
+                        <div id="node-status" style="margin-top: 8px; font-size: 0.9rem;"></div>
+                    </div>
+                    
+                    <div style="background: #fff; padding: 16px; border-radius: 8px; border: 2px solid var(--border);">
+                        <h4 style="color: var(--text); margin-bottom: 8px;">✅ Claude Code CLI</h4>
+                        <p style="font-size: 0.9rem; color: #6b7280; margin-bottom: 8px;">The terminal interface</p>
+                        <button onclick="checkClaude()" class="btn" style="font-size: 0.9rem; padding: 8px 16px;">Check Claude CLI</button>
+                        <div id="claude-status" style="margin-top: 8px; font-size: 0.9rem;"></div>
+                    </div>
+                </div>
+                
+                <div style="background: #f8f9fa; padding: 16px; border-radius: 8px; border-left: 4px solid var(--accent);">
+                    <h4 style="color: var(--text); margin-bottom: 8px;">💡 Quick Test</h4>
+                    <p style="font-size: 0.9rem; color: #6b7280; margin-bottom: 12px;">Try this command in your terminal:</p>
+                    <pre style="background: #1e1e1e; color: #f8f8f2; padding: 12px; border-radius: 6px; font-family: 'Roboto Mono', monospace; font-size: 0.9rem; margin: 0; overflow-x: auto;"><code>claude --version</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chapter 0: Terminal Basics -->
+        <section id="terminal-basics" style="margin-bottom: 32px;">
+            <h2>💻 Chapter 0: Opening Your Terminal</h2>
+            <div class="intro">
+                <p><strong>Before diving into Claude Code, you need to understand the terminal.</strong> This is where all the magic happens - where you'll run commands, see Claude's responses, and approve changes.</p>
+            </div>
+            
+            <div class="grid" style="margin-top: 24px;">
+                <div class="card">
+                    <h3 style="color: var(--accent); margin-bottom: 12px;">🖥️ What is a Terminal?</h3>
+                    <p style="font-size: 1rem; margin-bottom: 12px;">A terminal is a text-based interface to your computer. Instead of clicking icons, you type commands.</p>
+                    <ul style="font-size: 0.95rem; color: #6b7280;">
+                        <li>Think of it as a conversation with your computer</li>
+                        <li>You type a command, computer responds</li>
+                        <li>Claude Code runs inside the terminal</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3 style="color: var(--accent); margin-bottom: 12px;">🚀 How to Open Terminal</h3>
+                    <div style="font-size: 0.95rem;">
+                        <p style="margin-bottom: 8px;"><strong>Windows:</strong></p>
+                        <ul style="margin-bottom: 12px; padding-left: 16px;">
+                            <li>Press <code style="background: #f1f3f5; padding: 2px 6px; border-radius: 4px;">Win + R</code>, type <code style="background: #f1f3f5; padding: 2px 6px; border-radius: 4px;">cmd</code></li>
+                            <li>Or search "Command Prompt" in Start menu</li>
+                        </ul>
+                        
+                        <p style="margin-bottom: 8px;"><strong>Mac:</strong></p>
+                        <ul style="margin-bottom: 12px; padding-left: 16px;">
+                            <li>Press <code style="background: #f1f3f5; padding: 2px 6px; border-radius: 4px;">Cmd + Space</code>, type "Terminal"</li>
+                            <li>Or Applications → Utilities → Terminal</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3 style="color: var(--accent); margin-bottom: 12px;">📁 Essential Commands</h3>
+                    <div style="font-size: 0.95rem;">
+                        <div style="margin-bottom: 12px;">
+                            <code style="background: #1e1e1e; color: #f8f8f2; padding: 4px 8px; border-radius: 4px; font-family: 'Roboto Mono', monospace;">pwd</code>
+                            <span style="color: #6b7280; margin-left: 8px;">Shows your current folder</span>
+                        </div>
+                        <div style="margin-bottom: 12px;">
+                            <code style="background: #1e1e1e; color: #f8f8f2; padding: 4px 8px; border-radius: 4px; font-family: 'Roboto Mono', monospace;">ls</code>
+                            <span style="color: #6b7280; margin-left: 8px;">Lists files in current folder</span>
+                        </div>
+                        <div style="margin-bottom: 12px;">
+                            <code style="background: #1e1e1e; color: #f8f8f2; padding: 4px 8px; border-radius: 4px; font-family: 'Roboto Mono', monospace;">cd folder-name</code>
+                            <span style="color: #6b7280; margin-left: 8px;">Moves into a folder</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3 style="color: var(--accent); margin-bottom: 12px;">🎯 Working Directory</h3>
+                    <p style="font-size: 1rem; margin-bottom: 12px;">This is crucial for Claude Code!</p>
+                    <ul style="font-size: 0.95rem; color: #6b7280;">
+                        <li>Always run <code style="background: #f1f3f5; padding: 2px 6px; border-radius: 4px;">claude</code> commands in your project folder</li>
+                        <li>Use <code style="background: #f1f3f5; padding: 2px 6px; border-radius: 4px;">cd</code> to navigate there first</li>
+                        <li>Right-click in folder → "Open Terminal Here" (Windows/Mac)</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div style="background: linear-gradient(135deg, var(--ok-soft) 0%, #fff 100%); padding: 20px; border-radius: 12px; border: 2px solid var(--ok); margin-top: 24px;">
+                <h3 style="color: var(--ok); margin-bottom: 12px;">✅ Ready to Start?</h3>
+                <p style="margin-bottom: 12px;">Once you can open a terminal and navigate to a project folder, you're ready for Claude Code!</p>
+                <p style="font-size: 0.95rem; color: #6b7280; margin: 0;">Try: <code style="background: #1e1e1e; color: #f8f8f2; padding: 4px 8px; border-radius: 4px; font-family: 'Roboto Mono', monospace;">pwd</code> to see where you are, then <code style="background: #1e1e1e; color: #f8f8f2; padding: 4px 8px; border-radius: 4px; font-family: 'Roboto Mono', monospace;">ls</code> to see what's there.</p>
+            </div>
+        </section>
+
         <section id="track-selection">
             <h2>🎯 Choose Your Learning Track</h2>
             <div class="grid">
-                <div class="card" data-track="beginner" style="cursor: pointer; transition: all 0.3s;" onmouseover="this.style.borderColor='var(--accent)';" onmouseout="this.style.borderColor='var(--border)';">
+                <div class="card" data-track="beginner" style="cursor: pointer; transition: all 0.3s; position: relative;" onmouseover="this.style.borderColor='var(--accent)';" onmouseout="this.style.borderColor='var(--border)';">
+                    <span style="position: absolute; top: 8px; right: 8px; background: var(--ok); color: white; padding: 4px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 600;">✓ Recommended Start</span>
                     <div style="font-size: 2rem; margin-bottom: 0.25rem;">🌱</div>
                     <h3 style="color: var(--accent); margin-bottom: 0.25rem; font-size: 1.2rem;">Beginner Explorer</h3>
                     <p style="font-size: 0.9rem; color: #6c757d; margin-bottom: 8px; line-height: 1.4;">Start from zero. Build confidence through small, successful projects.</p>
@@ -396,31 +501,49 @@
     </div>
 
     <script>
+        // Installation check functions
+        function checkNode() {
+            const status = document.getElementById('node-status');
+            status.innerHTML = '<span style="color: #6b7280;">Checking... (This is a demo - in real use, this would check your system)</span>';
+            setTimeout(() => {
+                status.innerHTML = '<span style="color: var(--ok);">✅ Node.js detected</span>';
+            }, 1000);
+        }
+        
+        function checkClaude() {
+            const status = document.getElementById('claude-status');
+            status.innerHTML = '<span style="color: #6b7280;">Checking... (This is a demo - in real use, this would check your system)</span>';
+            setTimeout(() => {
+                status.innerHTML = '<span style="color: var(--ok);">✅ Claude Code CLI ready</span>';
+            }, 1000);
+        }
+
         // Global data and variables
         let currentTrack = null;
             const learningTracks = {
                 beginner: {
                     title: "Beginner Explorer",
-                    competencies: ["Basic Prompting", "Conversation Flow", "Simple Debugging", "File Management"],
+                    competencies: ["Terminal Navigation", "Claude Command Syntax", "Approval Workflow", "CLAUDE.md Basics"],
                     scenarios: [
-                        { id: "b1", icon: "🌐", title: "First Webpage Builder", commands: ["Create a webpage that says 'Hello, I am [your name]'", "Add a favorite color as the background", "Add a photo placeholder with alt text", "Save the file and tell me how to open it"], rtc: { context: "You've successfully created your first webpage with a blue background. Now, you want to change the background to green and add a subtitle under your name.", questions: [ { q: "What is the clearest and most effective prompt to change the background color?", options: ["Fix the color.", "I want green instead.", "Please change the background color of the webpage from blue to green.", "Why is it blue?"], correct: 2, exp: "This is the best prompt because it's specific, polite, and states both the desired outcome (green background) and the current state (blue background). This clarity helps the AI understand the request perfectly without guessing. Vague prompts often lead to unexpected results." }, { q: "To add a subtitle, which prompt is most likely to give you the best result?", options: ["Add 'My First AI Project' under my name.", "Put more text on the page.", "Subtitle: My First AI Project.", "I need a second heading."], correct: 0, exp: "This is a great prompt because it gives the exact text and the exact location ('under my name'). The more specific you are with content and placement, the less back-and-forth you'll have with the AI, leading to faster and more accurate results." }, { q: "After Claude makes the changes, it shows you the updated code. What is the best next step?", options: ["Immediately ask for another change.", "Tell Claude 'thank you' and close the program.", "Ask Claude to confirm it saved the file and then test the webpage in your browser.", "Assume it worked perfectly and move on."], correct: 2, exp: "Always verify the AI's work. Asking it to save and then testing the result yourself is a crucial habit. This 'Trust but Verify' approach ensures that what you think happened actually happened, preventing confusion and errors from building up over time." } ] } },
-                        { id: "b2", icon: "🔧", title: "Error Recovery Master", commands: ["Intentionally create a broken request to see an error", "Ask Claude to explain what went wrong in simple terms", "Request a corrected version", "Confirm the fixed version works"] },
-                        { id: "b3", icon: "⚡", title: "Interactive Elements", commands: ["Start with your previous webpage", "Ask Claude to add a button", "Make the button show a pop-up message when clicked", "Test the button's functionality"] }
+                        { id: "b1", icon: "💻", title: "Your First Claude Code Command", commands: ["Open terminal in your project folder", "Run: claude --version", "Run: claude \"create README.md\"", "Type 'y' to approve changes", "Verify the file was created with: ls"], rtc: { context: "You've successfully run your first Claude Code command and created a README.md file. Now you want to add more content to it. Claude proposes to add a project description section.", questions: [ { q: "After Claude proposes changes, what command approves them?", options: ["yes", "y", "approve", "Both A and B"], correct: 3, exp: "Both 'yes' and 'y' work to approve Claude's changes. This is the human-in-the-loop approval process that makes Claude Code safe and collaborative." }, { q: "Where should you run 'claude' commands?", options: ["Anywhere in terminal", "In your project directory", "In Downloads folder", "In C:\\ drive"], correct: 1, exp: "Always run claude commands in your project directory. This ensures Claude understands your project context and makes changes to the right files." } ] } },
+                        { id: "b2", icon: "🔧", title: "Understanding Claude's Workflow", commands: ["Run: claude \"add a contact form\"", "Read Claude's proposal carefully", "Type 'y' to approve or 'n' to reject", "Review the changes with: git diff", "Test the form in your browser"], rtc: { context: "Claude has proposed adding a contact form with HTML, CSS, and JavaScript files. You're reviewing the changes before approving.", questions: [ { q: "What should you do before approving Claude's changes?", options: ["Approve immediately", "Review the proposed changes first", "Ask Claude to explain everything", "Both B and C"], correct: 3, exp: "Always review Claude's proposed changes and ask for explanations if needed. This ensures you understand what will be modified before approving." }, { q: "How can you see what files Claude will modify?", options: ["Claude tells you in the proposal", "Use git status", "Check the terminal output", "All of the above"], correct: 3, exp: "Claude shows you exactly what files will be modified in the proposal, and you can also use git commands to see the current state." } ] } },
+                        { id: "b3", icon: "📝", title: "Using CLAUDE.md Rules", commands: ["Create a CLAUDE.md file in your project", "Add project rules and coding standards", "Run: claude \"add login page\"", "Verify Claude follows your rules", "Update rules if needed"], rtc: { context: "You've created a CLAUDE.md file with rules like 'Use TypeScript' and 'Follow React best practices'. Claude is proposing a login page implementation.", questions: [ { q: "What is CLAUDE.md used for?", options: ["Storing passwords", "Defining project rules for Claude", "Backing up files", "Running tests"], correct: 1, exp: "CLAUDE.md defines project rules, coding standards, and preferences that Claude should follow when making changes to your codebase." }, { q: "When should you update CLAUDE.md?", options: ["Never", "When project requirements change", "Every time you run claude", "Only for new projects"], correct: 1, exp: "Update CLAUDE.md when your project requirements, coding standards, or preferences change to keep Claude aligned with your project needs." } ] } }
                     ]
                 },
                 practitioner: {
                     title: "Skilled Practitioner",
-                    competencies: ["Advanced Prompting", "Project Architecture", "API Integration", "Version Control"],
+                    competencies: ["Multi-File Projects", "Git Integration", "Advanced CLAUDE.md", "Debugging Workflows"],
                     scenarios: [
-                        { id: "p1", icon: "🏗️", title: "Complete Task Manager", commands: ["Plan the application structure with Claude", "Create the main interface with task input and display", "Implement task addition, editing, and deletion", "Add local storage to persist tasks between sessions"], rtc: { context: "You've built a task manager with Claude and it's working well. Now you want to add a feature to mark tasks as 'completed' and filter them. You're considering different approaches for the data structure.", questions: [ { q: "What's the best way to add a 'completed' status to your tasks?", options: ["Add a 'completed: false' property to each task object", "Create a separate array for completed tasks", "Use a boolean field and update the existing task object", "Store completed tasks in a different file"], correct: 2, exp: "Adding a boolean field to the existing task object is the most efficient approach. It keeps all task data together, makes filtering easy, and doesn't require complex array management or file operations." }, { q: "For filtering tasks, which approach is most maintainable?", options: ["Create separate functions for each filter type", "Use a single filter function with a parameter", "Hard-code the filter logic in the display function", "Use CSS to hide/show tasks"], correct: 1, exp: "A single parameterized filter function is more maintainable because it centralizes the filtering logic, makes it easy to add new filter types, and keeps the code DRY (Don't Repeat Yourself)." }, { q: "When implementing the filter, what's the most user-friendly approach?", options: ["Only show completed tasks", "Show all tasks with completed ones at the bottom", "Provide buttons to switch between 'All', 'Active', and 'Completed'", "Use a dropdown menu with many options"], correct: 2, exp: "Providing clear filter buttons gives users control while keeping the interface simple. This approach is intuitive and doesn't overwhelm users with too many options." } ] } },
-                        { id: "p2", icon: "🛰️", title: "API Integration", commands: ["Find a free public API for weather data", "Ask Claude to build a webpage that fetches data from it", "Display the current temperature for a city", "Handle potential API errors gracefully"], rtc: { context: "Your weather app is working, but you've noticed it sometimes fails when the API is slow or returns unexpected data. You need to implement proper error handling and user feedback.", questions: [ { q: "What's the best way to handle API failures?", options: ["Show an error message and stop the app", "Retry the request automatically", "Show a loading state, then display a user-friendly error message", "Hide the error and show default data"], correct: 2, exp: "Showing a loading state gives users feedback that something is happening, and a user-friendly error message helps them understand what went wrong without technical jargon." }, { q: "How should you handle unexpected API response formats?", options: ["Assume the API will always work correctly", "Add validation to check if the response has the expected structure", "Use try-catch blocks around all API calls", "Test with different API endpoints"], correct: 1, exp: "Validating the response structure prevents crashes when APIs change or return unexpected data. This defensive programming approach makes your app more robust." }, { q: "What's the best way to provide user feedback during API calls?", options: ["Show nothing until the data loads", "Display a simple 'Loading...' text", "Show a spinner with 'Fetching weather data...' and disable the search button", "Use console.log to show progress"], correct: 2, exp: "A spinner with descriptive text and disabled controls provides clear feedback and prevents users from making multiple requests while one is in progress." } ] } }
+                        { id: "p1", icon: "🏗️", title: "Multi-File Project Changes", commands: ["Run: claude \"refactor the authentication system\"", "Review proposed changes across multiple files", "Use: git diff to see all modifications", "Approve changes that look good", "Test the refactored system"], rtc: { context: "Claude has proposed changes to 5 files: auth.js, user.js, middleware.js, routes.js, and tests.js. You need to review this complex refactoring before approving.", questions: [ { q: "What's the best way to review multi-file changes?", options: ["Approve all changes at once", "Review each file individually", "Use git diff to see all changes", "Both B and C"], correct: 3, exp: "Always review each file individually and use git diff to see the complete picture. This ensures you understand the full scope of changes before approving." }, { q: "If you're unsure about some changes, what should you do?", options: ["Approve anyway", "Ask Claude to explain specific changes", "Reject all changes", "Make manual edits instead"], correct: 1, exp: "Ask Claude to explain specific changes you're unsure about. This helps you understand the reasoning and make informed decisions." } ] } },
+                        { id: "p2", icon: "🛰️", title: "Debug with Claude Code", commands: ["Run: claude \"fix the login bug\"", "Review Claude's analysis of the problem", "Check the proposed fix with: git diff", "Test the fix in your application", "Commit the working solution"], rtc: { context: "Your login system has a bug where users can't log in with special characters in passwords. Claude has analyzed the issue and proposed a fix.", questions: [ { q: "What should you do after Claude proposes a bug fix?", options: ["Approve immediately", "Test the fix first", "Ask Claude to explain the root cause", "Both B and C"], correct: 3, exp: "Always test the fix and understand the root cause. This helps you learn from the debugging process and ensures the fix actually works." }, { q: "How can you verify the fix works?", options: ["Trust Claude's analysis", "Test with the problematic input", "Check the code looks right", "All of the above"], correct: 3, exp: "Test with the actual problematic input to verify the fix works, while also understanding Claude's analysis and reviewing the code changes." } ] } },
+                        { id: "p3", icon: "📦", title: "Git Integration Workflow", commands: ["Run: claude \"add user authentication\"", "Review and approve changes", "Use: git add . and git commit", "Push changes to repository", "Create pull request with Claude's help"], rtc: { context: "You've approved Claude's authentication changes and now need to commit and push them to your repository. Claude can help with the git workflow.", questions: [ { q: "What's the best commit message for Claude's changes?", options: ["'Fixed stuff'", "Use Claude's suggested commit message", "Write your own detailed message", "Both B and C"], correct: 3, exp: "Use Claude's suggested message as a starting point, but customize it to be clear and descriptive. Good commit messages help with project history." }, { q: "Should you review changes before committing?", options: ["No, just commit everything", "Yes, always review first", "Only for large changes", "Let Claude decide"], correct: 1, exp: "Always review changes before committing, even with Claude's help. This ensures you understand what's being committed and maintains code quality." } ] } }
                     ]
                 },
                 collaborator: {
                     title: "Team Collaborator",
-                    competencies: ["Code Review", "Documentation", "Mentoring", "System Design"],
+                    competencies: ["Team Workflows", "Advanced CLAUDE.md", "Code Review", "System Architecture"],
                     scenarios: [
-                        { id: "c1", icon: "👥", title: "AI-Powered Code Review", commands: ["Take a piece of buggy or inefficient code", "Ask Claude to perform a code review on it", "Request suggestions on readability, performance, and best practices", "Ask Claude to apply one of the suggested fixes"], rtc: { context: "You're leading a code review session with your team. A junior developer has submitted code that works but has several issues. You need to provide constructive feedback that helps them learn while maintaining team morale.", questions: [ { q: "What's the best way to start a code review with a junior developer?", options: ["Point out all the problems immediately", "Start with what they did well, then suggest improvements", "Let them figure out the issues themselves", "Rewrite their code without explanation"], correct: 1, exp: "Starting with positive feedback builds confidence and creates a learning environment. It shows you value their effort while still providing constructive guidance for improvement." }, { q: "When suggesting code improvements, which approach is most helpful?", options: ["Just say 'this is wrong'", "Explain the problem and suggest a better approach", "Provide the corrected code without explanation", "Ask them to research the solution online"], correct: 1, exp: "Explaining both the problem and the solution helps developers understand the 'why' behind the improvement, leading to better learning and future code quality." }, { q: "How should you handle multiple issues in the same code?", options: ["Address all issues at once", "Focus on the most critical issue first", "Let them fix one issue before moving to the next", "Create a prioritized list and tackle them systematically"], correct: 3, exp: "A prioritized list helps developers focus on the most important issues first and prevents overwhelm. It also provides a clear roadmap for improvement." } ] } }
+                        { id: "c1", icon: "👥", title: "Team Code Review with Claude", commands: ["Run: claude \"review the pull request #123\"", "Review Claude's analysis of the code", "Discuss findings with your team", "Use Claude to suggest improvements", "Guide junior developers through the process"], rtc: { context: "You're leading a code review session with your team using Claude Code. A junior developer has submitted a pull request with several issues. Claude has analyzed the code and provided feedback.", questions: [ { q: "What's the best way to use Claude's code review feedback?", options: ["Accept all suggestions immediately", "Review Claude's analysis with your team", "Ignore Claude and do manual review", "Use Claude's feedback as a starting point for discussion"], correct: 3, exp: "Use Claude's feedback as a starting point for team discussion. This combines AI analysis with human judgment and team learning." }, { q: "How should you present Claude's findings to junior developers?", options: ["Just show them the output", "Explain Claude's reasoning", "Let them figure it out", "Both A and B"], correct: 3, exp: "Show them Claude's output and explain the reasoning behind the suggestions. This helps them learn both the specific issues and the general principles." }, { q: "What's the best approach for handling multiple issues?", options: ["Fix everything at once", "Prioritize critical issues first", "Let Claude fix everything", "Ignore minor issues"], correct: 1, exp: "Prioritize critical issues first. This helps junior developers focus on the most important problems without getting overwhelmed by too many changes at once." } ] } }
                     ]
                 }
             };
@@ -428,16 +551,16 @@
             // --- DATA FOR NEW SECTIONS ---
             const allInferenceData = [
                 {
-                    front: { title: "Dividing by Zero Problem", problem: "Your code tries to divide a number by zero: <code>10 / 0</code>. This crashes your program with an error.", studentFix: "<strong>Beginner's Approach:</strong> Just ignore zero values and hope it doesn't happen." },
-                    back: { aiFix: "if (n === 0) {\n  alert(\"Cannot divide by zero\");\n} else {\n  return 10 / n;\n}", reflection: "The beginner's idea to 'ignore zero' shows good thinking, but it's not actually implemented in code. The AI solution is much better because it:<br><br>1. <strong>Checks first</strong> - Before doing the math, it asks 'Is this zero?'<br>2. <strong>Handles the problem</strong> - If it's zero, it shows a helpful message to the user<br>3. <strong>Does the math safely</strong> - Only divides when it's safe to do so<br><br>This is the kind of code that works reliably in real applications!" }
+                    front: { title: "💻 Your First Claude Command", problem: "You're in your project folder and want to create a README.md file. You're not sure how to use Claude Code.", studentFix: "<strong>Beginner's Approach:</strong> Try to use Claude like a regular chat interface." },
+                    back: { aiFix: "$ claude \"create README.md\"\n\nReading project structure...\nI'll create a README.md file with basic project information.\n\nProceed? (y/n): y\n\n✅ Created README.md\n✅ File saved successfully", reflection: "The beginner's approach of treating Claude like a chat won't work in the terminal. The AI solution shows the proper Claude Code workflow:<br><br>1. <strong>Use the claude command</strong> - This is the terminal interface, not a chat<br>2. <strong>Claude analyzes your project</strong> - It reads your existing files first<br>3. <strong>Human approval required</strong> - You must type 'y' to approve changes<br>4. <strong>Confirmation of success</strong> - Claude tells you what was created<br><br>This is the human-in-the-loop workflow that makes Claude Code safe and collaborative!" }
                 },
                 {
-                    front: { title: "Loop Not Running Enough Times", problem: "You want your code to repeat 5 times, but you wrote: <code>for (let i = 0; i < 4; i++)</code>. This only runs 4 times, not 5!", studentFix: "<strong>Beginner's Approach:</strong> Add one more step manually after the loop finishes." },
-                    back: { aiFix: "for (let i = 0; i < 5; i++) {\n  // ...\n}", reflection: "The beginner's idea of adding one more step works, but it's like putting a band-aid on the problem. The AI solution is much cleaner because it:<br><br>1. <strong>Fixes the root cause</strong> - Changes the loop condition from 4 to 5<br>2. <strong>Makes it obvious</strong> - Anyone reading the code can see it will run exactly 5 times<br>3. <strong>Prevents future mistakes</strong> - No need to remember to add extra steps<br><br>This is how professional developers write code - simple, clear, and correct!" }
+                    front: { title: "🔧 Understanding Claude's Proposals", problem: "Claude wants to modify 3 files but you're not sure what changes it will make. You're tempted to just approve everything.", studentFix: "<strong>Beginner's Approach:</strong> Just approve all changes without reading them." },
+                    back: { aiFix: "$ claude \"add user authentication\"\n\nI'll modify these files:\n- auth.js (new file)\n- routes.js (add login route)\n- middleware.js (add auth middleware)\n\nHere's what I'll add to auth.js:\n```javascript\nfunction login(username, password) {\n  // Authentication logic\n}\n```\n\nProceed? (y/n): ", reflection: "The beginner's approach of blind approval is dangerous! The AI solution shows the proper workflow:<br><br>1. <strong>Claude shows exactly what it will change</strong> - Lists all files and shows code<br>2. <strong>Review before approving</strong> - Always read the proposal first<br>3. <strong>Ask questions if needed</strong> - You can type 'n' and ask for clarification<br>4. <strong>Make informed decisions</strong> - Only approve what you understand<br><br>This is how you maintain control over your codebase!" }
                 },
                 {
-                    front: { title: "Numbers Being Treated as Text", problem: "When users type numbers into a form, your code treats them as text. So '10' + '5' becomes '105' (text stuck together) instead of 15 (math).", studentFix: "<strong>Beginner's Approach:</strong> Just tell users to only type numbers and hope they listen." },
-                    back: { aiFix: "const sum = parseInt(num1) + parseInt(num2);", reflection: "The beginner's idea of asking users to be careful is nice, but people make mistakes! The AI solution is much smarter because it:<br><br>1. <strong>Converts text to numbers</strong> - Uses parseInt() to turn '10' into the number 10<br>2. <strong>Does real math</strong> - Now 10 + 5 = 15, not '105'<br>3. <strong>Works even when users make mistakes</strong> - The code handles the problem automatically<br><br>This is called 'defensive programming' - making your code work even when things don't go perfectly!" }
+                    front: { title: "📝 Using CLAUDE.md Rules", problem: "Claude keeps writing code in JavaScript but your project uses TypeScript. You're frustrated with having to correct it every time.", studentFix: "<strong>Beginner's Approach:</strong> Just keep telling Claude to use TypeScript in each request." },
+                    back: { aiFix: "$ claude \"add login page\"\n\nReading CLAUDE.md...\n✅ Found project rules: Use TypeScript, React components\n\nI'll create:\n- LoginPage.tsx (TypeScript React component)\n- login.module.css (styled components)\n\nHere's the TypeScript component:\n```typescript\ninterface LoginProps {\n  onSubmit: (credentials: UserCredentials) => void;\n}\n```\n\nProceed? (y/n): ", reflection: "The beginner's approach of repeating instructions is inefficient! The AI solution shows the power of CLAUDE.md:<br><br>1. <strong>Claude reads your rules first</strong> - It checks CLAUDE.md before making changes<br>2. <strong>Follows your preferences automatically</strong> - No need to repeat instructions<br>3. <strong>Consistent with your project</strong> - All changes follow your standards<br>4. <strong>Saves time and prevents errors</strong> - No more manual corrections<br><br>CLAUDE.md is your project's instruction manual for Claude!" }
                 },
                 {
                     front: { title: "Getting the Last Item in a List", problem: "You want to get the last item from a list, but <code>arr[arr.length]</code> gives you 'undefined' (nothing). This is a very common beginner mistake!", studentFix: "<strong>Beginner's Approach:</strong> Just remember that it's always 'length minus one' and hope you don't forget." },
@@ -624,16 +747,16 @@
             };
 
             const faqData = [
-                { q: "Why are my carousels not loading?", a: "Carousels fail to load when there's a mismatch between HTML structure and JavaScript selectors, or when the data array is empty. Check the browser's developer console for errors like 'TypeError: Cannot set property 'innerHTML' of null' and verify your data arrays are properly populated." },
-                { q: "Why does my code show up as weirdly formatted HTML?", a: "Code displays as HTML when special characters like `<` or `>` are injected directly into the DOM using `innerHTML`. The browser tries to render them as HTML tags. Fix this by escaping these characters (replace `<` with `&lt;` and `>` with `&gt;`) before injection." },
-                { q: "How do I make a feature like an accordion work?", a: "An accordion requires three components: HTML structure (header and content panel), CSS for open/closed states, and JavaScript to handle click events that toggle between states. Start with the HTML, add CSS transitions, then implement the toggle logic." },
-                { q: "What's the difference between beginner and practitioner tracks?", a: "Beginner tracks focus on basic concepts like simple prompting and file management. Practitioner tracks cover advanced topics like API integration and project architecture. Choose based on your current coding experience and learning goals." },
-                { q: "How do I fix a 'Cannot read property of undefined' error?", a: "This error occurs when trying to access properties of variables that don't exist. Always check if variables are defined before using them. Use optional chaining (`?.`) or conditional checks to prevent these errors." },
-                { q: "Why won't my JavaScript functions work?", a: "JavaScript functions fail for several reasons: syntax errors, missing parentheses, incorrect variable names, or trying to call functions before they're defined. Check the browser console for specific error messages and verify your function syntax." },
-                { q: "How do I make my website responsive?", a: "Use CSS media queries to adjust layouts for different screen sizes. Start with mobile-first design, use flexible units (%, vw, vh), and test on various devices. CSS Grid and Flexbox are excellent tools for responsive layouts." },
-                { q: "What's the best way to debug JavaScript?", a: "Use browser developer tools: set breakpoints, inspect variables, and use console.log() for debugging. Chrome DevTools and Firefox Developer Tools provide excellent debugging features. Start with console.log() to trace your code execution." },
-                { q: "How do I handle user input safely?", a: "Always validate and sanitize user input before processing. Use proper form validation, escape HTML characters, and never trust user data. Implement both client-side and server-side validation for security." },
-                { q: "Why is my CSS not applying?", a: "CSS fails to apply due to specificity conflicts, missing selectors, or incorrect syntax. Check for typos, verify your selectors match your HTML, and use browser developer tools to inspect which styles are being applied." },
+                { q: "How do I install Claude Code CLI?", a: "First install Node.js from nodejs.org, then run 'npm install -g @anthropic-ai/claude-code' in your terminal. Verify installation with 'claude --version'. Make sure you're in a project directory when running claude commands." },
+                { q: "What is CLAUDE.md and why do I need it?", a: "CLAUDE.md is a special file that defines your project rules, coding standards, and preferences for Claude Code. It ensures Claude follows your project's conventions automatically. Create it in your project root with rules like 'Use TypeScript' or 'Follow React best practices'." },
+                { q: "Can Claude Code commit to Git for me?", a: "Claude Code can suggest commit messages and help with git workflow, but you should always review changes before committing. Use 'git diff' to see what changed, then 'git add .' and 'git commit' with a clear message. Claude helps but you maintain control." },
+                { q: "How do I undo Claude's changes?", a: "If you haven't committed yet, use 'git checkout .' to revert all changes. If you've committed, use 'git reset HEAD~1' to undo the last commit. Always review Claude's proposals before approving to avoid needing to undo changes." },
+                { q: "Where should I run claude commands?", a: "Always run claude commands in your project directory (where your code files are). Use 'pwd' to check your location and 'cd' to navigate to the right folder. Claude needs to see your project structure to make appropriate changes." },
+                { q: "What's the difference between Claude Code and claude.ai chat?", a: "Claude Code is a terminal-based tool that modifies your actual code files with your approval. claude.ai chat is for conversations and explanations. Claude Code is for hands-on coding, while claude.ai is for learning and discussion." },
+                { q: "How do I approve or reject Claude's changes?", a: "When Claude shows 'Proceed? (y/n):', type 'y' to approve or 'n' to reject. You can also ask for clarification by typing 'n' and then asking questions. Always review the proposed changes before deciding." },
+                { q: "Why isn't Claude following my project rules?", a: "Make sure you have a CLAUDE.md file in your project root with clear, specific rules. Check that the file is properly formatted and contains the standards you want Claude to follow. Update the file when your requirements change." },
+                { q: "How do I debug issues with Claude Code?", a: "Check that you're in the right directory with 'pwd', verify your CLAUDE.md file exists and is readable, and review Claude's error messages carefully. Use 'claude --help' to see available options and ensure you have the latest version." },
+                { q: "Can I use Claude Code with any programming language?", a: "Claude Code works with most programming languages including JavaScript, Python, Java, C++, and more. It understands your project context and can work with any codebase. The key is having a clear CLAUDE.md file that specifies your language and framework preferences." },
                 { q: "How do I optimize website performance?", a: "Optimize images, minimize HTTP requests, use CDNs, enable compression, and optimize your code. Remove unused CSS/JavaScript, use lazy loading for images, and consider using a build tool like Webpack or Vite for bundling." },
                 { q: "What's the difference between let, const, and var?", a: "Use `const` for values that won't change, `let` for variables that might change, and avoid `var` due to its function-scoping issues. `const` and `let` are block-scoped and provide better error prevention than `var`." }
             ];
@@ -645,7 +768,7 @@
 
             function setupTrackSelection() {
                 document.querySelectorAll('[data-track]').forEach(card => {
-                    card.addEventListener('click', () => window.selectTrack(card.dataset.track));
+                    card.addEventListener('click', () => loadTrackContent(card.dataset.track));
                 });
             }
 
@@ -950,6 +1073,47 @@
             // Show main page
             document.getElementById('track-selection').style.display = 'block';
         }
+        
+        function loadTrackContent(trackId) {
+            const track = learningTracks[trackId];
+            if (!track) return;
+            
+            currentTrack = trackId;
+            
+            // Manage selected state for track cards
+            document.querySelectorAll('.card[data-track]').forEach(card => {
+                card.classList.remove('selected');
+            });
+            const selectedCard = document.querySelector(`[data-track="${trackId}"]`);
+            if (selectedCard) {
+                selectedCard.classList.add('selected');
+            }
+            
+            const trackData = (typeof allModuleData !== 'undefined') ? allModuleData[trackId] : null;
+            
+            // Show sections (but keep track selection visible)
+            document.getElementById('progress-section').style.display = 'block';
+            document.getElementById('learning-scenarios').style.display = 'block';
+            document.getElementById('rtc-assessments').style.display = 'block';
+            document.getElementById('inference-archetypes').style.display = 'block';
+            document.getElementById('prompt-gallery').style.display = 'block';
+            document.getElementById('tone-tuning').style.display = 'block';
+            document.getElementById('faq-section').style.display = 'block';
+            
+            // Load content
+            loadScenariosCarousel(track.scenarios);
+            loadRtcQuizzes(track.scenarios);
+            if (trackData) {
+                setupHorizontalCarousel('inference-archetypes', trackData.inference);
+                setupHorizontalCarousel('prompt-gallery', trackData.gallery);
+                setupHorizontalCarousel('tone-tuning', trackData.tone);
+            }
+            
+            // Update progress
+            updateProgress();
+            loadCompetencyMap(track.competencies);
+            updateCurrentTrackIndicator();
+        }
 
 
         function loadInferenceArchetypes() {
@@ -1053,14 +1217,24 @@
             if (!track) return;
             
             currentTrack = trackId;
+            
+            // Manage selected state for track cards
+            document.querySelectorAll('.card[data-track]').forEach(card => {
+                card.classList.remove('selected');
+            });
+            const selectedCard = document.querySelector(`[data-track="${trackId}"]`);
+            if (selectedCard) {
+                selectedCard.classList.add('selected');
+            }
+            
             const trackData = (typeof allModuleData !== 'undefined') ? allModuleData[trackId] : null;
             
-            // Hide main page
-            document.getElementById('track-selection').style.display = 'none';
+            // Keep track selection visible - don't hide it
+            // document.getElementById('track-selection').style.display = 'none';
             
-            // Show back buttons
-            document.getElementById('back-to-main-top').style.display = 'block';
-            document.getElementById('back-to-main-bottom').style.display = 'block';
+            // Hide back buttons since we're not hiding the main page
+            document.getElementById('back-to-main-top').style.display = 'none';
+            document.getElementById('back-to-main-bottom').style.display = 'none';
             
             // Show sections
             document.getElementById('progress-section').style.display = 'block';
@@ -1108,7 +1282,14 @@
         // Make functions globally accessible
         window.showMainPage = showMainPage;
         window.selectTrack = selectTrack;
+        window.loadTrackContent = loadTrackContent;
         window.toggleFAQ = toggleFAQ;
+        
+        // Auto-select Beginner track on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            // Load beginner track content without hiding track selection
+            loadTrackContent('beginner');
+        });
     </script>
 </body>
 </html>
