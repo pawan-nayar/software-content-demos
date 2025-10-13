@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Claude Code Terminal Mastery for Doctors</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --text:#212529; --bg:#fff; --muted:#f8f9fa; --border:#e9ecef;
+      --accent:#fd7e14; --accent-2:#e87312; --header-bg:#212529; --header-fg:#f8f9fa;
+      --ok:#16a34a; --ok-soft:#dcfce7; --bad:#dc2626; --bad-soft:#fee2e2;
+      --table-header:#fff7ed;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;}
+    .container{max-width:800px;margin:auto;padding:24px;background:#fff}
+    a{color:var(--accent);text-decoration:none}
+    a:hover{text-decoration:underline}
+    .site-header,.site-footer{background:var(--header-bg);color:var(--header-fg);padding:14px 24px}
+    .site-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;position:sticky;top:0;z-index:100}
+    .logo{font-weight:700;font-size:1.15rem;color:#fff}
+    .site-header nav{display:flex;gap:14px}
+    .site-header nav a{color:#ced4da}
+    .site-header nav a:hover{color:#fff}
+    .site-footer{text-align:center;margin-top:50px;padding:40px}
+    .breadcrumbs{margin-bottom:24px;font-size:0.9rem;color:#6c757d}
+    .breadcrumbs a{color:var(--accent)}
+    h1{font-size:clamp(2rem,5vw,2.6rem);text-align:left;margin-bottom:8px;color:var(--text);line-height:1.2}
+    .byline{font-size:clamp(1rem,3vw,1.2rem);font-style:italic;color:#6c757d;margin-bottom:24px}
+    h2{font-size:clamp(1.5rem,4vw,2rem);color:var(--text);margin:48px 0 16px;border-bottom:2px solid var(--border);padding-bottom:8px}
+    h3{font-size:clamp(1.2rem,3vw,1.5rem);color:var(--text);margin-top:32px;margin-bottom:12px}
+    h4{font-size:clamp(1rem,2.5vw,1.2rem);font-weight:bold;color:var(--accent-2);margin-bottom:10px}
+    p{margin-bottom:16px;word-wrap:break-word}
+    ul{margin-left:24px;margin-bottom:24px;list-style-type:'🔹';padding-left:1em}
+    li{margin-bottom:12px;padding-left:0.5em}
+    .article-meta{display:flex;align-items:center;gap:12px;color:#6c757d;margin-bottom:32px;font-size:0.9rem}
+    .author-emoji{font-size:32px;line-height:1}
+    .intro{font-size:1.05rem;line-height:1.7;background:var(--muted);padding:18px;border-radius:12px;border-left:4px solid var(--accent);margin:24px 0}
+    .img-frame{position:relative;width:100%;padding-top:50%;overflow:hidden;border-radius:12px;margin:16px 0 24px;box-shadow:0 4px 15px rgba(0,0,0,0.1)}
+    .img-frame img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover}
+    .btn{background:var(--accent);color:#fff;border:none;padding:8px 12px;border-radius:8px;font-weight:600;cursor:pointer;transition:background-color 0.2s ease;font-size:0.9rem;}
+    .btn:hover{background-color:var(--accent-2);}
+    .interactive-box{background:#f8f9fa;border:1px solid var(--border);border-radius:12px;padding:24px;margin:24px 0}
+    .table-wrap{position:relative;border:1px solid var(--border);border-radius:12px;background:#fff;margin:24px 0}
+    .table-scroll{position:relative;overflow-x:auto}
+    table.data-table{width:100%;border-collapse:collapse;}
+    table.data-table th,table.data-table td{padding:12px 15px;border:1px solid var(--border);text-align:left;vertical-align:top;}
+    table.data-table thead th{background:var(--table-header);font-weight:700;color:var(--accent-2);border-bottom:2px solid var(--accent);}
+    table.data-table tbody tr:nth-child(even){background:#f8f9fa;}
+    .accordion{display:grid;gap:8px}
+    .accordion-header{width:100%;text-align:left;background:var(--muted);border:1px solid var(--border);padding:12px 16px;border-radius:8px;cursor:pointer;font-size:1rem;font-weight:600;display:flex;align-items:center}
+    .accordion-header .accordion-title{margin-right:auto;padding-right:1rem;}
+    .accordion-header::after{content:'+';color:#6c757d;font-size:1.3rem;font-weight:bold;}
+    .accordion-header[aria-expanded="true"]{background:#e9ecef;border-bottom-left-radius:0;border-bottom-right-radius:0}
+    .accordion-header[aria-expanded="true"]::after{content:'−'}
+    .accordion-content{padding:20px;display:none;border:1px solid var(--border);border-top:none;border-radius:0 0 8px 8px}
+    .carousel-container{perspective:1000px;position:relative;padding:0 50px;}
+    .flip-card{width:100%;height:310px;background-color:transparent;display:none;}
+    .flip-card.active{display:block;}
+    .flip-card-inner{position:relative;width:100%;height:100%;text-align:center;transition:transform 0.6s;transform-style:preserve-3d;cursor:pointer;border:1px solid var(--border);border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.08);}
+    .flip-card-inner:hover{box-shadow:0 4px 16px rgba(253,126,20,0.15);}
+    .flip-card.flipped .flip-card-inner{transform:rotateY(180deg);}
+    .flip-card-front, .flip-card-back{position:absolute;width:100%;height:100%;backface-visibility:hidden;display:flex;flex-direction:column;justify-content:center;padding:20px;border-radius:12px;}
+    .flip-card-front{background-color:#fff;color:var(--text);}
+    .flip-card-back{background-color:#2d2d2d;color:white;transform:rotateY(180deg);text-align:left;overflow-y:auto;}
+    .flip-card-emoji{font-size:2.5rem;margin-bottom:12px;display:block;}
+    .flip-card-front h4{border-bottom:2px solid var(--accent);padding-bottom:8px;margin-bottom:12px;font-size:1.1rem;}
+    .flip-card-front p{font-size:0.9rem;color:#495057;}
+    .flip-card-front strong{color:var(--accent-2);}
+    .carousel-nav{position:absolute;top:50%;transform:translateY(-50%);background-color:var(--accent);color:white;border:none;border-radius:50%;width:40px;height:40px;font-size:24px;cursor:pointer;z-index:10;display:flex;align-items:center;justify-content:center;}
+    .carousel-nav:hover{background-color:var(--accent-2);}
+    #carousel-prev{left:0;}
+    #carousel-next{right:0;}
+    .carousel-footer{text-align:center;margin-top:15px;}
+    #carousel-counter{font-weight:600;color:#6c757d;margin-bottom:10px;}
+    .quiz-container{padding:20px;border:2px solid var(--border);border-radius:12px;background:#fff}
+    .quiz-navigation{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border)}
+    .quiz-body{display:none;}.quiz-body.active{display:block}
+    .quiz-options{display:grid;gap:12px;}
+    .quiz-option label{display:flex;align-items:center;gap:12px;padding:14px;border:2px solid var(--border);border-radius:8px;cursor:pointer;background:#f8f9fa}
+    .quiz-option input[type="radio"]{flex-shrink:0;}
+    .quiz-option .explanation{display:none;margin-top:10px;padding:15px;border-radius:6px;border-left:4px solid #a0aec0}
+    .quiz-option.selected.correct label{background:var(--ok-soft);border-color:var(--ok)}
+    .quiz-option.selected.wrong label{background:var(--bad-soft);border-color:var(--bad)}
+    .quiz-option.correct .explanation{border-left-color:var(--ok);background:#f0fff4}
+    .quiz-option.wrong .explanation{border-left-color:var(--bad);background:#fff5f5}
+    .glossary-cloud{display:flex;flex-wrap:wrap;gap:16px;margin-top:24px;justify-content:center}
+    .glossary-chip{position:relative;display:flex;align-items:center;justify-content:center;gap:8px;padding:12px 16px;border-radius:999px;background:#fff7ed;border:1px solid #ffd8a8;color:#d9480f;font-weight:600;cursor:pointer;box-shadow:0 2px 6px rgba(253,126,20,.12);transition:all 0.2s;text-align:center;min-width:160px;}
+    .glossary-chip:hover, .glossary-chip:focus{background:#ffecde;transform:translateY(-2px);box-shadow:0 4px 12px rgba(253,126,20,.2);}
+    .chip-tip{position:fixed;z-index:101;min-width:240px;max-width:min(92vw,420px);background:var(--accent);color:#fff;padding:12px 14px;border-radius:12px;box-shadow:0 12px 28px rgba(253,126,20,.35);opacity:0;visibility:hidden;transition:.15s;line-height:1.45}
+    .chip-tip.show{opacity:1;visibility:visible}
+    .chip-tip .arrow{position:absolute;width:12px;height:12px;background:var(--accent);transform:rotate(45deg)}
+    .tier-badge{display:inline-block;padding:4px 12px;border-radius:6px;font-size:0.85rem;font-weight:600;margin-bottom:16px;}
+    .tier-1{background:#e0f2fe;color:#0c4a6e;}
+    .tier-2{background:#fef3c7;color:#92400e;}
+    .tip-box{background:#f0f9ff;border-left:4px solid #0ea5e9;padding:16px;border-radius:8px;margin:16px 0;display:flex;gap:12px;align-items:start;}
+    .tip-icon{font-size:1.5rem;flex-shrink:0;}
+    .svg-visual{margin:24px 0;padding:20px;background:#f8f9fa;border-radius:12px;text-align:center;}
+    .icon-label{display:inline-flex;align-items:center;gap:8px;background:#fff7ed;padding:4px 12px;border-radius:6px;font-size:0.9rem;font-weight:600;color:var(--accent-2);margin:4px;}
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+      <a href="#" class="logo">Beyond Dictionary</a>
+      <nav><a href="#">For Doctors</a><a href="#">Learning Paths</a><a href="#">Tools</a><a href="#">Blog</a></nav>
+  </header>
+
+  <div class="container">
+    <nav class="breadcrumbs"><a href="#">Learning</a> &gt; <a href="#">Doctors Who Code</a> &gt; Claude Code Terminal Management</nav>
+    <h1>Claude Code Terminal Mastery for Doctors</h1>
+    <p class="byline">From Medical Professional to Confident Coder: Your Terminal Journey</p>
+    <div class="article-meta"><span class="author-emoji">🩺</span><span>Dr. Tech Expert &nbsp; | &nbsp; Updated October 2025</span></div>
+    <p class="intro">Listen: you've memorized thousands of drug interactions, diagnosed rare conditions from subtle symptoms, and navigated EMR systems that would make anyone else weep. <strong>Learning terminal commands?</strong> That's child's play compared to what you already do daily. This isn't about becoming a "real programmer"—you already solve harder problems than most developers ever will. This is about giving you <em>direct control</em> over your healthcare innovations. No permission needed. No IT department gatekeeping. Just you, your ideas, and the tools to build them.</p>
+    <div class="img-frame"><img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1470&auto=format&fit=crop" alt="Terminal screen with code" onerror="this.onerror=null;this.src='https://placehold.co/1470/735/212529/FFFFFF?text=Terminal';"></div>
+    
+    <!-- SECTION 1: INTRO WITH SVG -->
+    <section id="intro">
+        <h2>🎯 Section 1: Why Doctors Belong in Code</h2>
+        <span class="tier-badge tier-1">Foundation</span>
+        
+        <div class="tip-box">
+          <span class="tip-icon">💡</span>
+          <div>
+            <strong>Real Talk:</strong> Every doctor who codes started exactly where you are. Feeling slightly intimidated by the terminal? That's not impostor syndrome—that's being appropriately cautious with unfamiliar tools. The same careful thinking that makes you a good doctor makes you a thoughtful programmer.
+          </div>
+        </div>
+
+        <p>The terminal is your command center in VS Code with Claude Code. Think of it as the difference between ordering tests through a nurse versus walking to the lab yourself. Both get results, but one gives you immediate answers and complete control.</p>
+
+        <div class="svg-visual">
+          <svg width="100%" height="200" viewBox="0 0 600 200">
+            <!-- Terminal Window -->
+            <rect x="50" y="20" width="500" height="160" rx="8" fill="#2d2d2d" stroke="#fd7e14" stroke-width="2"/>
+            <circle cx="70" cy="40" r="6" fill="#dc2626"/>
+            <circle cx="90" cy="40" r="6" fill="#fbbf24"/>
+            <circle cx="110" cy="40" r="6" fill="#16a34a"/>
+            <!-- Command Line -->
+            <text x="70" y="80" fill="#0f0" font-family="monospace" font-size="14">$ python analyze_patient_data.py</text>
+            <text x="70" y="110" fill="#fff" font-family="monospace" font-size="12">Processing 1,247 patient records...</text>
+            <text x="70" y="135" fill="#0f0" font-family="monospace" font-size="12">✓ Analysis complete! Results saved.</text>
+            <!-- Cursor blink -->
+            <rect x="310" y="120" width="8" height="16" fill="#0f0">
+              <animate attributeName="opacity" values="1;0;1" dur="1s" repeatCount="indefinite"/>
+            </rect>
+          </svg>
+          <p style="margin-top:12px;color:#6c757d;font-size:0.9rem;"><em>Your terminal in action: Clean commands, clear results</em></p>
+        </div>
+
+        <h3>What You'll Master (And Why It Matters)</h3>
+        <ul>
+            <li><strong>🔓 Terminal Basics:</strong> Opening, navigating, and controlling your workspace—like learning where everything lives in a new hospital.</li>
+            <li><strong>🎛️ Session Management:</strong> Running multiple tasks without chaos—think multiple patients in different rooms, not a hallway pileup.</li>
+            <li><strong>🏥 Real Workflows:</strong> How doctors actually use terminals in healthtech—parsing EMRs, validating prescriptions, analyzing outcomes.</li>
+            <li><strong>⚡ Advanced Automation:</strong> Making the computer do repetitive work—because your time is too valuable for manual data entry.</li>
+        </ul>
+
+        <h3>The Two-Tier Learning Path</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:24px 0;">
+          <div style="background:#e0f2fe;padding:20px;border-radius:12px;border-left:4px solid #0c4a6e;">
+            <h4 style="margin-top:0;color:#0c4a6e;">🎓 Tier 1: Foundation</h4>
+            <p style="font-size:0.95rem;margin:0;">Understanding terminals in VS Code—what they are, how they work, basic commands. Like anatomy before surgery: you need the fundamentals first.</p>
+          </div>
+          <div style="background:#fef3c7;padding:20px;border-radius:12px;border-left:4px solid #92400e;">
+            <h4 style="margin-top:0;color:#92400e;">🏥 Tier 2: Application</h4>
+            <p style="font-size:0.95rem;margin:0;">Doctor-specific workflows—real patient data scenarios, EMR integrations, clinical decision support. Where medicine meets code.</p>
+          </div>
+        </div>
+    </section>
+
+    <!-- SECTION 2: TERMINAL BASICS WITH ICONS -->
+    <section id="tier1-basics">
+        <h2>⚙️ Section 2: Terminal Foundations (Tier 1)</h2>
+        <span class="tier-badge tier-1">Core Concepts</span>
+        
+        <div class="tip-box">
+          <span class="tip-icon">🎯</span>
+          <div>
+            <strong>Pro Tip:</strong> You don't need to memorize these commands. Use them a few times, and muscle memory takes over. Just like suturing—awkward at first, then automatic.
+          </div>
+        </div>
+
+        <h3>REPL: The Secret Weapon Doctors Need (But Nobody Explains)</h3>
+        
+        <div style="background:#fff7ed;padding:24px;border-radius:12px;border-left:4px solid var(--accent);margin:24px 0;">
+          <h4 style="margin-top:0;color:var(--accent-2);">What Is REPL and Why Should You Care?</h4>
+          <p><strong>REPL stands for: Read-Eval-Print Loop</strong></p>
+          <p>But forget the acronym. Here's what it actually means for you:</p>
+          
+          <div style="background:#fff;padding:20px;border-radius:8px;margin:16px 0;">
+            <p><strong>Traditional Coding (The Old Way):</strong></p>
+            <ol style="margin-left:20px;">
+              <li>Write entire script in a file</li>
+              <li>Save the file</li>
+              <li>Run the whole thing</li>
+              <li>If something breaks, guess where</li>
+              <li>Edit, save, run again</li>
+              <li>Repeat 47 times until it works</li>
+            </ol>
+            <p style="color:var(--bad);margin-top:12px;"><em>This is why most doctors quit coding. It's exhausting.</em></p>
+          </div>
+
+          <div style="background:#dcfce7;padding:20px;border-radius:8px;margin:16px 0;border-left:4px solid var(--ok);">
+            <p><strong>REPL (The Doctor-Friendly Way):</strong></p>
+            <ol style="margin-left:20px;">
+              <li><strong>Type one line of code</strong></li>
+              <li><strong>See the result immediately</strong></li>
+              <li>Is it right? Great, next line</li>
+              <li>Is it wrong? Fix it right there, try again</li>
+              <li>Build your solution one verified step at a time</li>
+            </ol>
+            <p style="color:var(--ok);margin-top:12px;font-weight:600;"><em>This is like differential diagnosis—test one hypothesis, get immediate feedback, adjust.</em></p>
+          </div>
+        </div>
+
+        <h3>Real Medical Example: Why REPL Changes Everything</h3>
+        
+        <div style="background:#e0f2fe;padding:20px;border-radius:12px;margin:24px 0;">
+          <h4 style="color:#0c4a6e;">Scenario: You have a CSV with 10,000 patient lab results</h4>
+          <p><strong>Your task:</strong> Extract all patients with HbA1c > 7.0</p>
+          
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:20px 0;">
+            <div style="background:#fee2e2;padding:16px;border-radius:8px;">
+              <h5 style="color:var(--bad);">❌ Without REPL (Old Way)</h5>
+              <p style="font-size:0.9rem;">Write entire script → run → crashes because you spelled "HbA1c" wrong → edit → run → crashes because column name is actually "A1C" → edit → run → now it works but output format is wrong → edit → run...</p>
+              <p style="font-weight:600;margin-top:12px;">Time wasted: 45 minutes of frustration</p>
+            </div>
+            
+            <div style="background:#dcfce7;padding:16px;border-radius:8px;">
+              <h5 style="color:var(--ok);">✅ With REPL (Claude Code Way)</h5>
+              <p style="font-size:0.9rem;font-family:monospace;line-height:1.8;">
+                > import pandas as pd<br>
+                > df = pd.read_csv('labs.csv')<br>
+                > df.columns  # Check column names<br>
+                ['PatientID', 'A1C', 'Date']  # Ah, it's "A1C" not "HbA1c"<br>
+                > df[df['A1C'] > 7.0]  # Get results<br>
+                > results.to_csv('high_a1c.csv')  # Save<br>
+              </p>
+              <p style="font-weight:600;margin-top:12px;">Time: 3 minutes. Zero frustration.</p>
+            </div>
+          </div>
+        </div>
+
+        <h3>How REPL Powers Claude Code for Doctors</h3>
+        
+        <div class="svg-visual">
+          <h4 style="margin-bottom:16px;">The REPL Loop in Action</h4>
+          <svg width="100%" height="180" viewBox="0 0 600 180">
+            <!-- REPL cycle -->
+            <rect x="50" y="40" width="100" height="60" rx="8" fill="#fff7ed" stroke="#fd7e14" stroke-width="2"/>
+            <text x="100" y="65" text-anchor="middle" fill="#d9480f" font-weight="bold" font-size="12">1. Type Code</text>
+            <text x="100" y="82" text-anchor="middle" fill="#6c757d" font-size="10">One line at a time</text>
+            
+            <path d="M 150 70 L 190 70" stroke="#fd7e14" stroke-width="2" marker-end="url(#arrowhead)"/>
+            
+            <rect x="190" y="40" width="100" height="60" rx="8" fill="#e0f2fe" stroke="#0ea5e9" stroke-width="2"/>
+            <text x="240" y="65" text-anchor="middle" fill="#0c4a6e" font-weight="bold" font-size="12">2. Execute</text>
+            <text x="240" y="82" text-anchor="middle" fill="#6c757d" font-size="10">Computer runs it</text>
+            
+            <path d="M 290 70 L 330 70" stroke="#0ea5e9" stroke-width="2" marker-end="url(#arrowhead)"/>
+            
+            <rect x="330" y="40" width="100" height="60" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+            <text x="380" y="65" text-anchor="middle" fill="#166534" font-weight="bold" font-size="12">3. See Result</text>
+            <text x="380" y="82" text-anchor="middle" fill="#6c757d" font-size="10">Instant feedback</text>
+            
+            <path d="M 380 100 Q 380 130 240 130 Q 100 130 100 100" fill="none" stroke="#16a34a" stroke-width="2" marker-end="url(#arrowhead)"/>
+            <text x="240" y="150" text-anchor="middle" fill="#166534" font-weight="bold" font-size="11">4. Adjust & Repeat</text>
+            
+            <defs>
+              <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                <polygon points="0 0, 10 3, 0 6" fill="#16a34a"/>
+              </marker>
+            </defs>
+          </svg>
+        </div>
+
+        <div class="tip-box">
+          <span class="tip-icon">🏥</span>
+          <div>
+            <strong>Medical Parallel:</strong> REPL is like titrating a medication. Give a dose → check response → adjust dose → check again. You don't give the full dose blindly and hope for the best. Same with code—test each step, verify, then proceed.
+          </div>
+        </div>
+
+        <h3>Why 80% of Programmers Don't Know This</h3>
+        <p>Most programmers learned the old way: write files, run programs, debug for hours. <strong>REPL-first development is a paradigm shift</strong> that's only become mainstream in the last few years with tools like Claude Code, Jupyter notebooks, and modern Python environments.</p>
+        
+        <p><strong>You're learning the NEW way from day one.</strong> That's an advantage, not a disadvantage. You're not unlearning bad habits—you're starting with best practices.</p>
+
+        <div style="background:#fef3c7;padding:20px;border-radius:12px;margin:24px 0;border-left:4px solid #f59e0b;">
+          <h4 style="margin-top:0;color:#92400e;">🎯 The Claude Code Advantage for Healthcare</h4>
+          <p><strong>Claude Code + REPL = Perfect for Medical Workflows</strong></p>
+          <ul style="margin-left:20px;">
+            <li><strong>Explore patient data safely:</strong> Test queries on small samples before processing 100,000 records</li>
+            <li><strong>Validate algorithms interactively:</strong> Check drug interaction logic one medication at a time</li>
+            <li><strong>Debug EMR parsing instantly:</strong> See exactly where date formats break, fix immediately</li>
+            <li><strong>Prototype clinical decision support:</strong> Build diagnostic rules incrementally, testing each condition</li>
+            <li><strong>Learn by doing:</strong> Every line teaches you something. No waiting, no frustration.</li>
+          </ul>
+        </div>
+
+        <h3>Understanding the Terminal (The Broader Context)</h3>
+        <p>The <strong>Terminal</strong> is your general command center—it can run REPL, execute files, manage packages, navigate your system. Think of it as the hospital itself.</p>
+        <p>The <strong>REPL</strong> is one specific mode within the terminal—the interactive coding lab. It's a subset, a special environment optimized for the explore-test-verify workflow.</p>
+        
+        <p><em>In VS Code with Claude Code, you'll use both: Terminal for setup tasks, REPL for actual coding and data exploration. They work together seamlessly.</em></p>
+
+        <h3>Core Terminal Operations (Beyond REPL)</h3>
+        <div class="table-wrap">
+            <div class="table-scroll">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                          <th>🎯 Command</th>
+                          <th>⚙️ What It Does</th>
+                          <th>💡 Why You Need It</th>
+                          <th>🏥 Medical Analogy</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Open Terminal</td><td>Creates a new command window</td><td>Start coding/testing immediately</td><td>Opening a new patient chart</td></tr>
+                        <tr><td>Close Terminal</td><td>Ends the session</td><td>Clean workspace, free memory</td><td>Closing a completed case</td></tr>
+                        <tr><td>Clear Output</td><td>Removes displayed text</td><td>See new results without clutter</td><td>Clearing old vitals for new readings</td></tr>
+                        <tr><td>Copy/Paste</td><td>Duplicate text/code</td><td>Reuse successful snippets</td><td>Templating discharge summaries</td></tr>
+                        <tr><td>Resize Panel</td><td>Change window size</td><td>See more code or output</td><td>Adjusting monitor for X-ray review</td></tr>
+                        <tr><td>Switch Terminals</td><td>Move between sessions</td><td>Work on multiple projects</td><td>Moving between patient rooms</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="tip-box">
+          <span class="tip-icon">⚡</span>
+          <div>
+            <strong>Quick Win:</strong> Right now, open VS Code and press <code>Ctrl+`</code> (or Cmd+` on Mac). Boom—terminal appears. Close it with the trash icon. Do this three times until it feels automatic. That's your first terminal skill mastered.
+          </div>
+        </div>
+    </section>
+
+    <!-- SECTION 3: COMPACT FLIP CARDS WITH EMOJIS -->
+    <section id="concepts-cards">
+        <h2>🎴 Section 3: Essential Terminal Concepts</h2>
+        <span class="tier-badge tier-1">Interactive Learning</span>
+        <p>Click each card to reveal the full explanation. These 12 concepts are your terminal vocabulary. <strong>Don't rush</strong>—understanding beats memorization every time.</p>
+        <div class="interactive-box">
+            <div class="carousel-container">
+                <button id="carousel-prev" class="carousel-nav">‹</button>
+                <div id="carousel-deck"></div>
+                <button id="carousel-next" class="carousel-nav">›</button>
+            </div>
+            <div class="carousel-footer">
+                <div id="carousel-counter">Concept 1 of 12</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 4: DOCTOR WORKFLOWS -->
+    <section id="tier2-workflows">
+        <h2>🏥 Section 4: Doctor Workflows in Action (Tier 2)</h2>
+        <span class="tier-badge tier-2">Applied Practice</span>
+        
+        <div class="tip-box">
+          <span class="tip-icon">🎓</span>
+          <div>
+            <strong>Reality Check:</strong> These scenarios come from real doctors building real healthtech. Not theoretical examples—actual use cases from people who started exactly where you are now.
+          </div>
+        </div>
+
+        <h3>Real Healthcare Scenarios (What You'll Actually Build)</h3>
+
+        <div class="table-wrap">
+            <div class="table-scroll">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                          <th>🎯 Scenario</th>
+                          <th>💻 Terminal Task</th>
+                          <th>🏥 Clinical Example</th>
+                          <th>✨ Benefit</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Patient Data Analysis</td>
+                            <td>Open REPL for interactive testing</td>
+                            <td>Analyze lab results pattern interactively</td>
+                            <td>Test data parsing before production use</td>
+                        </tr>
+                        <tr>
+                            <td>EMR Integration</td>
+                            <td>Copy extraction code to docs</td>
+                            <td>Document patient ID extraction method</td>
+                            <td>Reproducible, auditable processes</td>
+                        </tr>
+                        <tr>
+                            <td>Error Debugging</td>
+                            <td>Search terminal output</td>
+                            <td>Find "Dosage mismatch" in 10K line log</td>
+                            <td>Quick error identification and fix</td>
+                        </tr>
+                        <tr>
+                            <td>Multi-Project Work</td>
+                            <td>Switch between terminal tabs</td>
+                            <td>Toggle drug review and patient summary</td>
+                            <td>No context loss, instant switching</td>
+                        </tr>
+                        <tr>
+                            <td>Data Import</td>
+                            <td>Drag CSV into terminal</td>
+                            <td>Import lab results for validation</td>
+                            <td>Fast data ingestion, zero typos</td>
+                        </tr>
+                        <tr>
+                            <td>Session Organization</td>
+                            <td>Rename terminal sessions</td>
+                            <td>Label "Antibiotic Audit" clearly</td>
+                            <td>Clear project tracking and focus</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 5: PROGRESSION WITH 2ND OPEN -->
+    <section id="progression">
+        <h2>📈 Section 5: Your Learning Progression</h2>
+        <span class="tier-badge tier-1">Skill Building</span>
+        
+        <p>Master these in order. Each builds on the previous. <strong>The second accordion is open</strong>—start there to see the pattern, then go back to step 1, then continue forward. This curiosity-driven approach helps concepts stick better than linear reading.</p>
+
+        <div class="accordion">
+            <div class="accordion-item">
+                <button class="accordion-header" aria-expanded="false">
+                    <span class="accordion-title"><strong>🌱 Steps 1-5: Absolute Basics</strong></span>
+                </button>
+                <div class="accordion-content">
+                    <ol>
+                        <li><strong>Open Claude Code terminal:</strong> Click Terminal menu → New Terminal. Your command center appears at the bottom. <em>It's that simple.</em></li>
+                        <li><strong>Close/kill session:</strong> Click the trash icon on the terminal tab. Clean slate, fresh start.</li>
+                        <li><strong>Clear output:</strong> Type <code>clear</code> and press Enter. Or use Cmd+K (Mac) / Ctrl+K (Windows). Fresh screen.</li>
+                        <li><strong>Copy/paste:</strong> Select text with mouse, Cmd+C / Ctrl+C to copy, Cmd+V / Ctrl+V to paste. Standard computer stuff you already know.</li>
+                        <li><strong>Find in terminal:</strong> Cmd+F / Ctrl+F searches your terminal history. <em>Essential</em> for debugging long outputs.</li>
+                    </ol>
+                    <div class="tip-box" style="margin-top:16px;">
+                      <span class="tip-icon">💪</span>
+                      <div><strong>Practice:</strong> Do each step once right now. Seriously—stop reading, try them. Five minutes of doing beats an hour of reading.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <button class="accordion-header" aria-expanded="true">
+                    <span class="accordion-title"><strong>🔧 Steps 6-10: Getting Comfortable</strong></span>
+                </button>
+                <div class="accordion-content">
+                    <ol start="6">
+                        <li><strong>Resize terminal:</strong> Drag the divider between terminal and editor up/down. More space when you need it.</li>
+                        <li><strong>Switch terminals:</strong> If you have multiple terminal tabs, click the one you want. Like switching browser tabs.</li>
+                        <li><strong>Create new terminal:</strong> Click the + icon or Terminal → New Terminal. Now you have two terminals—one for running code, one for testing.</li>
+                        <li><strong>Split terminal:</strong> Click the split icon (looks like two rectangles). Side-by-side terminals for comparison.</li>
+                        <li><strong>Show/hide tabs:</strong> Right-click a terminal tab for options. Hide ones you're not using to reduce clutter.</li>
+                    </ol>
+                    <div class="tip-box" style="margin-top:16px;">
+                      <span class="tip-icon">🎯</span>
+                      <div><strong>Why This Matters:</strong> By step 10, you can manage multiple projects simultaneously without losing your mind. That's professional-level workflow.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <button class="accordion-header" aria-expanded="false">
+                    <span class="accordion-title"><strong>⭐ Steps 11-15: Professional Level</strong></span>
+                </button>
+                <div class="accordion-content">
+                    <ol start="11">
+                        <li><strong>Drag files:</strong> Grab a file from your file explorer, drag into terminal. Full path appears automatically. No typing long paths.</li>
+                        <li><strong>Rename sessions:</strong> Right-click tab → Rename. Call it "Patient Parser" instead of "Terminal 2". Clarity matters.</li>
+                        <li><strong>Customize appearance:</strong> Settings → Terminal → Font/Color. Make it comfortable for your eyes.</li>
+                        <li><strong>Set custom shell:</strong> Settings → Terminal → Default Shell. Bash, zsh, PowerShell—your choice.</li>
+                        <li><strong>Persistent sessions:</strong> VS Code remembers your terminals. Close and reopen—they're still there with their history.</li>
+                    </ol>
+                    <div class="tip-box" style="margin-top:16px;">
+                      <span class="tip-icon">✨</span>
+                      <div><strong>Status Check:</strong> If you've done all 15 steps, you're now more comfortable with terminals than 70% of junior developers. Seriously.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <button class="accordion-header" aria-expanded="false">
+                    <span class="accordion-title"><strong>🚀 Steps 16-20: Advanced Mastery</strong></span>
+                </button>
+                <div class="accordion-content">
+                    <ol start="16">
+                        <li><strong>Multiple shell profiles:</strong> Different configs for different projects. Python project uses one setup, SQL another.</li>
+                        <li><strong>Automate tasks:</strong> Run scripts automatically when terminal opens. Set up your environment once, reuse forever.</li>
+                        <li><strong>Environment variables:</strong> Set <code>HOSPITAL_ID=Stanford</code> once. Your code reads it everywhere. Same code, different hospitals.</li>
+                        <li><strong>Configure scrollback:</strong> Settings → Terminal → Scrollback lines. Set to 50,000 for processing large datasets.</li>
+                        <li><strong>Command palette:</strong> Cmd+Shift+P → type "terminal" → see all terminal commands. Power user interface.</li>
+                    </ol>
+                    <div class="tip-box" style="margin-top:16px;">
+                      <span class="tip-icon">🏆</span>
+                      <div><strong>Congratulations:</strong> You've reached terminal mastery. Most programmers never learn steps 16-20. You're ahead of the curve.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 6: FAQs WITH 2ND OPEN -->
+    <section id="faqs">
+        <h2>❓ Section 6: Questions You're Probably Wondering</h2>
+        <span class="tier-badge tier-1">Quick Answers</span>
+        
+        <p>These are the questions every doctor asks when learning terminals. Honest answers, no condescension.</p>
+        
+        <div class="accordion">
+            <div class="accordion-item">
+                <button class="accordion-header" aria-expanded="false">
+                    <span class="accordion-title">What's the difference between Terminal and REPL?</span>
+                </button>
+                <div class="accordion-content">
+                    <p>A <strong>Terminal</strong> is your general command-line interface—run any system command, navigate files, install packages.</p>
+                    <p>A <strong>REPL</strong> (Read-Eval-Print Loop) is specifically for interactive programming. Type Python code, get immediate results. Perfect for exploring patient data structures before writing full scripts.</p>
+                    <p><em>Think of it this way:</em> Terminal is the whole hospital, REPL is the simulation lab where you practice procedures safely.</p>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <button class="accordion-header" aria-expanded="true">
+                    <span class="accordion-title">Can I actually break something using the terminal?</span>
+                </button>
+                <div class="accordion-content">
+                    <p><strong>Short answer:</strong> It's really hard to break anything just using the terminal in VS Code for coding projects.</p>
+                    <p><strong>Longer answer:</strong> The terminal can execute system commands, so theoretically yes. But you'd have to intentionally type destructive commands. Normal coding work (running Python scripts, installing packages, navigating files) is completely safe.</p>
+                    <p><strong>Medical parallel:</strong> It's like ordering labs. You could theoretically order something inappropriate, but the system has safety checks, and you're trained to be careful. Same here.</p>
+                    <div class="tip-box" style="margin-top:12px;">
+                      <span class="tip-icon">🛡️</span>
+                      <div><strong>Safety Tip:</strong> If a command asks for sudo/administrator password, pause and understand what it does first. That's the only real danger zone.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <button class="accordion-header" aria-expanded="false">
+                    <span class="accordion-title">How many terminal windows should I have open?</span>
+                </button>
+                <div class="accordion-content">
+                    <p><strong>Typical setup for doctors coding:</strong></p>
+                    <ul style="margin-left:20px;margin-top:8px;">
+                      <li><strong>Terminal 1:</strong> Running your main application/script</li>
+                      <li><strong>Terminal 2:</strong> Testing and debugging</li>
+                      <li><strong>Terminal 3:</strong> Database queries or API testing (if needed)</li>
+                    </ul>
+                    <p>Start with 2. Add more only when you feel limited. <em>Quality over quantity</em>—too many terminals creates confusion.</p>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <button class="accordion-header" aria-expanded="false">
+                    <span class="accordion-title">What if I close a terminal with important results?</span>
+                </button>
+                <div class="accordion-content">
+                    <p><strong>Good news:</strong> VS Code often preserves terminal history when you close and reopen.</p>
+                    <p><strong>Better practice:</strong> For critical outputs, redirect them to a file:</p>
+                    <p><code>python analyze.py > results.txt</code></p>
+                    <p>Now results are saved in results.txt automatically. <em>Documentation and output in one command.</em></p>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <button class="accordion-header" aria-expanded="false">
+                    <span class="accordion-title">How do I stop a command that's running too long?</span>
+                </button>
+                <div class="accordion-content">
+                    <p>Press <strong>Ctrl+C</strong> (Mac and Windows). This sends an interrupt signal—like politely asking the process to stop.</p>
+                    <p>If that doesn't work (rare), click the trash icon to kill the entire terminal.</p>
+                    <p><strong>Medical scenario:</strong> Your patient matching algorithm is taking forever because you forgot to limit the dataset. Ctrl+C stops it, you add a limit, restart. No harm done.</p>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <button class="accordion-header" aria-expanded="false">
+                    <span class="accordion-title">Why does dragging files matter when I can type paths?</span>
+                </button>
+                <div class="accordion-content">
+                    <p><strong>Time savings:</strong> Typing <code>/Users/doctor/Documents/Projects/Healthcare/Data/patient_records_2024_Q3.csv</code> is tedious and error-prone.</p>
+                    <p><strong>Dragging:</strong> Grab file, drop in terminal, done. Perfect path, zero typos.</p>
+                    <p>After the 10th time typing a long path wrong, you'll appreciate drag-and-drop. Trust me.</p>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <button class="accordion-header" aria-expanded="false">
+                    <span class="accordion-title">What are environment variables in plain English?</span>
+                </button>
+                <div class="accordion-content">
+                    <p>Environment variables are settings your programs can read. Set once in the terminal, available everywhere in that session.</p>
+                    <p><strong>Example:</strong> <code>export HOSPITAL_ID=Stanford</code></p>
+                    <p>Now every script you run can check <code>HOSPITAL_ID</code> and process Stanford-specific data. Change it to <code>HOSPITAL_ID=UCSF</code>, same scripts work for UCSF data.</p>
+                    <p><em>One codebase, infinite hospitals.</em> This is how real healthcare software scales.</p>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <button class="accordion-header" aria-expanded="false">
+                    <span class="accordion-title">Do I need to learn Linux/Unix commands?</span>
+                </button>
+                <div class="accordion-content">
+                    <p><strong>Eventually, yes. Immediately, no.</strong></p>
+                    <p>Start with the basics: <code>cd</code> (change directory), <code>ls</code> (list files), <code>pwd</code> (show current location). That's 90% of what you need initially.</p>
+                    <p>Advanced commands come naturally as you need them. Don't front-load learning—learn as you build.</p>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <button class="accordion-header" aria-expanded="false">
+                    <span class="accordion-title">Can I customize terminal colors for different projects?</span>
+                </button>
+                <div class="accordion-content">
+                    <p><strong>Absolutely.</strong> Create terminal profiles with different colors:</p>
+                    <ul style="margin-left:20px;margin-top:8px;">
+                      <li><strong>Production:</strong> Red theme—danger, be careful</li>
+                      <li><strong>Development:</strong> Green theme—safe to experiment</li>
+                      <li><strong>Research:</strong> Blue theme—exploratory work</li>
+                    </ul>
+                    <p>Visual cues prevent catastrophic mistakes. In healthcare coding, this isn't optional—it's safety.</p>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <button class="accordion-header" aria-expanded="false">
+                    <span class="accordion-title">What's scrollback and why should I care?</span>
+                </button>
+                <div class="accordion-content">
+                    <p>Scrollback is how many lines of output the terminal remembers. Default is often 1,000 lines.</p>
+                    <p><strong>Problem:</strong> If you process 10,000 patient records, you lose the first 9,000 lines of output.</p>
+                    <p><strong>Solution:</strong> Increase scrollback to 50,000+ in settings. Now you can scroll back through everything.</p>
+                    <p><em>Essential for debugging large datasets.</em></p>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <button class="accordion-header" aria-expanded="false">
+                    <span class="accordion-title">How do I search through terminal output?</span>
+                </button>
+                <div class="accordion-content">
+                    <p><strong>Cmd+F (Mac) or Ctrl+F (Windows):</strong> Opens search box.</p>
+                    <p>Type "error" to find all error messages. Type "patient ID 12345" to trace all operations for that specific patient.</p>
+                    <p><em>This is how you debug efficiently instead of reading thousands of lines manually.</em></p>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <button class="accordion-header" aria-expanded="false">
+                    <span class="accordion-title">Should I memorize all these commands?</span>
+                </button>
+                <div class="accordion-content">
+                    <p><strong>No. Absolutely not.</strong></p>
+                    <p>Use commands a few times, and muscle memory develops naturally. You didn't memorize drug dosages by rote—you learned them through repetition and use.</p>
+                    <p>Same here. Build things. The commands you need will stick. The ones you don't need will fade. That's efficient learning.</p>
+                    <div class="tip-box" style="margin-top:12px;">
+                      <span class="tip-icon">🧠</span>
+                      <div><strong>Learning Tip:</strong> Keep this page bookmarked. Reference it when stuck. Within a month, you won't need it anymore.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 7: QUIZ -->
+    <section id="quiz">
+        <h2>🎓 Section 7: Test Your Terminal Knowledge</h2>
+        <span class="tier-badge tier-2">Assessment</span>
+        <p>15 questions testing both foundation and application. <strong>Every wrong answer teaches you something.</strong> There's no grade, no judgment—just learning.</p>
+        
+        <div class="tip-box">
+          <span class="tip-icon">💭</span>
+          <div>
+            <strong>Before You Start:</strong> These aren't trick questions. If you've read this far, you know the answers. Trust your understanding.
+          </div>
+        </div>
+
+        <div class="quiz-container">
+            <div class="quiz-navigation">
+                <button class="btn" id="qPrev">←</button>
+                <span class="question-counter"><span id="qCur">1</span> of <span id="qTotal">15</span></span>
+                <button class="btn" id="qNext">→</button>
+            </div>
+            <div id="quiz-body"></div>
+        </div>
+    </section>
+
+    <!-- SECTION 8: NEXT STEPS -->
+    <section id="next-steps">
+        <h2>🚀 Section 8: Your Path Forward</h2>
+        <span class="tier-badge tier-2">Action Plan</span>
+        
+        <div class="tip-box">
+          <span class="tip-icon">🎯</span>
+          <div>
+            <strong>The Truth About Learning to Code:</strong> You don't learn by reading. You learn by building, breaking, fixing, and building again. These exercises give you safe things to break.
+          </div>
+        </div>
+
+        <h3>🏋️ Practice Exercises (Do These in Order)</h3>
+        <ol>
+            <li><strong>Day 1 – Terminal Basics:</strong> Open three terminals. Name them "Testing", "Production", "Research". Practice switching between them. Close all. Reopen VS Code and see them restored.</li>
+            <li><strong>Day 2 – File Handling:</strong> Find a CSV file (create a dummy one with patient data if needed). Drag it into terminal. Notice how the full path appears. Copy that path to a text file.</li>
+            <li><strong>Day 3 – Process Control:</strong> Create a simple Python script that prints "Hello, Doctor" 100 times in a loop. Run it. Practice stopping it mid-run with Ctrl+C. Restart it. Stop it again.</li>
+            <li><strong>Day 4 – Customization:</strong> Go to settings. Change your terminal colors. Make one profile "Clinical" (red/orange), one "Research" (blue/green). Switch between them.</li>
+            <li><strong>Day 5 – Automation:</strong> Write a tiny shell script that opens three terminals with specific names. Save it. Run it. Marvel at automation.</li>
+        </ol>
+
+        <div class="tip-box">
+          <span class="tip-icon">⏱️</span>
+          <div>
+            <strong>Time Commitment:</strong> Each exercise takes 10-15 minutes. Five days, 60 minutes total, terminal confidence for life. That's a better ROI than most CME courses.
+          </div>
+        </div>
+
+        <h3>📖 Resources for Doctors Who Code</h3>
+        <ul>
+            <li><strong>🗃️ Healthcare Data:</strong> MIMIC-III database for practice patient data (properly anonymized)</li>
+            <li><strong>🐍 Medical Python Libraries:</strong> scikit-learn for diagnostics, pandas for EMR parsing, medacy for NLP</li>
+            <li><strong>👥 Communities:</strong> r/healthIT on Reddit, Healthcare.ai Slack, Medical Informatics Discord</li>
+            <li><strong>📚 Next Learning:</strong> Git for version control, Docker for deployment, SQL for database work</li>
+        </ul>
+
+        <h3>🔄 The Claude Code Development Loop</h3>
+        <p>Understanding this workflow will make you a better coder. This is how professionals iterate:</p>
+        
+        <div class="svg-visual">
+          <h4 style="margin-bottom:16px;">Read → Execute → Review → Accept → Continue</h4>
+          <svg width="100%" height="200" viewBox="0 0 600 200">
+            <!-- Circular workflow -->
+            <circle cx="300" cy="100" r="80" fill="none" stroke="#fd7e14" stroke-width="3" stroke-dasharray="5,5"/>
+            
+            <!-- Step 1: Read -->
+            <circle cx="300" cy="20" r="30" fill="#fff7ed" stroke="#fd7e14" stroke-width="2"/>
+            <text x="300" y="28" text-anchor="middle" fill="#d9480f" font-weight="bold" font-size="14">📖 Read</text>
+            
+            <!-- Step 2: Execute -->
+            <circle cx="380" cy="100" r="30" fill="#e0f2fe" stroke="#0ea5e9" stroke-width="2"/>
+            <text x="380" y="108" text-anchor="middle" fill="#0c4a6e" font-weight="bold" font-size="14">▶️ Run</text>
+            
+            <!-- Step 3: Review -->
+            <circle cx="300" cy="180" r="30" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+            <text x="300" y="188" text-anchor="middle" fill="#92400e" font-weight="bold" font-size="14">🔍 Review</text>
+            
+            <!-- Step 4: Accept -->
+            <circle cx="220" cy="100" r="30" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+            <text x="220" y="108" text-anchor="middle" fill="#166534" font-weight="bold" font-size="14">✓ Accept</text>
+            
+            <!-- Arrows -->
+            <defs>
+              <marker id="arrow2" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                <polygon points="0 0, 10 3, 0 6" fill="#fd7e14"/>
+              </marker>
+            </defs>
+            <path d="M 320 40 Q 360 60 365 80" fill="none" stroke="#fd7e14" stroke-width="2" marker-end="url(#arrow2)"/>
+            <path d="M 365 120 Q 340 160 315 165" fill="none" stroke="#fd7e14" stroke-width="2" marker-end="url(#arrow2)"/>
+            <path d="M 285 165 Q 240 140 235 115" fill="none" stroke="#fd7e14" stroke-width="2" marker-end="url(#arrow2)"/>
+            <path d="M 235 85 Q 260 40 285 35" fill="none" stroke="#fd7e14" stroke-width="2" marker-end="url(#arrow2)"/>
+          </svg>
+          <div style="margin-top:16px;text-align:left;">
+            <p><strong>📖 Read:</strong> Understand the problem or task</p>
+            <p><strong>▶️ Execute:</strong> Run your code in the terminal</p>
+            <p><strong>🔍 Review:</strong> Check the output—errors? Success?</p>
+            <p><strong>✓ Accept:</strong> If good, move forward. If not, debug and loop back</p>
+            <p><em>This loop is how all great software gets built—one iteration at a time.</em></p>
+          </div>
+        </div>
+
+    </section>
+
+    <!-- SECTION 9: GLOSSARY - BEFORE FINAL THOUGHTS -->
+    <section id="glossary">
+      <h2>Master These Tech Terms</h2>
+      <p class="intro">Hover over any term to learn its meaning. These are your terminal essentials—no need to memorize, just reference when needed.</p>
+      <div class="glossary-cloud" id="glossary-cloud"></div>
+    </section>
+
+    <!-- FINAL SECTION: CLOSING THOUGHTS -->
+    <section id="final-thoughts">
+        <h3>🎯 Final Thoughts</h3>
+        <p>You've reached the end of this guide, but this is really the beginning. Every doctor who codes started exactly where you are now—slightly uncertain, definitely capable, ready to build.</p>
+        
+        <p>The terminal isn't a black box anymore. It's a tool. <strong>You've diagnosed conditions with less information than this.</strong> You've made life-or-death decisions under pressure. Learning terminal commands? That's easy mode compared to what you do every day.</p>
+
+        <p><em>Now go build something that helps patients. The world needs doctor-coders like you.</em></p>
+    </section>
+
+  </div>
+
+  <footer class="site-footer">
+    <p class="footer-copy">© 2025 Beyond Dictionary. Empowering doctors who code.</p>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // FLIP CARD DATA (WITH EMOJIS)
+      const cards = [
+        { emoji: "🖥️", title: "Terminal vs REPL", front: "What's the fundamental difference?", back: "TERMINAL: General command interface. Run system commands, navigate files, install packages.\n\nREPL: Interactive programming only. Type Python code, see immediate results.\n\nDoctor Use: Terminal for setup tasks, REPL for testing patient data transformations before writing full scripts." },
+        { emoji: "💾", title: "Session Persistence", front: "What happens when you close VS Code?", back: "VS Code REMEMBERS your terminal sessions and history (if enabled).\n\nClose laptop → attend patient → return: Everything's still there.\n\nCAVEAT: Running processes stop. Background tasks need special handling.\n\nPro Tip: For long-running processes, use screen/tmux or redirect output to files." },
+        { emoji: "🔀", title: "Multiple Terminals", front: "Why need more than one?", back: "PARALLEL WORKFLOWS:\n• Term 1: Running dev server\n• Term 2: Testing API calls\n• Term 3: Monitoring logs\n\nMEDICAL EXAMPLE:\n• Term 1: Patient data ingestion\n• Term 2: Real-time validation\n• Term 3: Error monitoring\n\nNo context switching. All visible at once. Professional workflow." },
+        { emoji: "⚡", title: "Keyboard Shortcuts", front: "Which shortcuts save the most time?", back: "ESSENTIAL:\n• Ctrl/Cmd + `: Toggle terminal\n• Ctrl + C: Stop running command\n• Ctrl/Cmd + F: Search output\n• Up Arrow: Previous command\n• Tab: Auto-complete paths\n\nMastering these five shortcuts = 70% efficiency gain.\n\nNo mouse needed. Hands stay on keyboard. Surgeon-level precision." },
+        { emoji: "🌍", title: "Environment Variables", front: "Why are they crucial in healthcare?", back: "DEFINITION: Variables available to all programs in your session.\n\nUSE CASE:\nexport HOSPITAL_ID=Stanford\n\nYour code reads this value. Change to HOSPITAL_ID=UCSF, same code processes UCSF data.\n\nONE CODEBASE → INFINITE HOSPITALS\n\nCritical for multi-site deployments. Security best practice." },
+        { emoji: "📜", title: "Command History", front: "How to never retype commands?", back: "UP ARROW: Cycles through previous commands\n\nCtrl+R: Search command history (type 'patient' → finds 'python parse_patient_data.py')\n\nEFFICIENCY EXAMPLE:\nDaily report uses same command, different date:\n1. Up arrow\n2. Change date\n3. Enter\n\n3 seconds vs 30 seconds typing. 365 days = 3 hours saved annually." },
+        { emoji: "🔍", title: "Output Scrollback", front: "Why increase from default 1,000 lines?", back: "SCENARIO: Processing 50,000 patient records\n\nDEFAULT: First 49,000 lines disappear\n\nSOLUTION: Increase scrollback to 100,000 lines in settings\n\nBENEFIT: Review entire dataset processing from start to finish. Find that one anomaly from the beginning.\n\nFor large medical datasets: ESSENTIAL, not optional." },
+        { emoji: "🔗", title: "Pipes and Redirection", front: "What's the | symbol power?", back: "PIPE (|): Send output of command 1 as input to command 2\n\nEXAMPLE:\ncat patients.csv | grep ERROR | wc -l\n\nReads file → finds errors → counts them\n\nNo intermediate files needed. Clean, composable, powerful.\n\nUNIX PHILOSOPHY: Do one thing well, chain infinitely." },
+        { emoji: "🛑", title: "Process Control", front: "How to manage running processes?", back: "STOP: Ctrl+C (interrupt signal)\n\nBACKGROUND: Add & at end\npython long_analysis.py &\n\nVIEW RUNNING: ps or top commands\n\nMEDICAL SCENARIO:\nStart overnight patient data processing in background.\nTerminal stays usable.\nCheck progress with ps command." },
+        { emoji: "📂", title: "Tab Completion", front: "Fastest way to type file paths?", back: "START TYPING → PRESS TAB\n\nTerminal fills in the rest. If multiple matches, Tab twice shows list.\n\nEXAMPLE:\nType: python pat [Tab]\nCompletes: python patient_data_parser.py\n\nBENEFITS:\n• Zero typos\n• 10x faster\n• Works with commands, files, directories\n\nLearn this once, use forever." },
+        { emoji: "🔐", title: "Sudo/Admin Rights", front: "When do you need special permissions?", back: "SUDO: Super User Do—administrator privileges\n\nNEED IT FOR:\n• Installing system-level packages\n• Modifying system files\n• Accessing protected directories\n\nSAFETY RULE:\nIf it asks for sudo/admin password, PAUSE and understand what it does.\n\nMedical parallel: Like controlled substance access. Required sometimes, but needs justification." },
+        { emoji: "🎨", title: "Terminal Customization", front: "Why customize appearance?", back: "READABILITY: Larger fonts for eye comfort\n\nCOLOR CODING: Different projects, different themes\n• Production: Red (danger)\n• Development: Green (safe)\n• Research: Blue (exploratory)\n\nPERSONALIZATION: Your workspace, your preferences\n\nDoctors spend hours in terminals. Comfortable environment = better focus = fewer errors." }
+      ];
+
+      // QUIZ DATA (EMPATHETIC BD STYLE)
+      const quiz = [
+        { q: "Renaming terminal sessions to match projects (e.g., 'Drug Checker') helps with:", cor: 3, opts: ["Terminal performance speed", "Code security measures", "Memory usage reduction", "Organization and context switching"], exps: ["You chose speed—naming has zero performance impact. The terminal runs identically regardless of tab name. This is purely organizational. Speed comes from hardware and code efficiency, not naming conventions.", "You chose security—naming tabs is visible only to you and provides no security benefit. Security comes from encryption, access controls, and secure coding practices. Tab names are for human organization, not system protection.", "You chose memory—naming uses negligible memory (a few bytes of text). Terminal memory usage depends on running processes and scrollback settings, not tab names. This is about mental clarity, not system resources.", "Perfect! With five terminals open, descriptive names ('Drug Interaction Checker' vs 'Terminal 3') let you find the right one instantly. Reduces cognitive load and prevents errors. Professional developers always name their sessions."] },
+        { q: "Dragging a file into terminal rather than typing its path:", cor: 1, opts: ["Opens the file automatically", "Eliminates path typing errors", "Speeds up file execution", "Improves file security"], exps: ["You chose automatic opening—dragging inserts the file path as text, it doesn't execute anything. You still need to type your command (like 'python' or 'cat') before or after the path. Dragging is convenience, not automation.", "Excellent! Manual path typing is error-prone—one wrong character breaks your command. Dragging guarantees the exact path with zero typos. Especially valuable for long or complex paths with special characters.", "You chose faster execution—dragging doesn't speed up how the computer processes the file. Execution time is identical whether you typed or dragged the path. The speed benefit is in YOUR input time, not the computer's processing time.", "You chose security—dragging has no security implications. It's simply an input method. File security comes from permissions, encryption, and access controls. How you reference the file makes no difference to its security profile."] },
+        { q: "Processing the same patient data daily with different parameters, the best approach is:", cor: 2, opts: ["Retype entire command each time", "Copy-paste from text file", "Use up arrow, modify parameter", "Create new script daily"], exps: ["You chose retyping—guaranteed to waste time and introduce errors. You'll make typos in parameters. You'll forget the exact command structure. Terminal history exists specifically to prevent this repetitive, error-prone work.", "You chose copy-paste—workable but clunky. Requires maintaining a separate reference file, opening it, copying, pasting. More steps than necessary. Terminal history already stores this for you automatically and accessibly.", "Perfect! Press up arrow to recall yesterday's command. Change just the date or parameter. Press Enter. Takes 3 seconds. No external files to maintain, no retyping, minimal error risk. This is what command history was designed for.", "You chose new script daily—massive overkill. That's 365 scripts per year for the same process. Completely unmaintainable. Parameters should be arguments or variables, not separate scripts. One flexible script beats hundreds of rigid ones."] },
+        { q: "Environment variables are particularly useful in healthcare because they:", cor: 0, opts: ["Allow same code across hospitals", "Make code execute faster", "Prevent syntax errors", "Reduce code file size"], exps: ["Excellent! Set HOSPITAL_ID=Stanford → code processes Stanford data. Change to HOSPITAL_ID=UCSF → same code processes UCSF data. Zero code modifications. One codebase, infinite contexts. Critical for multi-site healthcare deployments.", "You chose speed—environment variables have negligible performance impact. They're read once at program start. Execution speed comes from algorithm efficiency and hardware, not from configuration method.", "You chose error prevention—environment variables don't prevent syntax errors. Syntax errors are code mistakes caught by the interpreter before running. Environment variables configure runtime behavior. Different problem, different solution.", "You chose file size—environment variables live in memory, not in code files. They add zero size to your scripts. If anything, they reduce size by eliminating hardcoded values. But size isn't the point—flexibility is."] },
+        { q: "Comparing outputs from two parsing algorithms simultaneously works best with:", cor: 1, opts: ["Running sequentially, remembering first", "Split terminal view", "Separate VS Code windows", "Taking screenshots"], exps: ["You chose sequential memory—human memory is unreliable for precise data comparison. Numbers blur. Details forgotten. Scientific comparison requires simultaneous visibility. Don't trust memory when accuracy matters.", "Perfect! Split terminal shows both outputs side-by-side. Left: Algorithm A. Right: Algorithm B. Direct visual comparison. No context switching. No memory required. Spot differences immediately. Professional debugging technique.", "You chose separate windows—technically works but forces constant window switching and cognitive load. Split view keeps everything visible in one screen. No window juggling, full focus on actual comparison.", "You chose screenshots—static and limited. Screenshots can't be searched, scrolled if long, or updated on reruns. Live terminal comparison is dynamic, searchable, and always current."] },
+        { q: "Higher scrollback settings when processing large datasets:", cor: 3, opts: ["Improve processing speed", "Reduce memory usage", "Prevent terminal crashes", "Retain full output for review"], exps: ["You chose speed—scrollback affects stored history, not processing speed. The algorithm runs identically with 1,000 or 100,000 line scrollback. Speed depends on code efficiency and hardware, not history retention.", "You chose reduce memory—higher scrollback uses MORE memory, not less. Each stored line consumes memory. The tradeoff: more memory for complete history. If memory is constrained, you'd decrease scrollback, not increase it.", "You chose prevent crashes—scrollback doesn't cause or prevent crashes. The terminal handles it internally. Crashes come from code bugs, resource exhaustion, or system issues. Scrollback is a stable feature, not a crash risk.", "Correct! Processing 50,000 patient records generates 50,000+ lines. Default 1,000-line scrollback loses the first 49,000 lines permanently. Increase to 100,000—retain everything. Review complete processing from start to finish."] },
+        { q: "Piping commands with '|' allows you to:", cor: 2, opts: ["Run commands simultaneously", "Speed up individual commands", "Chain output → input sequentially", "Create file backups"], exps: ["You chose simultaneous—pipes run commands sequentially in a chain, not simultaneously. First command completes → passes output to second → second processes → passes to third. It's a waterfall, not parallel execution.", "You chose speed—pipes don't inherently speed up commands. Each command takes its normal processing time. The benefit is workflow efficiency and elegance—no intermediate files needed. Process efficiency, not execution speed.", "Excellent! <code>cat patients.csv | grep ERROR | wc -l</code> chains three: read file → find errors → count them. Each feeds the next. No intermediate files. Clean, powerful, composable. Unix philosophy in action.", "You chose backups—pipes process and transform data, they don't duplicate it. Backups require redirection (<code>></code>) or explicit copy commands. Pipes are about transformation and filtering, not preservation."] },
+        { q: "The Ctrl+C keyboard shortcut in terminal:", cor: 1, opts: ["Copies text to clipboard", "Stops the running process", "Closes terminal window", "Clears terminal screen"], exps: ["You chose copy—that's Cmd+C or Ctrl+Shift+C in terminals. Plain Ctrl+C is reserved for the more critical function: process interruption. Same keys, different meanings in different contexts.", "Perfect! Ctrl+C sends SIGINT (interrupt signal) to the running process. Stops execution gracefully. Essential for canceling long-running commands, stopping infinite loops, or terminating unresponsive programs. Your emergency brake.", "You chose close window—Ctrl+C doesn't close the terminal. It stops the process running INSIDE the terminal. The terminal itself remains open with full history preserved. Closing typically requires clicking X or specific exit commands.", "You chose clear screen—that's the <code>clear</code> command or Ctrl+L. Ctrl+C is about process control (functional), not display management (cosmetic). Clearing is aesthetic. Stopping runaway processes is critical."] },
+        { q: "Custom terminal profiles are most beneficial when:", cor: 0, opts: ["Multiple projects need different environments", "Changing terminal font size", "Saving terminal output", "Running faster commands"], exps: ["Excellent! Python project needs conda environment. SQL project needs database credentials. Web project needs Node environment. Each profile auto-configures shell, paths, and startup scripts. No manual setup every time.", "You chose font size—that's a single global setting. Profiles are for complex environment configurations: different shells, environment variables, startup scripts, working directories. Much more powerful than cosmetic adjustments.", "You chose save output—output saving uses redirection operators or logging, not profiles. Profiles configure the terminal environment BEFORE you run anything. Output management is handled separately by commands and redirects.", "You chose speed—profiles don't make commands execute faster. They automate your environment setup. Speed comes from code efficiency and hardware. Profiles save YOUR setup time, not the computer's execution time."] }
+      ];
+
+      // GLOSSARY DATA
+
+      // GLOSSARY DATA (22 TERMS)
+      const glossary = [
+        { term: "Terminal", def: "Command-line interface to your operating system. Type text commands, get text results. The original way humans talked to computers—still the most powerful method for development." },
+        { term: "REPL", def: "Read-Eval-Print Loop. Interactive programming environment where you type code and immediately see results. Perfect for testing small snippets before writing full programs." },
+        { term: "Shell", def: "The program that interprets your terminal commands. Bash, Zsh, PowerShell are different shells—like different dialects of the same language." },
+        { term: "Session", def: "Your active terminal instance with its history, environment variables, and current state. Close terminal = end session. Persistent sessions survive VS Code restarts." },
+        { term: "Tab Completion", def: "Press Tab to auto-complete file names, commands, and paths. Terminal guesses based on what you started typing. Saves time and prevents typos completely." },
+        { term: "Command History", def: "List of all commands you've run in a session. Up arrow cycles through previous commands. Ctrl+R searches history. Never retype long commands again." },
+        { term: "Scrollback", def: "How many lines of terminal output are kept in memory. Default ~1,000 lines. Older output gets deleted. Increase for processing large datasets to retain complete history." },
+        { term: "Environment Variable", def: "Named value available to all programs in your session. Example: HOSPITAL_ID=Stanford. Programs read this to configure behavior for different contexts." },
+        { term: "Path", def: "Location of a file or directory in your file system. Absolute path starts from root (/Users/doctor/data.csv). Relative path is from current location (./data.csv)." },
+        { term: "Working Directory", def: "Your terminal's current location in the file system. Commands operate relative to this location. Check with <code>pwd</code> command. Change with <code>cd</code> command." },
+        { term: "Process", def: "Running program in your terminal. Each command starts a process. View running processes with <code>ps</code> command. Stop with Ctrl+C or kill command." },
+        { term: "Stdout", def: "Standard output—where programs print normal results. Goes to terminal screen by default. Redirect to file with <code>></code> operator for permanent storage." },
+        { term: "Stderr", def: "Standard error—where programs print error messages. Separate from stdout. Errors can be redirected to different file than normal output for organized logging." },
+        { term: "Pipe", def: "Operator (<code>|</code>) that sends output of one command as input to another. Chain commands together like <code>command1 | command2 | command3</code> for powerful workflows." },
+        { term: "Redirect", def: "Send command output to a file instead of screen. <code>></code> overwrites file. <code>>></code> appends to file. Example: <code>python script.py > results.txt</code>" },
+        { term: "Background Process", def: "Command that runs while terminal remains usable. Add <code>&</code> at end: <code>python analyze.py &</code>. Terminal prompt returns immediately for other work." },
+        { term: "Sudo", def: "Super user do—run command with administrator privileges. Common on Mac/Linux. Required for system-level changes. Use carefully: <code>sudo install package</code>" },
+        { term: "Flag", def: "Option added to command to modify behavior. Usually starts with <code>-</code> or <code>--</code>. Example: <code>ls -la</code> shows all files in long format with details." },
+        { term: "Argument", def: "Value passed to a command. In <code>python script.py patient_data.csv</code>, the CSV filename is an argument. Commands process arguments to know what to work on." },
+        { term: "Alias", def: "Shortcut name for a long command. Create with <code>alias ll='ls -la'</code>. Now typing <code>ll</code> runs the full command. Saves typing for frequent commands." },
+        { term: "Exit Code", def: "Number returned when command finishes. 0 means success. Non-zero means error occurred. Scripts check exit codes to detect failures. <code>echo $?</code> shows last exit code." },
+        { term: "Terminal Multiplexer", def: "Program like tmux or screen that manages multiple terminal sessions. Create, detach, reattach sessions. Advanced workflow organization for power users." }
+      ];
+
+      // SETUP FLIP CARDS
+      const deck = document.getElementById('carousel-deck');
+      deck.innerHTML = cards.map((c,i) => `
+        <div class="flip-card" data-idx="${i}">
+          <div class="flip-card-inner">
+            <div class="flip-card-front">
+              <span class="flip-card-emoji">${c.emoji}</span>
+              <h4>${c.title}</h4>
+              <p>${c.front}</p>
+              <p style="margin-top:16px;color:var(--accent);font-size:0.85rem;">👆 Click to reveal explanation</p>
+            </div>
+            <div class="flip-card-back">
+              <pre style="margin:0;white-space:pre-wrap;font-size:0.85rem;line-height:1.5;">${c.back}</pre>
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+      let cardIdx = 0;
+      function showCard(i) {
+        deck.querySelectorAll('.flip-card').forEach((c,idx) => {
+          c.classList.toggle('active', idx === i);
+          if(idx !== i) c.classList.remove('flipped');
+        });
+        document.getElementById('carousel-counter').textContent = `Concept ${i+1} of ${cards.length}`;
+      }
+      deck.onclick = (e) => {
+        const c = e.target.closest('.flip-card');
+        if(c) c.classList.toggle('flipped');
+      };
+      document.getElementById('carousel-prev').onclick = () => { if(cardIdx > 0) { cardIdx--; showCard(cardIdx); }};
+      document.getElementById('carousel-next').onclick = () => { if(cardIdx < cards.length-1) { cardIdx++; showCard(cardIdx); }};
+      showCard(0);
+
+      // SETUP QUIZ
+      let qIdx = 0;
+      document.getElementById('qTotal').textContent = quiz.length;
+      function showQ(i) {
+        const q = quiz[i];
+        const qb = document.getElementById('quiz-body');
+        let h = `<div class="quiz-body active"><p><strong>Q${i+1}:</strong> ${q.q}</p><div class="quiz-options">`;
+        q.opts.forEach((opt,oi) => {
+          h += `<div class="quiz-option" data-oi="${oi}"><label><input type="radio" name="q${i}" value="${oi}"><span>${opt}</span></label><div class="explanation">${q.exps[oi]}</div></div>`;
+        });
+        h += '</div></div>';
+        qb.innerHTML = h;
+        document.getElementById('qCur').textContent = i+1;
+        document.getElementById('qPrev').disabled = i === 0;
+        document.getElementById('qNext').disabled = i === quiz.length - 1;
+        qb.querySelectorAll('input').forEach(inp => {
+          inp.onchange = () => {
+            const sel = parseInt(inp.value);
+            const parent = inp.closest('.quiz-body');
+            parent.querySelectorAll('.quiz-option').forEach(o => {
+              o.classList.remove('selected','correct','wrong');
+              o.querySelector('.explanation').style.display = 'none';
+            });
+            const selOpt = inp.closest('.quiz-option');
+            selOpt.classList.add('selected');
+            selOpt.querySelector('.explanation').style.display = 'block';
+            if(sel === q.cor) {
+              selOpt.classList.add('correct');
+            } else {
+              selOpt.classList.add('wrong');
+              parent.querySelector(`[data-oi="${q.cor}"]`).classList.add('correct');
+            }
+          };
+        });
+      }
+      document.getElementById('qPrev').onclick = () => { if(qIdx > 0) { qIdx--; showQ(qIdx); }};
+      document.getElementById('qNext').onclick = () => { if(qIdx < quiz.length-1) { qIdx++; showQ(qIdx); }};
+      showQ(0);
+
+      // SETUP GLOSSARY
+      const gc = document.getElementById('glossary-cloud');
+      if (gc) {
+        gc.innerHTML = glossary.map(g => `<button class="glossary-chip"><span>${g.term}</span></button>`).join('');
+        const tip = document.createElement('div');
+        tip.className = 'chip-tip';
+        tip.innerHTML = '<div class="arrow"></div><div class="tip-content"></div>';
+        document.body.appendChild(tip);
+        const tipC = tip.querySelector('.tip-content');
+        const tipA = tip.querySelector('.arrow');
+        let openBtn = null;
+        function posTip(btn) {
+          const r = btn.getBoundingClientRect();
+          const vw = window.innerWidth;
+          tip.style.maxWidth = Math.min(vw-16,420)+'px';
+          const tr = tip.getBoundingClientRect();
+          const preferTop = r.top > (window.innerHeight - r.bottom);
+          const top = preferTop ? r.top - tr.height - 12 : r.bottom + 12;
+          const left = Math.max(8, Math.min(r.left + r.width/2 - tr.width/2, vw - tr.width - 8));
+          tip.style.top = Math.max(8,top)+'px';
+          tip.style.left = left+'px';
+          tipA.style.top = (preferTop ? tr.height-6 : -6)+'px';
+          tipA.style.left = Math.max(10, Math.min(r.left + r.width/2 - left - 6, tr.width-22))+'px';
+        }
+        gc.querySelectorAll('.glossary-chip').forEach((btn,i) => {
+          const def = glossary[i].def;
+          btn.onmouseover = btn.onfocus = () => {
+            tipC.innerHTML = def;
+            tip.classList.add('show');
+            posTip(btn);
+            openBtn = btn;
+          };
+          btn.onmouseout = btn.onblur = () => {
+            tip.classList.remove('show');
+            openBtn = null;
+          };
+        });
+        window.onresize = () => { if(openBtn) posTip(openBtn); };
+        window.onscroll = () => { if(openBtn) posTip(openBtn); };
+      }
+
+      // SETUP ACCORDIONS (2nd item open by default)
+      document.querySelectorAll('.accordion').forEach(acc => {
+        acc.querySelectorAll('.accordion-header').forEach((h, idx) => {
+          // Open 2nd item by default (index 1)
+          if(idx === 1) {
+            h.setAttribute('aria-expanded', 'true');
+            h.nextElementSibling.style.display = 'block';
+          }
+          h.onclick = () => {
+            const e = h.getAttribute('aria-expanded') === 'true';
+            h.setAttribute('aria-expanded', !e);
+            h.nextElementSibling.style.display = e ? 'none' : 'block';
+          };
+        });
+      });
+    });
+  </script>
+</body>
+</html>
