@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Use Case Explorer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root { 
+      --text: #111827;
+      --muted-text: #6b7280;
+      --bg: #f9fafb;
+      --panel-bg: #ffffff;
+      --border: #e5e7eb; 
+      --accent: #d97706;
+      --accent-light: #fef3c7;
+      --accent-dark: #b45309;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+      --radius: 0.75rem;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body { 
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg); 
+      color: var(--text); 
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      line-height: 1.5;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1024px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+      flex-grow: 1;
+    }
+
+    .intro-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .intro-title {
+      font-size: clamp(2rem, 5vw, 2.75rem);
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      line-height: 1.1;
+      margin-bottom: 0.75rem;
+      color: var(--accent-dark);
+    }
+    .intro-subtitle {
+      font-size: clamp(1rem, 3vw, 1.125rem);
+      color: var(--muted-text); 
+      max-width: 600px; 
+      margin: 0 auto 2rem;
+      line-height: 1.5;
+    }
+    .start-btn {
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: var(--radius);
+      padding: 0.875rem 2rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: var(--shadow-md);
+      transition: all 0.2s ease-in-out;
+      margin-top: 2rem;
+    }
+    .start-btn:hover { 
+      background: var(--accent-dark); 
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .intro-features {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+    .feature-card {
+      background: var(--panel-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+    }
+    .feature-icon { font-size: 1.75rem; margin-bottom: 0.75rem; }
+    .feature-card h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; }
+    .feature-card p { font-size: 0.875rem; color: var(--muted-text); line-height: 1.4; }
+
+    .wizard-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: rgba(17, 24, 39, 0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .wizard-modal {
+      background: var(--bg);
+      border-radius: var(--radius);
+      max-width: 800px;
+      width: calc(100% - 2rem);
+      max-height: 90vh;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .wizard-header {
+      padding: 0.9rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      text-align: center;
+      background: var(--panel-bg);
+      flex-shrink: 0;
+    }
+    .wizard-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; }
+    .wizard-progress { display: flex; gap: 0.5rem; justify-content: center; }
+    .progress-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--border);
+      transition: all 0.3s ease;
+    }
+    .progress-dot.active { background: var(--accent); transform: scale(1.1); }
+    
+    .wizard-content {
+      padding: 2rem;
+      flex-grow: 1;
+      overflow-y: auto;
+    }
+    .step { display: none; text-align: center; }
+    .step.active { display: block; animation: slideIn 0.4s ease; }
+    @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    .step-title { font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem; }
+    .step-subtitle { color: var(--muted-text); margin-bottom: 2rem; font-size: 1rem; }
+    
+    .tiles-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+      width: 100%;
+    }
+    .tile {
+      padding: 1.25rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--panel-bg);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+    }
+    .tile:hover { 
+      border-color: var(--accent); 
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+    }
+    .tile.selected {
+      border-color: var(--accent);
+      background: var(--accent-light);
+      box-shadow: 0 0 0 2px var(--accent);
+    }
+    .tile-icon { font-size: 1.75rem; margin-bottom: 0.75rem; display: block; }
+    .tile-label { font-weight: 600; font-size: 0.95rem; }
+    .tile-hint { font-size: 0.8rem; color: var(--muted-text); margin-top: 0.25rem; }
+    
+    .wizard-footer {
+      padding: 0.9rem 1.5rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--panel-bg);
+      flex-shrink: 0;
+    }
+    .wizard-footer-buttons {
+        display: flex;
+        gap: 0.75rem;
+    }
+    .wizard-btn {
+      padding: 0.625rem 1.25rem;
+      border-radius: var(--radius);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 1px solid transparent;
+      font-size: 0.9rem;
+    }
+    .wizard-btn.secondary {
+      background: var(--panel-bg);
+      color: var(--muted-text);
+      border-color: var(--border);
+    }
+    .wizard-btn.secondary:hover { border-color: var(--accent); color: var(--accent); }
+    .wizard-btn.primary { background: var(--accent); color: white; }
+    .wizard-btn.primary:hover { background: var(--accent-dark); }
+    .wizard-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    
+    .results-section {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+      display: none;
+      animation: fadeIn 0.5s ease;
+      flex-grow: 1;
+    }
+    .results-header { text-align: center; margin-bottom: 2.5rem; }
+    .results-title { font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .results-subtitle { color: var(--muted-text); font-size: 1rem; margin-bottom: 1.5rem; }
+    .start-over-btn {
+      background: none; border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.625rem 1.25rem; cursor: pointer;
+      font-size: 0.9rem; color: var(--muted-text);
+      transition: all 0.2s ease; font-weight: 600;
+    }
+    .start-over-btn:hover { border-color: var(--accent); color: var(--accent); }
+    
+    .result-card {
+      background: var(--panel-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2rem;
+      box-shadow: var(--shadow-md);
+      transition: all 0.2s ease;
+      margin-bottom: 1.5rem;
+    }
+    .result-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+    
+    .result-header {
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .result-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--accent-dark); }
+    .result-meta { 
+      display: flex; 
+      flex-wrap: wrap; 
+      gap: 0.75rem; 
+      font-size: 0.875rem; 
+      color: var(--muted-text); 
+      margin-bottom: 0.5rem;
+    }
+    .meta-badge {
+      padding: 0.25rem 0.75rem;
+      border-radius: 99px;
+      font-weight: 600;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .badge-mode { background: #dbeafe; color: #1e40af; }
+    .badge-difficulty { background: #fef3c7; color: #92400e; }
+    .badge-time { background: #dcfce7; color: #166534; }
+    
+    .result-section { margin-bottom: 1.5rem; }
+    .result-section-title { font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .result-desc { color: var(--text); line-height: 1.7; }
+    
+    .tags-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .tag {
+      padding: 0.25rem 0.75rem;
+      background: #f3f4f6;
+      color: var(--muted-text);
+      border-radius: 0.375rem;
+      font-size: 0.875rem;
+    }
+    
+    .example-box {
+      background: #f9fafb;
+      border-left: 4px solid var(--accent);
+      padding: 1.25rem;
+      border-radius: 0.5rem;
+      margin-top: 1rem;
+    }
+    .example-label {
+      font-weight: 700;
+      color: var(--accent-dark);
+      margin-bottom: 0.5rem;
+      font-size: 0.875rem;
+    }
+    .example-text {
+      color: var(--text);
+      line-height: 1.6;
+      margin-bottom: 0.75rem;
+    }
+    .prompt-box {
+      background: var(--panel-bg);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 1rem;
+      font-family: 'Monaco', 'Courier New', monospace;
+      font-size: 0.875rem;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    
+    .error-alert {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-top: 1.25rem;
+      margin-bottom: 2rem;
+      color: #991b1b;
+    }
+    .error-title { font-weight: 700; font-size: 1.125rem; margin-bottom: 0.5rem; }
+    
+    .page-footer {
+        text-align: center;
+        padding: 2rem 1rem;
+        color: var(--muted-text);
+        font-size: 0.875rem;
+        flex-shrink: 0;
+    }
+    
+    @media (max-width: 820px) {
+      .intro-features {
+        display: flex;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        padding-bottom: 1rem;
+        margin-left: -1.5rem;
+        margin-right: -1.5rem;
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+      }
+      .intro-features::-webkit-scrollbar { display: none; }
+      .feature-card {
+        flex: 0 0 80%;
+        scroll-snap-align: center;
+      }
+    }
+    @media (max-width: 768px) {
+      .wizard-modal { width: 100%; max-height: 100%; height: 100%; border-radius: 0; margin: 0; }
+      .wizard-content { padding: 1.5rem 1rem; }
+      .tiles-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+      .tile { padding: 1rem 0.75rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="intro-header">
+      <h1 class="intro-title">AI Use Case Explorer</h1>
+      <p class="intro-subtitle">Navigate a personalized journey to discover AI workflows tailored to your role, goals, and software.</p>
+      
+      <div class="intro-features">
+        <div class="feature-card">
+          <div class="feature-icon">🎯</div>
+          <h3>Personalized Results</h3>
+          <p>Get use cases tailored to your specific role and the tools you already use.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">⚡</div>
+          <h3>Quick Discovery</h3>
+          <p>Just a few selections to see your best workflows in under 2 minutes.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🛠️</div>
+          <h3>Actionable Examples</h3>
+          <p>See practical tasks and real examples, not generic descriptions.</p>
+        </div>
+      </div>
+
+      <div id="errorContainer"></div>
+      <button class="start-btn" id="startBtn">Begin Your Journey</button>
+    </header>
+  </div>
+
+  <main class="results-section" id="resultsSection">
+    <div class="results-header">
+      <h2 class="results-title">Your Selected Use Case</h2>
+      <p class="results-subtitle" id="resultsSubtitle"></p>
+      <button class="start-over-btn" id="startOverBtn">← Start Over</button>
+    </div>
+    <div id="resultCard"></div>
+  </main>
+  
+  <footer class="page-footer">
+      AI Use Case Explorer • Powered by Claude
+  </footer>
+
+  <div class="wizard-overlay" id="wizardOverlay">
+    <div class="wizard-modal">
+      <div class="wizard-header">
+        <h2 class="wizard-title">Find Your Perfect Workflow</h2>
+        <div class="wizard-progress">
+          <div class="progress-dot"></div>
+          <div class="progress-dot"></div>
+          <div class="progress-dot"></div>
+        </div>
+      </div>
+      
+      <div class="wizard-content">
+        <div class="step" id="step1">
+          <h3 class="step-title">What is your professional role?</h3>
+          <p class="step-subtitle">This helps us understand your primary responsibilities.</p>
+          <div class="tiles-grid" id="rolesTiles"></div>
+        </div>
+        
+        <div class="step" id="step2">
+          <h3 class="step-title">Which software will you use?</h3>
+          <p class="step-subtitle">Choose the tool where you'll apply this workflow.</p>
+          <div class="tiles-grid" id="softwareTiles"></div>
+        </div>
+        
+        <div class="step" id="step3">
+          <h3 class="step-title">Select your specific task</h3>
+          <p class="step-subtitle">Choose the exact workflow you want to learn.</p>
+          <div class="tiles-grid" id="taskTiles"></div>
+        </div>
+      </div>
+      
+      <div class="wizard-footer">
+        <button class="wizard-btn secondary" id="homeBtn">Home</button>
+        <div class="wizard-footer-buttons">
+            <button class="wizard-btn secondary" id="backBtn">← Back</button>
+            <button class="wizard-btn primary" id="nextBtn" disabled>Next</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  (function() {
+    const roleIcons = {
+      'developer': '👨‍💻', 'marketer': '📣', 'data_scientist': '📊', 'product_manager': '🎯', 
+      'sales_representative': '📈', 'hr_manager': '👥', 'legal_counsel': '⚖️', 
+      'uxui_designer': '🎨', 'finance_analyst': '💰', 'customer_support_agent': '🎧', 
+      'teachereducator': '🧑‍🏫', 'executive_assistant': '📎', 'it_administrator': '⚙️', 
+      'consultant': '💼', 'researcher': '🔬', 'operations_manager': '📦'
+    };
+
+    let data = null;
+    let currentStep = 1;
+    let selectedRole = '';
+    let selectedSoftware = '';
+    let selectedTask = null;
+
+    const startBtn = document.getElementById('startBtn');
+    const wizardOverlay = document.getElementById('wizardOverlay');
+    const backBtn = document.getElementById('backBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const homeBtn = document.getElementById('homeBtn');
+    const resultsSection = document.getElementById('resultsSection');
+    const introContainer = document.querySelector('.container');
+    const errorContainer = document.getElementById('errorContainer');
+
+    fetch('./master_data_final.json')
+      .then(response => {
+        if (!response.ok) throw new Error('Failed to load data');
+        return response.json();
+      })
+      .then(jsonData => {
+        data = jsonData;
+      })
+      .catch(error => {
+        errorContainer.innerHTML = `
+          <div class="error-alert">
+            <div class="error-title">⚠️ Unable to Load Data</div>
+            <p>This application must be viewed using a local web server.</p>
+            <p>Please use VS Code's <strong>Live Server</strong> extension or run <code>python -m http.server</code> in this directory.</p>
+            <br />
+            <p><strong>Note:</strong> The page loads data from <code>master_data_final.json</code>. Ensure this JSON file exists here and is accessible.</p>
+          </div>
+        `;
+        startBtn.disabled = true;
+        console.error('Error:', error);
+      });
+
+    function renderTiles(containerId, items, selectedValue, onSelect) {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+      container.innerHTML = items.map(item => `
+        <div class="tile ${selectedValue === item.id ? 'selected' : ''}" data-value="${item.id}">
+          <div class="tile-icon">${item.icon || '⭐'}</div>
+          <div class="tile-label">${item.label}</div>
+          ${item.hint ? `<div class="tile-hint">${item.hint}</div>` : ''}
+        </div>
+      `).join('');
+      
+      container.querySelectorAll('.tile').forEach(tile => {
+        tile.addEventListener('click', () => onSelect(tile.dataset.value));
+      });
+    }
+
+    function updateWizardState(step, selection) {
+      if (step === 1) {
+        selectedRole = selection;
+        selectedSoftware = '';
+        selectedTask = null;
+      } else if (step === 2) {
+        selectedSoftware = selection;
+        selectedTask = null;
+      } else if (step === 3) {
+        selectedTask = selection;
+      }
+
+      document.querySelectorAll(`#step${step} .tile`).forEach(t => t.classList.remove('selected'));
+      const selectedTile = document.querySelector(`#step${step} .tile[data-value="${selection}"]`);
+      if(selectedTile) selectedTile.classList.add('selected');
+      
+      nextBtn.disabled = false;
+    }
+    
+    function navigateToStep(stepNumber) {
+      currentStep = stepNumber;
+      document.querySelectorAll('.step').forEach(step => step.classList.remove('active'));
+      const activeStep = document.getElementById(`step${currentStep}`);
+      if(activeStep) activeStep.classList.add('active');
+
+      document.querySelectorAll('.progress-dot').forEach((dot, index) => {
+        dot.classList.toggle('active', index < currentStep);
+      });
+
+      backBtn.style.visibility = currentStep > 1 ? 'visible' : 'hidden';
+      nextBtn.textContent = currentStep === 3 ? 'Show Result' : 'Next';
+
+      if (currentStep === 2) populateSoftwareForRole(selectedRole);
+      else if (currentStep === 3) populateTasksForSoftware(selectedRole, selectedSoftware);
+      
+      const currentSelection = [selectedRole, selectedSoftware, selectedTask][currentStep - 1];
+      nextBtn.disabled = !currentSelection;
+    }
+
+    function populateRoles() {
+      if (!data || !data.roles) return;
+      const roles = data.roles.map(r => ({
+        id: r.roleId,
+        label: r.role,
+        icon: roleIcons[r.roleId] || '⭐',
+        hint: ''
+      }));
+      renderTiles('rolesTiles', roles, selectedRole, (value) => updateWizardState(1, value));
+    }
+
+    function populateSoftwareForRole(roleId) {
+      const roleObj = data.roles.find(r => r.roleId === roleId);
+      if (!roleObj) return;
+      
+      const softwareMap = new Map();
+      roleObj.goals.forEach(goal => {
+        if (goal.software) {
+          goal.software.forEach(sw => {
+            if (sw.tasks && sw.tasks.length > 0) {
+              softwareMap.set(sw.softwareId, sw.name);
+            }
+          });
+        }
+      });
+      
+      const software = Array.from(softwareMap.entries()).map(([id, name]) => ({
+        id: id,
+        label: name,
+        icon: '🛠️',
+        hint: ''
+      }));
+      
+      renderTiles('softwareTiles', software, selectedSoftware, (value) => updateWizardState(2, value));
+    }
+
+    function populateTasksForSoftware(roleId, softwareId) {
+      const roleObj = data.roles.find(r => r.roleId === roleId);
+      if (!roleObj) return;
+      
+      const uniqueTasks = new Map();
+      roleObj.goals.forEach(goal => {
+        if (goal.software) {
+          const softwareObj = goal.software.find(s => s.softwareId === softwareId);
+          if (softwareObj && softwareObj.tasks) {
+            softwareObj.tasks.forEach(task => {
+              if (!uniqueTasks.has(task.task)) {
+                uniqueTasks.set(task.task, {
+                  ...task,
+                  goalId: goal.goalId,
+                  goal: goal.goal
+                });
+              }
+            });
+          }
+        }
+      });
+      
+      const tasks = Array.from(uniqueTasks.values()).map(t => ({
+        id: t.taskId,
+        label: t.task,
+        icon: '✨',
+        hint: ''
+      }));
+      
+      renderTiles('taskTiles', tasks, selectedTask, (value) => updateWizardState(3, value));
+    }
+
+    function showResults() {
+      const roleObj = data.roles.find(r => r.roleId === selectedRole);
+      if (!roleObj) return;
+      
+      let task = null;
+      let goalObj = null;
+      let softwareObj = null;
+      
+      for (const goal of roleObj.goals) {
+        if (goal.software) {
+          for (const sw of goal.software) {
+            if (sw.softwareId === selectedSoftware && sw.tasks) {
+              const foundTask = sw.tasks.find(t => t.taskId === selectedTask);
+              if (foundTask) {
+                task = foundTask;
+                goalObj = goal;
+                softwareObj = sw;
+                break;
+              }
+            }
+          }
+          if (task) break;
+        }
+      }
+      
+      if (!task) return;
+
+      document.getElementById('resultsSubtitle').textContent = 
+        `${roleObj.role} • ${goalObj.goal} • ${softwareObj.name}`;
+
+      let html = `
+        <div class="result-card">
+          <div class="result-header">
+            <h3 class="result-title">${task.task}</h3>
+            <div class="result-meta">
+              ${task.mode ? `<span class="meta-badge badge-mode">${task.mode}</span>` : ''}
+              ${task.difficulty ? `<span class="meta-badge badge-difficulty">${task.difficulty}</span>` : ''}
+              ${task.estimatedTime ? `<span class="meta-badge badge-time">⏱️ ${task.estimatedTime}</span>` : ''}
+            </div>
+          </div>
+
+          <div class="result-section">
+            <h4 class="result-section-title">Description</h4>
+            <p class="result-desc">${task.description}</p>
+          </div>
+      `;
+
+      if (task.tags && task.tags.length > 0) {
+        html += `
+          <div class="result-section">
+            <h4 class="result-section-title">Tags</h4>
+            <div class="tags-container">
+              ${task.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      if (task.example) {
+        html += `<div class="result-section"><h4 class="result-section-title">Example Use Case</h4><div class="example-box">`;
+        if (task.example.scenario) {
+          html += `<div class="example-label">Scenario</div><p class="example-text">${task.example.scenario}</p>`;
+        }
+        if (task.example.userPrompt) {
+          html += `<div class="example-label">Example Prompt</div><div class="prompt-box">${task.example.userPrompt}</div>`;
+        }
+        html += `</div></div>`;
+      }
+
+      html += `</div>`;
+
+      document.getElementById('resultCard').innerHTML = html;
+      wizardOverlay.style.display = 'none';
+      introContainer.style.display = 'none';
+      resultsSection.style.display = 'block';
+      window.scrollTo(0, 0);
+    }
+    
+    function resetAndOpenWizard() {
+      resultsSection.style.display = 'none';
+      introContainer.style.display = 'block';
+      selectedRole = selectedSoftware = '';
+      selectedTask = null;
+      populateRoles();
+      navigateToStep(1);
+      wizardOverlay.style.display = 'flex';
+    }
+    
+    function goHome() {
+      wizardOverlay.style.display = 'none';
+      resultsSection.style.display = 'none';
+      introContainer.style.display = 'block';
+    }
+
+    startBtn.addEventListener('click', resetAndOpenWizard);
+    document.getElementById('startOverBtn').addEventListener('click', resetAndOpenWizard);
+    homeBtn.addEventListener('click', goHome);
+
+    nextBtn.addEventListener('click', () => {
+      if (currentStep < 3) {
+        navigateToStep(currentStep + 1);
+      } else {
+        showResults();
+      }
+    });
+
+    backBtn.addEventListener('click', () => {
+      if (currentStep > 1) navigateToStep(currentStep - 1);
+    });
+    
+    wizardOverlay.addEventListener('click', (e) => {
+      if (e.target === wizardOverlay) wizardOverlay.style.display = 'none';
+    });
+  })();
+  </script>
+</body>
+</html>
