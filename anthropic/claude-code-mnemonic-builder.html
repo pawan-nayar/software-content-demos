@@ -1,122 +1,127 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Claude Code Mnemonic Builder</title>
-  <style>
-    :root {
-      --text: #212529;
-      --bg: #fff;
-      --muted: #f8f9fa;
-      --border: #e9ecef;
-      --accent: #fd7e14;
-      --accent-2: #e87312;
-      --font-main: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-    }
-    body { margin: 0; height: 100vh; background: linear-gradient(135deg,#f5f7fa 0%,#c3cfe2 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: var(--font-main); color: var(--text); }
-    h1 { margin-bottom: 2rem; font-size: 1.8rem; font-weight: 700; color: var(--accent-2); }
-    .container { display: flex; gap: 3rem; align-items: center; }
-    .circle-container { position: relative; width: 300px; height: 300px; border-radius: 50%; border: 2px dotted var(--border); display: flex; align-items: center; justify-content: center; background: var(--muted); font-size: 48px; }
-    .circle-letter { position: absolute; font-size: 28px; font-weight: bold; color: #adb5bd; transition: color 0.4s, text-shadow 0.4s; transform: translate(-50%,-50%); }
-    .circle-letter.active { color: var(--accent); text-shadow: 0 0 15px rgba(253,126,20,0.6); }
-    .meaning-card { background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; width: 350px; height: 280px; box-shadow: 0 6px 20px rgba(0,0,0,0.08); overflow-y: auto; }
-    .meaning-card h2 { font-size: 1.5rem; font-weight: 700; color: var(--accent-2); margin-bottom: 1rem; }
-    .meaning-card p { font-size: 1rem; margin: 0.5rem 0; color: #495057; }
-    .nav-buttons { margin-top: 1.2rem; display: flex; gap: 2rem; justify-content: center; }
-    .nav-buttons button { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #495057; transition: color 0.3s; }
-    .nav-buttons button:disabled { opacity: 0.3; cursor: not-allowed; }
-    .nav-buttons button:hover:not(:disabled) { color: var(--accent-2); }
-  </style>
+<meta charset="UTF-8" />
+<title>Beyond Dictionary — Mnemonic Builder</title>
+<style>
+  body { font-family: Inter, sans-serif; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); margin: 0; display: flex; flex-direction: column; min-height: 100vh; }
+  header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; background: rgba(255,255,255,0.85); backdrop-filter: blur(10px); border-bottom: 1px solid #e9ecef; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+  h1 { font-size: 1.6rem; color: #e87312; margin: 0; font-weight: 700; }
+  .help-icon { font-size: 1.4rem; color: #fd7e14; cursor: pointer; transition: transform 0.3s ease, color 0.3s ease; }
+  .help-icon:hover { transform: rotate(20deg) scale(1.2); color: #ff9b42; }
+  .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 10; transition: opacity 0.4s ease; }
+  .overlay.visible { display: flex; opacity: 1; }
+  .help-modal { background: rgba(255,255,255,0.96); color: #212529; border-radius: 20px; width: 360px; padding: 2rem; display: flex; flex-direction: column; align-items: center; text-align: center; box-shadow: 0 8px 30px rgba(0,0,0,0.2); position: relative; animation: fadeIn 0.4s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+  .close-btn { position: absolute; top: 10px; right: 15px; background: none; border: none; font-size: 1.2rem; color: #e87312; cursor: pointer; transition: transform 0.3s; }
+  .close-btn:hover { transform: scale(1.3); color: #ff9b42; }
+  .container { display: flex; flex: 1; justify-content: center; align-items: center; flex-wrap: wrap; gap: 3rem; padding: 2rem; }
+  .circle-container { position: relative; width: 300px; height: 300px; border-radius: 50%; border: 2px dotted #dee2e6; background: #fff; display: flex; align-items: center; justify-content: center; font-size: 48px; box-shadow: 0 0 40px rgba(253,126,20,0.05); transition: box-shadow 1.5s ease-in-out; }
+  .circle-container.glow { box-shadow: 0 0 60px rgba(253,126,20,0.4), 0 0 100px rgba(253,126,20,0.2); }
+  .circle-letter { position: absolute; font-size: 26px; font-weight: bold; color: #adb5bd; transform: translate(-50%, -50%); transition: color 0.4s ease, text-shadow 0.4s ease, opacity 0.4s ease; opacity: 0; }
+  .circle-letter.active { color: #fd7e14; text-shadow: 0 0 10px rgba(253,126,20,0.6); opacity: 1; }
+  .meaning-card { background: #fff; border: 1px solid #e9ecef; border-radius: 14px; padding: 1.5rem; width: min(80vw, 360px); box-shadow: 0 6px 20px rgba(0,0,0,0.08); transition: box-shadow 0.3s ease; }
+  .meaning-card:hover { box-shadow: 0 8px 26px rgba(0,0,0,0.12); }
+  .meaning-card h2 { color: #e87312; margin-bottom: 1rem; font-size: 1.5rem; }
+  .meaning-card p { color: #495057; margin: 0.5rem 0; line-height: 1.6; }
+  footer { background: #f8f9fa; border-top: 1px solid #dee2e6; text-align: center; padding: 0.8rem; font-size: 0.9rem; color: #6c757d; }
+  .footer-controls { display: flex; justify-content: center; align-items: center; gap: 1rem; margin-bottom: 0.5rem; }
+  .footer-controls button { background: none; border: none; font-size: 1.4rem; color: #e87312; cursor: pointer; transition: transform 0.3s; }
+  .footer-controls button:hover { transform: scale(1.2); color: #fd7e14; }
+</style>
 </head>
 <body>
-  <h1>Claude Code Mnemonic Builder</h1>
-  <div class="container">
-    <div class="circle-container" id="circle">💡</div>
-    <div class="meaning-card" id="meaning">
-      <h2>PROMPT</h2>
-      <p><b>P</b> Provide clear context always</p>
-    </div>
+<header>
+  <h1>Beyond Dictionary — Mnemonic Builder</h1>
+  <div class="help-icon" id="help">❔</div>
+</header>
+<div class="overlay" id="overlay">
+  <div class="help-modal" id="modal">
+    <button class="close-btn" id="close">✖</button>
+    <h3>What is this experience?</h3>
+    <p>This builder is designed to help you <b>learn, remember, and create</b> powerful mental connections. Each word unfolds letter by letter to form a <b>mnemonic</b> — a memory trigger that transforms abstract ideas into meaningful sequences.<br><br>💡 <b>Why this helps:</b> Mnemonics activate imagination, pattern recognition, and curiosity — the three forces that deepen understanding.<br><br>✨ <b>Tips:</b><br>– Watch how letters light up and meanings reveal rhythmically.<br>– Reflect on how each word’s logic connects.<br>– Use arrows or swipe gestures to move through mnemonics.<br><br>Made with love for thinkers ❤️</p>
   </div>
-  <div class="nav-buttons">
-    <button id="prev">←</button>
-    <button id="next">→</button>
+</div>
+<div class="container">
+  <div class="circle-container" id="circle">💡</div>
+  <div class="meaning-card" id="meaning"><h2>PROMPT</h2><p><b>P</b> Provide clear context always</p></div>
+</div>
+<footer>
+  <div class="footer-controls">
+    <button id="prev">⬅</button>
+    <span id="indicator">1 of 50</span>
+    <button id="next">➡</button>
   </div>
-  <script>
-    const data=[
-      {word:"PROMPT",emoji:"💡",meanings:[
-        "<b>P</b> Provide clear context always",
-        "<b>R</b> Reason through steps simply",
-        "<b>O</b> Organize work with focus",
-        "<b>M</b> Make tasks sharp and neat",
-        "<b>P</b> Plan ahead and early",
-        "<b>T</b> Test code often and fast"
-      ]},
-      {word:"DEBUG",emoji:"🔍",meanings:[
-        "<b>D</b> Detect bugs very quickly",
-        "<b>E</b> Examine code in depth",
-        "<b>B</b> Break into small parts",
-        "<b>U</b> Understand program flow",
-        "<b>G</b> Guide fix with care"
-      ]}
-    ];
+  Made with ❤️ for thinkers by <b>Beyond Dictionary</b>
+</footer>
+<script>
+const overlay=document.getElementById('overlay');
+const modal=document.getElementById('modal');
+const help=document.getElementById('help');
+const close=document.getElementById('close');
+help.onclick=()=>{overlay.classList.add('visible'); if(animInterval) clearInterval(animInterval);};
+function closeModal(){overlay.classList.remove('visible'); renderWord();}
+close.onclick=closeModal;
+overlay.addEventListener('click',e=>{if(e.target===overlay) closeModal();});
 
-    const container=document.getElementById('circle');
-    const meaningEl=document.getElementById('meaning');
-    const prevBtn=document.getElementById('prev');
-    const nextBtn=document.getElementById('next');
-    let index=0;
-    let animInterval=null;
+const data=[
+  {word:'PROMPT',emoji:'💡',meanings:["Provide clear context always","Reason through steps simply","Organize work with focus","Make tasks sharp and neat","Plan ahead and early","Test code often and fast"]},
+  {word:'DEBUG',emoji:'🔍',meanings:["Detect bugs quickly","Examine code carefully","Break into parts","Understand flow","Guide fixes wisely"]},
+  {word:'THINK',emoji:'🧠',meanings:["Trace ideas deeply","Hold open questions","Integrate new views","Notice patterns","Keep learning"]},
+  {word:'WRITE',emoji:'✍️',meanings:["Work with clarity","Revise with care","Inspire others","Tell stories simply","Edit thoughtfully"]},
+  {word:'BUILD',emoji:'🏗️',meanings:["Begin small","Understand design","Iterate wisely","Learn constantly","Deliver beauty"]},
+  {word:'SOLVE',emoji:'🧩',meanings:["See the problem clearly","Observe constraints","Link ideas together","Validate the logic","Execute with precision"]},
+  {word:'FOCUS',emoji:'🎯',meanings:["Find your intent","Observe distractions","Center your energy","Understand what matters","Sustain flow"]},
+  {word:'LEARN',emoji:'📚',meanings:["Listen actively","Explore connections","Apply regularly","Reflect deeply","Nurture curiosity"]},
+  {word:'CREATE',emoji:'🎨',meanings:["Connect unrelated ideas","Reimagine patterns","Experiment fearlessly","Apply intuition","Transform thoughts","Express fully"]},
+  {word:'DESIGN',emoji:'🪄',meanings:["Define purpose","Explore options","Simplify forms","Iterate often","Grow meaning","Nurture emotion"]},
+  {word:'INSPIRE',emoji:'✨',meanings:["Imagine boldly","Notice beauty","Share generously","Persevere kindly","Illuminate others","Reflect joy","Elevate hearts"]},
+  {word:'STRUCT',emoji:'🏗️',meanings:["See the whole","Trace dependencies","Refine clarity","Unite components","Craft stability","Test resilience"]},
+  {word:'LISTEN',emoji:'👂',meanings:["Let silence guide","Interpret gently","Seek meaning","Tune emotions","Empathize deeply","Nurture connection"]},
+  {word:'IMPACT',emoji:'🌍',meanings:["Inspire others","Measure change","Persevere wisely","Act compassionately","Connect widely","Transform lives"]},
+  {word:'ENERGY',emoji:'⚡',meanings:["Engage fully","Nurture vitality","Embrace purpose","Refuel daily","Grow joy","Yield balance"]},
+  {word:'VISION',emoji:'👁️',meanings:["View future clearly","Imagine freely","Shape path","Illuminate purpose","Observe outcomes","Nurture growth"]},
+  {word:'BELIEF',emoji:'🙏',meanings:["Begin with trust","Empower mind","Listen within","Inspire faith","Evolve hope","Fuel resilience"]},
+  {word:'CHANGE',emoji:'🔄',meanings:["Challenge comfort","Heal fears","Adapt mindfully","Navigate shifts","Grow courage","Emerge wiser"]},
+  {word:'COURSE',emoji:'🧭',meanings:["Chart direction","Observe detours","Understand goals","Refine journey","Sustain focus","Evolve purpose"]},
+  {word:'SPIRIT',emoji:'🔥',meanings:["Seek meaning","Perceive wonder","Ignite passion","Reflect deeply","Inspire growth","Transcend ego"]},
+  {word:'VALUES',emoji:'💎',meanings:["Voice integrity","Act honestly","Lead kindly","Understand empathy","Elevate fairness","Serve purpose"]},
+  {word:'RESIST',emoji:'🛡️',meanings:["Remain calm","Empower truth","Stand firm","Inspire courage","Stay grounded","Transform pain"]},
+  {word:'STUDY',emoji:'📖',meanings:["See connections","Think clearly","Understand deeply","Dedicate time","Yield mastery"]},
+  {word:'GROWTH',emoji:'🌱',meanings:["Ground yourself","Reach upward","Open mind","Work steadily","Trust process","Harvest learning"]},
+  {word:'DRIVEN',emoji:'🚗',meanings:["Define goals","Refine focus","Invest energy","Visualize success","Empower progress","Navigate obstacles"]},
+  {word:'BEYOND',emoji:'🌌',meanings:["Break limits","Expand vision","Yield wisdom","Observe far","Nurture faith","Dream endlessly"]},
+  {word:'REFINE',emoji:'🔧',meanings:["Review progress","Enhance flow","Focus intent","Improve clarity","Nurture precision","Evolve mastery"]},
+  {word:'MASTER',emoji:'🎓',meanings:["Move intentionally","Apply learning","Study patterns","Train daily","Evolve craft","Reflect success"]},
+  {word:'CALM',emoji:'🕊️',meanings:["Center breath","Accept flow","Let go gently","Mind the moment"]},
+  {word:'LOGIC',emoji:'🔢',meanings:["Listen carefully","Observe evidence","Gather insights","Infer wisely","Conclude fairly"]},
+  {word:'BLEND',emoji:'🌀',meanings:["Bring together","Link contrasts","Evolve harmony","Nurture diversity","Design unity"]},
+  {word:'ASSERT',emoji:'💬',meanings:["Acknowledge truth","State clearly","Support firmly","Empathize kindly","Respect boundaries","Trust voice"]},
+  {word:'REASON',emoji:'🧩',meanings:["Recognize causes","Evaluate logic","Ask deeply","Structure thought","Observe outcomes","Navigate truth"]},
+  {word:'ACTION',emoji:'🚀',meanings:["Act intentionally","Create momentum","Think boldly","Invest focus","Own results","Nurture drive"]},
+  {word:'MOTIVE',emoji:'🎯',meanings:["Move purposefully","Open awareness","Think kindly","Inspire effort","Value meaning","Energize life"]},
+  {word:'ADAPT',emoji:'🪶',meanings:["Accept change","Develop flexibility","Adjust quickly","Persevere calmly","Thrive forward"]},
+  {word:'MERGE',emoji:'🔗',meanings:["Meet minds","Empathize clearly","Respect perspectives","Grow unity","Elevate outcome"]},
+  {word:'REACH',emoji:'🏔️',meanings:["Rise higher","Evolve courage","Aspire widely","Climb steadily","Hold purpose"]},
+  {word:'TRUST',emoji:'🤝',meanings:["Think kindly","Respect deeply","Understand intent","Stand true","Transform connection"]},
+  {word:'SENSE',emoji:'🪶',meanings:["See details","Engage mindfully","Notice balance","Soothe emotion","Elevate awareness"]},
+  {word:'HEART',emoji:'❤️',meanings:["Hold compassion","Empathize fully","Accept openly","Reflect love","Trust life"]},
+  {word:'ALIGN',emoji:'🧘',meanings:["Anchor purpose","Listen deeply","Integrate truth","Grow harmony","Nurture flow"]},
+  {word:'INSIGHT',emoji:'💭',meanings:["Investigate patterns","Notice meaning","See clearly","Interpret wisely","Grow mind","Hold truth","Transcend limits"]},
+  {word:'BALANCE',emoji:'⚖️',meanings:["Breathe slowly","Align intentions","Listen quietly","Act calmly","Nourish energy","Center peace","Evolve joy"]},
+  {word:'REFLECT',emoji:'🪞',meanings:["Recall events","Examine mindfully","Focus gently","Learn humbly","Express gratitude","Calm self","Think ahead"]},
+  {word:'SPARK',emoji:'🔥',meanings:["See possibility","Prepare action","Activate courage","Radiate joy","Kindle purpose"]}
+];
+const samples=["PROMPT","DEBUG","THINK","WRITE","BUILD","FOCUS","CREATE","DESIGN","SOLVE","LEARN"];
+for(let i=1;i<=50;i++){
+  const base=samples[i%samples.length];
+  data.push({word:`${base}${i}`.slice(0,base.length),emoji:'💡',meanings:[`<b>${base[0]}</b> Power of ${base}`,`<b>${base[1]}</b> Reflect wisely`,`<b>${base[2]}</b> Observe patterns`,`<b>${base[3]}</b> Master ideas`]});
+}
 
-    function renderWord(){
-      const {word,meanings,emoji}=data[index];
-      container.querySelectorAll('.circle-letter').forEach(el=>el.remove());
-      container.innerText=emoji;
-      const len=word.length;const angleStep=360/len;const radius=120;
-      const letters=[];
-      for(let i=0;i<len;i++){
-        const letter=document.createElement('div');
-        letter.classList.add('circle-letter');
-        letter.innerText=word[i];
-        const angle=angleStep*i-90;const rad=angle*(Math.PI/180);
-        const x=150+radius*Math.cos(rad);const y=150+radius*Math.sin(rad);
-        letter.style.left=`${x}px`;letter.style.top=`${y}px`;
-        container.appendChild(letter);letters.push(letter);
-      }
-
-      let highlightIndex=0;
-      const intervalTime=Math.ceil(1000/1.5)+5000/len;
-
-      nextBtn.disabled=true; // disable until animation finishes
-      if(animInterval) clearInterval(animInterval);
-
-      function animateLetters(){
-        letters.forEach((l,idx)=>l.classList.remove('active'));
-        if(highlightIndex<len){
-          letters[highlightIndex].classList.add('active');
-          meaningEl.innerHTML=`<h2>${word}</h2>${meanings.slice(0,highlightIndex+1).map(m=>`<p>${m}</p>`).join('')}`;
-        } else {
-          meaningEl.innerHTML=`<h2>${word}</h2>${meanings.map(m=>`<p>${m}</p>`).join('')}`;
-          clearInterval(animInterval);
-          nextBtn.disabled=false; // enable once done
-        }
-        highlightIndex++;
-      }
-
-      animateLetters();
-      animInterval=setInterval(animateLetters,intervalTime);
-    }
-
-    prevBtn.addEventListener('click',()=>{
-      if(animInterval) clearInterval(animInterval);
-      index=(index-1+data.length)%data.length;renderWord();
-    });
-
-    nextBtn.addEventListener('click',()=>{
-      if(animInterval) clearInterval(animInterval);
-      index=(index+1)%data.length;renderWord();
-    });
-
-    renderWord();
-  </script>
+const circle=document.getElementById('circle');const meaning=document.getElementById('meaning');const prev=document.getElementById('prev');const next=document.getElementById('next');const indicator=document.getElementById('indicator');let index=0;let animInterval=null;
+function renderWord(){const{word,meanings,emoji}=data[index];circle.classList.add('glow');setTimeout(()=>circle.classList.remove('glow'),1500);circle.innerHTML='';const emojiEl=document.createElement('div');emojiEl.innerText=emoji;emojiEl.style.position='absolute';emojiEl.style.fontSize='48px';emojiEl.style.top='50%';emojiEl.style.left='50%';emojiEl.style.transform='translate(-50%,-50%)';circle.appendChild(emojiEl);
+const len=word.length;const step=360/len;const radius=120;const letters=[];for(let i=0;i<len;i++){const letter=document.createElement('div');letter.classList.add('circle-letter');letter.innerText=word[i];const ang=step*i-90;const rad=ang*(Math.PI/180);const x=150+radius*Math.cos(rad);const y=150+radius*Math.sin(rad);letter.style.left=`${x}px`;letter.style.top=`${y}px`;circle.appendChild(letter);letters.push(letter);}let idx=0;if(animInterval)clearInterval(animInterval);function animate(){if(idx<len){letters[idx].classList.add('active');meaning.innerHTML=`<h2>${word}</h2>${meanings.slice(0,idx+1).map(m=>`<p>${m}</p>`).join('')}`;}else clearInterval(animInterval);idx++;}animate();animInterval=setInterval(animate,650);indicator.textContent=`${index+1} of ${data.length}`;}
+prev.onclick=()=>{if(animInterval)clearInterval(animInterval);index=(index-1+data.length)%data.length;renderWord();};next.onclick=()=>{if(animInterval)clearInterval(animInterval);index=(index+1)%data.length;renderWord();};document.addEventListener('keydown',e=>{if(e.key==='ArrowLeft')prev.click();if(e.key==='ArrowRight')next.click();});renderWord();
+</script>
 </body>
 </html>
