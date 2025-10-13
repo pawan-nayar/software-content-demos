@@ -1,0 +1,2209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Markdown Mastery: The Complete Guide</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --text:#212529; --bg:#fff; --muted:#f8f9fa; --border:#e9ecef;
+      --accent:#fd7e14; --accent-2:#e87312; --header-bg:#212529; --header-fg:#f8f9fa;
+      --ok:#16a34a; --ok-soft:#dcfce7; --bad:#dc2626; --bad-soft:#fee2e2;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;}
+    .container{max-width:800px;margin:auto;padding:24px;background:#fff}
+    a{color:var(--accent);text-decoration:none}
+    a:hover{text-decoration:underline}
+    .site-header,.site-footer{background:var(--header-bg);color:var(--header-fg);padding:14px 24px}
+    .site-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;position:sticky;top:0;z-index:100}
+    .logo{font-weight:700;font-size:1.15rem;color:#fff}
+    .site-header nav{display:flex;gap:14px}
+    .site-header nav a{color:#ced4da}
+    .site-header nav a:hover{color:#fff}
+    .site-footer{text-align:center;margin-top:50px;padding:40px}
+    .breadcrumbs{margin-bottom:24px;font-size:0.9rem;color:#6c757d}
+    .breadcrumbs a{color:var(--accent)}
+    h1{font-size:clamp(2rem,5vw,2.6rem);text-align:left;margin-bottom:8px;color:var(--text);line-height:1.2}
+    .byline{font-size:clamp(1rem,3vw,1.2rem);font-style:italic;color:#6c757d;margin-bottom:24px}
+    h2{font-size:clamp(1.5rem,4vw,2rem);color:var(--text);margin:48px 0 16px;border-bottom:2px solid var(--border);padding-bottom:8px}
+    h3{font-size:clamp(1.2rem,3vw,1.5rem);color:var(--text);margin-top:32px;margin-bottom:12px}
+    h4{font-size:clamp(1rem,2.5vw,1.2rem);font-weight:bold;color:var(--accent-2);margin-bottom:10px}
+    p{margin-bottom:16px;word-wrap:break-word}
+    ul{margin-left:24px;margin-bottom:24px;list-style-type:'🔹';padding-left:1em}
+    li{margin-bottom:12px;padding-left:0.5em}
+    .article-meta{display:flex;align-items:center;gap:12px;color:#6c757d;margin-bottom:32px;font-size:0.9rem}
+    .author-emoji{font-size:32px;line-height:1}
+    .intro{font-size:1.05rem;line-height:1.7;background:var(--muted);padding:18px;border-radius:12px;border-left:4px solid var(--accent);margin:24px 0}
+    .img-frame{position:relative;width:100%;padding-top:50%;overflow:hidden;border-radius:12px;margin:16px 0 24px;box-shadow:0 4px 15px rgba(0,0,0,0.1)}
+    .img-frame img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover}
+    .btn{background:var(--accent);color:#fff;border:none;padding:8px 12px;border-radius:8px;font-weight:600;cursor:pointer;transition:background-color 0.2s ease;font-size:0.9rem;}
+    .btn:hover{background-color:var(--accent-2);}
+    .btn:disabled{opacity:0.5;cursor:not-allowed;}
+    .interactive-box{background:#f8f9fa;border:1px solid var(--border);border-radius:12px;padding:24px;margin:24px 0}
+    .table-wrap{position:relative;border:1px solid var(--border);border-radius:12px;background:#fff;margin:24px 0}
+    .table-scroll{position:relative;overflow-x:auto}
+    table.data-table{width:100%;border-collapse:collapse;}
+    table.data-table th,table.data-table td{padding:12px 15px;border:1px solid var(--border);text-align:left;vertical-align:top;}
+    table.data-table thead th{background:var(--muted);font-weight:600;}
+    table.data-table tbody tr:nth-child(even){background:#f8f9fa;}
+    .accordion{display:grid;gap:8px}
+    .accordion-header{width:100%;text-align:left;background:var(--muted);border:1px solid var(--border);padding:12px 16px;border-radius:8px;cursor:pointer;font-size:1rem;font-weight:600;display:flex;align-items:center}
+    .accordion-header .accordion-title{margin-right:auto;padding-right:1rem;}
+    .accordion-header::after{content:'+';color:#6c757d}
+    .accordion-header[aria-expanded="true"]{background:#e9ecef;border-bottom-left-radius:0;border-bottom-right-radius:0}
+    .accordion-header[aria-expanded="true"]::after{content:'−'}
+    .accordion-content{padding:20px;display:none;border:1px solid var(--border);border-top:none;border-radius:0 0 8px 8px}
+    .code-wrapper{margin:16px 0;}
+    pre{margin:0;}
+    .code-block{background:#2d2d2d;color:#f8f8f2;font-family:'Courier New',Courier,monospace;padding:1.2em;border-radius:8px;overflow-x:auto;font-size:0.95rem;}
+    .code-output{background:#f0f0f0;border:1px solid #e0e0e0;padding:1em;border-radius:8px;margin-top:8px;font-family:'Courier New',Courier,monospace;color:#495057;white-space:pre-wrap;}
+    .code-output strong{color:#212529;}
+    .carousel-container{perspective:1000px;position:relative;padding:0 50px;}
+    .flip-card{width:100%;height:350px;background-color:transparent;display:none;}
+    .flip-card.active{display:block;}
+    .flip-card-inner{position:relative;width:100%;height:100%;text-align:center;transition:transform 0.6s;transform-style:preserve-3d;cursor:pointer;border:1px solid var(--border);border-radius:12px;}
+    .flip-card.flipped .flip-card-inner{transform:rotateY(180deg);}
+    .flip-card-front, .flip-card-back{position:absolute;width:100%;height:100%;backface-visibility:hidden;display:flex;flex-direction:column;justify-content:center;padding:20px;border-radius:12px;}
+    .flip-card-front{background-color:#fff;color:var(--text);}
+    .flip-card-back{background-color:#2d2d2d;color:white;transform:rotateY(180deg);text-align:left;}
+    .flip-card-front h4{border-bottom:2px solid var(--accent);padding-bottom:10px;margin-bottom:15px;}
+    .flip-card-front p{font-size:0.95rem;}
+    .flip-card-front strong{color:var(--accent-2);}
+    .carousel-nav{position:absolute;top:50%;transform:translateY(-50%);background-color:var(--accent);color:white;border:none;border-radius:50%;width:40px;height:40px;font-size:24px;cursor:pointer;z-index:10;display:flex;align-items:center;justify-content:center;}
+    .carousel-nav:hover{background-color:var(--accent-2);}
+    #carousel-prev{left:0;}
+    #carousel-next{right:0;}
+    .carousel-footer{text-align:center;margin-top:15px;}
+    #carousel-counter{font-weight:600;color:#6c757d;margin-bottom:10px;}
+    #carousel-copy-btn{background:#6c757d;color:white;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:0.85rem;font-weight:600;transition:background-color 0.2s ease;display:inline-flex;align-items:center;gap:4px;}
+    #carousel-copy-btn:hover{background:#495057;}
+    .role-carousel{position:relative;padding:0 50px;margin:24px 0;}
+    .role-slide{display:none;padding:24px;background:#fff;border:2px solid var(--accent);border-radius:12px;min-height:200px;}
+    .role-slide.active{display:block;}
+    .role-emoji{font-size:36px;text-align:center;margin-bottom:12px;}
+    .role-title{font-size:1.2rem;font-weight:bold;color:var(--accent-2);text-align:center;margin-bottom:10px;}
+    .role-description{font-size:0.95rem;line-height:1.5;}
+    .role-nav{position:absolute;top:50%;transform:translateY(-50%);background-color:var(--accent);color:white;border:none;border-radius:50%;width:40px;height:40px;font-size:24px;cursor:pointer;z-index:10;display:flex;align-items:center;justify-content:center;}
+    .role-nav:hover{background-color:var(--accent-2);}
+    #role-prev{left:0;}
+    #role-next{right:0;}
+    .role-counter{text-align:center;margin-top:15px;font-weight:600;color:#6c757d;}
+    .quiz-container{padding:20px;border:2px solid var(--border);border-radius:12px;background:#fff}
+    .quiz-navigation{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border)}
+    .quiz-body{display:none;}.quiz-body.active{display:block}
+    .quiz-options{display:grid;gap:12px;}
+    .quiz-option label{display:flex;align-items:center;gap:12px;padding:14px;border:2px solid var(--border);border-radius:8px;cursor:pointer;background:#f8f9fa}
+    .quiz-option input[type="radio"]{flex-shrink:0;}
+    .quiz-option .explanation{display:none;margin-top:10px;padding:15px;border-radius:6px;border-left:4px solid #a0aec0}
+    .quiz-option.selected.correct label{background:var(--ok-soft);border-color:var(--ok)}
+    .quiz-option.selected.wrong label{background:var(--bad-soft);border-color:var(--bad)}
+    .quiz-option.correct .explanation{border-left-color:var(--ok);background:#f0fff4}
+    .quiz-option.wrong .explanation{border-left-color:var(--bad);background:#fff5f5}
+    .matching-container{padding:20px;border:2px solid var(--border);border-radius:12px;background:#fff;margin:24px 0;}
+    .matching-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:20px 0;}
+    .matching-column h4{text-align:center;margin-bottom:16px;color:var(--accent-2);}
+    .matching-item{padding:14px;border:2px solid var(--border);border-radius:8px;background:#f8f9fa;cursor:pointer;transition:all 0.2s ease;text-align:center;}
+    .matching-item:hover{background:#e9ecef;}
+    .matching-item.selected{background:#fff7ed;border-color:var(--accent);}
+    .matching-item.correct{background:var(--ok-soft);border-color:var(--ok);}
+    .matching-item.wrong{background:var(--bad-soft);border-color:var(--bad);}
+    .matching-feedback{text-align:center;margin-top:20px;font-weight:bold;min-height:24px;}
+    .matching-reset{display:block;margin:20px auto 0;}
+    .glossary-cloud{display:flex;flex-wrap:wrap;gap:8px;margin-top:24px;justify-content:center}
+    .glossary-chip{position:relative;display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:999px;background:#fff7ed;border:1px solid #ffd8a8;color:#d9480f;font-weight:600;cursor:pointer;box-shadow:0 2px 6px rgba(253,126,20,.12)}
+    .glossary-chip:hover,.glossary-chip:focus{background:#ffecde;}
+    .chip-tip{position:fixed;z-index:101;min-width:240px;max-width:min(92vw,420px);background:var(--accent);color:#fff;padding:12px 14px;border-radius:12px;box-shadow:0 12px 28px rgba(253,126,20,.35);opacity:0;visibility:hidden;transition:.15s;line-height:1.45}
+    .chip-tip.show{opacity:1;visibility:visible}
+    .chip-tip .arrow{position:absolute;width:12px;height:12px;background:var(--accent);transform:rotate(45deg)}
+    .placeholder-section{min-height:100px;padding:40px;background:#fff7ed;border:2px dashed var(--accent);border-radius:12px;text-align:center;margin:48px 0;}
+    .placeholder-section h2{color:var(--accent);border:none;margin:0 0 16px 0;}
+    .placeholder-section p{font-size:1rem;color:#6c757d;margin:0;}
+  </style>
+</head>
+<body>
+  <header class="site-header">
+      <a href="#" class="logo">Beyond Dictionary</a>
+      <nav><a href="#">What's New</a><a href="#">Learning</a><a href="#">Resources</a><a href="#">Blog</a></nav>
+  </header>
+
+  <div class="container">
+    <nav class="breadcrumbs"><a href="#">Documentation</a> &gt; <a href="#">Writing</a> &gt; <a href="#">Markdown</a> &gt; Complete Guide</nav>
+    <h1>Markdown Mastery</h1>
+    <p class="byline">From Zero to Hero: Master the Language of Modern Documentation</p>
+    <div class="article-meta"><span class="author-emoji">📝</span><span>Documentation Expert &nbsp; | &nbsp; Updated October 2025</span></div>
+    <p class="intro">Welcome to the world of Markdown! In the next hour, you will discover why millions of writers, developers, and creators have abandoned complex word processors for this beautifully simple markup language. Markdown is not just another tool. It is a philosophy. Write once, publish anywhere. No vendor lock-in. No formatting nightmares. Just pure, portable content that works everywhere from GitHub to Gmail, Notion to Reddit. This is your complete guide to mastering Markdown.</p>
+    <div class="img-frame"><img src="https://images.unsplash.com/photo-1499750310107-5fef28a66643?q=80&w=1470&auto=format&fit=crop" alt="Laptop showing markdown" onerror="this.onerror=null;this.src='https://placehold.co/1470x735/212529/FFFFFF?text=Markdown';"></div>
+    
+    <section id="intro">
+        <h2>Part 1: DISCOVER - What is Markdown?</h2>
+        <p>Markdown is a lightweight markup language created by John Gruber in 2004. It allows you to write using plain text with simple formatting syntax that can be converted to HTML and many other formats.</p>
+        
+        <h3>Opening Animation: Plain to Powerful</h3>
+        <p>Watch the magic happen. As you type simple characters on the left, they transform into beautiful formatted content on the right. This is Markdown superpower. What you type is what you mean, and what you mean becomes what readers see.</p>
+        <div class="interactive-box">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;">
+                <div style="background:#2d2d2d;color:#fff;padding:20px;border-radius:8px;font-family:monospace;">
+                    <div style="color:#888;margin-bottom:10px;font-size:0.9rem;">What You Type:</div>
+                    <pre id="anim-source" style="margin:0;white-space:pre-wrap;line-height:1.6;">Loading...</pre>
+                </div>
+                <div style="background:#fff;padding:20px;border-radius:8px;border:1px solid var(--border);">
+                    <div style="color:#888;margin-bottom:10px;font-size:0.9rem;">What Readers See:</div>
+                    <div id="anim-preview" style="line-height:1.6;">Loading...</div>
+                </div>
+            </div>
+            <div style="text-align:center;">
+                <button class="btn" id="anim-prev">← Previous</button>
+                <span id="anim-counter" style="margin:0 20px;font-weight:600;color:#6c757d;">Step 1 of 8</span>
+                <button class="btn" id="anim-next">Next →</button>
+            </div>
+            <div id="anim-narration" style="margin-top:20px;padding:15px;background:var(--muted);border-radius:8px;font-style:italic;text-align:center;">Loading...</div>
+        </div>
+        
+        <h4>The Core Philosophy</h4>
+        <p>Markdown was designed with one primary goal: readability. Even without being converted to HTML, Markdown documents should be readable as plain text. The formatting syntax is intuitive and does not get in the way of the content.</p>
+        <ul>
+            <li><strong>Plain Text Foundation:</strong> Everything is just text. No hidden formatting codes, no proprietary file formats.</li>
+            <li><strong>Human-Readable Syntax:</strong> The markup looks natural. Double asterisks for bold looks like it should be bold, even before rendering.</li>
+            <li><strong>Universal Compatibility:</strong> Works everywhere from GitHub to Slack, Discord to WordPress.</li>
+            <li><strong>Future-Proof:</strong> Plain text files will be readable decades from now, long after today word processors are obsolete.</li>
+            <li><strong>Focus on Writing:</strong> No time wasted clicking toolbar buttons. Your hands stay on the keyboard.</li>
+        </ul>
+    </section>
+
+    <section id="commands">
+        <h2>Markdown Commands Reference</h2>
+        <p>Need to find a specific syntax quickly? Use the search box below to filter commands by keyword. Type heading, bold, link, code, or any term you are looking for.</p>
+        <div class="interactive-box">
+            <input type="text" id="cmd-filter" placeholder="🔍 Type: heading, bold, link, code..." style="width:100%;padding:12px;border:1px solid var(--border);border-radius:8px;font-size:1rem;margin-bottom:20px;">
+            <div class="accordion" id="commands-accordion"></div>
+        </div>
+    </section>
+
+    <section id="flipcards">
+        <h2>Flip-Card Deck A: The 15 Essential Patterns</h2>
+        <p>Every Markdown document uses these fifteen patterns. Each card shows you why you would use something, then how to write it. Click any card to flip and see the syntax. Use arrows to navigate. Take your time. Nothing is timed, nothing is graded.</p>
+        <div class="interactive-box">
+            <div class="carousel-container">
+                <button id="carousel-prev" class="carousel-nav">‹</button>
+                <div id="carousel-deck"></div>
+                <button id="carousel-next" class="carousel-nav">›</button>
+            </div>
+            <div class="carousel-footer">
+                <div id="carousel-counter">Pattern 1 of 15</div>
+                <button id="carousel-copy-btn"><span>📋</span> Copy Syntax</button>
+            </div>
+        </div>
+    </section>
+
+    <section id="roles">
+        <h2>Who Uses Markdown? Role Carousel</h2>
+        <p>Markdown is not just for programmers. Writers use it to escape formatting hell. Educators use it to focus on teaching, not typography. Product managers use it to think portably. Let us see who else uses Markdown and why it matters to them.</p>
+        <div class="interactive-box">
+            <div class="role-carousel">
+                <button id="role-prev" class="role-nav">‹</button>
+                <div id="role-deck"></div>
+                <button id="role-next" class="role-nav">›</button>
+            </div>
+            <div class="role-counter" id="role-counter">Role 1 of 6</div>
+        </div>
+    </section>
+
+    <section id="advantages">
+        <h2>15 Advantages: Why Choose Markdown?</h2>
+        <p>Why does Markdown exist? What problem does it solve? Here are 15 reasons people choose Markdown from works everywhere to survives decades. Click any advantage to see what it means in practice.</p>
+        <div class="accordion" id="advantages-accordion"></div>
+    </section>
+
+    <section id="whennot">
+        <h2>When NOT to Use Markdown</h2>
+        <p>Markdown is powerful, but it is not magic. There are times when it is the wrong tool. Knowing when not to use Markdown is just as important as knowing when to use it. Let us set clear boundaries.</p>
+        <div class="accordion" id="whennot-accordion"></div>
+    </section>
+
+    <section id="svg">
+        <h2>SVG Comparison: See the Mapping</h2>
+        <p>Understanding how Markdown becomes HTML helps you think in patterns. Hover over any Markdown syntax on the left to see its corresponding HTML tag highlighted on the right.</p>
+        <div class="interactive-box">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+                <div>
+                    <h4 style="text-align:center;margin-bottom:15px;color:var(--accent-2);">Markdown Source</h4>
+                    <div style="background:#2d2d2d;color:#fff;padding:20px;border-radius:8px;font-family:monospace;font-size:0.95rem;line-height:1.8;">
+                        <div class="svg-item" data-target="h1"># Heading</div>
+                        <div class="svg-item" data-target="bold">**bold**</div>
+                        <div class="svg-item" data-target="italic">*italic*</div>
+                        <div class="svg-item" data-target="link">[link](url)</div>
+                        <div class="svg-item" data-target="code">`code`</div>
+                        <div class="svg-item" data-target="quote">&gt; quote</div>
+                    </div>
+                </div>
+                <div>
+                    <h4 style="text-align:center;margin-bottom:15px;color:var(--accent-2);">HTML Output</h4>
+                    <div style="background:#fff;padding:20px;border-radius:8px;border:1px solid var(--border);font-family:monospace;font-size:0.95rem;line-height:1.8;">
+                        <div id="h1" class="svg-target">&lt;h1&gt;Heading&lt;/h1&gt;</div>
+                        <div id="bold" class="svg-target">&lt;strong&gt;bold&lt;/strong&gt;</div>
+                        <div id="italic" class="svg-target">&lt;em&gt;italic&lt;/em&gt;</div>
+                        <div id="link" class="svg-target">&lt;a&gt;link&lt;/a&gt;</div>
+                        <div id="code" class="svg-target">&lt;code&gt;code&lt;/code&gt;</div>
+                        <div id="quote" class="svg-target">&lt;blockquote&gt;quote&lt;/blockquote&gt;</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="quiz">
+        <h2>Test Your Knowledge: Markdown Fundamentals Quiz</h2>
+        <p>Time to test your understanding. Not for a grade, just to see what is sticking. Eight questions covering everything we have learned so far. If you get stuck, that is useful information. It tells you what to review.</p>
+        <div class="quiz-container">
+            <div class="quiz-navigation">
+                <button class="btn" id="qPrev">←</button>
+                <span class="question-counter"><span id="qCur">1</span> of <span id="qTotal">8</span></span>
+                <button class="btn" id="qNext">→</button>
+            </div>
+            <div id="quiz-body"></div>
+        </div>
+    </section>
+
+    <section id="matching">
+        <h2>Matching Exercise: Syntax to Purpose</h2>
+        <p>Match the Markdown syntax to its purpose. Click items from the left column, then click the matching item from the right column. Get all four pairs correct!</p>
+        <div class="matching-container">
+            <div class="matching-grid">
+                <div class="matching-column">
+                    <h4>Markdown Syntax</h4>
+                    <div class="matching-item" data-id="1" data-pair="A">**text**</div>
+                    <div class="matching-item" data-id="2" data-pair="B"># text</div>
+                    <div class="matching-item" data-id="3" data-pair="C">[text](url)</div>
+                    <div class="matching-item" data-id="4" data-pair="D">&gt; text</div>
+                </div>
+                <div class="matching-column">
+                    <h4>Purpose</h4>
+                    <div class="matching-item" data-id="A" data-pair="1">Make text bold</div>
+                    <div class="matching-item" data-id="B" data-pair="2">Create a heading</div>
+                    <div class="matching-item" data-id="C" data-pair="3">Add a link</div>
+                    <div class="matching-item" data-id="D" data-pair="4">Quote someone</div>
+                </div>
+            </div>
+            <div class="matching-feedback" id="match-feedback"></div>
+            <button class="btn matching-reset" id="match-reset">Reset</button>
+        </div>
+    </section>
+
+    <section id="glossary">
+      <h2>Master These Terms: Interactive Glossary</h2>
+      <p class="intro">Hover to learn.</p>
+      <div class="glossary-cloud" id="glossary"></div>
+    </section>
+
+<!-- ============================================ -->
+<!-- PART 2: BUILD - Your First Document -->
+<!-- MERGE THIS INTO MAIN FILE -->
+<!-- Replace the Part 2 placeholder section -->
+<!-- ============================================ -->
+
+<section id="part2-intro">
+    <h2>Part 2: BUILD - Your First Document</h2>
+    <p class="intro">You know the syntax. Now let us build something real. In this section, you will create an actual Markdown document from scratch, experiment in a live editor, learn professional best practices, avoid common mistakes, and test your skills with hands-on exercises. This is where theory becomes practice.</p>
+</section>
+
+<section id="wizard">
+    <h2>Guided Project Wizard: Build Your First Document</h2>
+    <p>Let us build your first real Markdown document together. I will guide you through 10 steps, and by the end, you will have a complete, properly formatted document. You cannot break anything. This is your playground.</p>
+    <div class="interactive-box">
+        <div style="margin-bottom:20px;text-align:center;">
+            <div style="display:flex;justify-content:center;gap:8px;margin-bottom:12px;">
+                <span class="wizard-dot" data-step="0">●</span>
+                <span class="wizard-dot" data-step="1">●</span>
+                <span class="wizard-dot" data-step="2">●</span>
+                <span class="wizard-dot" data-step="3">●</span>
+                <span class="wizard-dot" data-step="4">●</span>
+                <span class="wizard-dot" data-step="5">●</span>
+                <span class="wizard-dot" data-step="6">●</span>
+                <span class="wizard-dot" data-step="7">●</span>
+                <span class="wizard-dot" data-step="8">●</span>
+                <span class="wizard-dot" data-step="9">●</span>
+            </div>
+            <div id="wizard-progress" style="font-weight:600;color:#6c757d;margin-bottom:20px;">Step 1 of 10</div>
+        </div>
+        <div id="wizard-instruction" style="background:#fff;padding:20px;border-radius:8px;border:1px solid var(--border);margin-bottom:20px;min-height:80px;">
+            Loading instruction...
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;">
+            <div>
+                <div style="font-weight:600;margin-bottom:8px;color:var(--accent-2);">Your Markdown:</div>
+                <textarea id="wizard-input" style="width:100%;height:200px;padding:12px;font-family:monospace;border:1px solid var(--border);border-radius:8px;resize:vertical;"></textarea>
+            </div>
+            <div>
+                <div style="font-weight:600;margin-bottom:8px;color:var(--accent-2);">Live Preview:</div>
+                <div id="wizard-preview" style="background:#fff;border:1px solid var(--border);border-radius:8px;padding:12px;min-height:200px;"></div>
+            </div>
+        </div>
+        <details style="margin-bottom:20px;">
+            <summary style="cursor:pointer;padding:10px;background:var(--muted);border-radius:6px;font-weight:600;">💡 Need a hint?</summary>
+            <div id="wizard-hint" style="padding:15px;background:#fff;border:1px solid var(--border);border-radius:0 0 6px 6px;margin-top:-1px;">Hint will appear here</div>
+        </details>
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+            <button class="btn" id="wizard-prev">← Back</button>
+            <button class="btn" id="wizard-skip" style="background:#6c757d;">Skip Step</button>
+            <button class="btn" id="wizard-next">Next →</button>
+        </div>
+        <div id="wizard-complete" style="display:none;text-align:center;padding:40px;">
+            <div style="font-size:3rem;margin-bottom:20px;">🎉</div>
+            <h3 style="color:var(--ok);margin-bottom:16px;">Congratulations!</h3>
+            <p style="margin-bottom:20px;">You have created your first complete Markdown document!</p>
+            <button class="btn" id="wizard-download">📥 Download Your Document</button>
+        </div>
+    </div>
+</section>
+
+<section id="live-editor">
+    <h2>Split-Pane Live Renderer</h2>
+    <p>Now it is time to experiment freely. Type anything in the left pane, see it render instantly on the right. Load a template if you want a head start, or start from scratch. This is where the magic clicks.</p>
+    <div class="interactive-box">
+        <div style="display:flex;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+            <div style="display:flex;gap:10px;">
+                <button class="btn" id="editor-clear" style="background:#6c757d;">Clear</button>
+                <select id="editor-template" style="padding:8px;border:1px solid var(--border);border-radius:6px;font-family:inherit;">
+                    <option value="">Load Template...</option>
+                    <option value="blank">Blank Canvas</option>
+                    <option value="meeting">Meeting Notes</option>
+                    <option value="blog">Blog Post</option>
+                    <option value="readme">README</option>
+                    <option value="recipe">Recipe</option>
+                </select>
+            </div>
+            <div style="display:flex;gap:10px;">
+                <button class="btn" id="editor-download-md">Download .md</button>
+                <button class="btn" id="editor-download-html">Export HTML</button>
+            </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:12px;">
+            <div>
+                <div style="font-weight:600;margin-bottom:8px;color:var(--accent-2);">Markdown Editor</div>
+                <textarea id="live-editor-input" style="width:100%;height:400px;padding:12px;font-family:monospace;border:1px solid var(--border);border-radius:8px;resize:vertical;" placeholder="Start typing Markdown here..."></textarea>
+            </div>
+            <div>
+                <div style="font-weight:600;margin-bottom:8px;color:var(--accent-2);">Live Preview</div>
+                <div id="live-editor-preview" style="background:#fff;border:1px solid var(--border);border-radius:8px;padding:12px;min-height:400px;overflow-y:auto;"></div>
+            </div>
+        </div>
+        <div style="text-align:center;color:#6c757d;font-size:0.9rem;">
+            <span id="editor-chars">0</span> characters | <span id="editor-words">0</span> words
+        </div>
+    </div>
+</section>
+
+<section id="best-practices">
+    <h2>Best Practices by Role</h2>
+    <p>You know the syntax. Now let us talk about how professionals use Markdown in the real world. Each role has different needs. Click your role to see tips that matter to you.</p>
+    <div class="accordion" id="practices-accordion"></div>
+</section>
+
+<section id="mistakes">
+    <h2>What NOT to Do: 10 Common Mistakes</h2>
+    <p>Everyone makes these mistakes. Let us look at the 10 most common errors, why they happen, and how to fix them. Learning what not to do is just as important as learning what to do.</p>
+    <div class="accordion" id="mistakes-accordion"></div>
+</section>
+
+<section id="quiz2">
+    <h2>Quiz 2: Fix the Formatting</h2>
+    <p>Time to get your hands dirty. Each question shows broken Markdown. Your job? Fix it. Edit the code, click Check, and learn from the feedback. This is active learning, no passive reading.</p>
+    <div class="quiz-container">
+        <div class="quiz-navigation">
+            <button class="btn" id="q2Prev">←</button>
+            <span class="question-counter"><span id="q2Cur">1</span> of <span id="q2Total">10</span></span>
+            <button class="btn" id="q2Next">→</button>
+        </div>
+        <div id="quiz2-body"></div>
+    </div>
+</section>
+
+<section id="power-tips">
+    <h2>Power Tips Terminal</h2>
+    <p>Ready to level up? These 20 tips separate beginners from pros. They are organized by category: productivity, advanced syntax, organization, and collaboration. You do not need all of them today, but bookmark this for when you do.</p>
+    <div class="interactive-box">
+        <div style="background:#1e1e1e;color:#0f0;padding:20px;border-radius:8px;font-family:monospace;font-size:0.9rem;min-height:300px;">
+            <div style="margin-bottom:16px;">user@markdown:~$ ./power-tips.sh</div>
+            <div id="terminal-progress" style="margin-bottom:20px;color:#666;">
+                [Tip <span id="terminal-current">1</span>/20] <span id="terminal-bar">████████████░░░░░░░░</span>
+            </div>
+            <div id="terminal-content" style="color:#0f0;line-height:1.6;">Loading tip...</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:16px;">
+            <button class="btn" id="tip-prev">← Previous Tip</button>
+            <button class="btn" id="tip-random" style="background:#6c757d;">🎲 Random Tip</button>
+            <button class="btn" id="tip-next">Next Tip →</button>
+        </div>
+    </div>
+</section>
+
+<style>
+.wizard-dot {
+    font-size:1.5rem;
+    color:#ddd;
+    transition:color 0.3s;
+}
+.wizard-dot.active {
+    color:var(--accent);
+}
+.wizard-dot.completed {
+    color:var(--ok);
+}
+</style>
+
+<script>
+(function() {
+    // WIZARD DATA
+    const wizardSteps = [
+        {
+            instruction: "Let us start with a title. Every document needs one. Use a single hash symbol followed by a space, then your title.",
+            prefill: "# My First Document",
+            hint: "The hash symbol creates a heading. One hash is the largest heading level."
+        },
+        {
+            instruction: "Now add your name as the author. Use double asterisks to make it bold.",
+            prefill: "# My First Document\n\n**Author:** Your Name",
+            hint: "Double asterisks on both sides make text bold. Like this: **text**"
+        },
+        {
+            instruction: "Write a short introduction paragraph. Just plain text, no special syntax needed.",
+            prefill: "# My First Document\n\n**Author:** Your Name\n\nThis document demonstrates my new Markdown skills. I am learning how to format text using simple, readable syntax.",
+            hint: "Just type naturally. Markdown handles plain paragraphs automatically."
+        },
+        {
+            instruction: "Create a section heading. Use two hash symbols for a level 2 heading.",
+            prefill: "# My First Document\n\n**Author:** Your Name\n\nThis document demonstrates my new Markdown skills.\n\n## Section 1: Key Points",
+            hint: "Two hashes create a smaller heading than one hash. Perfect for sections."
+        },
+        {
+            instruction: "Add a bullet list with at least 3 items. Start each line with a dash and space.",
+            prefill: "# My First Document\n\n**Author:** Your Name\n\nThis document demonstrates my new Markdown skills.\n\n## Section 1: Key Points\n\n- Markdown is easy to learn\n- It works everywhere\n- Plain text means forever",
+            hint: "Each line starts with dash space then your text. They become bullets automatically."
+        },
+        {
+            instruction: "Now create a numbered list. Use numbers followed by a period and space.",
+            prefill: "# My First Document\n\n**Author:** Your Name\n\nThis document demonstrates my new Markdown skills.\n\n## Section 1: Key Points\n\n- Markdown is easy to learn\n- It works everywhere\n- Plain text means forever\n\n## Section 2: Steps to Success\n\n1. Learn the basics\n2. Practice daily\n3. Build real documents",
+            hint: "Start each line with a number, period, and space. Markdown handles numbering."
+        },
+        {
+            instruction: "Add a quote from someone. Use the greater-than symbol at the start of the line.",
+            prefill: "# My First Document\n\n**Author:** Your Name\n\nThis document demonstrates my new Markdown skills.\n\n## Section 1: Key Points\n\n- Markdown is easy to learn\n- It works everywhere\n- Plain text means forever\n\n## Section 2: Steps to Success\n\n1. Learn the basics\n2. Practice daily\n3. Build real documents\n\n> The best time to start was yesterday. The next best time is now.",
+            hint: "The greater-than symbol creates a blockquote. Add a dash and name for attribution."
+        },
+        {
+            instruction: "Show an inline code example. Use single backticks around the code.",
+            prefill: "# My First Document\n\n**Author:** Your Name\n\nThis document demonstrates my new Markdown skills.\n\n## Section 1: Key Points\n\n- Markdown is easy to learn\n- It works everywhere\n- Plain text means forever\n\n## Section 2: Steps to Success\n\n1. Learn the basics\n2. Practice daily\n3. Build real documents\n\n> The best time to start was yesterday. The next best time is now.\n\n## Technical Note\n\nTo make text bold, use `**text**` syntax.",
+            hint: "Backticks are the key left of number 1. Wrap code with them like this: `code`"
+        },
+        {
+            instruction: "Add a link to a website. Use square brackets for text, parentheses for the URL.",
+            prefill: "# My First Document\n\n**Author:** Your Name\n\nThis document demonstrates my new Markdown skills.\n\n## Section 1: Key Points\n\n- Markdown is easy to learn\n- It works everywhere\n- Plain text means forever\n\n## Section 2: Steps to Success\n\n1. Learn the basics\n2. Practice daily\n3. Build real documents\n\n> The best time to start was yesterday. The next best time is now.\n\n## Technical Note\n\nTo make text bold, use `**text**` syntax.\n\n## Resources\n\nLearn more at [Markdown Guide](https://www.markdownguide.org)",
+            hint: "Links use this pattern: [visible text](actual-url)"
+        },
+        {
+            instruction: "Add a conclusion section. Use a level 2 heading and write your final thoughts.",
+            prefill: "# My First Document\n\n**Author:** Your Name\n\nThis document demonstrates my new Markdown skills.\n\n## Section 1: Key Points\n\n- Markdown is easy to learn\n- It works everywhere\n- Plain text means forever\n\n## Section 2: Steps to Success\n\n1. Learn the basics\n2. Practice daily\n3. Build real documents\n\n> The best time to start was yesterday. The next best time is now.\n\n## Technical Note\n\nTo make text bold, use `**text**` syntax.\n\n## Resources\n\nLearn more at [Markdown Guide](https://www.markdownguide.org)\n\n## Conclusion\n\nI now understand how to create properly formatted documents using Markdown. The syntax is simple, readable, and works everywhere.",
+            hint: "You have learned all the basics. Just write naturally with a heading and paragraph."
+        }
+    ];
+
+    // TEMPLATES
+    const templates = {
+        blank: "",
+        meeting: "# Meeting Notes\n\n**Date:** YYYY-MM-DD  \n**Attendees:** Name1, Name2, Name3  \n**Topic:** Meeting Topic\n\n## Agenda\n\n1. Item one\n2. Item two\n3. Item three\n\n## Discussion\n\n- Point discussed\n- Decision made\n- Action required\n\n## Action Items\n\n- [ ] Task one - @Person1\n- [ ] Task two - @Person2\n- [ ] Task three - @Person3\n\n## Next Steps\n\nNext meeting scheduled for: DATE",
+        blog: "# Blog Post Title\n\n**Author:** Your Name  \n**Date:** YYYY-MM-DD  \n**Tags:** #tag1 #tag2 #tag3\n\n## Introduction\n\nYour opening paragraph goes here. Hook the reader and explain what this post is about.\n\n## Main Content\n\n### Subheading 1\n\nYour content here.\n\n### Subheading 2\n\nMore content here.\n\n## Conclusion\n\nWrap up your thoughts and leave the reader with something memorable.\n\n---\n\n*Thanks for reading!*",
+        readme: "# Project Name\n\nBrief description of what this project does and who it is for.\n\n## Features\n\n- Feature one\n- Feature two\n- Feature three\n\n## Installation\n\n```bash\nnpm install project-name\n```\n\n## Usage\n\n```javascript\nconst project = require('project-name');\nproject.doSomething();\n```\n\n## Configuration\n\nExplain any configuration options here.\n\n## Contributing\n\nPull requests are welcome.\n\n## License\n\nMIT",
+        recipe: "# Recipe Name\n\n**Prep Time:** 15 minutes  \n**Cook Time:** 30 minutes  \n**Servings:** 4\n\n## Ingredients\n\n- 2 cups ingredient one\n- 1 cup ingredient two\n- 3 tablespoons ingredient three\n- Salt and pepper to taste\n\n## Instructions\n\n1. Preheat oven to 350F\n2. Mix ingredients in a bowl\n3. Pour into baking dish\n4. Bake for 30 minutes\n5. Let cool and serve\n\n## Notes\n\n- Can be made ahead\n- Freezes well\n- Substitute X for Y if needed\n\n**Enjoy!**"
+    };
+
+    // BEST PRACTICES DATA
+    const practices = {
+        "Writers & Authors": [
+            { title: "Use Semantic Headings", content: "Structure with H1 for title, H2 for chapters, H3 for sections. Screen readers and SEO rely on proper heading hierarchy. Do not use headings just to make text bigger.", example: "# Book Title\n## Chapter 1\n### Section 1.1" },
+            { title: "One Sentence Per Line", content: "Break lines at sentence boundaries. Git diffs show changes per line making edits easier to track.", example: "This is sentence one.\nThis is sentence two.\nThis is sentence three." },
+            { title: "Use Reference Links", content: "For documents with many links define them at the bottom. Keeps your writing flow clean and readable.", example: "See [this article][1] and [that study][2].\n\n[1]: https://url1.com\n[2]: https://url2.com" },
+            { title: "Emphasis Best Practices", content: "Use italic for subtle emphasis and bold for strong emphasis. Do not overuse. Too much emphasis is no emphasis.", example: "This is *subtle* and this is **strong**." },
+            { title: "Consistent Style Guide", content: "Create a style guide for your writing. Decide on list markers, heading case, spacing rules. Consistency improves readability.", example: "Choose: Title Case or Sentence case for headings. Stick with it throughout." }
+        ],
+        "Software Developers": [
+            { title: "Code Blocks with Language", content: "Always specify the language after triple backticks. Enables syntax highlighting and helps readers understand context.", example: "```javascript\nconst x = 10;\n```" },
+            { title: "README Structure", content: "Follow standard README structure: Title, Description, Installation, Usage, Contributing, License. Makes repos professional and accessible.", example: "# Project\n## Installation\n## Usage\n## Contributing" },
+            { title: "Link to Issues and PRs", content: "Reference GitHub issues and pull requests directly. Use #123 syntax for automatic linking.", example: "Fixes #42\nSee PR #156 for details" },
+            { title: "Document Code Decisions", content: "Use Markdown for Architecture Decision Records (ADRs). Plain text, version controlled, searchable.", example: "# ADR 001: Use PostgreSQL\n## Context\n## Decision\n## Consequences" },
+            { title: "Inline Code for Technical Terms", content: "Wrap function names, variables, file names in backticks. Makes technical content scannable.", example: "The `getUserData()` function reads from `config.json`." }
+        ],
+        "Educators & Students": [
+            { title: "Use Task Lists", content: "Create interactive checklists for assignments and study plans. Students can check off completed items.", example: "- [ ] Read chapter 3\n- [x] Complete homework\n- [ ] Review notes" },
+            { title: "Math Equations with LaTeX", content: "Many Markdown renderers support LaTeX for mathematical notation. Essential for STEM subjects.", example: "Inline: $E = mc^2$\n\nBlock:\n$$\nx = \\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}\n$$" },
+            { title: "Blockquotes for Key Concepts", content: "Highlight important definitions or theorems using blockquotes. Makes them stand out visually.", example: "> **Theorem:** The sum of angles in a triangle equals 180 degrees." },
+            { title: "Collapsible Sections", content: "Use HTML details tags for optional content. Keeps notes concise while preserving detail.", example: "<details>\n<summary>More info</summary>\nDetailed explanation here\n</details>" },
+            { title: "Link to Resources", content: "Include links to videos, articles, and external resources. Markdown makes references easy to maintain.", example: "Watch [this lecture](url) for more details." }
+        ],
+        "Product Managers": [
+            { title: "Use Tables for Comparisons", content: "Tables are perfect for feature comparisons, roadmaps, and prioritization matrices.", example: "| Feature | Priority | Status |\n|---------|----------|--------|\n| Login   | High     | Done   |" },
+            { title: "Link Requirements to Code", content: "Store specs in the same repo as code. Link directly to implementation and issues.", example: "Feature X implemented in PR #123\nSee issue #45 for discussion" },
+            { title: "Version Your Documents", content: "Use Git for spec version control. Track changes, see who modified what, revert if needed.", example: "Commit specs with semantic messages:\n'feat: Add user authentication spec'" },
+            { title: "Templates for Consistency", content: "Create templates for PRDs, one-pagers, and meeting notes. Ensures all documents follow same structure.", example: "## Problem\n## Solution\n## Success Metrics\n## Timeline" },
+            { title: "Stakeholder-Friendly Format", content: "Markdown exports to PDF and HTML. Share specs in format stakeholders prefer while maintaining single source.", example: "Write in .md, export to PDF for executives" }
+        ],
+        "Content Creators": [
+            { title: "Front Matter for Metadata", content: "Use YAML front matter for post metadata. Title, date, tags, author stay with content.", example: "---\ntitle: Post Title\ndate: 2025-10-10\ntags: [tag1, tag2]\n---\n\nPost content here" },
+            { title: "Alt Text for Accessibility", content: "Always include descriptive alt text for images. Helps screen readers and improves SEO.", example: "![Person typing on laptop in coffee shop](image.jpg)" },
+            { title: "Content Reusability", content: "Write in Markdown, publish to multiple platforms. Medium, Dev.to, Hashnode all accept Markdown input.", example: "One .md file publishes everywhere" },
+            { title: "Local Asset Management", content: "Store images in same repo as content. Relative paths keep everything together and portable.", example: "![Logo](./assets/logo.png)" },
+            { title: "Excerpt and Summary", content: "Many static site generators use first paragraph or explicit excerpt in front matter for previews.", example: "---\nexcerpt: This post covers...\n---" }
+        ],
+        "Designers & UX Teams": [
+            { title: "Document Component Specs", content: "Write component documentation in Markdown. Props, variants, usage examples all in version control.", example: "# Button Component\n\n## Props\n- `variant`: primary | secondary\n- `size`: small | medium | large" },
+            { title: "Storyboards in Markdown", content: "Use Markdown for video and animation storyboards. Scene descriptions, timing, transitions.", example: "## Scene 1 (0:00-0:05)\n- Camera: Close-up\n- Action: User clicks button\n- Transition: Fade" },
+            { title: "Design Decision Logs", content: "Track design decisions like developers track code decisions. Why you chose certain patterns or colors.", example: "# Why We Use 8px Grid\n## Context\n## Decision\n## Impact" },
+            { title: "ASCII Diagrams", content: "Simple user flows and wireframes can be drawn in ASCII. Quick to create, easy to version control.", example: "Login → Dashboard → Settings\n  ↓\n  Error → Retry" },
+            { title: "Link to Figma and Prototypes", content: "Include links to Figma files and prototypes in your Markdown docs. Single source of truth.", example: "[View prototype](figma-link)\n[Design system](figma-design-system)" }
+        ]
+    };
+
+    // MISTAKES DATA
+    const mistakes = [
+        {
+            title: "Inconsistent List Markers",
+            wrong: "* Item one\n- Item two\n+ Item three",
+            right: "- Item one\n- Item two\n- Item three",
+            why: "Mixing markers looks unprofessional and confuses readers. Pick one marker and stick with it throughout your document.",
+            fix: "Choose dash, asterisk, or plus. Most people use dash for consistency with GitHub."
+        },
+        {
+            title: "Missing Space After Hash",
+            wrong: "#Heading\n##Another Heading",
+            right: "# Heading\n## Another Heading",
+            why: "The space after the hash is required by the Markdown spec. Without it, many parsers will not recognize it as a heading.",
+            fix: "Always add a space: hash-space-text. Most good editors will auto-add this space."
+        },
+        {
+            title: "No Blank Lines Between Elements",
+            wrong: "Paragraph one.\nParagraph two.\n- List item",
+            right: "Paragraph one.\n\nParagraph two.\n\n- List item",
+            why: "Markdown needs blank lines to separate block elements. Without them, everything runs together.",
+            fix: "Press Enter twice between paragraphs, headings, lists, and other block elements."
+        },
+        {
+            title: "Incorrect List Nesting",
+            wrong: "- Main item\n - Sub item (1 space)",
+            right: "- Main item\n  - Sub item (2 spaces)",
+            why: "Nested items need 2-4 spaces of indentation. One space is not enough for most parsers.",
+            fix: "Use 2 or 4 spaces consistently. Configure your editor to insert spaces when you press Tab."
+        },
+        {
+            title: "Broken Links",
+            wrong: "[Link text](url\n[Link text(url)]",
+            right: "[Link text](url)",
+            why: "Link syntax requires square brackets around text and parentheses around URL. Both must be closed properly.",
+            fix: "Pattern is: [text](url). No spaces between brackets and parentheses."
+        },
+        {
+            title: "Unclosed Bold or Italic",
+            wrong: "**Bold text\n*Italic text",
+            right: "**Bold text**\n*Italic text*",
+            why: "Emphasis markers must come in pairs. Unclosed markers will render as literal asterisks.",
+            fix: "Always close your emphasis. Type both asterisks first, then add text between them."
+        },
+        {
+            title: "Wrong Escape Character",
+            wrong: "/#Not a heading\n/5. Not a list",
+            right: "\\#Not a heading\n\\5. Not a list",
+            why: "Backslash is the escape character in Markdown, not forward slash. Forward slash has no special meaning.",
+            fix: "Use backslash before any character you want to display literally: \\* \\# \\[ \\]"
+        },
+        {
+            title: "Mixing Tabs and Spaces",
+            wrong: "- Item\n\t- Tab indent\n  - Space indent",
+            right: "- Item\n  - Space indent\n  - Space indent",
+            why: "Tabs render differently in different editors. This breaks consistent indentation and nesting.",
+            fix: "Configure editor to insert spaces when you press Tab. Use spaces exclusively."
+        },
+        {
+            title: "Missing Alt Text for Images",
+            wrong: "![](image.jpg)\n![](logo.png)",
+            right: "![Product screenshot](image.jpg)\n![Company logo](logo.png)",
+            why: "Alt text is essential for accessibility and SEO. Screen readers need it to describe images to visually impaired users.",
+            fix: "Always describe the image: ![description](url). Be specific and helpful."
+        },
+        {
+            title: "Incorrect Line Breaks",
+            wrong: "Line one\nLine two (no break)",
+            right: "Line one  \nLine two (two spaces)\n\nOr use:\n\nLine one<br>Line two",
+            why: "Single line breaks are ignored in Markdown. You need two spaces at end of line or a blank line.",
+            fix: "Either: two-spaces-then-Enter, or blank line, or <br> tag for hard break."
+        }
+    ];
+
+    // QUIZ 2 DATA
+    const quiz2Questions = [
+        { q: "Fix the unclosed bold", broken: "**Bold text", correct: "**Bold text**", feedback: "Bold requires double asterisks on both sides. You had the opening but forgot the closing." },
+        { q: "Fix the missing space", broken: "#Heading", correct: "# Heading", feedback: "Headings need a space after the hash symbol. Hash-space-text is the pattern." },
+        { q: "Fix the broken link", broken: "[Link](url", correct: "[Link](url)", feedback: "Links need closing parenthesis. Pattern is [text](url) with both properly closed." },
+        { q: "Fix the list indentation", broken: "- Main\n - Sub", correct: "- Main\n  - Sub", feedback: "Nested items need 2-4 spaces of indentation. One space is not enough. You need two." },
+        { q: "Fix the escape character", broken: "/#Not heading", correct: "\\#Not heading", feedback: "Backslash is the escape character in Markdown, not forward slash. Use backslash." },
+        { q: "Fix the blockquote spacing", broken: ">Quote", correct: "> Quote", feedback: "Blockquotes need a space after the greater-than symbol. Greater-than-space-text." },
+        { q: "Fix the code block", broken: "```code```", correct: "```\ncode\n```", feedback: "Code blocks need the backticks on separate lines. Opening backticks, newline, code, newline, closing backticks." },
+        { q: "Fix the image alt text", broken: "![](img.jpg)", correct: "![Description](img.jpg)", feedback: "Images need descriptive alt text for accessibility. Always describe what the image shows." },
+        { q: "Fix the list markers", broken: "* One\n- Two\n+ Three", correct: "- One\n- Two\n- Three", feedback: "Use consistent list markers. Pick dash, asterisk, or plus and stick with it. Dash is most common." },
+        { q: "Fix the paragraph spacing", broken: "Para one.\nPara two.", correct: "Para one.\n\nPara two.", feedback: "Paragraphs need a blank line between them. Single line break is ignored. Press Enter twice." }
+    ];
+
+    // POWER TIPS DATA
+    const powerTips = [
+        { category: "Productivity", tip: "Use reference-style links for readability", content: "Instead of: Check out [this article](https://very-long-url.com...)\n\nDo this: Check out [this article][1]\n\n[1]: https://very-long-url.com...\n\nWhy: Keeps your writing flow clean and readable. Define all URLs at the bottom." },
+        { category: "Productivity", tip: "Learn keyboard shortcuts", content: "Most Markdown editors support shortcuts:\nCtrl+B = Bold\nCtrl+I = Italic\nCtrl+K = Insert link\n\nWhy: Keeps your hands on keyboard. Much faster than clicking buttons." },
+        { category: "Productivity", tip: "Use snippets and templates", content: "Create snippets in your editor:\n'mdtable' expands to table template\n'mdcode' expands to code block\n\nWhy: Common patterns become instant. Saves hundreds of keystrokes daily." },
+        { category: "Productivity", tip: "Add YAML front matter for metadata", content: "---\ntitle: Document Title\ndate: 2025-10-10\nauthor: Your Name\ntags: [tag1, tag2]\n---\n\nContent here\n\nWhy: Metadata stays with content. Static site generators use this for organization." },
+        { category: "Productivity", tip: "Split-pane live preview workflow", content: "Set up your editor with:\nLeft: Markdown source\nRight: Live preview\n\nWhy: See changes instantly. Catch formatting errors as you type. Most IDEs support this." },
+        { category: "Advanced Syntax", tip: "Nested blockquotes", content: "> Level 1 quote\n>> Level 2 nested\n>>> Level 3 nested\n\nWhy: Useful for email-style threading or emphasizing quotes within quotes." },
+        { category: "Advanced Syntax", tip: "Definition lists", content: "Term 1\n: Definition 1a\n: Definition 1b\n\nTerm 2\n: Definition 2\n\nWhy: Semantic markup for glossaries and term definitions. Not all parsers support this." },
+        { category: "Advanced Syntax", tip: "Footnotes for citations", content: "This needs a citation[^1].\n\nMore text here[^2].\n\n[^1]: First citation source\n[^2]: Second citation source\n\nWhy: Academic writing, technical docs. Keeps citations out of reading flow." },
+        { category: "Advanced Syntax", tip: "Table alignment", content: "| Left | Center | Right |\n|:-----|:------:|------:|\n| L    | C      | R     |\n\nColons control alignment:\n:--- = left\n:---: = center\n---: = right" },
+        { category: "Advanced Syntax", tip: "Task lists for todos", content: "- [ ] Unchecked task\n- [x] Checked task\n- [ ] Another todo\n\nWhy: GitHub and many apps render these as interactive checkboxes. Perfect for project tracking." },
+        { category: "Organization", tip: "Consistent heading levels", content: "Good:\n# Title\n## Section\n### Subsection\n\nBad:\n# Title\n### Subsection (skipped h2)\n\nWhy: Screen readers and document outlines depend on proper hierarchy. Do not skip levels." },
+        { category: "Organization", tip: "One sentence per line", content: "Write this way:\nSentence one.\nSentence two.\nSentence three.\n\nNot this:\nSentence one. Sentence two. Sentence three.\n\nWhy: Git diffs show exactly which sentence changed. Easier collaboration." },
+        { category: "Organization", tip: "Table of contents with anchors", content: "## Table of Contents\n- [Section 1](#section-1)\n- [Section 2](#section-2)\n\n## Section 1\nContent...\n\n## Section 2\nContent...\n\nWhy: Long documents need navigation. Anchor links make it easy." },
+        { category: "Organization", tip: "Horizontal rules for major breaks", content: "Use --- or *** for thematic breaks:\n\nSection 1 content\n\n---\n\nSection 2 content\n\nWhy: Visual separation for major topic changes. Three or more hyphens or asterisks." },
+        { category: "Organization", tip: "HTML comments for notes", content: "<!-- TODO: Add example here -->\n<!-- FIXME: Update this section -->\n<!-- NOTE: Keep this for reference -->\n\nWhy: Comments are invisible in rendered output. Perfect for internal notes and TODOs." },
+        { category: "Collaboration", tip: "Add a style guide to your repo", content: "Create STYLE.md:\n- Use dashes for lists\n- Title Case for h1/h2\n- Sentence case for h3+\n- Two spaces for nesting\n\nWhy: Team consistency. Everyone follows same conventions." },
+        { category: "Collaboration", tip: "Use linters like markdownlint", content: "Install markdownlint in your project:\nnpm install -g markdownlint-cli\nmarkdownlint '**/*.md'\n\nWhy: Catches style violations automatically. Enforces consistency across team." },
+        { category: "Collaboration", tip: "Consistent file naming", content: "Use kebab-case:\nuser-guide.md\napi-reference.md\ncontributing-guidelines.md\n\nNot: User Guide.md or user_guide.md\n\nWhy: URL-friendly. Works on all operating systems. No spaces to escape." },
+        { category: "Collaboration", tip: "README templates for consistency", content: "Create .github/README-template.md\n\nNew projects copy template:\ncp .github/README-template.md README.md\n\nWhy: Every repo has same structure. Makes documentation predictable." },
+        { category: "Collaboration", tip: "Version control best practices", content: "Commit messages:\n'docs: Update installation guide'\n'docs: Fix typo in API reference'\n\nWhy: Clear history. Easy to find when docs changed and why." }
+    ];
+
+    // WIZARD LOGIC
+    let wizardStep = 0;
+    function updateWizard() {
+        const step = wizardSteps[wizardStep];
+        document.getElementById('wizard-instruction').textContent = step.instruction;
+        document.getElementById('wizard-input').value = step.prefill;
+        document.getElementById('wizard-hint').textContent = step.hint;
+        document.getElementById('wizard-progress').textContent = 'Step ' + (wizardStep + 1) + ' of ' + wizardSteps.length;
+        
+        document.querySelectorAll('.wizard-dot').forEach((dot, i) => {
+            dot.classList.remove('active', 'completed');
+            if (i < wizardStep) dot.classList.add('completed');
+            if (i === wizardStep) dot.classList.add('active');
+        });
+        
+        updateWizardPreview();
+        document.getElementById('wizard-prev').disabled = wizardStep === 0;
+        document.getElementById('wizard-next').disabled = false;
+        
+        if (wizardStep === wizardSteps.length - 1) {
+            document.getElementById('wizard-next').textContent = 'Complete!';
+        } else {
+            document.getElementById('wizard-next').textContent = 'Next →';
+        }
+    }
+    
+    function updateWizardPreview() {
+        const input = document.getElementById('wizard-input').value;
+        const preview = document.getElementById('wizard-preview');
+        preview.innerHTML = simpleMarkdownToHTML(input);
+    }
+    
+    document.getElementById('wizard-prev').onclick = () => {
+        if (wizardStep > 0) {
+            wizardStep--;
+            updateWizard();
+        }
+    };
+    
+    document.getElementById('wizard-next').onclick = () => {
+        if (wizardStep < wizardSteps.length - 1) {
+            wizardStep++;
+            updateWizard();
+        } else {
+            document.querySelector('#wizard .interactive-box > div').style.display = 'none';
+            document.getElementById('wizard-complete').style.display = 'block';
+        }
+    };
+    
+    document.getElementById('wizard-skip').onclick = () => {
+        if (wizardStep < wizardSteps.length - 1) {
+            wizardStep++;
+            updateWizard();
+        }
+    };
+    
+    document.getElementById('wizard-input').oninput = updateWizardPreview;
+    
+    document.getElementById('wizard-download').onclick = () => {
+        const content = wizardSteps[wizardSteps.length - 1].prefill;
+        const blob = new Blob([content], { type: 'text/markdown' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'my-first-document.md';
+        a.click();
+    };
+
+    // LIVE EDITOR LOGIC
+    function updateLiveEditor() {
+        const input = document.getElementById('live-editor-input').value;
+        const preview = document.getElementById('live-editor-preview');
+        preview.innerHTML = simpleMarkdownToHTML(input);
+        
+        const chars = input.length;
+        const words = input.trim().split(/\s+/).filter(w => w).length;
+        document.getElementById('editor-chars').textContent = chars;
+        document.getElementById('editor-words').textContent = words;
+    }
+    
+    document.getElementById('live-editor-input').oninput = updateLiveEditor;
+    
+    document.getElementById('editor-clear').onclick = () => {
+        document.getElementById('live-editor-input').value = '';
+        updateLiveEditor();
+    };
+    
+    document.getElementById('editor-template').onchange = (e) => {
+        const template = templates[e.target.value];
+        if (template !== undefined) {
+            document.getElementById('live-editor-input').value = template;
+            updateLiveEditor();
+        }
+    };
+    
+    document.getElementById('editor-download-md').onclick = () => {
+        const content = document.getElementById('live-editor-input').value;
+        const blob = new Blob([content], { type: 'text/markdown' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'document.md';
+        a.click();
+    };
+    
+    document.getElementById('editor-download-html').onclick = () => {
+        const md = document.getElementById('live-editor-input').value;
+        const html = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Document</title>
+</head>
+<body>
+${simpleMarkdownToHTML(md)}
+</body>
+</html>`;
+        const blob = new Blob([html], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'document.html';
+        a.click();
+    };
+
+    // BEST PRACTICES RENDERING
+    const practicesAcc = document.getElementById('practices-accordion');
+    let practicesHTML = '';
+    for (const role in practices) {
+        practicesHTML += '<div class="accordion-item"><button class="accordion-header" aria-expanded="false"><span class="accordion-title"><strong>' + role + '</strong></span></button><div class="accordion-content">';
+        practices[role].forEach(tip => {
+            practicesHTML += '<h4>' + tip.title + '</h4><p>' + tip.content + '</p>';
+            if (tip.example) {
+                practicesHTML += '<pre class="code-block" style="margin-top:10px;"><code>' + tip.example.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</code></pre>';
+            }
+        });
+        practicesHTML += '</div></div>';
+    }
+    practicesAcc.innerHTML = practicesHTML;
+    practicesAcc.querySelectorAll('.accordion-header').forEach(h => {
+        h.onclick = () => {
+            const expanded = h.getAttribute('aria-expanded') === 'true';
+            h.setAttribute('aria-expanded', !expanded);
+            h.nextElementSibling.style.display = expanded ? 'none' : 'block';
+        };
+    });
+
+    // MISTAKES RENDERING (template literals to avoid quoting issues)
+    const mistakesAcc = document.getElementById('mistakes-accordion');
+    let mistakesHTML = '';
+    mistakes.forEach((m, i) => {
+        const wrong = m.wrong.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        const right = m.right.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        mistakesHTML += `
+        <div class="accordion-item">
+          <button class="accordion-header" aria-expanded="false">
+            <span class="accordion-title"><strong>${i + 1}. ${m.title}</strong></span>
+          </button>
+          <div class="accordion-content">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:20px 0;">
+              <div>
+                <h5 style="text-align:center;color:var(--bad);margin-bottom:10px;">❌ Wrong</h5>
+                <pre class="code-block" style="border-left:3px solid var(--bad);"><code>${wrong}</code></pre>
+              </div>
+              <div>
+                <h5 style="text-align:center;color:var(--ok);margin-bottom:10px;">✅ Right</h5>
+                <pre class="code-block" style="border-left:3px solid var(--ok);"><code>${right}</code></pre>
+              </div>
+            </div>
+            <p><strong>Why:</strong> ${m.why}</p>
+            <p><strong>How to fix:</strong> ${m.fix}</p>
+          </div>
+        </div>`;
+    });
+    mistakesAcc.innerHTML = mistakesHTML;
+    mistakesAcc.querySelectorAll('.accordion-header').forEach(h => {
+        h.onclick = () => {
+            const expanded = h.getAttribute('aria-expanded') === 'true';
+            h.setAttribute('aria-expanded', !expanded);
+            h.nextElementSibling.style.display = expanded ? 'none' : 'block';
+        };
+    });
+
+    // QUIZ 2 LOGIC
+    let q2Idx = 0;
+    document.getElementById('q2Total').textContent = quiz2Questions.length;
+    function showQ2(i) {
+        const q = quiz2Questions[i];
+        const qb = document.getElementById('quiz2-body');
+        let h = '<div class="quiz-body active"><p><strong>Q' + (i+1) + ':</strong> ' + q.q + '</p>';
+        h += '<textarea id="q2-input" style="width:100%;height:100px;padding:10px;font-family:monospace;border:1px solid var(--border);border-radius:6px;margin:16px 0;">' + q.broken + '</textarea>';
+        h += '<button class="btn" id="q2-check">Check My Answer</button>';
+        h += '<div id="q2-feedback" style="margin-top:16px;padding:15px;border-radius:8px;display:none;"></div>';
+        h += '</div>';
+        qb.innerHTML = h;
+        document.getElementById('q2Cur').textContent = i + 1;
+        document.getElementById('q2Prev').disabled = i === 0;
+        document.getElementById('q2Next').disabled = i === quiz2Questions.length - 1;
+        
+        document.getElementById('q2-check').onclick = () => {
+            const userAnswer = document.getElementById('q2-input').value.trim();
+            const feedback = document.getElementById('q2-feedback');
+            feedback.style.display = 'block';
+            if (userAnswer === q.correct) {
+                feedback.style.background = 'var(--ok-soft)';
+                feedback.style.borderLeft = '4px solid var(--ok)';
+                feedback.innerHTML = '<strong>✅ Correct!</strong><p>' + q.feedback + '</p>';
+            } else {
+                feedback.style.background = 'var(--bad-soft)';
+                feedback.style.borderLeft = '4px solid var(--bad)';
+                feedback.innerHTML = '<strong>❌ Not quite.</strong><p>' + q.feedback + '</p><p><strong>Expected:</strong> <code>' + q.correct + '</code></p>';
+            }
+        };
+    }
+    document.getElementById('q2Prev').onclick = () => { if (q2Idx > 0) { q2Idx--; showQ2(q2Idx); }};
+    document.getElementById('q2Next').onclick = () => { if (q2Idx < quiz2Questions.length - 1) { q2Idx++; showQ2(q2Idx); }};
+    showQ2(0);
+
+    // POWER TIPS LOGIC
+    let tipIdx = 0;
+    function showTip(i) {
+        const tip = powerTips[i];
+        const filled = Math.round((i + 1) / powerTips.length * 20);
+        const empty = 20 - filled;
+        const bar = '█'.repeat(filled) + '░'.repeat(empty);
+        
+        document.getElementById('terminal-current').textContent = i + 1;
+        document.getElementById('terminal-bar').textContent = bar;
+        document.getElementById('terminal-content').innerHTML = '<div style="color:#0f0;margin-bottom:10px;">💡 TIP [' + tip.category + ']: ' + tip.tip + '</div><div style="color:#0f0;white-space:pre-wrap;">' + tip.content + '</div>';
+        
+        document.getElementById('tip-prev').disabled = i === 0;
+        document.getElementById('tip-next').disabled = i === powerTips.length - 1;
+    }
+    
+    document.getElementById('tip-prev').onclick = () => { if (tipIdx > 0) { tipIdx--; showTip(tipIdx); }};
+    document.getElementById('tip-next').onclick = () => { if (tipIdx < powerTips.length - 1) { tipIdx++; showTip(tipIdx); }};
+    document.getElementById('tip-random').onclick = () => { tipIdx = Math.floor(Math.random() * powerTips.length); showTip(tipIdx); };
+    showTip(0);
+
+    // SIMPLE MARKDOWN RENDERER
+    function simpleMarkdownToHTML(md) {
+        let html = md;
+        html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
+        html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
+        html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>');
+        html = html.replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>');
+        html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+        html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+        html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+        html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+        html = html.replace(/^> (.+)$/gim, '<blockquote>$1</blockquote>');
+        html = html.replace(/^- (.+)$/gim, '<li>$1</li>');
+        html = html.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
+        html = html.replace(/^\d+\. (.+)$/gim, '<li>$1</li>');
+        html = html.replace(/\n\n/g, '</p><p>');
+        html = '<p>' + html + '</p>';
+        return html;
+    }
+
+    // INITIALIZE
+    updateWizard();
+    updateLiveEditor();
+})();
+</script>
+
+<!-- ============================================ -->
+<!-- PART 3: EXPRESS - Your Markdown Voice -->
+<!-- MERGE THIS INTO MAIN FILE -->
+<!-- Replace the Part 3 placeholder section -->
+<!-- ============================================ -->
+
+<section id="part3-intro">
+    <h2>Part 3: EXPRESS - Your Markdown Voice</h2>
+    <p class="intro">You know the syntax. You can build documents. Now it is time to develop your personal style and voice. This final section helps you create a style guide, choose the right structure for any document, master advanced features, and reflect on your journey. Transform from syntax user to expressive communicator.</p>
+</section>
+
+<section id="style-configurator">
+    <h2>STYLE.md Configurator</h2>
+    <p>Every writer has preferences. Dash or asterisk? Title Case or sentence case? Let us codify your style. Build your personal STYLE.md file that you can share with collaborators or keep as your own reference.</p>
+    <div class="interactive-box">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+            <div>
+                <h4 style="margin-bottom:16px;">Your Preferences</h4>
+                <div style="display:grid;gap:16px;">
+                    <div>
+                        <label style="display:block;font-weight:600;margin-bottom:6px;">List Marker</label>
+                        <select id="style-list" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:6px;">
+                            <option value="-">Dash (-)</option>
+                            <option value="*">Asterisk (*)</option>
+                            <option value="+">Plus (+)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display:block;font-weight:600;margin-bottom:6px;">Heading Case</label>
+                        <select id="style-heading" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:6px;">
+                            <option value="title">Title Case (Main Words Capitalized)</option>
+                            <option value="sentence">Sentence case (First word only)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display:block;font-weight:600;margin-bottom:6px;">Bold Syntax</label>
+                        <select id="style-bold" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:6px;">
+                            <option value="**">Double asterisk (**text**)</option>
+                            <option value="__">Double underscore (__text__)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display:block;font-weight:600;margin-bottom:6px;">Line Length</label>
+                        <select id="style-length" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:6px;">
+                            <option value="80">80 characters</option>
+                            <option value="100">100 characters</option>
+                            <option value="120">120 characters</option>
+                            <option value="none">No limit</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display:block;font-weight:600;margin-bottom:6px;">Indent Style</label>
+                        <select id="style-indent" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:6px;">
+                            <option value="2">2 spaces</option>
+                            <option value="4">4 spaces</option>
+                            <option value="tab">Tab</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display:block;font-weight:600;margin-bottom:6px;">Code Fence</label>
+                        <select id="style-fence" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:6px;">
+                            <option value="```">Triple backtick (```)</option>
+                            <option value="~~~">Triple tilde (~~~)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display:block;font-weight:600;margin-bottom:6px;">Link Style</label>
+                        <select id="style-link" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:6px;">
+                            <option value="inline">Inline [text](url)</option>
+                            <option value="reference">Reference [text][ref]</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display:block;font-weight:600;margin-bottom:6px;">Horizontal Rule</label>
+                        <select id="style-hr" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:6px;">
+                            <option value="---">Dashes (---)</option>
+                            <option value="***">Asterisks (***)</option>
+                            <option value="___">Underscores (___)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <h4 style="margin-bottom:16px;">Your STYLE.md Preview</h4>
+                <div style="background:#2d2d2d;color:#0f0;padding:16px;border-radius:8px;font-family:monospace;font-size:0.85rem;line-height:1.6;min-height:400px;overflow-y:auto;">
+                    <pre id="style-preview" style="margin:0;white-space:pre-wrap;color:#0f0;">Loading...</pre>
+                </div>
+                <div style="display:flex;gap:10px;margin-top:12px;">
+                    <button class="btn" id="style-download">📥 Download STYLE.md</button>
+                    <button class="btn" id="style-copy" style="background:#6c757d;">📋 Copy</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="write-framework">
+    <h2>WRITE Framework Builder</h2>
+    <p>The hardest part of writing is not syntax. It is knowing what to write. This framework helps you think through purpose, audience, and tone before you type a single word. Answer five questions, get a custom template.</p>
+    <div class="interactive-box">
+        <div id="write-step-1" class="write-step">
+            <h4>Step 1: What are you writing?</h4>
+            <div style="display:grid;gap:12px;margin:20px 0;">
+                <label style="display:flex;align-items:center;gap:12px;padding:14px;border:2px solid var(--border);border-radius:8px;cursor:pointer;">
+                    <input type="radio" name="write-type" value="readme">
+                    <span><strong>README</strong> - Project documentation</span>
+                </label>
+                <label style="display:flex;align-items:center;gap:12px;padding:14px;border:2px solid var(--border);border-radius:8px;cursor:pointer;">
+                    <input type="radio" name="write-type" value="blog">
+                    <span><strong>Blog Post</strong> - Article or tutorial</span>
+                </label>
+                <label style="display:flex;align-items:center;gap:12px;padding:14px;border:2px solid var(--border);border-radius:8px;cursor:pointer;">
+                    <input type="radio" name="write-type" value="docs">
+                    <span><strong>Documentation</strong> - Technical reference</span>
+                </label>
+                <label style="display:flex;align-items:center;gap:12px;padding:14px;border:2px solid var(--border);border-radius:8px;cursor:pointer;">
+                    <input type="radio" name="write-type" value="tutorial">
+                    <span><strong>Tutorial</strong> - Step-by-step guide</span>
+                </label>
+                <label style="display:flex;align-items:center;gap:12px;padding:14px;border:2px solid var(--border);border-radius:8px;cursor:pointer;">
+                    <input type="radio" name="write-type" value="report">
+                    <span><strong>Report</strong> - Analysis or findings</span>
+                </label>
+            </div>
+            <button class="btn" id="write-next-1">Next →</button>
+        </div>
+        <div id="write-step-2" class="write-step" style="display:none;">
+            <h4>Step 2: Who are your readers?</h4>
+            <div style="display:grid;gap:12px;margin:20px 0;">
+                <label style="display:flex;align-items:center;gap:12px;padding:14px;border:2px solid var(--border);border-radius:8px;cursor:pointer;">
+                    <input type="checkbox" name="write-audience" value="developers">
+                    <span>Developers</span>
+                </label>
+                <label style="display:flex;align-items:center;gap:12px;padding:14px;border:2px solid var(--border);border-radius:8px;cursor:pointer;">
+                    <input type="checkbox" name="write-audience" value="students">
+                    <span>Students</span>
+                </label>
+                <label style="display:flex;align-items:center;gap:12px;padding:14px;border:2px solid var(--border);border-radius:8px;cursor:pointer;">
+                    <input type="checkbox" name="write-audience" value="general">
+                    <span>General Public</span>
+                </label>
+                <label style="display:flex;align-items:center;gap:12px;padding:14px;border:2px solid var(--border);border-radius:8px;cursor:pointer;">
+                    <input type="checkbox" name="write-audience" value="technical">
+                    <span>Technical Professionals</span>
+                </label>
+                <label style="display:flex;align-items:center;gap:12px;padding:14px;border:2px solid var(--border);border-radius:8px;cursor:pointer;">
+                    <input type="checkbox" name="write-audience" value="executives">
+                    <span>Executives</span>
+                </label>
+            </div>
+            <div style="display:flex;gap:10px;">
+                <button class="btn" id="write-back-2" style="background:#6c757d;">← Back</button>
+                <button class="btn" id="write-next-2">Next →</button>
+            </div>
+        </div>
+        <div id="write-step-3" class="write-step" style="display:none;">
+            <h4>Step 3: What should readers do after reading?</h4>
+            <textarea id="write-intent" style="width:100%;height:120px;padding:12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;margin:20px 0;" placeholder="Example: Install the software and run their first command"></textarea>
+            <div style="display:flex;gap:10px;">
+                <button class="btn" id="write-back-3" style="background:#6c757d;">← Back</button>
+                <button class="btn" id="write-next-3">Next →</button>
+            </div>
+        </div>
+        <div id="write-step-4" class="write-step" style="display:none;">
+            <h4>Step 4: Choose your tone</h4>
+            <div style="margin:20px 0;">
+                <label style="display:block;margin-bottom:12px;font-weight:600;">Formality Level</label>
+                <input type="range" id="write-formality" min="1" max="5" value="3" style="width:100%;">
+                <div style="display:flex;justify-content:space-between;font-size:0.85rem;color:#6c757d;margin-top:6px;">
+                    <span>Very Casual</span>
+                    <span>Neutral</span>
+                    <span>Very Formal</span>
+                </div>
+            </div>
+            <div style="display:grid;gap:12px;margin:20px 0;">
+                <label style="display:flex;align-items:center;gap:12px;padding:14px;border:2px solid var(--border);border-radius:8px;cursor:pointer;">
+                    <input type="checkbox" name="write-tone" value="technical">
+                    <span>Technical</span>
+                </label>
+                <label style="display:flex;align-items:center;gap:12px;padding:14px;border:2px solid var(--border);border-radius:8px;cursor:pointer;">
+                    <input type="checkbox" name="write-tone" value="friendly">
+                    <span>Friendly</span>
+                </label>
+                <label style="display:flex;align-items:center;gap:12px;padding:14px;border:2px solid var(--border);border-radius:8px;cursor:pointer;">
+                    <input type="checkbox" name="write-tone" value="authoritative">
+                    <span>Authoritative</span>
+                </label>
+                <label style="display:flex;align-items:center;gap:12px;padding:14px;border:2px solid var(--border);border-radius:8px;cursor:pointer;">
+                    <input type="checkbox" name="write-tone" value="encouraging">
+                    <span>Encouraging</span>
+                </label>
+            </div>
+            <div style="display:flex;gap:10px;">
+                <button class="btn" id="write-back-4" style="background:#6c757d;">← Back</button>
+                <button class="btn" id="write-generate">Generate Template →</button>
+            </div>
+        </div>
+        <div id="write-result" style="display:none;">
+            <h4>Your Custom Template</h4>
+            <div style="background:#2d2d2d;color:#0f0;padding:16px;border-radius:8px;font-family:monospace;font-size:0.85rem;margin:20px 0;min-height:300px;">
+                <pre id="write-template" style="margin:0;white-space:pre-wrap;color:#0f0;">Loading...</pre>
+            </div>
+            <div style="display:flex;gap:10px;">
+                <button class="btn" id="write-download">📥 Download Template</button>
+                <button class="btn" id="write-copy" style="background:#6c757d;">📋 Copy</button>
+                <button class="btn" id="write-restart" style="background:#6c757d;">🔄 Start Over</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="advanced-flipcards">
+    <h2>Flip-Card Deck B: 10 Advanced Patterns</h2>
+    <p>You have mastered the basics. These 10 cards cover advanced syntax that separates pros from beginners. Footnotes, nested lists, HTML mixing. When you need more power, these patterns deliver.</p>
+    <div class="interactive-box">
+        <div class="carousel-container">
+            <button id="adv-prev" class="carousel-nav">‹</button>
+            <div id="adv-deck"></div>
+            <button id="adv-next" class="carousel-nav">›</button>
+        </div>
+        <div class="carousel-footer">
+            <div id="adv-counter">Pattern 1 of 10</div>
+            <button id="adv-copy-btn" style="background:#6c757d;color:white;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:0.85rem;font-weight:600;transition:background-color 0.2s ease;display:inline-flex;align-items:center;gap:4px;"><span>📋</span> Copy Syntax</button>
+        </div>
+    </div>
+</section>
+
+<section id="svg-gallery">
+    <h2>Advanced Features Gallery</h2>
+    <p>See Markdown advanced features in action. Each demo is interactive. Click Try it to edit the code and watch it render. Experiment freely. This is your laboratory.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;margin:24px 0;">
+        <div class="gallery-card" data-demo="table">
+            <div style="font-size:2rem;text-align:center;margin-bottom:12px;">📊</div>
+            <h4 style="text-align:center;margin-bottom:8px;">Tables</h4>
+            <p style="font-size:0.9rem;text-align:center;color:#6c757d;">Organize data in columns</p>
+            <button class="btn" style="width:100%;margin-top:12px;">Try it</button>
+        </div>
+        <div class="gallery-card" data-demo="tasks">
+            <div style="font-size:2rem;text-align:center;margin-bottom:12px;">✅</div>
+            <h4 style="text-align:center;margin-bottom:8px;">Task Lists</h4>
+            <p style="font-size:0.9rem;text-align:center;color:#6c757d;">Interactive checkboxes</p>
+            <button class="btn" style="width:100%;margin-top:12px;">Try it</button>
+        </div>
+        <div class="gallery-card" data-demo="footnotes">
+            <div style="font-size:2rem;text-align:center;margin-bottom:12px;">📝</div>
+            <h4 style="text-align:center;margin-bottom:8px;">Footnotes</h4>
+            <p style="font-size:0.9rem;text-align:center;color:#6c757d;">Citations and references</p>
+            <button class="btn" style="width:100%;margin-top:12px;">Try it</button>
+        </div>
+        <div class="gallery-card" data-demo="emoji">
+            <div style="font-size:2rem;text-align:center;margin-bottom:12px;">😊</div>
+            <h4 style="text-align:center;margin-bottom:8px;">Emoji</h4>
+            <p style="font-size:0.9rem;text-align:center;color:#6c757d;">Shortcode support</p>
+            <button class="btn" style="width:100%;margin-top:12px;">Try it</button>
+        </div>
+        <div class="gallery-card" data-demo="html">
+            <div style="font-size:2rem;text-align:center;margin-bottom:12px;">🏷️</div>
+            <h4 style="text-align:center;margin-bottom:8px;">HTML Mixing</h4>
+            <p style="font-size:0.9rem;text-align:center;color:#6c757d;">Inline HTML elements</p>
+            <button class="btn" style="width:100%;margin-top:12px;">Try it</button>
+        </div>
+        <div class="gallery-card" data-demo="definition">
+            <div style="font-size:2rem;text-align:center;margin-bottom:12px;">📚</div>
+            <h4 style="text-align:center;margin-bottom:8px;">Definition Lists</h4>
+            <p style="font-size:0.9rem;text-align:center;color:#6c757d;">Terms and definitions</p>
+            <button class="btn" style="width:100%;margin-top:12px;">Try it</button>
+        </div>
+    </div>
+</section>
+
+<section id="tone-guidelines">
+    <h2>Best Practices v2: Tone and Style</h2>
+    <p>The same Markdown can sound professional or casual, technical or friendly. It is not what you write, it is how you write it. These examples show the difference between good and great.</p>
+    <div class="accordion" id="tone-accordion"></div>
+</section>
+
+<section id="break-rules">
+    <h2>When to Break the Rules</h2>
+    <p>Rules are made to be broken when you have good reason. Here are eight scenarios where breaking Markdown conventions is not just okay, it is the right choice. Learn when and why.</p>
+    <div class="accordion" id="break-accordion"></div>
+</section>
+
+<section id="quiz3">
+    <h2>Quiz 3: Applied Scenarios</h2>
+    <p>Final exam. Ten real-world scenarios where you must choose the best approach. No syntax questions. These test your judgment, your understanding of audience, and your ability to choose the right structure for the job.</p>
+    <div class="quiz-container">
+        <div class="quiz-navigation">
+            <button class="btn" id="q3Prev">←</button>
+            <span class="question-counter"><span id="q3Cur">1</span> of <span id="q3Total">10</span></span>
+            <button class="btn" id="q3Next">→</button>
+        </div>
+        <div id="quiz3-body"></div>
+    </div>
+</section>
+
+<section id="global-glossary">
+    <h2>Global Glossary: 30 Essential Terms</h2>
+    <p class="intro">Search and explore.</p>
+    <div class="interactive-box">
+        <input type="text" id="glossary-search" placeholder="🔍 Search terms..." style="width:100%;padding:12px;border:1px solid var(--border);border-radius:8px;font-size:1rem;margin-bottom:20px;">
+        <div id="glossary-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;"></div>
+    </div>
+</section>
+
+<section id="reflection">
+    <h2>Reflection: Your Markdown Journey</h2>
+    <p>You have reached the end. Before you go, reflect on your journey. What will you build? What surprised you? What is next? Write it down. This is your Markdown origin story.</p>
+    <div class="interactive-box">
+        <div style="display:grid;gap:20px;">
+            <div>
+                <label style="display:block;font-weight:600;margin-bottom:8px;">1. What will you write first in Markdown?</label>
+                <textarea id="reflect-1" style="width:100%;height:80px;padding:12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;"></textarea>
+            </div>
+            <div>
+                <label style="display:block;font-weight:600;margin-bottom:8px;">2. Which feature surprised you most?</label>
+                <textarea id="reflect-2" style="width:100%;height:80px;padding:12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;"></textarea>
+            </div>
+            <div>
+                <label style="display:block;font-weight:600;margin-bottom:8px;">3. What is your biggest Markdown challenge?</label>
+                <textarea id="reflect-3" style="width:100%;height:80px;padding:12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;"></textarea>
+            </div>
+            <div>
+                <label style="display:block;font-weight:600;margin-bottom:8px;">4. How will Markdown change your workflow?</label>
+                <textarea id="reflect-4" style="width:100%;height:80px;padding:12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;"></textarea>
+            </div>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:20px;">
+            <button class="btn" id="reflect-save">💾 Save Reflections</button>
+            <button class="btn" id="reflect-download" style="background:#6c757d;">📥 Download as .md</button>
+        </div>
+        <div id="reflect-saved" style="display:none;text-align:center;padding:20px;background:var(--ok-soft);border-radius:8px;margin-top:20px;">
+            <div style="font-size:2rem;margin-bottom:12px;">🎉</div>
+            <h3 style="color:var(--ok);margin-bottom:8px;">Congratulations, Markdown Master!</h3>
+            <p>You have completed the entire Markdown Mastery course. Your reflections are saved.</p>
+        </div>
+    </div>
+</section>
+
+<style>
+.gallery-card {
+    background:#fff;
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:20px;
+    transition:box-shadow 0.2s;
+}
+.gallery-card:hover {
+    box-shadow:0 4px 15px rgba(0,0,0,0.1);
+}
+</style>
+
+<script>
+(function() {
+    // STYLE CONFIGURATOR DATA & LOGIC
+    function updateStylePreview() {
+        const list = document.getElementById('style-list').value;
+        const heading = document.getElementById('style-heading').value;
+        const bold = document.getElementById('style-bold').value;
+        const length = document.getElementById('style-length').value;
+        const indent = document.getElementById('style-indent').value;
+        const fence = document.getElementById('style-fence').value;
+        const link = document.getElementById('style-link').value;
+        const hr = document.getElementById('style-hr').value;
+        
+        let style = '# Markdown Style Guide\n\n';
+        style += 'This document defines the Markdown conventions for this project.\n\n';
+        style += '## Lists\n\n';
+        style += '- Use `' + list + '` for unordered lists\n';
+        style += '- Consistent marker throughout document\n';
+        style += '- Indent nested items with ' + indent + (indent === 'tab' ? '' : ' spaces') + '\n\n';
+        style += '## Headings\n\n';
+        style += '- Use ' + (heading === 'title' ? 'Title Case (Main Words Capitalized)' : 'Sentence case (first word only)') + '\n';
+        style += '- One H1 per document\n';
+        style += '- Do not skip heading levels\n\n';
+        style += '## Emphasis\n\n';
+        style += '- Bold: `' + bold + 'text' + bold + '`\n';
+        style += '- Italic: `*text*` or `_text_`\n';
+        style += '- Do not overuse emphasis\n\n';
+        style += '## Links\n\n';
+        style += '- Prefer ' + (link === 'inline' ? 'inline links: `[text](url)`' : 'reference-style links: `[text][ref]`') + '\n';
+        style += '- Use descriptive link text\n\n';
+        style += '## Code\n\n';
+        style += '- Code blocks: `' + fence + 'language`\n';
+        style += '- Always specify language for syntax highlighting\n';
+        style += '- Inline code: `` `code` ``\n\n';
+        style += '## Formatting\n\n';
+        style += '- Line length: ' + (length === 'none' ? 'No limit' : length + ' characters') + '\n';
+        style += '- Blank line before headings: 1\n';
+        style += '- Horizontal rules: `' + hr + '`\n';
+        style += '- One sentence per line for version control\n\n';
+        style += '## General\n\n';
+        style += '- Use UTF-8 encoding\n';
+        style += '- End files with newline\n';
+        style += '- No trailing whitespace\n';
+        style += '- Consistent indentation: ' + indent + (indent === 'tab' ? '' : ' spaces');
+        
+        document.getElementById('style-preview').textContent = style;
+        return style;
+    }
+    
+    ['style-list', 'style-heading', 'style-bold', 'style-length', 'style-indent', 'style-fence', 'style-link', 'style-hr'].forEach(id => {
+        document.getElementById(id).onchange = updateStylePreview;
+    });
+    
+    document.getElementById('style-download').onclick = () => {
+        const content = updateStylePreview();
+        const blob = new Blob([content], { type: 'text/markdown' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'STYLE.md';
+        a.click();
+    };
+    
+    document.getElementById('style-copy').onclick = () => {
+        const content = updateStylePreview();
+        navigator.clipboard.writeText(content).then(() => {
+            const btn = document.getElementById('style-copy');
+            const orig = btn.textContent;
+            btn.textContent = '✅ Copied!';
+            setTimeout(() => { btn.textContent = orig; }, 2000);
+        });
+    };
+    
+    // WRITE FRAMEWORK LOGIC
+    let writeData = {};
+    
+    document.getElementById('write-next-1').onclick = () => {
+        const selected = document.querySelector('input[name="write-type"]:checked');
+        if (!selected) { alert('Please select a document type'); return; }
+        writeData.type = selected.value;
+        document.getElementById('write-step-1').style.display = 'none';
+        document.getElementById('write-step-2').style.display = 'block';
+    };
+    
+    document.getElementById('write-back-2').onclick = () => {
+        document.getElementById('write-step-2').style.display = 'none';
+        document.getElementById('write-step-1').style.display = 'block';
+    };
+    
+    document.getElementById('write-next-2').onclick = () => {
+        const selected = Array.from(document.querySelectorAll('input[name="write-audience"]:checked')).map(el => el.value);
+        if (selected.length === 0) { alert('Please select at least one audience'); return; }
+        writeData.audience = selected;
+        document.getElementById('write-step-2').style.display = 'none';
+        document.getElementById('write-step-3').style.display = 'block';
+    };
+    
+    document.getElementById('write-back-3').onclick = () => {
+        document.getElementById('write-step-3').style.display = 'none';
+        document.getElementById('write-step-2').style.display = 'block';
+    };
+    
+    document.getElementById('write-next-3').onclick = () => {
+        const intent = document.getElementById('write-intent').value.trim();
+        if (!intent) { alert('Please describe the intended outcome'); return; }
+        writeData.intent = intent;
+        document.getElementById('write-step-3').style.display = 'none';
+        document.getElementById('write-step-4').style.display = 'block';
+    };
+    
+    document.getElementById('write-back-4').onclick = () => {
+        document.getElementById('write-step-4').style.display = 'none';
+        document.getElementById('write-step-3').style.display = 'block';
+    };
+    
+    document.getElementById('write-generate').onclick = () => {
+        writeData.formality = document.getElementById('write-formality').value;
+        writeData.tone = Array.from(document.querySelectorAll('input[name="write-tone"]:checked')).map(el => el.value);
+        
+        let template = generateTemplate(writeData);
+        document.getElementById('write-template').textContent = template;
+        document.getElementById('write-step-4').style.display = 'none';
+        document.getElementById('write-result').style.display = 'block';
+    };
+    
+    function generateTemplate(data) {
+        let t = '';
+        const formal = parseInt(data.formality) > 3;
+        const casual = parseInt(data.formality) < 3;
+        
+        if (data.type === 'readme') {
+            t = '# Project Title\n\n';
+            t += formal ? 'A comprehensive solution for...\n\n' : 'This project helps you...\n\n';
+            t += '## Features\n\n- Feature one\n- Feature two\n- Feature three\n\n';
+            t += '## Installation\n\n```bash\nnpm install project-name\n```\n\n';
+            t += '## Usage\n\n```javascript\nconst project = require("project-name");\n```\n\n';
+            t += '## Documentation\n\nSee [full documentation](url) for details.\n\n';
+            t += '## Contributing\n\n' + (formal ? 'Contributions are welcome.' : 'Pull requests welcome!') + '\n\n';
+            t += '## License\n\nMIT';
+        } else if (data.type === 'blog') {
+            t = '# ' + (formal ? 'Article Title' : 'Your Catchy Title') + '\n\n';
+            t += '**Published:** YYYY-MM-DD  \n**Reading time:** 5 minutes\n\n';
+            t += '## Introduction\n\n' + (casual ? 'Hey there! ' : '') + 'Your opening hook goes here.\n\n';
+            t += '## Main Point 1\n\nYour content...\n\n';
+            t += '## Main Point 2\n\nMore content...\n\n';
+            t += '## Conclusion\n\nWrap up your thoughts.\n\n';
+            t += '---\n\n' + (casual ? 'Thanks for reading!' : 'Thank you for your time.');
+        } else if (data.type === 'docs') {
+            t = '# API Reference\n\n';
+            t += '## Overview\n\nThis document describes...\n\n';
+            t += '## Authentication\n\n```http\nGET /api/endpoint\nAuthorization: Bearer TOKEN\n```\n\n';
+            t += '## Endpoints\n\n### GET /resource\n\nReturns a list of resources.\n\n';
+            t += '**Parameters:**\n- `limit` (optional): Number of results\n- `offset` (optional): Pagination offset\n\n';
+            t += '**Response:**\n```json\n{\n  "data": [],\n  "total": 100\n}\n```';
+        } else if (data.type === 'tutorial') {
+            t = '# ' + (casual ? 'How to' : 'Tutorial:') + ' Your Topic\n\n';
+            t += '## What You Will Learn\n\n- Skill one\n- Skill two\n- Skill three\n\n';
+            t += '## Prerequisites\n\n- Requirement one\n- Requirement two\n\n';
+            t += '## Step 1: First Step\n\n' + (casual ? 'Let us start by...' : 'Begin by...') + '\n\n';
+            t += '```bash\ncommand here\n```\n\n';
+            t += '## Step 2: Next Step\n\nContinue with...\n\n';
+            t += '## Step 3: Final Step\n\nFinish by...\n\n';
+            t += '## Next Steps\n\n' + (casual ? 'Now you can...' : 'You may now proceed to...');
+        } else {
+            t = '# Report Title\n\n**Date:** YYYY-MM-DD  \n**Author:** Your Name\n\n';
+            t += '## Executive Summary\n\nKey findings in brief.\n\n';
+            t += '## Background\n\nContext and problem statement.\n\n';
+            t += '## Analysis\n\n### Finding 1\nDetails...\n\n### Finding 2\nDetails...\n\n';
+            t += '## Recommendations\n\n1. Recommendation one\n2. Recommendation two\n\n';
+            t += '## Conclusion\n\nSummary of key points.';
+        }
+        
+        t += '\n\n---\n\n_Intended outcome: ' + data.intent + '_\n';
+        t += '_Target audience: ' + data.audience.join(', ') + '_\n';
+        t += '_Tone: ' + (data.tone.length ? data.tone.join(', ') : 'neutral') + '_';
+        
+        return t;
+    }
+    
+    document.getElementById('write-download').onclick = () => {
+        const content = document.getElementById('write-template').textContent;
+        const blob = new Blob([content], { type: 'text/markdown' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'template.md';
+        a.click();
+    };
+    
+    document.getElementById('write-copy').onclick = () => {
+        const content = document.getElementById('write-template').textContent;
+        navigator.clipboard.writeText(content).then(() => {
+            const btn = document.getElementById('write-copy');
+            const orig = btn.textContent;
+            btn.textContent = '✅ Copied!';
+            setTimeout(() => { btn.textContent = orig; }, 2000);
+        });
+    };
+    
+    document.getElementById('write-restart').onclick = () => {
+        writeData = {};
+        document.getElementById('write-result').style.display = 'none';
+        document.getElementById('write-step-1').style.display = 'block';
+        document.querySelectorAll('input[type="radio"]').forEach(el => el.checked = false);
+        document.querySelectorAll('input[type="checkbox"]').forEach(el => el.checked = false);
+        document.getElementById('write-intent').value = '';
+        document.getElementById('write-formality').value = 3;
+    };
+    
+    // ADVANCED FLIP CARDS
+    const advCards = [
+        { title: "Nested Lists Mixed", why: "Combine ordered and unordered lists for complex hierarchies", how: "Mix list types with proper indentation", syn: "1. Ordered item\n   - Unordered sub\n   - Another sub\n2. Next ordered\n   1. Nested ordered\n   2. Another nested" },
+        { title: "Tables with Alignment", why: "Control column alignment for better readability", how: "Use colons in separator row", syn: "| Left | Center | Right |\n|:-----|:------:|------:|\n| L1   | C1     | R1    |\n| L2   | C2     | R2    |" },
+        { title: "Footnotes", why: "Add citations without breaking reading flow", how: "Use [^n] for reference and definition", syn: "Text with footnote[^1].\n\nMore text[^2].\n\n[^1]: First note\n[^2]: Second note" },
+        { title: "Definition Lists", why: "Semantic markup for glossaries and term definitions", how: "Term on one line colon definition below", syn: "First Term\n: Definition of first term\n\nSecond Term\n: Definition of second term" },
+        { title: "Task Lists", why: "Create interactive todo checkboxes", how: "Use dash square brackets with space or x", syn: "- [ ] Unchecked task\n- [x] Checked task\n- [ ] Another todo\n- [x] Completed item" },
+        { title: "Strikethrough", why: "Show deleted or deprecated content", how: "Wrap text with double tildes", syn: "~~This text is crossed out~~\n\nRegular text ~~deleted~~ more text" },
+        { title: "Emoji Shortcodes", why: "Add emoji using text codes", how: "Use colon emoji name colon", syn: ":smile: :heart: :rocket:\n:+1: :tada: :fire:\n\nNote: Support varies by platform" },
+        { title: "HTML in Markdown", why: "Use HTML when Markdown is insufficient", how: "Write HTML tags directly in document", syn: "<div align='center'>\n  <strong>Centered bold</strong>\n</div>\n\n<span style='color:red'>Red text</span>" },
+        { title: "Auto-linking URLs", why: "Create clickable links without brackets", how: "Wrap URL in angle brackets", syn: "<https://example.com>\n<user@email.com>\n\nBoth become clickable links" },
+        { title: "Escaping Everything", why: "Display literal special characters", how: "Use backslash before character", syn: "\\* Not a bullet\n\\# Not heading\n\\[Not a link\\]\n\\`Not code\\`\n\\\\ Literal backslash" }
+    ];
+    
+    const advDeck = document.getElementById('adv-deck');
+    advDeck.innerHTML = advCards.map((c,i) => 
+        '<div class="flip-card" data-idx="'+i+'"><div class="flip-card-inner"><div class="flip-card-front"><h4>'+c.title+'</h4><p><strong>Why:</strong> '+c.why+'</p><p><strong>How:</strong> '+c.how+'</p><p style="margin-top:20px;color:var(--accent);font-size:0.9rem;">👆 Click to see syntax</p></div><div class="flip-card-back"><pre style="margin:0;white-space:pre-wrap;font-size:0.9rem;line-height:1.6;">'+c.syn.replace(/</g, '&lt;').replace(/>/g, '&gt;')+'</pre></div></div></div>'
+    ).join('');
+    
+    let advIdx = 0;
+    function showAdvCard(i) {
+        advDeck.querySelectorAll('.flip-card').forEach((c,idx) => {
+            c.classList.toggle('active', idx === i);
+            if(idx !== i) c.classList.remove('flipped');
+        });
+        document.getElementById('adv-counter').textContent = 'Pattern ' + (i+1) + ' of ' + advCards.length;
+    }
+    advDeck.onclick = (e) => {
+        const c = e.target.closest('.flip-card');
+        if(c) c.classList.toggle('flipped');
+    };
+    document.getElementById('adv-prev').onclick = () => { if(advIdx > 0) { advIdx--; showAdvCard(advIdx); }};
+    document.getElementById('adv-next').onclick = () => { if(advIdx < advCards.length-1) { advIdx++; showAdvCard(advIdx); }};
+    document.getElementById('adv-copy-btn').onclick = () => {
+        navigator.clipboard.writeText(advCards[advIdx].syn).then(() => {
+            const btn = document.getElementById('adv-copy-btn');
+            const orig = btn.innerHTML;
+            btn.innerHTML = '✅ Copied!';
+            setTimeout(() => { btn.innerHTML = orig; }, 2000);
+        });
+    };
+    showAdvCard(0);
+    
+    // GALLERY DEMOS (Modal would go here - simplified for length)
+    document.querySelectorAll('.gallery-card button').forEach(btn => {
+        btn.onclick = () => {
+            const demo = btn.closest('.gallery-card').dataset.demo;
+            alert('Demo: ' + demo + '\n\nIn full implementation, this would open a modal with editable code and live preview.');
+        };
+    });
+    
+    // TONE GUIDELINES & BREAK RULES (Accordion data)
+    const toneData = {
+        "Technical Writing for Developers": {
+            bad1: "Hey! So like, this function is super cool and does stuff...",
+            good: "This function validates user input before processing...",
+            bad2: "One must endeavor to utilize this function for validation...",
+            tips: "Use active voice. Be direct and clear. Avoid unnecessary jargon. Include code examples."
+        },
+        "Educational Content for Students": {
+            bad1: "Figure it out yourself, it is obvious...",
+            good: "Let us walk through this step by step. First, we...",
+            bad2: "The utilization of aforementioned methodologies facilitates...",
+            tips: "Be encouraging. Break complex ideas into steps. Use analogies. Check understanding."
+        },
+        "Professional Documentation": {
+            bad1: "idk maybe try this lol",
+            good: "Follow these steps to configure the system:",
+            bad2: "One might possibly consider attempting to...",
+            tips: "Be clear and authoritative. Use consistent terminology. Provide complete information."
+        },
+        "Blog Posts for General Audience": {
+            bad1: "Pursuant to section 3 subsection B...",
+            good: "Here is what you need to know:",
+            bad2: "ya this is gr8 u should tots try it!!!",
+            tips: "Be conversational but professional. Use stories. Keep paragraphs short. Address reader directly."
+        },
+        "README for Open Source": {
+            bad1: "If you don't know how to install this, don't use it.",
+            good: "Installation is simple. Run: npm install package-name",
+            bad2: "This repository contains code that may or may not work...",
+            tips: "Be welcoming. Assume no prior knowledge. Provide quick start. Link to details."
+        },
+        "Tutorial for Beginners": {
+            bad1: "Obviously you just configure the manifest...",
+            good: "No worries if this is new. We will start from the beginning.",
+            bad2: "hey bestie lets code sum stuff!!1!",
+            tips: "Never use obviously or just. Explain why, not just how. Celebrate small wins. Provide next steps."
+        }
+    };
+    
+    const toneAcc = document.getElementById('tone-accordion');
+    let toneHTML = '';
+    for (const topic in toneData) {
+        const data = toneData[topic];
+        toneHTML += '<div class="accordion-item"><button class="accordion-header" aria-expanded="false"><span class="accordion-title"><strong>'+topic+'</strong></span></button><div class="accordion-content">';
+        toneHTML += '<h4 style="color:var(--bad);margin-top:0;">❌ Too Casual</h4>';
+        toneHTML += '<p style="background:var(--bad-soft);padding:12px;border-radius:6px;border-left:3px solid var(--bad);">"'+data.bad1+'"</p>';
+        toneHTML += '<h4 style="color:var(--ok);margin-top:20px;">✅ Just Right</h4>';
+        toneHTML += '<p style="background:var(--ok-soft);padding:12px;border-radius:6px;border-left:3px solid var(--ok);">"'+data.good+'"</p>';
+        toneHTML += '<h4 style="color:var(--bad);margin-top:20px;">❌ Too Formal</h4>';
+        toneHTML += '<p style="background:var(--bad-soft);padding:12px;border-radius:6px;border-left:3px solid var(--bad);">"'+data.bad2+'"</p>';
+        toneHTML += '<h4 style="margin-top:20px;">Guidelines:</h4><p>'+data.tips+'</p>';
+        toneHTML += '</div></div>';
+    }
+    toneAcc.innerHTML = toneHTML;
+    toneAcc.querySelectorAll('.accordion-header').forEach(h => {
+        h.onclick = () => {
+            const e = h.getAttribute('aria-expanded') === 'true';
+            h.setAttribute('aria-expanded', !e);
+            h.nextElementSibling.style.display = e ? 'none' : 'block';
+        };
+    });
+    
+    const breakData = [
+        { rule: "Mixing HTML for Styling", when: "Markdown cannot achieve the desired visual effect", ex: "<div style='color:red'>Important warning</div>", risk: "Reduces portability. Not all renderers support HTML." },
+        { rule: "Using Tables for Layout", when: "Creating forms or complex structured data", ex: "Use tables for comparison matrices and data grids", risk: "Tables are not responsive. Consider alternatives." },
+        { rule: "Inline Styles", when: "Highlighting specific elements that need emphasis", ex: "<span style='background:yellow'>highlighted</span>", risk: "Styling should live in CSS. Use sparingly." },
+        { rule: "Non-standard Extensions", when: "Using tools like Mermaid or KaTeX that extend Markdown", ex: "```mermaid\ngraph LR\nA-->B\n```", risk: "Not portable. Document dependencies clearly." },
+        { rule: "Breaking Semantic HTML", when: "Creative typography or artistic layouts", ex: "Using multiple H1 tags for visual effect", risk: "Hurts accessibility and SEO. Justify carefully." },
+        { rule: "Ignoring Line Length", when: "Code blocks URLs or data that cannot wrap", ex: "Long URLs or code samples", risk: "None. This is expected and acceptable." },
+        { rule: "Multiple Blank Lines", when: "Creating dramatic pauses in narrative content", ex: "Section\n\n\n\nNew section", risk: "Inconsistent rendering. Most parsers collapse these." },
+        { rule: "Skipping Heading Levels", when: "Never. This breaks document structure", ex: "# H1\n### H3 (skipped H2)", risk: "Screen readers and outlines break. Always maintain hierarchy." }
+    ];
+    
+    const breakAcc = document.getElementById('break-accordion');
+    let breakHTML = '';
+    breakData.forEach((item, i) => {
+        breakHTML += '<div class="accordion-item"><button class="accordion-header" aria-expanded="false"><span class="accordion-title"><strong>'+(i+1)+'. '+item.rule+'</strong></span></button><div class="accordion-content">';
+        breakHTML += '<p><strong>When justified:</strong> '+item.when+'</p>';
+        breakHTML += '<p><strong>Example:</strong></p><pre class="code-block"><code>'+item.ex.replace(/</g, '&lt;').replace(/>/g, '&gt;')+'</code></pre>';
+        breakHTML += '<p><strong>Risks:</strong> '+item.risk+'</p>';
+        breakHTML += '</div></div>';
+    });
+    breakAcc.innerHTML = breakHTML;
+    breakAcc.querySelectorAll('.accordion-header').forEach(h => {
+        h.onclick = () => {
+            const e = h.getAttribute('aria-expanded') === 'true';
+            h.setAttribute('aria-expanded', !e);
+            h.nextElementSibling.style.display = e ? 'none' : 'block';
+        };
+    });
+    
+    // QUIZ 3 (Scenario-based)
+    const quiz3 = [
+        { scenario: "You are writing API documentation for developers. Your audience needs quick reference but also detailed examples.", q: "Which structure is best?", cor: 1, opts: ["Long paragraphs explaining everything", "Short description plus code example plus link to detailed guide", "Just code examples with no explanation", "Detailed explanation with no code examples"], exps: ["Wrong. Developers skim. Walls of text get skipped.", "Correct! Respects developer time with quick reference, shows practical usage, and provides depth when needed.", "Wrong. Code without context is confusing and frustrating.", "Wrong. Explanation without examples is not actionable."] },
+        { scenario: "Your README needs to serve both beginners and experts.", q: "How do you structure it?", cor: 0, opts: ["Quick start first then link to advanced docs", "Advanced features first then basics", "Everything in one giant file", "Separate READMEs for each audience"], exps: ["Correct! Quick start gets everyone moving. Advanced users know to look for more.", "Wrong. Beginners will bounce. Always optimize for the newcomer.", "Wrong. Too much information overwhelms. Separate concerns.", "Wrong. Maintainability nightmare. One README with good navigation."] },
+        { scenario: "You are writing a tutorial and students are getting stuck.", q: "What is the most likely problem?", cor: 2, opts: ["Not enough advanced concepts", "Too many code examples", "Using words like obviously and simply", "Too much explanation"], exps: ["Wrong. Tutorials should focus on one thing. Advanced comes later.", "Wrong. Examples clarify. You cannot have too many if they are relevant.", "Correct! These words dismiss struggle and make students feel stupid. Never use them.", "Wrong. Beginners need context. Don't assume knowledge."] },
+        { scenario: "Your changelog needs to communicate what changed to both users and developers.", q: "Best format?", cor: 1, opts: ["Technical git commit messages", "Added features, Fixed bugs, Breaking changes sections", "Paragraph explaining everything", "Just version number and date"], exps: ["Wrong. Users do not care about commits. They care about impact.", "Correct! Clear categories. Users scan for features. Developers check breaking changes.", "Wrong. No one reads paragraphs. Use scannable lists.", "Wrong. Not enough information. Always explain what changed and why it matters."] },
+        { scenario: "You need to document an error message that users will encounter.", q: "What must you include?", cor: 3, opts: ["Just the error message", "Error message plus technical cause", "Error message plus how to fix it", "All of the above"], exps: ["Wrong. Users are stuck. Just naming the error does not help.", "Wrong. Technical cause does not help user fix it.", "Wrong. Missing the full picture. Context matters.", "Correct! Show the error, explain why it happens, and tell them exactly how to fix it. Complete information reduces support burden."] },
+        { scenario: "Your contributing guidelines are too long and no one reads them.", q: "How do you fix this?", cor: 0, opts: ["TL;DR at top with essentials then details below", "Make them even more detailed", "Remove the guidelines entirely", "Split into multiple documents"], exps: ["Correct! Respect contributor time. Give them the minimum to get started, link to details for edge cases.", "Wrong. More detail makes the problem worse. Brevity wins.", "Wrong. Guidelines reduce wasted effort and bad PRs. Keep them but make them scannable.", "Wrong. Multiple docs means no one finds anything. One doc, good structure."] },
+        { scenario: "You are writing a blog post and it feels boring.", q: "What is missing?", cor: 2, opts: ["More technical jargon", "Longer paragraphs", "Stories, examples, and personality", "Formal academic tone"], exps: ["Wrong. Jargon alienates readers. Use plain language.", "Wrong. Long paragraphs are hard to read. Keep them short.", "Correct! People connect with stories. Examples make concepts concrete. Personality makes content memorable.", "Wrong. Blog posts should be conversational. Save formality for papers."] },
+        { scenario: "Your meeting notes are not getting read.", q: "What should you change?", cor: 1, opts: ["Write them in paragraph form", "Start with action items and decisions", "Include every word spoken", "Send them a week later"], exps: ["Wrong. Paragraphs bury the important information. Use structure.", "Correct! Busy people scan for action items first. Put the important stuff at the top.", "Wrong. Verbatim notes are noise. Capture decisions and actions only.", "Wrong. Notes lose value over time. Send within 24 hours."] },
+        { scenario: "You need to write technical specifications that non-technical stakeholders will read.", q: "How do you structure it?", cor: 3, opts: ["Pure technical details", "No technical details", "Two separate documents", "Executive summary then technical details"], exps: ["Wrong. Stakeholders cannot make decisions without understanding.", "Wrong. Developers need technical details to implement.", "Wrong. Maintaining two docs is painful. They drift apart.", "Correct! Summary for stakeholders, details for implementers. One source of truth."] },
+        { scenario: "Your personal notes are disorganized and you cannot find anything.", q: "What system works best?", cor: 2, opts: ["One giant file for everything", "Separate file for every note", "Consistent naming and folder structure with index", "Random files whenever you think of something"], exps: ["Wrong. Giant files become unmaintainable. Information gets lost.", "Wrong. Too many files makes navigation impossible.", "Correct! Consistent structure plus index makes everything findable. Date-based or topic-based, pick one and stick with it.", "Wrong. Chaos now means lost information later. Systems beat spontaneity."] }
+    ];
+    
+    let q3Idx = 0;
+    document.getElementById('q3Total').textContent = quiz3.length;
+    function showQ3(i) {
+        const q = quiz3[i];
+        const qb = document.getElementById('quiz3-body');
+        let h = '<div class="quiz-body active">';
+        h += '<div style="background:var(--muted);padding:16px;border-radius:8px;margin-bottom:20px;"><strong>Scenario:</strong> '+q.scenario+'</div>';
+        h += '<p><strong>'+q.q+'</strong></p><div class="quiz-options">';
+        q.opts.forEach((opt,oi) => {
+            h += '<div class="quiz-option" data-oi="'+oi+'"><label><input type="radio" name="q3'+i+'" value="'+oi+'"><span>'+opt+'</span></label><div class="explanation">'+q.exps[oi]+'</div></div>';
+        });
+        h += '</div></div>';
+        qb.innerHTML = h;
+        document.getElementById('q3Cur').textContent = i+1;
+        document.getElementById('q3Prev').disabled = i === 0;
+        document.getElementById('q3Next').disabled = i === quiz3.length - 1;
+        qb.querySelectorAll('input').forEach(inp => {
+            inp.onchange = () => {
+                const sel = parseInt(inp.value);
+                const parent = inp.closest('.quiz-body');
+                parent.querySelectorAll('.quiz-option').forEach(o => {
+                    o.classList.remove('selected','correct','wrong');
+                    o.querySelector('.explanation').style.display = 'none';
+                });
+                const selOpt = inp.closest('.quiz-option');
+                selOpt.classList.add('selected');
+                selOpt.querySelector('.explanation').style.display = 'block';
+                if(sel === q.cor) {
+                    selOpt.classList.add('correct');
+                } else {
+                    selOpt.classList.add('wrong');
+                    parent.querySelector('[data-oi="'+q.cor+'"]').classList.add('correct');
+                }
+            };
+        });
+    }
+    document.getElementById('q3Prev').onclick = () => { if(q3Idx > 0) { q3Idx--; showQ3(q3Idx); }};
+    document.getElementById('q3Next').onclick = () => { if(q3Idx < quiz3.length-1) { q3Idx++; showQ3(q3Idx); }};
+    showQ3(0);
+    
+    // GLOBAL GLOSSARY (30 terms total - combining all parts)
+    const allGlossary = [
+        { term: "Markdown", cat: "Core", def: "A lightweight markup language for creating formatted text using plain text syntax." },
+        { term: "Parser", cat: "Core", def: "Software that reads Markdown and converts it to HTML or other formats." },
+        { term: "Syntax", cat: "Core", def: "The rules and symbols used to format text in Markdown." },
+        { term: "Render", cat: "Core", def: "The process of converting Markdown syntax into formatted visual output." },
+        { term: "Plain Text", cat: "Core", def: "Text without any formatting just characters." },
+        { term: "HTML", cat: "Core", def: "HyperText Markup Language the standard format for web pages." },
+        { term: "Flavor", cat: "Advanced", def: "A variant of Markdown with additional features like GitHub Flavored Markdown." },
+        { term: "Escape Character", cat: "Syntax", def: "A backslash used to display special characters literally instead of as formatting." },
+        { term: "Inline vs Block", cat: "Syntax", def: "Inline appears in text. Block creates separate sections." },
+        { term: "Front Matter", cat: "Advanced", def: "YAML metadata at the top of a Markdown file for title author date tags." },
+        { term: "Linter", cat: "Tools", def: "A tool that checks Markdown for style violations and errors." },
+        { term: "Reference Link", cat: "Syntax", def: "Link style where URL is defined separately from the link text." },
+        { term: "Anchor", cat: "Syntax", def: "A target location in a document that links can jump to." },
+        { term: "Code Fence", cat: "Syntax", def: "Triple backticks or tildes that wrap multi-line code blocks." },
+        { term: "Strikethrough", cat: "Syntax", def: "Text with a line through it created with double tildes." },
+        { term: "Task List", cat: "Extended", def: "Checkboxes in lists using square bracket syntax." },
+        { term: "Footnote", cat: "Extended", def: "A numbered reference that links to a note at the bottom." },
+        { term: "Definition List", cat: "Extended", def: "A list format for terms and their definitions." },
+        { term: "Table Alignment", cat: "Syntax", def: "Using colons in table separators to control column alignment." },
+        { term: "Nested List", cat: "Syntax", def: "A list item that contains sub-items created by indentation." },
+        { term: "Static Site Generator", cat: "Tools", def: "Software that converts Markdown files into a complete website." },
+        { term: "Preprocessor", cat: "Tools", def: "A tool that processes Markdown before rendering like adding includes." },
+        { term: "CommonMark", cat: "Standard", def: "A strongly defined specification of Markdown to ensure consistency." },
+        { term: "GFM", cat: "Flavor", def: "GitHub Flavored Markdown adds tables task lists and more to standard Markdown." },
+        { term: "Pandoc", cat: "Tools", def: "Universal document converter that can transform Markdown to many formats." },
+        { term: "Heading Hierarchy", cat: "Best Practice", def: "The structure of headings from H1 to H6 never skipping levels." },
+        { term: "Semantic HTML", cat: "Concept", def: "HTML that uses tags for meaning not just appearance important for accessibility." },
+        { term: "Trailing Whitespace", cat: "Best Practice", def: "Extra spaces at the end of lines often removed by linters." },
+        { term: "Line Length Limit", cat: "Best Practice", def: "Maximum characters per line often 80 or 120 for readability." },
+        { term: "Blockquote", cat: "Syntax", def: "Indented text prefixed with greater-than symbol for quotations." }
+    ];
+    
+ const glossaryGrid = document.getElementById('glossary-grid');
+    const glossarySearch = document.getElementById('glossary-search');
+    
+    function renderGlossary(filter) {
+        const filtered = filter ? allGlossary.filter(g => 
+            g.term.toLowerCase().includes(filter.toLowerCase()) || 
+            g.def.toLowerCase().includes(filter.toLowerCase())
+        ) : allGlossary;
+        
+        glossaryGrid.innerHTML = filtered.map(g => 
+            '<div style="background:#fff;padding:16px;border:1px solid var(--border);border-radius:8px;"><h4 style="color:var(--accent-2);margin:0 0 8px 0;">'+g.term+'</h4><p style="font-size:0.85rem;color:#6c757d;margin:0;">'+g.def+'</p></div>'
+        ).join('');
+        
+        if (filtered.length === 0) {
+            glossaryGrid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:#6c757d;padding:40px;">No terms found matching "' + filter + '"</p>';
+        }
+    }
+    
+    renderGlossary('');
+    
+    glossarySearch.oninput = (e) => {
+        renderGlossary(e.target.value.trim());
+    };
+    
+    // REFLECTION SYSTEM
+    document.getElementById('reflect-save').onclick = () => {
+        const r1 = document.getElementById('reflect-1').value;
+        const r2 = document.getElementById('reflect-2').value;
+        const r3 = document.getElementById('reflect-3').value;
+        const r4 = document.getElementById('reflect-4').value;
+        
+        if (!r1 && !r2 && !r3 && !r4) {
+            alert('Please answer at least one reflection question');
+            return;
+        }
+        
+        localStorage.setItem('markdown-reflections', JSON.stringify({r1, r2, r3, r4, date: new Date().toISOString()}));
+        document.getElementById('reflect-saved').style.display = 'block';
+    };
+    
+    document.getElementById('reflect-download').onclick = () => {
+        const r1 = document.getElementById('reflect-1').value;
+        const r2 = document.getElementById('reflect-2').value;
+        const r3 = document.getElementById('reflect-3').value;
+        const r4 = document.getElementById('reflect-4').value;
+        
+        let content = '# My Markdown Journey\n\n';
+        content += '**Date:** ' + new Date().toLocaleDateString() + '\n\n';
+        content += '## What I will write first in Markdown\n\n' + (r1 || '_No response_') + '\n\n';
+        content += '## Which feature surprised me most\n\n' + (r2 || '_No response_') + '\n\n';
+        content += '## My biggest Markdown challenge\n\n' + (r3 || '_No response_') + '\n\n';
+        content += '## How Markdown will change my workflow\n\n' + (r4 || '_No response_') + '\n\n';
+        content += '---\n\n_Completed Markdown Mastery Course_';
+        
+        const blob = new Blob([content], { type: 'text/markdown' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'my-markdown-journey.md';
+        a.click();
+    };
+    
+    // Load saved reflections if they exist
+    const saved = localStorage.getItem('markdown-reflections');
+    if (saved) {
+        const data = JSON.parse(saved);
+        document.getElementById('reflect-1').value = data.r1 || '';
+        document.getElementById('reflect-2').value = data.r2 || '';
+        document.getElementById('reflect-3').value = data.r3 || '';
+        document.getElementById('reflect-4').value = data.r4 || '';
+    }
+    
+    // Initialize style preview on load
+    updateStylePreview();
+})();
+</script>
+
+  <footer class="site-footer">
+    <p class="footer-copy">© 2025 Beyond Dictionary. All Rights Reserved.</p>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const animSteps = [
+        { src: "# Welcome", prev: "<h1 style='margin:0;font-size:2rem;'>Welcome</h1>", narr: "A single hash symbol creates a heading. No toolbar needed." },
+        { src: "**bold** and *italic*", prev: "<strong>bold</strong> and <em>italic</em>", narr: "Asterisks give you emphasis. One star equals italic, two equals bold." },
+        { src: "[Link text](url)", prev: "<a href='#' style='color:var(--accent);text-decoration:underline;'>Link text</a>", narr: "Square brackets plus parentheses equals clickable link." },
+        { src: "- Item one\n- Item two", prev: "• Item one<br>• Item two", narr: "Hyphens turn into bullet lists automatically." },
+        { src: "> A quote", prev: "<blockquote style='border-left:4px solid var(--accent);padding-left:15px;color:#666;margin:10px 0;'>A quote</blockquote>", narr: "Angle brackets create quotes like email replies." },
+        { src: "`code`", prev: "<code style='background:#f0f0f0;padding:2px 6px;border-radius:4px;font-family:monospace;'>code</code>", narr: "Backticks make text look like code." },
+        { src: "![Alt text](image.jpg)", prev: "🖼️ <span style='color:#888;'>[Image placeholder]</span>", narr: "Exclamation plus brackets equals image. Same syntax as links." },
+        { src: "# Welcome\n**bold** *italic*\n[Link](url)\n> Quote", prev: "<h1 style='margin:0 0 10px 0;'>Welcome</h1><p><strong>bold</strong> <em>italic</em><br><a href='#' style='color:var(--accent);'>Link</a></p><blockquote style='border-left:4px solid var(--accent);padding-left:15px;margin:10px 0;'>Quote</blockquote>", narr: "Seven simple patterns. Infinite possibilities." }
+      ];
+
+      const cmdData = [
+        {
+          cat: "Headers and Structure",
+          items: [
+            { syn: "# Heading 1", kw: "heading header title h1 largest main", prev: "<h1>Heading 1</h1>", use: "Main page title" },
+            { syn: "## Heading 2", kw: "subheading section h2 secondary", prev: "<h2>Heading 2</h2>", use: "Section divider" },
+            { syn: "### Heading 3", kw: "subsection h3 tertiary", prev: "<h3>Heading 3</h3>", use: "Sub-section header" },
+            { syn: "#### Heading 4", kw: "h4 quaternary minor", prev: "<h4>Heading 4</h4>", use: "Minor section" },
+            { syn: "---", kw: "divider line separator horizontal rule break", prev: "───────", use: "Visual break between sections" }
+          ]
+        },
+        {
+          cat: "Emphasis and Formatting",
+          items: [
+            { syn: "**bold text**", kw: "bold strong emphasis important weight", prev: "<strong>bold text</strong>", use: "Strong emphasis" },
+            { syn: "*italic text*", kw: "italic emphasis em slant oblique", prev: "<em>italic text</em>", use: "Subtle emphasis" },
+            { syn: "***bold italic***", kw: "bold italic strong emphasis both combined", prev: "<strong><em>bold italic</em></strong>", use: "Maximum emphasis" },
+            { syn: "~~strikethrough~~", kw: "strike delete cross out removed deprecated", prev: "<del>strikethrough</del>", use: "Removed or deprecated text" },
+            { syn: "__underline__", kw: "underscore underline", prev: "<u>underline</u>", use: "Alternative emphasis" }
+          ]
+        },
+        {
+          cat: "Links and Images",
+          items: [
+            { syn: "[text](url)", kw: "link hyperlink url anchor reference external", prev: "<a href='url'>text</a>", use: "Clickable hyperlink" },
+            { syn: "![alt](image.jpg)", kw: "image picture photo img visual graphic", prev: "🖼️ image", use: "Embed image with alt text" },
+            { syn: "<url>", kw: "auto link automatic bare url plain", prev: "<a href='url'>url</a>", use: "Auto-linked URL without text" },
+            { syn: "[text][ref]", kw: "reference link footnote reusable", prev: "<a>text</a>", use: "Reference-style link" }
+          ]
+        },
+        {
+          cat: "Lists and Organization",
+          items: [
+            { syn: "- item", kw: "bullet unordered list dash hyphen point", prev: "• item", use: "Bullet point list" },
+            { syn: "1. item", kw: "numbered ordered list number sequential", prev: "1. item", use: "Numbered list" },
+            { syn: "  - nested", kw: "indent nested sub-item child hierarchy", prev: "  • nested", use: "Nested list item" },
+            { syn: "- [ ] task", kw: "checkbox todo task list checklist unchecked", prev: "☐ task", use: "Unchecked task item" },
+            { syn: "- [x] done", kw: "checkbox checked completed done finished", prev: "☑ done", use: "Checked task item" }
+          ]
+        },
+        {
+          cat: "Code and Technical",
+          items: [
+            { syn: "`code`", kw: "inline code backtick monospace command terminal", prev: "<code>code</code>", use: "Inline code snippet" },
+            { syn: "```\ncode\n```", kw: "code block fence multi-line syntax program", prev: "<pre>code</pre>", use: "Multi-line code block" },
+            { syn: "```js\ncode\n```", kw: "syntax highlighting language javascript python", prev: "<pre>code</pre>", use: "Syntax-highlighted code" },
+            { syn: "> quote", kw: "blockquote citation quote indent callout", prev: "<blockquote>quote</blockquote>", use: "Block quotation" },
+            { syn: "| A | B |", kw: "table grid column row data tabular", prev: "table", use: "Create data table" }
+          ]
+        }
+      ];
+
+      const cards = [
+        { title: "1. Make text stand out", why: "To emphasize important words or phrases in your content", how: "Wrap text with asterisks or underscores", syn: "**bold text**\n*italic text*\n***bold and italic***\n~~strikethrough~~" },
+        { title: "2. Create headings", why: "To organize content with hierarchical structure and improve readability", how: "Use 1-6 hash symbols before text", syn: "# Heading 1\n## Heading 2\n### Heading 3\n#### Heading 4\n##### Heading 5\n###### Heading 6" },
+        { title: "3. Add links", why: "To reference external resources, other pages, or create navigation", how: "Square brackets for display text, parentheses for URL", syn: "[Link Text](https://example.com)\n[Google](https://google.com)\n[Email](mailto:user@example.com)" },
+        { title: "4. Show images", why: "To embed visual content, diagrams, screenshots in your documents", how: "Like a link but with exclamation mark at the start", syn: "![Alt text](image-url.jpg)\n![Logo](https://example.com/logo.png)\n![Diagram](./path/diagram.svg)" },
+        { title: "5. Make lists", why: "To organize items in bullet or numbered format for better scanning", how: "Use dash, asterisk, or plus for bullets, numbers for ordered lists", syn: "- Bullet item\n- Another item\n\n1. First item\n2. Second item\n\n+ Also works\n* Also works" },
+        { title: "6. Quote someone", why: "To cite text, highlight important passages, or show quoted material", how: "Start line with greater-than symbol", syn: "> This is a quote\n> It can span lines\n>\n> - Author Name" },
+        { title: "7. Show code", why: "To reference code, commands, technical terms, or file names", how: "Single backticks for inline, triple backticks for blocks", syn: "`inline code`\n`npm install`\n\n```javascript\nconst x = 10;\nconsole.log(x);\n```" },
+        { title: "8. Create tables", why: "To organize data in rows and columns for easy comparison", how: "Use pipes to separate columns, hyphens for header row", syn: "| Header 1 | Header 2 | Header 3 |\n|----------|----------|----------|\n| Cell 1   | Cell 2   | Cell 3   |\n| Cell 4   | Cell 5   | Cell 6   |" },
+        { title: "9. Add breaks", why: "To visually separate major sections or create thematic breaks", how: "Three or more hyphens, asterisks, or underscores on a line", syn: "---\n\n***\n\n___\n\nAll three work the same" },
+        { title: "10. Escape special characters", why: "To display literal characters that have special meaning in Markdown", how: "Use backslash before the character you want to escape", syn: "\\* Not a bullet\n\\# Not a heading\n\\[Not a link\\]\n\\`Not code\\`" },
+        { title: "11. Nest lists", why: "To create sub-items and hierarchical organization in lists", how: "Indent with 2-4 spaces or a tab", syn: "- Main item\n  - Sub-item level 1\n    - Sub-item level 2\n      - Sub-item level 3\n- Another main item" },
+        { title: "12. Combine formats", why: "To apply multiple styles simultaneously for complex formatting", how: "Nest different Markdown syntax types together", syn: "**_bold and italic_**\n[**bold link**](url)\n**bold with `code`**\n*italic with [link](url)*" },
+        { title: "13. Reference-style links", why: "To keep document readable when you have many links", how: "Define link references separately at bottom of document", syn: "[Link text][ref1]\n[Another link][ref2]\n\n[ref1]: https://example.com\n[ref2]: https://other.com" },
+        { title: "14. Inline HTML", why: "When Markdown syntax is insufficient for your needs", how: "Use HTML tags directly in your Markdown document", syn: "<span style='color:red;'>Red text</span>\n<div class='custom'>Custom div</div>\n<details><summary>Click</summary>Hidden</details>" },
+        { title: "15. Task lists", why: "To create interactive checkboxes for todo items and tracking", how: "Use square brackets with space or x inside", syn: "- [ ] Unchecked task\n- [x] Completed task\n- [ ] Another todo\n- [x] Another done" }
+      ];
+
+      const roles = [
+        { emoji: "✍️", title: "Writers and Authors", desc: "Escape the tyranny of formatting menus. Markdown lets you focus on words not widgets. Write in any text editor, export to any format. Your manuscripts survive platform changes and software updates. Many authors write entire books in Markdown then convert to DOCX PDF or ePub with a single command. The content is yours forever in the simplest most portable format possible." },
+        { emoji: "💻", title: "Software Developers", desc: "Every README every documentation site every comment in GitHub issues all Markdown. It is the lingua franca of development. Write docs alongside your code version control everything and never worry about Word binary format breaking your commit history. Markdown is native to the developer workflow. Most IDEs have built-in Markdown preview. Your documentation lives in Git with your code where it belongs." },
+        { emoji: "🎓", title: "Educators and Students", desc: "Create lecture notes assignment instructions and study guides that work everywhere. Students can read them on phones tablets or printed paper. Teachers can collaborate on curriculum without compatibility headaches. Math equations via LaTeX code snippets with syntax highlighting diagrams with Mermaid. Markdown does it all. Export to HTML for web viewing PDF for printing or slides for presentations. One source multiple outputs." },
+        { emoji: "📊", title: "Product Managers", desc: "Write PRDs specs and roadmaps in Markdown. Store them in Git alongside the code they describe. Link directly to issues pull requests and documentation. When you change jobs your documents come with you. No proprietary formats no vendor lock-in just portable knowledge. Tools like Notion Linear and Jira all support Markdown. Your thinking stays portable across tools and companies throughout your career." },
+        { emoji: "🎨", title: "Content Creators", desc: "Write blog posts once publish everywhere. Markdown to WordPress Medium Dev.to Hashnode all accept Markdown input. Your content is not trapped in one platform editor. You own your words in their purest form. Platform dies your content lives on. Many creators maintain their entire blog as Markdown files in Git. Ultimate ownership ultimate portability. Write locally publish globally." },
+        { emoji: "🎬", title: "Designers and UX Teams", desc: "Document design systems storyboard videos and annotate wireframes all in Markdown. Version control your component specs alongside the code. Write user flows that developers can read in their IDEs. Create design docs that live in the repository not in some separate tool. Future video storyboards in Markdown become the single source of truth for production teams. Plain text design documentation that scales." }
+      ];
+
+      const advs = [
+        { title: "1. Platform Independence", text: "Write once run anywhere. Markdown files open on Windows Mac Linux iOS Android anywhere there is a text editor. No compatibility issues no version conflicts. Your content transcends operating systems and devices. True platform independence means your words are never held hostage by any vendor or ecosystem." },
+        { title: "2. Future-Proof", text: "Plain text files have existed for over 50 years and will exist for 50 more. Unlike proprietary formats that become unreadable when the software dies Markdown documents are immortal. Your great-grandchildren will be able to read your Markdown files with no special software. This is digital permanence." },
+        { title: "3. Version Control Friendly", text: "Git can track every change line by line. See who changed what when and why. Merge conflicts are readable and resolvable. This is impossible with binary formats like DOCX. Developers understand this immediately but it benefits everyone. Your document history becomes queryable searchable and truly collaborative." },
+        { title: "4. Distraction-Free Writing", text: "No toolbars no ribbon menus no autocorrect fighting you. Just you and your words on a blank canvas. This is why authors love Markdown. It gets out of the way. When you write you want to think about ideas not formatting. Markdown gives you that mental space. Pure writing with no cognitive overhead." },
+        { title: "5. Fast and Lightweight", text: "A 100-page Markdown document is approximately 100KB. The equivalent Word document is 5MB or larger. Markdown files load instantly even on slow connections or old hardware. Email them as attachments with no size issues. Store thousands of documents in the space one DOCX would take. Speed and efficiency at every level." },
+        { title: "6. Easy to Learn", text: "Learn the basics in 10 minutes. Master the advanced features in an hour. Compare that to Microsoft Word with thousands of features and hidden menus. Markdown has maybe 15 core syntax patterns. That is it. The learning curve is not a curve. It is a gentle slope. Anyone can learn Markdown in an afternoon." },
+        { title: "7. Free and Open", text: "No licenses no subscriptions no vendor lock-in. Markdown is a free open standard. Use any editor from Notepad to VS Code to specialized Markdown apps. Never pay for software to read or write your documents. This is freedom. True digital freedom that respects your wallet and your rights." },
+        { title: "8. Readable as Plain Text", text: "Even without rendering Markdown documents are human-readable. Double asterisks for bold looks like it should be bold. This is not true for HTML or LaTeX. You can read Markdown files on any device with any text viewer. The formatting is implicit and obvious. No mystery no confusion just clarity." },
+        { title: "9. Converts to Anything", text: "Pandoc can convert Markdown to PDF DOCX HTML LaTeX ePub slides and dozens more formats. Write once export to any format your audience needs. Academic paper to PDF. Blog post to HTML. Book to ePub. All from the same Markdown source. One input infinite outputs. This is the power of plain text." },
+        { title: "10. Excellent for Documentation", text: "Most documentation sites including GitHub GitLab Stack Overflow and Reddit use Markdown. Write docs in the same language as your issues pull requests and comments. The entire developer ecosystem has standardized on Markdown. Learn it once use it everywhere. This is network effects at work." },
+        { title: "11. Collaboration Made Simple", text: "Email a Markdown file as an attachment. It is just text. No wrong version of Word issues. No formatting corruption. It just works. Share via Git Dropbox Google Drive anywhere. Others can edit with any text editor. True format-agnostic collaboration. No barriers no friction just content." },
+        { title: "12. Scriptable and Automatable", text: "Process Markdown files with scripts. Generate documentation from code comments. Build static sites from Markdown files. It is programmable content. You can automate workflows that would be impossible with binary formats. Text is programmable. Everything else is a black box. Markdown gives you power." },
+        { title: "13. Accessibility Wins", text: "Screen readers handle plain text beautifully. Semantic HTML output from Markdown is inherently accessible. No hidden metadata or formatting to confuse assistive technologies. Markdown respects users with disabilities by default. Accessibility is not an afterthought. It is built into the format itself." },
+        { title: "14. Separation of Concerns", text: "Markdown enforces separation of content and presentation. You define structure like headings lists and emphasis. The renderer handles visual styling. This is web design best practice. Your content is pure and portable. The styling is flexible and changeable. Never mix concerns. Markdown keeps them separate." },
+        { title: "15. It is Fun", text: "Seriously once you experience the flow of Markdown writing no mouse no formatting dialogs just keystrokes and content it is hard to go back to traditional word processors. Writers report feeling more productive and creative. Developers appreciate the speed. Everyone loves the simplicity. Markdown is not just better. It is more enjoyable." }
+      ];
+
+      const notUse = [
+        { title: "Complex Page Layouts", why: "Markdown does not support columns sidebars precise positioning or magazine-style layouts. It is content-focused not design-focused.", alt: "Use HTML and CSS InDesign Figma or page builders like Webflow.", ex: "Marketing landing pages magazine spreads brochures annual reports anything requiring pixel-perfect design control." },
+        { title: "Print-Ready Documents", why: "Markdown lacks fine-grained control over pagination margins fonts widow and orphan control crop marks and bleed.", alt: "Use LaTeX for academic papers Word for business documents or InDesign for professional publishing.", ex: "Legal contracts formatted resumes academic theses book typesetting anything going to a professional printer." },
+        { title: "Rich Media Editing", why: "No built-in support for video editing audio mixing complex animations or interactive multimedia.", alt: "Use Adobe Premiere Final Cut After Effects or specialized multimedia authoring tools.", ex: "Video production podcasts multimedia presentations interactive media anything beyond static images and text." },
+        { title: "Collaborative Real-Time Editing", why: "Plain text creates merge conflicts when multiple people edit simultaneously. Markdown is not Google Docs.", alt: "Use Google Docs Notion Confluence or other real-time collaborative platforms.", ex: "Team documents with live collaboration simultaneous editing by multiple authors real-time comments and discussions." },
+        { title: "Strict Corporate Branding", why: "Cannot enforce exact fonts colors spacing letter-spacing or brand guidelines without extensive custom CSS.", alt: "Use branded templates in Word PowerPoint or design tools with locked style guides.", ex: "Corporate reports branded presentations materials requiring exact adherence to brand style guides." },
+        { title: "Complex Tables and Charts", why: "Basic table syntax only. No merged cells no pivot tables no formulas no embedded charts or data visualization.", alt: "Use Excel Google Sheets or dedicated data visualization tools like Tableau.", ex: "Financial reports complex data analysis spreadsheets pivot tables interactive dashboards anything requiring advanced table features." },
+        { title: "WYSIWYG Requirements", why: "Markdown requires learning syntax. Not point-and-click. Not suitable when non-technical users must edit content.", alt: "Use WordPress Medium Squarespace or any WYSIWYG content management system.", ex: "Client-facing content management non-technical team members anyone intimidated by syntax or markup." }
+      ];
+
+      const quiz = [
+        { q: "What file extension do Markdown files typically use?", cor: 1, opts: [".txt", ".md or .markdown", ".html", ".doc"], exps: ["Incorrect. While Markdown is plain text the txt extension does not indicate Markdown formatting.", "Correct! These are the standard extensions for Markdown files recognized by most tools and platforms.", "Incorrect. HTML is the output format not the source file format for Markdown.", "Incorrect. That is a Microsoft Word proprietary format completely different from Markdown."] },
+        { q: "How do you create a heading level 2 in Markdown?", cor: 2, opts: ["# Heading", "<h2>Heading</h2>", "## Heading", "Heading\n==="], exps: ["Incorrect. One hash symbol creates a level 1 heading the largest heading size.", "Incorrect. That is HTML syntax not Markdown syntax although HTML does work in Markdown.", "Correct! Two hash symbols followed by a space create a level 2 heading.", "Incorrect. This creates a level 1 heading using an alternative underline syntax."] },
+        { q: "What is the correct syntax for making text bold?", cor: 0, opts: ["**text**", "*text*", "<b>text</b>", "__text"], exps: ["Correct! Double asterisks on both sides create bold text in Markdown.", "Incorrect. Single asterisks create italic text not bold text.", "Incorrect. That is HTML syntax not Markdown although it would work in Markdown.", "Incorrect. You need double underscores on both sides not just at the start."] },
+        { q: "What was Markdown primary design goal?", cor: 1, opts: ["To replace Microsoft Word", "Readability as plain text", "To be the fastest markup language", "To work only on GitHub"], exps: ["Incorrect. Markdown was designed for web writing not word processing or replacing Word.", "Correct! John Gruber designed Markdown to be readable even without rendering to HTML.", "Incorrect. Speed was not the primary goal although Markdown is indeed fast.", "Incorrect. Markdown was created in 2004 predating GitHub by several years."] },
+        { q: "How do you create a clickable link in Markdown?", cor: 3, opts: ["(Link Text)[url]", "<a href='url'>Link Text</a>", "url [Link Text]", "[Link Text](url)"], exps: ["Incorrect. The order is reversed. Square brackets come first then parentheses.", "Incorrect. That is HTML syntax not Markdown syntax.", "Incorrect. The syntax structure is completely wrong. Links use brackets and parentheses.", "Correct! Square brackets for the link text then parentheses for the URL."] },
+        { q: "What symbol starts a blockquote?", cor: 2, opts: ["<", "|", ">", '"'], exps: ["Incorrect. The less-than symbol is used in HTML not for Markdown blockquotes.", "Incorrect. The pipe symbol is used for tables not blockquotes.", "Correct! The greater-than symbol at the start of a line creates a blockquote.", "Incorrect. Quotation marks do not create blockquotes in Markdown syntax."] },
+        { q: "Which of these is a valid reason NOT to use Markdown?", cor: 0, opts: ["You need complex multi-column page layouts", "You want to write documentation", "You need version control", "You want platform independence"], exps: ["Correct! Markdown is content-focused and not designed for complex page layouts or precise positioning.", "Incorrect. Markdown is perfect for documentation and widely used for this purpose.", "Incorrect. Markdown works great with version control systems like Git.", "Incorrect. Platform independence is one of Markdown key strengths and major advantages."] },
+        { q: "What makes Markdown future-proof?", cor: 1, opts: ["It uses the latest web technologies", "It is plain text that will always be readable", "It is owned by a major corporation", "It automatically updates to new versions"], exps: ["Incorrect. Markdown is intentionally simple and stable not based on latest tech.", "Correct! Plain text has existed for decades and will continue to be readable forever.", "Incorrect. Markdown is an open standard not owned by any company or corporation.", "Incorrect. The format is stable and does not need updates or new versions."] }
+      ];
+
+      const gloss = [
+        { term: "Markdown", emoji: "📝", def: "A lightweight markup language for creating formatted text using plain text syntax. Created by John Gruber in 2004." },
+        { term: "Parser", emoji: "⚙️", def: "Software that reads Markdown text and converts it to HTML or other formats. Think of it as a translator turning your shorthand into web language." },
+        { term: "Syntax", emoji: "🔤", def: "The rules and symbols used to format text in Markdown. Examples include asterisks for emphasis or hash symbols for headings." },
+        { term: "Markup", emoji: "🏷️", def: "Special characters or codes added to text to indicate formatting or structure. Markdown uses minimal markup for maximum readability." },
+        { term: "Render", emoji: "🎨", def: "The process of converting Markdown syntax into formatted visual output usually HTML for display in browsers." },
+        { term: "Plain Text", emoji: "📄", def: "Text without any formatting just characters. Markdown files are plain text with special syntax that indicates how text should be formatted." },
+        { term: "HTML", emoji: "🌐", def: "HyperText Markup Language. The standard format for web pages. Markdown often converts to HTML for web display." },
+        { term: "Flavor", emoji: "🍦", def: "A variant of Markdown with additional features beyond the original specification. Examples include GitHub Flavored Markdown and CommonMark." },
+        { term: "Escape Character", emoji: "🛡️", def: "A backslash used before special characters to display them literally instead of as formatting. Example backslash asterisk shows an actual asterisk." },
+        { term: "Inline vs Block", emoji: "📦", def: "Inline elements like bold or code appear within text. Block elements like headings or lists create separate sections with spacing around them." }
+      ];
+
+      let animIdx = 0;
+      function showAnim(i) {
+        const s = animSteps[i];
+        document.getElementById('anim-source').textContent = s.src;
+        document.getElementById('anim-preview').innerHTML = s.prev;
+        document.getElementById('anim-narration').textContent = s.narr;
+        document.getElementById('anim-counter').textContent = 'Step ' + (i+1) + ' of ' + animSteps.length;
+        document.getElementById('anim-prev').disabled = i === 0;
+        document.getElementById('anim-next').disabled = i === animSteps.length - 1;
+      }
+      document.getElementById('anim-prev').onclick = () => { if(animIdx > 0) { animIdx--; showAnim(animIdx); }};
+      document.getElementById('anim-next').onclick = () => { if(animIdx < animSteps.length-1) { animIdx++; showAnim(animIdx); }};
+      showAnim(0);
+
+      function renderCmds(term) {
+        const acc = document.getElementById('commands-accordion');
+        let h = '';
+        cmdData.forEach(cat => {
+          const match = term ? cat.items.filter(c => c.syn.toLowerCase().includes(term) || c.kw.toLowerCase().includes(term) || c.use.toLowerCase().includes(term)) : cat.items;
+          if(match.length) {
+            const exp = term !== '';
+            h += '<div class="accordion-item"><button class="accordion-header" aria-expanded="'+exp+'"><span class="accordion-title"><strong>'+cat.cat+'</strong></span></button><div class="accordion-content" style="display:'+(exp?'block':'none')+';">';
+            h += '<table class="data-table" style="width:100%;margin-top:10px;"><thead><tr><th>Syntax</th><th>Preview</th><th>Usage</th></tr></thead><tbody>';
+            match.forEach(c => {
+              h += '<tr><td><code>'+c.syn.replace(/</g, '&lt;').replace(/>/g, '&gt;')+'</code></td><td>'+c.prev+'</td><td>'+c.use+'</td></tr>';
+            });
+            h += '</tbody></table></div></div>';
+          }
+        });
+        acc.innerHTML = h;
+        acc.querySelectorAll('.accordion-header').forEach(b => {
+          b.onclick = () => {
+            const e = b.getAttribute('aria-expanded') === 'true';
+            b.setAttribute('aria-expanded', !e);
+            b.nextElementSibling.style.display = e ? 'none' : 'block';
+          };
+        });
+      }
+      document.getElementById('cmd-filter').oninput = (e) => renderCmds(e.target.value.toLowerCase());
+      renderCmds('');
+
+      const deck = document.getElementById('carousel-deck');
+      deck.innerHTML = cards.map((c,i) => 
+        '<div class="flip-card" data-idx="'+i+'"><div class="flip-card-inner"><div class="flip-card-front"><h4>'+c.title+'</h4><p><strong>Why:</strong> '+c.why+'</p><p><strong>How:</strong> '+c.how+'</p><p style="margin-top:20px;color:var(--accent);font-size:0.9rem;">👆 Click to see syntax</p></div><div class="flip-card-back"><pre style="margin:0;white-space:pre-wrap;font-size:0.9rem;line-height:1.6;">'+c.syn.replace(/</g, '&lt;').replace(/>/g, '&gt;')+'</pre></div></div></div>'
+      ).join('');
+      let cardIdx = 0;
+      function showCard(i) {
+        deck.querySelectorAll('.flip-card').forEach((c,idx) => {
+          c.classList.toggle('active', idx === i);
+          if(idx !== i) c.classList.remove('flipped');
+        });
+        document.getElementById('carousel-counter').textContent = 'Pattern ' + (i+1) + ' of ' + cards.length;
+      }
+      deck.onclick = (e) => {
+        const c = e.target.closest('.flip-card');
+        if(c) c.classList.toggle('flipped');
+      };
+      document.getElementById('carousel-prev').onclick = () => { if(cardIdx > 0) { cardIdx--; showCard(cardIdx); }};
+      document.getElementById('carousel-next').onclick = () => { if(cardIdx < cards.length-1) { cardIdx++; showCard(cardIdx); }};
+      document.getElementById('carousel-copy-btn').onclick = () => {
+        navigator.clipboard.writeText(cards[cardIdx].syn).then(() => {
+          const btn = document.getElementById('carousel-copy-btn');
+          const orig = btn.innerHTML;
+          btn.innerHTML = '✅ Copied!';
+          btn.style.background = 'var(--ok)';
+          setTimeout(() => { btn.innerHTML = orig; btn.style.background = '#6c757d'; }, 2000);
+        });
+      };
+      showCard(0);
+
+      const rdeck = document.getElementById('role-deck');
+      rdeck.innerHTML = roles.map((r,i) => 
+        '<div class="role-slide" data-idx="'+i+'"><div class="role-emoji">'+r.emoji+'</div><div class="role-title">'+r.title+'</div><div class="role-description">'+r.desc+'</div></div>'
+      ).join('');
+      let roleIdx = 0;
+      function showRole(i) {
+        rdeck.querySelectorAll('.role-slide').forEach((s,idx) => s.classList.toggle('active', idx === i));
+        document.getElementById('role-counter').textContent = 'Role ' + (i+1) + ' of ' + roles.length;
+      }
+      document.getElementById('role-prev').onclick = () => { if(roleIdx > 0) { roleIdx--; showRole(roleIdx); }};
+      document.getElementById('role-next').onclick = () => { if(roleIdx < roles.length-1) { roleIdx++; showRole(roleIdx); }};
+      showRole(0);
+
+      const aacc = document.getElementById('advantages-accordion');
+      aacc.innerHTML = advs.map(a => 
+        '<div class="accordion-item"><button class="accordion-header" aria-expanded="false"><span class="accordion-title"><strong>'+a.title+'</strong></span></button><div class="accordion-content"><p>'+a.text+'</p></div></div>'
+      ).join('');
+      aacc.querySelectorAll('.accordion-header').forEach(b => {
+        b.onclick = () => {
+          const e = b.getAttribute('aria-expanded') === 'true';
+          b.setAttribute('aria-expanded', !e);
+          b.nextElementSibling.style.display = e ? 'none' : 'block';
+        };
+      });
+
+      const wacc = document.getElementById('whennot-accordion');
+      wacc.innerHTML = notUse.map(n => 
+        '<div class="accordion-item"><button class="accordion-header" aria-expanded="false"><span class="accordion-title"><strong>❌ '+n.title+'</strong></span></button><div class="accordion-content"><p><strong>Why:</strong> '+n.why+'</p><p><strong>Use instead:</strong> '+n.alt+'</p><p><strong>Examples:</strong> '+n.ex+'</p></div></div>'
+      ).join('');
+      wacc.querySelectorAll('.accordion-header').forEach(b => {
+        b.onclick = () => {
+          const e = b.getAttribute('aria-expanded') === 'true';
+          b.setAttribute('aria-expanded', !e);
+          b.nextElementSibling.style.display = e ? 'none' : 'block';
+        };
+      });
+
+      document.querySelectorAll('.svg-item').forEach(item => {
+        item.style.cursor = 'pointer';
+        item.style.padding = '4px 0';
+        item.style.transition = 'background 0.2s';
+        item.onmouseover = () => {
+          const tgt = document.getElementById(item.dataset.target);
+          if(tgt) {
+            item.style.background = 'rgba(253,126,20,0.2)';
+            tgt.style.background = 'rgba(253,126,20,0.2)';
+            tgt.style.padding = '4px';
+            tgt.style.borderRadius = '4px';
+          }
+        };
+        item.onmouseout = () => {
+          const tgt = document.getElementById(item.dataset.target);
+          if(tgt) {
+            item.style.background = '';
+            tgt.style.background = '';
+            tgt.style.padding = '0';
+          }
+        };
+      });
+
+      let qIdx = 0;
+      document.getElementById('qTotal').textContent = quiz.length;
+      function showQ(i) {
+        const q = quiz[i];
+        const qb = document.getElementById('quiz-body');
+        let h = '<div class="quiz-body active"><p><strong>Q'+(i+1)+':</strong> '+q.q+'</p><div class="quiz-options">';
+        q.opts.forEach((opt,oi) => {
+          h += '<div class="quiz-option" data-oi="'+oi+'"><label><input type="radio" name="q'+i+'" value="'+oi+'"><span>'+opt+'</span></label><div class="explanation">'+q.exps[oi]+'</div></div>';
+        });
+        h += '</div></div>';
+        qb.innerHTML = h;
+        document.getElementById('qCur').textContent = i+1;
+        document.getElementById('qPrev').disabled = i === 0;
+        document.getElementById('qNext').disabled = i === quiz.length - 1;
+        qb.querySelectorAll('input').forEach(inp => {
+          inp.onchange = () => {
+            const sel = parseInt(inp.value);
+            const parent = inp.closest('.quiz-body');
+            parent.querySelectorAll('.quiz-option').forEach(o => {
+              o.classList.remove('selected','correct','wrong');
+              o.querySelector('.explanation').style.display = 'none';
+            });
+            const selOpt = inp.closest('.quiz-option');
+            selOpt.classList.add('selected');
+            selOpt.querySelector('.explanation').style.display = 'block';
+            if(sel === q.cor) {
+              selOpt.classList.add('correct');
+            } else {
+              selOpt.classList.add('wrong');
+              parent.querySelector('[data-oi="'+q.cor+'"]').classList.add('correct');
+            }
+          };
+        });
+      }
+      document.getElementById('qPrev').onclick = () => { if(qIdx > 0) { qIdx--; showQ(qIdx); }};
+      document.getElementById('qNext').onclick = () => { if(qIdx < quiz.length-1) { qIdx++; showQ(qIdx); }};
+      showQ(0);
+
+      let mSel = null, mDone = 0;
+      document.querySelectorAll('.matching-item').forEach(item => {
+        item.onclick = () => {
+          if(item.classList.contains('correct')) return;
+          if(!mSel) {
+            document.querySelectorAll('.matching-item').forEach(i => i.classList.remove('selected'));
+            item.classList.add('selected');
+            mSel = item;
+          } else {
+            const first = mSel;
+            const second = item;
+            if(first.dataset.pair === second.dataset.id || first.dataset.id === second.dataset.pair) {
+              first.classList.remove('selected');
+              first.classList.add('correct');
+              second.classList.add('correct');
+              mDone++;
+              if(mDone === 4) {
+                document.getElementById('match-feedback').textContent = '🎉 Perfect! All pairs matched correctly!';
+                document.getElementById('match-feedback').style.color = 'var(--ok)';
+              }
+            } else {
+              first.classList.add('wrong');
+              second.classList.add('wrong');
+              document.getElementById('match-feedback').textContent = '❌ Not a match. Try again!';
+              document.getElementById('match-feedback').style.color = 'var(--bad)';
+              setTimeout(() => {
+                first.classList.remove('wrong','selected');
+                second.classList.remove('wrong');
+              }, 1000);
+            }
+            mSel = null;
+          }
+        };
+      });
+      document.getElementById('match-reset').onclick = () => {
+        document.querySelectorAll('.matching-item').forEach(i => i.classList.remove('selected','correct','wrong'));
+        document.getElementById('match-feedback').textContent = '';
+        mSel = null;
+        mDone = 0;
+      };
+
+      const gc = document.getElementById('glossary');
+      gc.innerHTML = gloss.map(g => '<button class="glossary-chip"><span>'+g.emoji+'</span><span>'+g.term+'</span></button>').join('');
+      const tip = document.createElement('div');
+      tip.className = 'chip-tip';
+      tip.innerHTML = '<div class="arrow"></div><div class="tip-content"></div>';
+      document.body.appendChild(tip);
+      const tipC = tip.querySelector('.tip-content');
+      const tipA = tip.querySelector('.arrow');
+      let openBtn = null;
+      function posTip(btn) {
+        const r = btn.getBoundingClientRect();
+        const vw = window.innerWidth;
+        tip.style.maxWidth = Math.min(vw-16,420)+'px';
+        const tr = tip.getBoundingClientRect();
+        const preferTop = r.top > (window.innerHeight - r.bottom);
+        const top = preferTop ? r.top - tr.height - 12 : r.bottom + 12;
+        const left = Math.max(8, Math.min(r.left + r.width/2 - tr.width/2, vw - tr.width - 8));
+        tip.style.top = Math.max(8,top)+'px';
+        tip.style.left = left+'px';
+        tipA.style.top = (preferTop ? tr.height-6 : -6)+'px';
+        tipA.style.left = Math.max(10, Math.min(r.left + r.width/2 - left - 6, tr.width-22))+'px';
+      }
+      gc.querySelectorAll('.glossary-chip').forEach((btn,i) => {
+        const def = gloss[i].def;
+        btn.onmouseover = btn.onfocus = () => {
+          tipC.innerHTML = def;
+          tip.classList.add('show');
+          posTip(btn);
+          openBtn = btn;
+        };
+        btn.onmouseout = btn.onblur = () => {
+          tip.classList.remove('show');
+          openBtn = null;
+        };
+      });
+      window.onresize = () => { if(openBtn) posTip(openBtn); };
+      window.onscroll = () => { if(openBtn) posTip(openBtn); };
+    });
+  </script>
+</body>
+</html>
