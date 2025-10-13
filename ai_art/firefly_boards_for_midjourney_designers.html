@@ -75,10 +75,12 @@
     /* --- Glossary Styles --- */
     .glossary-cloud{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px;justify-content:center}
     .glossary-chip{position:relative;display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:999px;background:#fff7ed;border:1px solid #ffd8a8;color:#d9480f;font-weight:600;cursor:pointer;box-shadow:0 2px 6px rgba(253,126,20,.12)}
+    .glossary-chip:focus{outline:2px solid var(--accent); outline-offset:2px}
     .glossary-chip:hover, .glossary-chip:focus{background:#ffecde;}
-    .chip-tip{position:fixed;z-index:101;min-width:240px;max-width:min(92vw,420px);background:var(--accent);color:#fff;padding:12px 14px;border-radius:12px;box-shadow:0 12px 28px rgba(253,126,20,.35);opacity:0;visibility:hidden;transition:.15s;line-height:1.45}
+    .chip-tip{position:fixed;z-index:99999;min-width:240px;max-width:min(92vw,420px);background:var(--accent);color:#fff;padding:12px 14px;border-radius:12px;box-shadow:0 12px 28px rgba(253,126,20,.35);opacity:0;visibility:hidden;transition:.15s;line-height:1.45;pointer-events:none}
     .chip-tip.show{opacity:1;visibility:visible}
     .chip-tip .arrow{position:absolute;width:12px;height:12px;background:var(--accent);transform:rotate(45deg)}
+    @media (max-width:640px){.chip-tip{max-width:92vw}}
   </style>
 </head>
 <body>
@@ -235,7 +237,7 @@
     <section id="describe-image">
         <h2>7. Prompt from Image (Describe): Reverse‑Engineer a Prompt</h2>
         <p>Ever see a great Midjourney image and wonder what prompt created it? Firefly includes <strong>Prompt from image</strong> (also surfaced as <em>Describe</em> in some contexts). It suggests a prompt based on the selected image.</p>
-        <h3>How to Use Describe Image:</h3>
+        <h3>How to Use Describe Image</h3>
         <ol>
             <li>Click on any image on your board (even one from Midjourney).</li>
             <li>In the right-hand panel, click <strong>Prompt from image</strong> (may appear as <em>Describe</em>).</li>
@@ -251,7 +253,7 @@
     <section id="generative-text">
         <h2>8. Text Effects & Text Editing</h2>
         <p>Firefly provides text-related features, but precise pixel‑level text replacement inside arbitrary images may be limited or evolving. Check current labels such as <strong>Text Effects</strong> or in‑app text editing tools for availability in your region and release.</p>
-        <h3>How to use text tools (when available):</h3>
+        <h3>How to use text tools (when available)</h3>
         <ol>
             <li>Select an image that contains text.</li>
             <li>Choose available text editing or <strong>Text Effects</strong> features in the panel.</li>
@@ -281,10 +283,10 @@
     <section id="collaboration">
         <h2>10. Collaboration and Export</h2>
         <p>This is where Firefly Boards truly leaves the solo world of Midjourney behind.</p>
-        <h3>Collaboration:</h3>
+        <h3>Collaboration</h3>
         <p>Click the <strong>"Invite"</strong> button to share your board link. You can set permissions for "View" or "Edit." Team members or clients can then add comments, upload their own references, and generate new images in real-time alongside you.</p>
 
-        <h3>Export:</h3>
+        <h3>Export</h3>
         <p>When you have a final asset, you can export or send to other Adobe apps where supported. Look for actions like <strong>Open in Photoshop</strong>, <strong>Open in Illustrator</strong>, or <strong>Open in Express</strong>; availability and fidelity (e.g., layers/masks) can vary by feature, format, and release. Adobe embeds <strong>Content Credentials</strong> to provide provenance for many AI‑assisted assets.</p>
     </section>
 
@@ -600,64 +602,72 @@
       function setupGlossary() {
         const cloud = document.getElementById('glossaryCloud');
         if (!cloud) return;
-        cloud.innerHTML = glossaryData.map(kw => `<button class="glossary-chip" type="button" data-def="${kw.def}">${kw.term}</button>`).join('');
+        cloud.innerHTML = glossaryData.map((kw, i) => `<button class="glossary-chip" type="button" data-index="${i}" aria-label="${kw.term} definition tooltip" title="${kw.term}: ${kw.def.replace(/\"/g,'&quot;')}">${kw.term}</button>`).join('');
         const tip = document.createElement('div');
         tip.className = 'chip-tip';
         tip.innerHTML = '<div class="arrow"></div><div class="tip-content"></div>';
         document.body.appendChild(tip);
         const tipContent = tip.querySelector('.tip-content');
+        const arrow = tip.querySelector('.arrow');
         let openBtn = null;
 
-        function positionTipFor(btn) {
-            const rect = btn.getBoundingClientRect();
-            const tipRect = tip.getBoundingClientRect();
-            let top = rect.bottom + 12;
-            let arrowTop = -6;
-            if (top + tipRect.height > window.innerHeight) {
-                top = rect.top - tipRect.height - 12;
-                arrowTop = tipRect.height - 6;
-            }
-            let left = rect.left + rect.width / 2 - tipRect.width / 2;
-            left = Math.max(8, Math.min(left, window.innerWidth - tipRect.width - 8));
-            // Use fixed positioning: no scroll offsets needed
-            tip.style.top = `${top}px`;
-            tip.style.left = `${left}px`;
-            tip.querySelector('.arrow').style.top = `${arrowTop}px`;
-            tip.querySelector('.arrow').style.left = `${rect.left + rect.width / 2 - left - 6}px`;
+        function showTipFor(btn) {
+            const idx = parseInt(btn.getAttribute('data-index'), 10);
+            const def = glossaryData[idx] ? glossaryData[idx].def : '';
+            if (!def) return;
+            
+            tipContent.textContent = def;
+            tip.classList.add('show');
+            openBtn = btn;
+            
+            // Position after content is set and display is visible
+            setTimeout(() => {
+                const rect = btn.getBoundingClientRect();
+                const tipRect = tip.getBoundingClientRect();
+                let top = rect.bottom + 12;
+                let arrowTop = -6;
+                
+                if (top + tipRect.height > window.innerHeight - 20) {
+                    top = rect.top - tipRect.height - 12;
+                    arrowTop = tipRect.height - 6;
+                }
+                
+                let left = rect.left + rect.width / 2 - tipRect.width / 2;
+                left = Math.max(8, Math.min(left, window.innerWidth - tipRect.width - 8));
+                
+                tip.style.top = `${top}px`;
+                tip.style.left = `${left}px`;
+                arrow.style.top = `${arrowTop}px`;
+                arrow.style.left = `${rect.left + rect.width / 2 - left - 6}px`;
+            }, 10);
+        }
+
+        function hideTip() {
+            tip.classList.remove('show');
+            openBtn = null;
         }
 
         cloud.querySelectorAll('.glossary-chip').forEach(btn => {
-            // Hover/focus (desktop & keyboard)
-            btn.addEventListener('mouseenter', (e) => {
-                tipContent.textContent = e.currentTarget.dataset.def;
-                tip.classList.add('show');
-                openBtn = e.currentTarget;
-                requestAnimationFrame(() => positionTipFor(e.currentTarget));
-            });
-            btn.addEventListener('mouseleave', () => { tip.classList.remove('show'); openBtn = null; });
-            btn.addEventListener('focus', (e) => {
-                tipContent.textContent = e.currentTarget.dataset.def;
-                tip.classList.add('show');
-                openBtn = e.currentTarget;
-                requestAnimationFrame(() => positionTipFor(e.currentTarget));
-            });
-            btn.addEventListener('blur', () => { tip.classList.remove('show'); openBtn = null; });
+            // Hover (desktop)
+            btn.addEventListener('mouseenter', () => showTipFor(btn));
+            btn.addEventListener('mouseleave', hideTip);
+            
+            // Focus (keyboard)
+            btn.addEventListener('focus', () => showTipFor(btn));
+            btn.addEventListener('blur', hideTip);
 
             // Click/tap toggle (mobile-friendly)
             btn.addEventListener('click', (e) => {
-                const isOpen = tip.classList.contains('show') && openBtn === e.currentTarget;
+                e.stopPropagation();
+                const isOpen = tip.classList.contains('show') && openBtn === btn;
                 if (isOpen) {
-                    tip.classList.remove('show');
-                    openBtn = null;
+                    hideTip();
                 } else {
-                    tipContent.textContent = e.currentTarget.dataset.def;
-                    tip.classList.add('show');
-                    openBtn = e.currentTarget;
-                    requestAnimationFrame(() => positionTipFor(e.currentTarget));
+                    showTipFor(btn);
                 }
             });
 
-            // Keyboard toggle for accessibility (Enter/Space)
+            // Keyboard toggle
             btn.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
@@ -668,15 +678,13 @@
 
         // Close on outside click
         document.addEventListener('click', (e) => {
-            if (openBtn && !e.target.closest('.glossary-chip') && !tip.contains(e.target)) {
-                tip.classList.remove('show');
-                openBtn = null;
+            if (openBtn && !e.target.closest('.glossary-chip')) {
+                hideTip();
             }
         });
 
-        // Reposition on scroll/resize
-        window.addEventListener('scroll', () => { if (openBtn) positionTipFor(openBtn); }, { passive: true });
-        window.addEventListener('resize', () => { if (openBtn) positionTipFor(openBtn); });
+        // Close on scroll
+        window.addEventListener('scroll', hideTip, { passive: true });
       }
 
       // --- INITIALIZE ALL COMPONENTS ---
