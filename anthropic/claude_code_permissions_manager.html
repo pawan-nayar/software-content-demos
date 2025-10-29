@@ -1,0 +1,2014 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Claude Code Permission Manager</title>
+  <meta name="description" content="An educational tool to safely learn, build, and manage Claude Code permissions.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ================= Base / Theme ================= */
+    :root {
+      --text:#212529; --bg:#fff; --muted:#f8f9fa; --border:#e9ecef;
+      /* Using YOUR brand's accent colors consistently */
+      --accent:#fd7e14; --accent-2:#e87312; --header-bg:#212529; --header-fg:#f8f9fa;
+      --ok:#16a34a; --ok-soft:#dcfce7; --bad:#dc2626; --bad-soft:#fee2e2;
+      --tabs-sticky-top: 60px; /* distance from top when sticky (desktop) */
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;scroll-behavior:smooth}
+    .container{max-width:800px;margin:auto;padding:24px;background:#fff}
+    a{color:var(--accent);text-decoration:none}
+    a:hover{text-decoration:underline}
+
+    /* ================= Header / Footer ================= */
+    .site-header,.site-footer{background:var(--header-bg);color:var(--header-fg);padding:14px 24px}
+    .site-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;position:sticky;top:0;z-index:100}
+    .logo{font-weight:700;font-size:1.15rem;color:#fff}
+    .site-header nav{display:flex;gap:14px}
+    .site-header nav a{color:#ced4da}
+    .site-header nav a:hover{color:#fff}
+    .site-footer{text-align:center;margin-top:50px;padding:40px}
+
+    /* ================= Typography & Layout ================= */
+    h1{font-size:clamp(2rem,5vw,2.6rem);text-align:left;margin-bottom:8px;color:var(--text);line-height:1.2}
+    .byline{font-size:clamp(1rem,3vw,1.2rem);font-style:italic;color:#4a5568;margin-bottom:24px}
+    h2{font-size:clamp(1.5rem,4vw,2rem);color:var(--text);margin:48px 0 16px;border-bottom:2px solid var(--border);padding-bottom:8px}
+    h3{font-size:clamp(1.2rem,3vw,1.5rem);color:var(--text);margin-top:32px;margin-bottom:12px}
+    /* Using brand accent color for H4 */
+    h4{font-size:clamp(1rem,2.5vw,1.2rem);font-weight:bold;color:var(--accent-2);margin-bottom:10px}
+    p{margin-bottom:16px;word-wrap:break-word}
+    ul{margin-left:24px;margin-bottom:24px;list-style-type:'🔸';padding-left:1em}
+    li{margin-bottom:12px;padding-left:0.5em}
+    .intro{font-size:1.1rem;line-height:1.8;background:transparent;padding:0;border-radius:0;border-left:none;margin:16px 0 8px}
+    .btn{background:var(--accent);color:#fff;border:none;padding:10px 14px;border-radius:10px;font-weight:700;cursor:pointer;transition:background-color 0.2s ease}
+    .btn:hover{background-color:var(--accent-2)}
+    .btn:disabled{background:#ced4da;cursor:not-allowed}
+    strong { font-weight: 600; } /* Ensure strong tag is used, not Markdown */
+    
+    /* ================= Tabs ================= */
+    .tabs{display:flex;flex-wrap:wrap;gap:8px;border-bottom:2px solid var(--border);margin:16px 0 12px;justify-content:flex-start;align-items:center;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-ms-overflow-style:none}
+    .tabs::-webkit-scrollbar{display:none;height:0}
+    @media (min-width: 900px){ .tabs{flex-wrap:nowrap; position: sticky; top: var(--tabs-sticky-top); background: var(--bg); z-index: 90; padding-top:4px} .tabs.tabs-stuck{box-shadow:0 6px 14px rgba(0,0,0,0.08);} }
+    .tab-button{background:none;border:none;padding:10px 12px;font-size:1rem;font-weight:600;cursor:pointer;border-bottom:3px solid transparent;transition:all .2s ease;color:#6c757d;white-space:nowrap}
+    .tab-button.active{color:#fff;border-bottom-color:transparent;background:var(--accent);border-radius:8px}
+    .tabs .btn.cta-start{margin-left:auto;white-space:nowrap;background:transparent;color:var(--accent-2);border:2px solid var(--accent);padding:8px 12px}
+    .tabs .btn.cta-start:hover{background:var(--accent);color:#fff}
+    .tab-button:hover{color:var(--text);}
+    .tab-panel{display:none;animation:fadeIn .3s; padding-top: 24px;}
+    .tab-panel.active{display:block}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+    
+    /* ================= Quiz Styles ================= */
+    .quiz-container{padding:20px;border:2px solid var(--border);border-radius:12px;background:#fff}
+    .quiz-navigation{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border)}
+    .quiz-body{display:none}
+    .quiz-body.active{display:block}
+    .quiz-options{display:grid;gap:12px}
+    .quiz-option label{display:flex;align-items:flex-start;gap:12px;padding:14px;border:2px solid var(--border);border-radius:8px;cursor:pointer;background:#f8f9fa}
+    .quiz-option input[type="radio"]{flex-shrink:0; margin-top: 5px;}
+    .quiz-option .explanation{display:none;margin-top:10px;padding:15px;border-radius:6px;border-left:4px solid #a0aec0}
+    .quiz-option.selected.correct label{background:var(--ok-soft);border-color:var(--ok)}
+    .quiz-option.selected.wrong label{background:var(--bad-soft);border-color:var(--bad)}
+    .quiz-option.correct .explanation{border-left-color:var(--ok);background:#f0fff4}
+    .quiz-option.wrong .explanation{border-left-color:var(--bad);background:#fff5f5}
+    .quiz-rationale{display:none;margin-top:14px;padding:14px;border-radius:6px;border:1px solid var(--border);background:#f8fafc}
+
+    /* ================= PERMISSION SEEDER (New Component) ================= */
+    .permission-group { margin: 1.5rem 0rem; }
+    .permission-group h3 { border-bottom: 2px solid var(--border); padding-bottom: 8px; margin: 0 0 12px 0; }
+    .permission-item {
+        display: flex;
+        align-items: flex-start; /* Align to top for multi-line */
+        padding: 12px 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    .permission-item:last-child { border-bottom: none; }
+    .permission-item input { margin-right: 12px; transform: scale(1.2); margin-top: 5px; flex-shrink: 0;}
+    .permission-item label {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        cursor: pointer;
+        line-height: 1.5;
+        margin-right: 10px; /* Space before help icon */
+    }
+    .permission-item strong {
+        font-family: "Courier New", Courier, monospace;
+        font-size: 1.1em;
+        color: var(--accent-2); /* Using brand color */
+    }
+    .permission-item span { font-size: 0.9em; color: #555; }
+    /* Help Icon (?) Styling */
+    .help-icon {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        background-color: #e9ecef;
+        color: #6c757d;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 20px;
+        font-weight: bold;
+        font-size: 0.8rem;
+        cursor: pointer;
+        margin-left: auto; /* Pushes icon to the right */
+        flex-shrink: 0;
+        margin-top: 4px;
+        transition: background-color 0.2s;
+    }
+    .help-icon:hover { background-color: #ced4da; }
+    
+    .output-area { padding: 1.5rem 0rem; background: #fdfdfd; }
+    .output-area button {
+        padding: 12px 20px;
+        font-size: 1em;
+        font-weight: bold;
+    }
+    #json-output {
+        width: 100%;
+        height: 250px;
+        margin-top: 1rem;
+        font-family: "Courier New", Courier, monospace;
+        font-size: 0.9em;
+        background: #282c34;
+        color: #abb2bf;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 10px;
+        box-sizing: border-box; /* Ensures padding doesn't affect width */
+        white-space: pre; /* Ensure whitespace is preserved */
+    }
+    
+    /* Simple Modal for Help Popups */
+    .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s, visibility 0.3s;
+        z-index: 1000;
+    }
+    .modal-overlay.visible {
+        opacity: 1;
+        visibility: visible;
+    }
+    .modal-content {
+        background: white;
+        padding: 25px;
+        border-radius: 12px;
+        max-width: 500px;
+        width: 90%;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        position: relative;
+    }
+    .modal-content.large { max-width: 960px; width: 96%; }
+    .modal-content h4 { margin-top: 0; color: var(--accent-2); }
+    .modal-close-btn {
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #aaa;
+        background: none;
+        border: none;
+        cursor: pointer;
+    }
+    .modal-close-btn:hover { color: #333; }
+
+    /* Learn Modal UI */
+    .modal-tabs { display:flex; gap:10px; border-bottom:1px solid var(--border); margin: 6px 0 12px 0; }
+    .modal-tab { background:none; border:none; padding:10px 12px; cursor:pointer; font-weight:600; color:#475569; border-bottom:3px solid transparent; }
+    .modal-tab.active { color: var(--accent-2); border-bottom-color: var(--accent-2); }
+    .modal-panels { height: 60vh; overflow:auto; }
+    .modal-panel { display:none; }
+    .modal-panel.active { display:block; }
+    .preset-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap:12px; }
+    .preset-card { border:1px solid var(--border); border-radius:10px; padding:12px; background:#fff; }
+    .preset-card h5 { margin: 0 0 6px 0; }
+    .preset-card .small { color:#64748b; font-size:0.9em; }
+    
+    /* ================= RISK AUDITOR (New Component) ================= */
+    .auditor-container {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    .auditor-container textarea {
+        width: 100%;
+        height: 200px;
+        font-family: "Courier New", Courier, monospace;
+        font-size: 0.9em;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 10px;
+    }
+    .auditor-report {
+        background: var(--muted);
+        border-radius: 8px;
+        padding: 20px;
+        border: 1px solid var(--border);
+    }
+    .auditor-report h3 { margin-top: 0; }
+    .risk-list { list-style-type: none; padding-left: 0; }
+    .risk-list li {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px;
+        background: #fff;
+        border-radius: 6px;
+        margin-bottom: 8px;
+        font-family: "Courier New", Courier, monospace;
+        font-weight: bold;
+    }
+    /* Updated risk colors to be more distinct */
+    .risk-list .risk-critical::before { content: '🔴'; } /* Critical */
+    .risk-list .risk-high::before { content: '🟠'; }    /* High */
+    .risk-list .risk-medium::before { content: '🟡'; }   /* Medium */
+    .risk-list .risk-low::before { content: '🟢'; }      /* Low / Safe */
+    .risk-list .risk-unknown::before { content: '⚪️'; } /* Unknown */
+
+    /* ================= Glossary L (3D Flip Card) ================= */
+    .bdx-glossaryL-section{max-width:700px;margin:40px auto;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+    .bdx-glossaryL-section h2{display: none;} /* Hiding the h2 as it's in the tab */
+    .bdx-glossaryL-section .intro{text-align:center;color:#64748b;margin-bottom:1.5rem;font-size:0.95rem}
+    .bdx-card-container{perspective:1200px;width:100%;max-width:700px;height:580px;max-height:85vh;margin:0 auto}
+    .bdx-card{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform 0.7s cubic-bezier(0.25,1,0.5,1)}
+    .bdx-card.flipped{transform:rotateY(180deg)}
+    /* Using a lighter, branded background for the card */
+    .bdx-card-face{position:absolute;width:100%;height:100%;backface-visibility:hidden;background:#fffaf3;border-radius:1rem;box-shadow:0 6px 20px rgba(0,0,0,0.1);display:flex;flex-direction:column; border: 1px solid var(--border);}
+    .bdx-card-front{z-index:2}
+    .bdx-card-back{transform:rotateY(180deg);z-index:1}
+    .bdx-card.flipped .bdx-card-front{z-index:1}
+    .bdx-card.flipped .bdx-card-back{z-index:2}
+    .bdx-card-content{width:100%;height:100%;display:flex;flex-direction:column;padding:1.25rem 1.5rem}
+    .bdx-card-header{flex-shrink:0;padding-bottom:0.75rem;border-bottom:1px solid #eee;margin-bottom:0.75rem}
+    .bdx-card-body{flex-grow:1;overflow-y:auto;min-height:0;padding-right:0.5rem;margin-right:-0.5rem}
+    .bdx-card-footer{flex-shrink:0;padding-top:1rem;margin-top:auto;border-top:1px solid #eee}
+    /* Branded emoji background */
+    .bdx-emoji{font-size:2rem;width:2.2em;height:2.2em;background:#fff0dc;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 0.5rem}
+    .bdx-card h3{font-size:1.25rem;font-weight:700;margin:0;text-align:center;line-height:1.2}
+    .bdx-description{font-size:0.95rem;line-height:1.5;margin:0 0 1.25rem 0} /* Slightly larger desc font */
+    .bdx-examples strong{display:block;margin-bottom:0.5rem;font-size:0.95rem}
+    .bdx-examples ul{margin:0;padding-left:1.2rem; list-style-type: '👉';}
+    .bdx-examples li{font-size:0.9rem;margin-bottom:0.5rem;line-height:1.4}
+    .bdx-formula{font-style:italic;font-family:serif;text-align:left;font-size:0.9rem;margin-bottom:1rem;color:#555}
+    .bdx-quick-summary,.bdx-practice-questions{margin-bottom:1.25rem}
+    .bdx-quick-summary strong,.bdx-practice-questions strong{font-size:0.95rem}
+    .bdx-quick-summary ul,.bdx-practice-questions ul{padding-left:1.2rem;font-size:0.9rem;line-height:1.4; list-style-type: '✅';} /* Slightly larger summary/faq font */
+    .bdx-practice-questions ul { list-style-type: '❓'; }
+    .bdx-card-footer strong{display:block;margin-bottom:0.5rem;font-size:0.9rem}
+    .bdx-tag-list{display:flex;flex-wrap: wrap; gap: 5px; padding-bottom:0.5rem;margin-bottom:0.5rem;} /* Allow tags to wrap */
+    .bdx-tag{background:#f0f0f0;padding:0.2rem 0.5rem;border-radius:0.35rem;font-size:0.7rem;line-height:1.2;flex-shrink:0;white-space:nowrap}
+    .bdx-card-body::-webkit-scrollbar{width:5px}
+    .bdx-card-body::-webkit-scrollbar-track{background:transparent}
+    .bdx-card-body::-webkit-scrollbar-thumb{background:#ccc;border-radius:3px}
+    .bdx-card-body::-webkit-scrollbar-thumb:hover{background:#999}
+    .bdx-card-back .bdx-card-header{display:flex;align-items:center;justify-content:center;gap:0.5rem}
+    .bdx-back-emoji{font-size:1.25rem}
+    .bdx-controls{margin-top:1rem;display:flex;gap:0.5rem;justify-content:center}
+    .bdx-controls button{padding:0.5rem 1rem;font-size:1rem;border:1px solid #ccc;border-radius:0.5rem;background-color:#fff;cursor:pointer;transition:all 0.2s ease-in-out}
+    .bdx-controls button:hover{border-color:#999;background-color:#f9f9f9}
+    /* Branded flip button */
+    .bdx-flip-button{width:100%;background:#fff0dc;font-weight:600;border:1px solid #fdb;border-radius:0.5rem;padding:0.5rem;cursor:pointer;transition:all 0.2s}
+    .bdx-flip-button:hover{background:#ffe0c4}
+
+    /* ================= Mode Guidance ================= */
+    .mode-guidance { background: #f8f9fa; border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin: 8px 0 14px 0; }
+    .mode-guidance strong { color: var(--accent-2); }
+
+    /* ====== Seeder live preview & risk ====== */
+    .seeder-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+    @media (min-width: 900px){ .seeder-grid { grid-template-columns: 1fr 1fr; align-items: start; } }
+    .preview-panel { border: 1px solid var(--border); border-radius: 8px; background: #0f172a; color: #e2e8f0; padding: 12px; }
+    .preview-header { display:flex; justify-content: space-between; align-items:center; margin-bottom:8px; gap:8px; }
+    .preview-code { font-family: "Courier New", Courier, monospace; font-size: 0.9em; overflow:auto; max-height: 360px; line-height: 1.5; }
+    .preview-line { display: grid; grid-template-columns: 3ch auto; gap: 12px; }
+    .gutter { color: #64748b; text-align: right; user-select: none; }
+    .tok-key { color: #60a5fa; }
+    .tok-str { color: #86efac; }
+    .tok-punc { color: #94a3b8; }
+    .risk-bar { background:#e9ecef; border-radius:8px; height:14px; overflow:hidden; position:relative; }
+    .risk-fill { height:100%; width:0%; background: linear-gradient(90deg, #16a34a, #eab308, #f97316, #dc2626); transition: width .2s ease; }
+    .risk-meta { display:flex; justify-content: space-between; font-size: 0.9em; color:#475569; margin-top:6px; }
+    .warnings-panel { border:1px solid var(--border); border-radius:8px; padding:10px; background:#fff7ed; color:#7c2d12; }
+
+    /* Trace output styling */
+    .trace-output { border:1px solid var(--border); border-radius:8px; padding:12px; font-family: "Courier New", Courier, monospace; font-size: 0.9em; }
+    .trace-header { display:flex; align-items:center; gap:8px; margin-bottom:8px; font-weight:700; }
+    .trace-badge { display:inline-block; padding:2px 8px; border-radius:999px; color:#fff; font-weight:700; font-size:0.8em; }
+    .trace-allow .trace-badge { background:#16a34a; }
+    .trace-ask .trace-badge { background:#eab308; color:#111827; }
+    .trace-deny .trace-badge { background:#dc2626; }
+    .trace-section { margin-top:8px; }
+    .trace-section strong { display:block; margin-bottom:4px; }
+
+    /* Accordion (details/summary) */
+    details.acc { border:1px solid var(--border); border-radius:10px; background:#fff; margin:10px 0; }
+    details.acc > summary { list-style:none; cursor:pointer; padding:12px 14px; font-weight:700; color:#334155; }
+    details.acc[open] > summary { border-bottom:1px solid var(--border); background:#f8fafc; }
+    details.acc .acc-body { padding:12px 14px; }
+
+    /* Tooltip for risk bar */
+    #risk-area { position: relative; }
+    .risk-info-btn { background:#fff; border:1px solid var(--border); color:#475569; padding:2px 8px; border-radius:999px; font-weight:700; cursor:pointer; }
+    .risk-tooltip { position:absolute; right:0; top:38px; max-width:420px; background:#0f172a; color:#e2e8f0; border:1px solid #1f2937; border-radius:10px; padding:12px; display:none; z-index: 20; box-shadow: 0 6px 18px rgba(0,0,0,0.25); }
+    .risk-tooltip.visible { display:block; }
+    .risk-tooltip h5 { margin:0 0 6px 0; color:#93c5fd; }
+    .risk-tooltip code { color:#86efac; }
+
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+      <a href="https://docs.claude.com/en/docs/claude-code/settings" target="_blank" rel="noopener" class="logo">Claude Code Setup</a>
+      <nav><a href="#learn">Permissions</a><a href="#test">Quiz</a><a href="#build">Build</a><a href="#audit">Audit</a></nav>
+  </header>
+
+  <div class="container">
+    
+    <h1>Your Guide to Claude Code Permissions!</h1>
+    <p class="byline">Let's unlock Claude's potential, safely and step-by-step.</p>
+    
+    <!-- UPDATED INTRO PARAGRAPH - More Enthusiasm, Simpler Language -->
+    <p class="intro">
+      Hey there! 👋 So glad you're here! Let's talk about Claude Code permissions. Think of Claude as a super-smart helper, ready to code with you. Permissions are like telling Claude which tools it's allowed to use. 
+      <br><br>
+      Some tools are simple, like a magnifying glass 🔎 to just <strong>read</strong> your code. Others are powerful, like a magic pen ✏️ that can <strong>edit</strong> your files, or even a tool 📄 to create <strong>new</strong> files from scratch! It sounds a bit technical, but don't worry! We'll break it all down with easy examples and fun quizzes.
+      <br><br>
+      Here, you can <strong>learn</strong> what each permission does, <strong>test</strong> your understanding, <strong>build</strong> your *own* safe set of rules, and even <strong>check</strong> any rules you've already made. Ready to become a permissions pro? Let's get started! 🚀
+      <br><br>
+      <small><strong>Note:</strong> We also discussed a cool idea about uploading images to figure out permissions automatically! That needs a 'behind-the-scenes' server setup, so it's not in this simple webpage, but it was a great idea for the future!</small>
+    </p>
+
+    <!-- ================= TABS ================= -->
+    <div class="tabs" role="tablist" aria-label="Tool Tabs">
+      <button class="tab-button active" role="tab" aria-selected="true" aria-controls="tabp-1" id="tab-1">Learn Permissions</button>
+      <button class="tab-button" role="tab" aria-selected="false" aria-controls="tabp-2" id="tab-2">Test Your Knowledge</button>
+      <button class="tab-button" role="tab" aria-selected="false" aria-controls="tabp-3" id="tab-3">Build Your Config</button>
+      <button class="tab-button" role="tab" aria-selected="false" aria-controls="tabp-4" id="tab-4">Audit Your Config</button>
+      <a class="btn cta-start" id="cta-start" href="#build">Get Started</a>
+    </div>
+
+    <!-- ================= TAB PANEL 1: LEARN (Glossary) ================= -->
+    <div id="tabp-1" class="tab-panel active" role="tabpanel" aria-labelledby="tab-1">
+      <section class="bdx-glossaryL-section" id="glossary-mount-point">
+        <!-- The bdx-glossaryL-bootstrap script will build the component here -->
+      </section>
+    </div>
+
+    <!-- ================= TAB PANEL 2: QUIZ ================= -->
+    <div id="tabp-2" class="tab-panel" role="tabpanel" aria-labelledby="tab-2">
+      <section id="quiz-demo">
+        <h2>Test Your Knowledge!</h2>
+        <p>Let's check our understanding with a few quick questions. No grades here, just for fun!</p>
+        
+        <div class="quiz-container">
+          <div class="quiz-navigation">
+            <button class="btn" id="mainPrevBtn">⮜</button>
+            <span class="question-counter"><span id="mainCurrentQ">1</span> of <span id="mainTotalQ">...</span></span>
+            <button class="btn" id="mainNextBtn">⮞</button>
+          </div>
+          <div id="quiz-body-container">
+            <!-- Quiz questions will be injected here by JavaScript -->
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ================= TAB PANEL 3: BUILD (Seeder) ================= -->
+    <div id="tabp-3" class="tab-panel" role="tabpanel" aria-labelledby="tab-3">
+      <section id="permission-seeder">
+        <h2>Build Your Config (Seeder)</h2>
+        <p>You're in control! Check the boxes for the permissions you want to allow. Need a quick reminder? Click the <code>(?)</code> icon next to any permission! This tool will create the special JSON text you need. Just copy it and paste it into your <code>.claude/settings.local.json</code> file in VS Code.</p>
+        
+        <div id="preset-controls" style="margin: 14px 0;">
+          <details class="acc" open>
+            <summary>Presets</summary>
+            <div class="acc-body">
+              <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px;">
+                <button class="btn" data-preset="safeExploration" type="button">Safe Exploration</button>
+                <button class="btn" data-preset="frontendDev" type="button">Frontend Development</button>
+                <button class="btn" data-preset="maintenance" type="button">Maintenance / Refactor</button>
+                <button class="btn" data-preset="lockdown" type="button">Maximum Lockdown</button>
+                <button class="btn" data-preset="cicd" type="button">Full Stack with CI/CD</button>
+              </div>
+              <small id="preset-hint" style="color:#6c757d;display:block;">Tip: Applying a preset will set checkboxes (for matching rules) and include ask/deny in the generated JSON.</small>
+              <div id="mode-guidance" class="mode-guidance">
+                <strong>Mode:</strong> Choose a preset to see the recommended permission mode.
+              </div>
+            </div>
+          </details>
+
+          <details class="acc">
+            <summary>Quick Start & Templates</summary>
+            <div class="acc-body">
+              <div id="quickstart-controls" style="margin:8px 0 0 0;">
+                <button class="btn" id="quickstart-btn" type="button">Quick Start (Copy Safe Defaults)</button>
+                <small style="color:#6c757d;display:block;">Copies a safe starter settings.json to your clipboard.</small>
+              </div>
+              <div style="margin:6px 0 0 0;">
+                <button class="btn" id="preset-learn-btn" type="button">Learn about Presets</button>
+                <small style="color:#6c757d;display:block;">See what each preset allows, denies, and when to use it.</small>
+              </div>
+              <div id="template-controls" style="margin:8px 0 0 0;">
+                <button class="btn" id="copy-template-btn" type="button">Copy Template Example</button>
+                <small style="color:#6c757d;display:block;">Copies a balanced template (allow Edit in src/, protect .env).</small>
+              </div>
+            </div>
+          </details>
+
+          <details class="acc">
+            <summary>Profiles</summary>
+            <div class="acc-body">
+              <div id="profile-controls" style="margin-top:0;">
+                <h3 style="margin: 0 0 10px 0;">Profiles</h3>
+                <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px;align-items:center;">
+                  <input id="profile-name" type="text" placeholder="Profile name" style="padding:10px;border:1px solid var(--border);border-radius:8px;min-width:180px;">
+                  <button class="btn" id="profile-save" type="button">Save</button>
+                  <select id="profile-list" style="padding:10px;border:1px solid var(--border);border-radius:8px;min-width:200px;">
+                    <option value="">Load profile...</option>
+                  </select>
+                  <button class="btn" id="profile-delete" type="button">Delete</button>
+                  <button class="btn" id="profile-export" type="button">Export</button>
+                  <button class="btn" id="profile-import" type="button">Import</button>
+                  <button class="btn" id="profile-share" type="button">Copy Share Link</button>
+                  <input id="profile-import-file" type="file" accept="application/json" style="display:none;">
+                </div>
+                <small id="profile-hint" style="color:#6c757d;display:block;">Save your current config, load later, or share with teammates.</small>
+              </div>
+            </div>
+          </details>
+
+          <details class="acc">
+            <summary>External Resources</summary>
+            <div class="acc-body">
+              <div id="external-links" style="margin:0;">
+                <ul style="margin:0; padding-left: 18px; list-style-type: '↗ ';">
+                  <li><a href="https://docs.claude.com/en/docs/claude-code/settings" target="_blank" rel="noopener">Official Settings Docs</a></li>
+                  <li><a href="https://github.com/dwillitzer/claude-settings" target="_blank" rel="noopener">Community Templates</a></li>
+                  <li><a href="https://owasp.org/www-project-top-10-for-large-language-model-applications/" target="_blank" rel="noopener">OWASP LLM Top 10 (Security Checklist)</a></li>
+                </ul>
+              </div>
+            </div>
+          </details>
+        </div>
+        
+        <div id="risk-area" style="margin:10px 0 16px 0;">
+          <h3 style="margin:0 0 6px 0;">Risk Overview <button class="risk-info-btn" id="risk-info-btn" type="button">i</button></h3>
+          <div class="risk-bar"><div class="risk-fill" id="risk-fill"></div></div>
+          <div class="risk-meta"><span id="risk-level">Level: Safe</span><span id="risk-score">0/100</span></div>
+          <div id="warnings-panel" class="warnings-panel" style="display:none; margin-top:10px;"></div>
+          <div id="risk-tooltip" class="risk-tooltip" role="tooltip"></div>
+        </div>
+
+        <div class="seeder-grid">
+          <div>
+            <div id="seeder-permission-list">
+              <!-- Permission checkboxes will be injected here by JavaScript -->
+            </div>
+          </div>
+          <div>
+            <div class="preview-panel">
+              <div class="preview-header">
+                <strong>Live JSON Preview</strong>
+                <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                  <button class="btn" id="btn-download-json" type="button">Download settings.json</button>
+                  <button class="btn" id="btn-download-jsonc" type="button">Download settings.jsonc</button>
+                  <button class="btn" id="btn-download-local" type="button">Download settings.local.json</button>
+                </div>
+              </div>
+              <small style="color:#cbd5e1;margin-top:4px;display:block;">📁 Save to: <code>~/.claude/settings.json</code> (user-level) or <code>./.claude/settings.local.json</code> (project-level)</small>
+              <div id="json-preview" class="preview-code" aria-label="JSON Preview"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="output-area">
+            <!-- Added a temporary input field for the copy command -->
+            <input type="text" id="copy-helper" style="position: absolute; left: -9999px;" aria-hidden="true">
+            <button class="btn" id="generate-btn">Copy Config to Clipboard</button>
+            <textarea id="json-output" readonly>Click the button to generate your config...</textarea>
+        </div>
+      </section>
+    </div>
+    
+    <!-- ================= TAB PANEL 4: AUDIT (Manager) ================= -->
+    <div id="tabp-4" class="tab-panel" role="tabpanel" aria-labelledby="tab-4">
+      <section id="config-auditor">
+        <h2>Audit Your Config (Manager)</h2>
+        <p>Already have a <code>settings.local.json</code> file? Awesome! Let's do a quick safety check. Paste the *entire* contents of your file below to get an instant report on its risk level.</p>
+
+        <div class="auditor-container">
+          <div>
+            <label for="config-input"><strong>Paste your config file text here:</strong></label>
+            <textarea id="config-input" placeholder="{ &quot;permissions&quot;: { &quot;allow&quot;: [...] } }"></textarea>
+            <button class="btn" id="audit-btn" style="margin-top: 10px;">Check My Configuration</button>
+          </div>
+          <div class="auditor-report">
+            <h3>Safety Report</h3>
+            <p id="audit-summary">Awaiting input...</p>
+            <ul id="audit-list" class="risk-list">
+              <!-- Risk report will be injected here -->
+            </ul>
+            <p id="audit-advice" style="margin-top: 15px; font-size: 0.9em;"></p>
+            <hr style="margin:16px 0; border:0; border-top:1px solid var(--border);">
+            <h3 style="margin:0 0 8px 0;">Rule Trace (Why is this allowed/denied/asked?)</h3>
+            <div style="display:grid;gap:8px;">
+              <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+                <label for="trace-pack"><strong>Suggestion pack:</strong></label>
+                <select id="trace-pack" style="padding:8px 10px;border:1px solid var(--border);border-radius:8px;">
+                  <option value="all" selected>All</option>
+                  <option value="nextjs">Next.js</option>
+                  <option value="terraform">Terraform</option>
+                  <option value="reactnative">React Native</option>
+                  <option value="dockerk8s">Docker & Kubernetes</option>
+                  <option value="pyml">Python / Data Science</option>
+                  <option value="cicd">CI/CD</option>
+                  <option value="htmld3">HTML / CSS / D3</option>
+                </select>
+              </div>
+              <input id="trace-input" type="text" list="trace-options" placeholder="e.g., Bash(npm install lodash) or Edit(src/components/Button.tsx) or Read(.env)" style="padding:10px;border:1px solid var(--border);border-radius:8px;">
+              <datalist id="trace-options">
+                <option value="Bash(npm install lodash)"></option>
+                <option value="Bash(npm install:*)"></option>
+                <option value="Bash(npm run test)"></option>
+                <option value="Bash(npm run build)"></option>
+                <option value="Bash(npm run lint)"></option>
+                <option value="Bash(git status)"></option>
+                <option value="Bash(git diff HEAD)"></option>
+                <option value="Bash(git add .)"></option>
+                <option value="Bash(git commit:*)"></option>
+                <option value="Bash(git push origin main)"></option>
+                <option value="Bash(pip install requests)"></option>
+                <option value="Bash(pytest)"></option>
+                <option value="Bash(docker build .)"></option>
+                <option value="Bash(docker compose up)"></option>
+                <option value="Bash(curl:*)"></option>
+                <option value="Bash(rm -rf node_modules)"></option>
+                <option value="Edit(src/App.js)"></option>
+                <option value="Edit(src/**)"></option>
+                <option value="Edit(package.json)"></option>
+                <option value="Write(src/newFile.ts)"></option>
+                <option value="Write(tests/**)"></option>
+                <option value="Read(.env)"></option>
+                <option value="Read(README.md)"></option>
+                <option value="WebFetch(domain: &quot;github.com&quot;)"></option>
+                <option value="WebFetch(domain: &quot;stackoverflow.com&quot;)"></option>
+                <option value="WebFetch(domain: &quot;*&quot;)"></option>
+                <option value="Glob(src/**/*.js)"></option>
+                <option value="Glob(**/*.test.js)"></option>
+                <option value="Bash(kubectl apply -f k8s.yaml)"></option>
+                <option value="Bash(terraform plan)"></option>
+                <option value="Bash(aws s3 ls)"></option>
+                <option value="Bash(gcloud app deploy)"></option>
+                <option value="Bash(gh pr create)"></option>
+                <option value="Bash(vercel --prod)"></option>
+                <option value="Bash(npm publish)"></option>
+                <option value="Bash(kubectl delete deployment web)"></option>
+                <option value="Bash(docker rm my-container)"></option>
+                <option value="Bash(aws s3 sync . s3://bucket)"></option>
+                <option value="Bash(conda install pandas)"></option>
+                <option value="Bash(pytest -k login)"></option>
+              </datalist>
+              <button class="btn" id="trace-btn" type="button">Explain Decision</button>
+              <div id="trace-output" class="trace-output"></div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+    </div>
+
+  </div>
+  
+  <!-- Simple Modal Structure -->
+  <div class="modal-overlay" id="help-modal">
+    <div class="modal-content">
+        <button class="modal-close-btn" id="modal-close">&times;</button>
+        <h4 id="modal-title">Permission Help</h4>
+        <p id="modal-text">Details about the permission...</p>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <p class="footer-copy">© 2025 Claude Code Tools. This is an educational tool, not an official Anthropic product.</p>
+  </footer>
+
+
+  <script>
+    // ===================================================================
+    // ALL FRAMEWORK JAVASCRIPT
+    // This is the logic for all components (Tabs, Quiz, Glossary, Seeder, Auditor, Modal)
+    // ===================================================================
+    document.addEventListener('DOMContentLoaded', function() {
+      // Lightweight toast helper for user feedback
+      function showToast(message){
+        try {
+          const toast = document.createElement('div');
+          toast.textContent = message;
+          toast.setAttribute('role','status');
+          toast.style.position = 'fixed';
+          toast.style.top = '20px';
+          toast.style.right = '20px';
+          toast.style.background = '#16a34a';
+          toast.style.color = '#fff';
+          toast.style.padding = '12px 16px';
+          toast.style.borderRadius = '8px';
+          toast.style.boxShadow = '0 6px 16px rgba(0,0,0,0.2)';
+          toast.style.zIndex = '2000';
+          document.body.appendChild(toast);
+          setTimeout(() => { if (toast && toast.remove) toast.remove(); }, 2500);
+        } catch(_) { /* ignore */ }
+      }
+
+      // Render helper: convert backticks to <code> with HTML escape
+      function escapeHtml(s){
+        return (s||'').replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+      }
+      function renderWithCode(s){
+        const parts = String(s||'').split('`');
+        let out = '';
+        for (let i=0;i<parts.length;i++){
+          const seg = escapeHtml(parts[i]);
+          out += (i % 2 === 1) ? `<code>${seg}</code>` : seg;
+        }
+        return out;
+      }
+
+      // ========== TABS SETUP ==========
+      (function(){
+        const tabsContainer = document.querySelector('.tabs');
+        if(!tabsContainer) return;
+        
+        const tabButtons = tabsContainer.querySelectorAll('.tab-button');
+        const panels = document.querySelectorAll('.tab-panel');
+        
+        function activate(id){
+          tabButtons.forEach(btn=>{
+            const active = btn.id === id;
+            btn.classList.toggle('active', active);
+            btn.setAttribute('aria-selected', active ? 'true' : 'false');
+          });
+          panels.forEach(p=>{
+            const active = p.getAttribute('aria-labelledby') === id;
+            p.classList.toggle('active', active);
+          });
+           // Scroll to top of container when tab changes for better UX
+           const container = document.querySelector('.container');
+           if (container) container.scrollTop = 0;
+           window.scrollTo({ top: tabsContainer.offsetTop - 80, behavior: 'smooth' }); // Adjust offset as needed
+        }
+        
+        tabButtons.forEach(btn=>{
+          btn.addEventListener('click', (e) => {
+             e.preventDefault();
+             activate(btn.id);
+          });
+        });
+        const cta = document.getElementById('cta-start');
+        if (cta){ cta.addEventListener('click', (e)=>{ e.preventDefault(); activate('tab-3'); }); }
+
+        // Desktop sticky shadow
+        try {
+          const stickyTopVar = getComputedStyle(document.documentElement).getPropertyValue('--tabs-sticky-top').trim();
+          const stickyTop = parseInt(stickyTopVar.replace('px','')) || 60;
+          const start = tabsContainer.getBoundingClientRect().top + window.scrollY - stickyTop;
+          function onScroll(){
+            if (window.innerWidth >= 900) {
+              if (window.scrollY >= start) tabsContainer.classList.add('tabs-stuck');
+              else tabsContainer.classList.remove('tabs-stuck');
+            } else {
+              tabsContainer.classList.remove('tabs-stuck');
+            }
+          }
+          window.addEventListener('scroll', onScroll);
+          window.addEventListener('resize', onScroll);
+          onScroll();
+        } catch(_) {}
+      })();
+
+      // ========== QUIZ DATA (Expanded to 10 Questions) ==========
+      const quizQuestions = [
+        { q: "You asked Claude to 'fix a typo' in a file. Which permission lets it change the file?", correct: 0, options: [ {text: "<code>Edit()</code>", explanation: "✅ Correct! <code>Edit()</code> is for changing files that already exist."}, {text: "<code>Write()</code>", explanation: "❌ <code>Write()</code> is only for making new files."}, {text: "<code>Read()</code>", explanation: "❌ <code>Read()</code> only lets Claude look at files."} ] },
+        { q: "Claude needs to create a new file called <code>config.js</code>. Which permission is needed?", correct: 1, options: [ {text: "<code>Edit()</code>", explanation: "❌ <code>Edit()</code> is for changing existing files."}, {text: "<code>Write()</code>", explanation: "✅ Yes! <code>Write()</code> is specifically for creating brand new files."}, {text: "<code>Bash(touch config.js)</code>", explanation: "❌ While <code>touch</code> creates a file, <code>Write()</code> is the core Claude permission for file creation."} ] },
+        { q: "What's the main risk if you allow <code>Edit()</code> without carefully checking Claude's plan?", correct: 2, options: [ {text: "It might install unwanted software.", explanation: "❌ That's more a risk of <code>Bash(npm install:*)</code>."}, {text: "It might create too many new files.", explanation: "❌ That's the risk of <code>Write()</code>."}, {text: "It might accidentally delete important code in existing files.", explanation: "✅ Exactly! A vague prompt could lead to Claude changing or deleting things you needed."} ] },
+        { q: "Which of these is a totally SAFE, read-only permission?", correct: 3, options: [ {text: "<code>Write()</code>", explanation: "❌ <code>Write()</code> creates new things, so it's not read-only."}, {text: "<code>Bash(git commit:*)</code>", explanation: "❌ This saves changes, altering your project history."}, {text: "<code>Bash(npm install:*)</code>", explanation: "❌ This downloads and installs code, changing your project."}, {text: "<code>Read()</code>", explanation: "✅ Perfect! <code>Read()</code> is like looking through a window – Claude can see but can't touch."} ] },
+        { q: "You want Claude to save its work using Git. You allowed <code>Bash(git commit:*)</code>. Why might it still fail?", correct: 1, options: [ {text: "You also need <code>Bash(git push:*)</code>.", explanation: "❌ <code>push</code> is for sharing online, not needed for a local save (<code>commit</code>)."}, {text: "You probably forgot <code>Bash(git add:*)</code>.", explanation: "✅ You got it! You need to stage files with <code>add</code> before you can <code>commit</code> them."}, {text: "You need <code>Edit()</code> to commit.", explanation: "❌ <code>Edit()</code> is for changing files, not for saving them with Git."} ] },
+        { q: "What does the star (<code>*</code>) mean in a permission like <code>Bash(npm install:*)</code>?", correct: 0, options: [ {text: "It means 'allow this command plus any words after it'.", explanation: "✅ Yes! It's a wildcard, letting Claude specify what to install (e.g., <code>npm install react</code>)."}, {text: "It means 'this is a very important command'.", explanation: "❌ The star doesn't relate to importance."}, {text: "It means 'only allow this command, nothing else'.", explanation: "❌ It's the opposite – it allows more variations of the command."} ] },
+        { q: "Which permission involves downloading code from the internet, bringing a potential security risk?", correct: 2, options: [ {text: "<code>Bash(git commit:*)</code>", explanation: "❌ This saves code locally."}, {text: "<code>Write()</code>", explanation: "❌ This creates files locally."}, {text: "<code>Bash(npm install:*)</code>", explanation: "✅ Correct! <code>npm install</code> (and <code>pip install</code>) fetches code packages from online sources."}, {text: "<code>Read()</code>", explanation: "❌ This only reads local files."} ] },
+        { q: "Claude needs to find all Python files (<code>*.py</code>) in your project. Which permission helps with this?", correct: 1, options: [ {text: "<code>Read()</code>", explanation: "❌ <code>Read()</code> lets it read a specific file, but not search for files."}, {text: "<code>Glob()</code>", explanation: "✅ Exactly! <code>Glob()</code> is the permission used for searching files using patterns like <code>*.py</code>."}, {text: "<code>Edit()</code>", explanation: "❌ <code>Edit()</code> is for changing files, not finding them."} ] },
+        { q: "Which permission is riskier: <code>Bash(git commit:*)</code> or <code>Bash(git push:*)</code>?", correct: 1, options: [ {text: "<code>Bash(git commit:*)</code>", explanation: "❌ Committing only affects your local computer. It's usually easy to undo."}, {text: "<code>Bash(git push:*)</code>", explanation: "✅ Correct! Pushing sends your code changes to a shared online place (like GitHub). It's harder to undo and affects your whole team!"} ] },
+        { q: "If you allow <code>WebFetch(domain: &quot;stackoverflow.com&quot;)</code>, what can Claude do?", correct: 0, options: [ {text: "Read pages directly from stackoverflow.com.", explanation: "✅ Yes! It lets Claude fetch web content from that specific website to find answers."}, {text: "Install software from Stack Overflow.", explanation: "❌ Stack Overflow hosts information, not installable packages."}, {text: "Edit your code based on Stack Overflow answers.", explanation: "❌ This only allows reading the website. It would need <code>Edit()</code> to actually change your code."} ] },
+        // Added new questions
+        { q: "What does <code>Write()</code> allow Claude to do?", correct: 1, options: [ {text: "Change existing files", explanation: "❌ That's <code>Edit()</code>."}, {text: "Create brand new files", explanation: "✅ Correct. <code>Write()</code> creates new files."}, {text: "Delete files", explanation: "❌ Deletion is via shell commands like <code>Bash(rm:*)</code>."} ] },
+        { q: "Which rule is safest to include by default?", correct: 0, options: [ {text: "<code>Read()</code>", explanation: "✅ It's read-only and low risk."}, {text: "<code>Edit(*)</code>", explanation: "❌ Too broad for default use."}, {text: "<code>Bash(*)</code>", explanation: "❌ Extremely dangerous."} ] },
+        { q: "You want Claude to run your test suite. Which is best?", correct: 2, options: [ {text: "<code>Bash(npm install:*)</code>", explanation: "❌ Installs packages; not for running tests."}, {text: "<code>Write(tests/**)</code>", explanation: "❌ Creates files, doesn't run tests."}, {text: "<code>Bash(npm run test:*)</code>", explanation: "✅ Correct. Lets Claude run test scripts."} ] },
+        { q: "Why is <code>Bash(curl:*)</code> often denied?", correct: 1, options: [ {text: "It slows builds", explanation: "❌ Performance isn't the main reason."}, {text: "It can download and execute untrusted code", explanation: "✅ Exactly. It's a common vector for attacks."}, {text: "It modifies <code>package.json</code>", explanation: "❌ Not inherently."} ] },
+        { q: "Which combination should raise a critical warning?", correct: 2, options: [ {text: "<code>Read()</code> + <code>Glob()</code>", explanation: "❌ This is safe."}, {text: "<code>Edit(src/**)</code> + <code>Bash(npm run lint)</code>", explanation: "❌ Reasonable for dev."}, {text: "<code>Bash(*)</code> + <code>Write(*)</code>", explanation: "✅ Critical. Arbitrary command exec plus unrestricted write."} ] },
+        { q: "What's the precedence if both Allow and Deny match?", correct: 0, options: [ {text: "Deny wins over Allow", explanation: "✅ Correct. Deny > Allow > Ask > Default Ask."}, {text: "Allow wins over Deny", explanation: "❌ Not correct."}, {text: "Ask wins over both", explanation: "❌ Ask is lower precedence."} ] },
+        { q: "Best practice for <code>git push</code>?", correct: 1, options: [ {text: "Allow it automatically", explanation: "❌ Risky for teams."}, {text: "Put it under Ask", explanation: "✅ Requires confirmation before pushing."}, {text: "Deny in all cases", explanation: "❌ Too restrictive in many workflows."} ] },
+        { q: "How to restrict web access safely?", correct: 2, options: [ {text: "Use <code>WebFetch(domain: " + '"*"' + ")</code>", explanation: "❌ That allows all domains."}, {text: "Use <code>Bash(curl:*)</code>", explanation: "❌ Shell curl is high risk."}, {text: "Use <code>WebFetch(domain: &quot;docs.example.com&quot;)</code>", explanation: "✅ Domain-restricted web reads."} ] },
+        { q: "Which is better for refactoring only <code>src/</code> code?", correct: 0, options: [ {text: "<code>Edit(src/**)</code>", explanation: "✅ Scoped editing to source directory."}, {text: "<code>Edit(*)</code>", explanation: "❌ Too broad."}, {text: "<code>Write(*)</code>", explanation: "❌ Creation, not editing."} ] },
+        { q: "Why keep <code>.env</code> protected?", correct: 2, options: [ {text: "It slows the app", explanation: "❌ Not the reason."}, {text: "It's not used in production", explanation: "❌ Often it is used locally."}, {text: "It contains secrets that must not be read/edited/pushed", explanation: "✅ Exactly."} ] },
+        { q: "What does <code>Glob()</code> NOT do?", correct: 1, options: [ {text: "Find files by pattern", explanation: "❌ That is what Glob does."}, {text: "Read contents of files", explanation: "✅ Correct. Use <code>Read()</code> for that."}, {text: "List matching paths", explanation: "❌ It does return matching paths."} ] },
+        // Preset-focused questions
+        { q: "Which preset is best for reading and exploring only?", correct: 0, options: [ {text: "Safe Exploration", explanation: "✅ Read + Glob + read-only git."}, {text: "Frontend Development", explanation: "❌ Includes edits and builds."}, {text: "Full Stack with CI/CD", explanation: "❌ Too broad and risky for exploration."} ] },
+        { q: "For refactors in <code>src/</code>, which preset pairs with auto-accept (scoped)?", correct: 1, options: [ {text: "Maximum Lockdown", explanation: "❌ Read-only/ask-heavy."}, {text: "Maintenance / Refactor", explanation: "✅ Scoped edits with tests."}, {text: "Safe Exploration", explanation: "❌ No edits."} ] },
+        { q: "Which preset should keep <code>git push</code> under Ask by default?", correct: 2, options: [ {text: "Frontend Development", explanation: "❌ Often set to Ask but can be changed."}, {text: "Maintenance / Refactor", explanation: "❌ Focused on code changes."}, {text: "Full Stack with CI/CD", explanation: "✅ Deploy-adjacent; Ask before pushing."} ] },
+        { q: "Which preset blocks most writes and commands by default?", correct: 0, options: [ {text: "Maximum Lockdown", explanation: "✅ Edits/writes/commands are denied or asked."}, {text: "Safe Exploration", explanation: "❌ Read-focused but not full lockdown."}, {text: "Full Stack with CI/CD", explanation: "❌ Broad allowances for devops."} ] }
+      ];
+
+      // Rich 30–50 word rationales per question
+      const quizRationales = [
+        // 1
+        'Edit() lets Claude modify bytes inside existing files. Write() is for creating new files and Read() is view-only. When you want a line changed or a refactor applied, Edit() is the capability required. Using Write() here would create duplicates, while Read() would do nothing.',
+        // 2
+        'Creating config.js is a file-creation operation, handled by Write(). Edit() changes existing files only. A shell command like touch also creates files, but within Claude Code\'s permission system, the semantic capability that governs file creation is Write(), not generic Bash access.',
+        // 3
+        'The main risk with Edit() is unintended changes to existing code—accidental deletions, large diffs, or semantics shifts from vague prompts. Installing packages is governed by Bash(npm/pip install:*). Creating too many files is a Write() risk, not an Edit() risk.',
+        // 4
+        'Read() is lowest risk because it cannot alter state. Bash commands and Write() change things and should be guarded. Use Read() for code reviews, audits, and exploration. Upgrading from Read() to Edit()/Write() should happen only after you approve a specific plan or diff.',
+        // 5
+        'Git requires staging before committing. Without Bash(git add:*), commits fail because nothing is staged. You don\'t need git push to save locally. Edit() is unrelated—Git tracks filesystem changes, but committing them is a separate version-control step requiring add then commit.',
+        // 6
+        'The wildcard * allows flexible suffixes or arguments so Claude can run variations of a command, like npm install react or lodash. It does not imply importance or restriction. Use wildcards intentionally and scope to families of commands to limit risk exposure.',
+        // 7
+        'npm install (and pip install) pulls remote code and executes lifecycle scripts. That\'s inherently risky and should be restricted to Ask or narrowly allowed. Committing or writing local files lacks the inbound network risk and therefore isn\'t the primary danger here.',
+        // 8
+        'Glob() returns file paths that match patterns (e.g., **/*.py). Read() opens files, but it doesn\'t search. Edit() changes content, not discover files. The usual flow is Glob() to enumerate, then Read() to inspect, and optionally Edit() to modify the targeted set.',
+        // 9
+        'git push affects shared history and can deploy changes indirectly. It\'s harder to revert and impacts teammates. git commit affects only your local repository and is easy to amend or squash. Therefore, push should usually be Ask or tightly controlled by policy.',
+        // 10
+        'WebFetch(domain: "stackoverflow.com") allows downloading page content for reading and citation, not executing code or installing anything. It\'s a safer, scoped alternative to generic curl. Pair with domain whitelists and keep shell-based network commands denied for defense in depth.',
+        // 11
+        'Write() creates brand new files or artifacts. Edit() modifies existing files and Delete operations come from dangerous Bash patterns like rm. If you\'re scaffolding components or generating outputs, Write() is correct; use Edit() only to change what already exists.',
+        // 12
+        'Read() offers the best signal with minimal risk. It enables explanation, review, and planning. Edit(*) or Bash(*) are extremely broad and inappropriate as defaults. Start with Read(), add Glob(), then selectively introduce Ask rules where speed trumps friction.',
+        // 13
+        'Running tests is about executing project scripts, not installing dependencies or creating files. Bash(npm run test:*) safely limits execution to scripts defined in package.json, which you can inspect. Keep installs under Ask so you can verify package names and intent.',
+        // 14
+        'curl can fetch arbitrary content and pipe it to interpreters, enabling one-command compromise. Many attacks reduce to curl|bash or curl with malicious post-install steps. Prefer WebFetch with domain allowlists and block curl/wget unless you have a narrow, auditable need.',
+        // 15
+        'Bash(*) grants arbitrary command execution; combining it with Write(*) permits dropping or modifying any file. That pairing creates full RCE-style capability. It dwarfs the risk of scoped editing or linting and should be avoided except inside isolated, disposable environments.',
+        // 16
+        'When multiple rules match, deny must take precedence to protect safety boundaries. Allow can be too permissive in edge cases. Ask sits below Allow because it requires human confirmation. If nothing matches, default Ask provides a safety valve without surprise execution.',
+        // 17
+        'git push changes shared state and often triggers CI/CD. Keeping it under Ask provides a final human checkpoint before external side effects occur. Automatic push is convenient but risky; explicit review reduces incidents and aligns with least-privilege and change-control practices.',
+        // 18
+        'Web access should prefer explicit allowlists. WebFetch(domain: "docs.example.com") restricts reading to a known host. Allowing all domains or shell-based curl gives too much reach and complicates auditing. Constrain the blast radius by naming exactly where Claude may read from.',
+        // 19
+        'For controlled refactors, scope Edit() to the source tree: Edit(src/**). That protects configuration, secrets, and infrastructure directories. Edit(*) is too broad; Write(*) is about file creation, which refactors rarely require. Tight scoping reduces unintended changes.',
+        // 20
+        '.env commonly contains API keys and credentials. Allowing Read or Edit on it risks leakage or accidental commits. Deny interaction with .env and related secret files; instead pass environment variables securely from your runtime or use secret managers for strong controls.',
+        // 21
+        'Glob() discovers paths matching patterns; it doesn\'t open or parse file content. Reading content requires Read(); editing content requires Edit(). Separating discovery from access helps you preview impact before changing anything—an important guardrail during large, multi-file tasks.',
+        // 22
+        'Safe Exploration prioritizes visibility with minimal write surface. It includes Read(), Glob(), and read-only Git commands so you can evaluate a repo and form a plan. Choose a development preset only after you\'ve approved a concrete set of changes or diffs.',
+        // 23
+        'Maintenance / Refactor is ideal when the scope is known (e.g., src/**) and tests validate behavior. Auto-accept can speed large-but-safe edits. Blocking installs keeps the environment deterministic so tests remain meaningful and failures point to code changes, not tooling drift.',
+        // 24
+        'Full Stack with CI/CD touches deploy paths and registries, so git push should stay under Ask. That preserves a mandatory approval checkpoint prior to external effects like triggering pipelines, publishing images, or updating environments. Treat push like a change-control gate.',
+        // 25
+        'Maximum Lockdown denies broad edits, writes, and shell, defaulting to asking for nearly everything. It\'s suited for audits, production work, and sensitive code where accidental change is unacceptable. Use it when read-only is the baseline and every mutation must be deliberate.'
+      ];
+      for (let i=0; i<quizQuestions.length && i<quizRationales.length; i++) { quizQuestions[i].rationale = quizRationales[i]; }
+
+      // ========== QUIZ SETUP ==========
+      function setupQuiz(containerId, questionsData) {
+        // (Existing setupQuiz function - unchanged from previous version)
+        const quizSection = document.getElementById(containerId);
+        if (!quizSection) return;
+        const bodyContainer = quizSection.querySelector('#quiz-body-container');
+        const prevBtn = quizSection.querySelector('#mainPrevBtn');
+        const nextBtn = quizSection.querySelector('#mainNextBtn');
+        const currentQSpan = quizSection.querySelector('#mainCurrentQ');
+        const totalQSpan = quizSection.querySelector('#mainTotalQ');
+        if (!bodyContainer || !prevBtn || !nextBtn || !currentQSpan || !totalQSpan) return;
+        
+        let currentQuestionIndex = 0;
+        totalQSpan.textContent = questionsData.length;
+
+        function renderQuestion() {
+          const qData = questionsData[currentQuestionIndex];
+          let optionsHTML = qData.options.map((opt, index) => `
+            <div class="quiz-option" data-option-index="${index}">
+              <label>
+                <input type="radio" name="q${currentQuestionIndex}" value="${index}">
+                <span>${opt.text}</span>
+              </label>
+              <div class="explanation">${opt.explanation}</div>
+            </div>`).join('');
+          const rationaleBlock = '<div class="quiz-rationale" id="quiz-rationale"></div>';
+          bodyContainer.innerHTML = `<div class="quiz-body active"><p><strong>Q${currentQuestionIndex + 1}:</strong> ${qData.q}</p><div class=\"quiz-options\">${optionsHTML}</div>${rationaleBlock}</div>`;
+          currentQSpan.textContent = currentQuestionIndex + 1;
+          prevBtn.disabled = currentQuestionIndex === 0;
+          nextBtn.disabled = currentQuestionIndex === questionsData.length - 1;
+          bodyContainer.querySelectorAll('.quiz-option input').forEach(radio => radio.addEventListener('change', handleOptionSelect));
+        }
+
+        function handleOptionSelect(e) {
+          const selectedOptionIndex = parseInt(e.target.value);
+          const qData = questionsData[currentQuestionIndex];
+          const parentQuestionDiv = e.target.closest('.quiz-body');
+          parentQuestionDiv.querySelectorAll('.quiz-option').forEach(optDiv => {
+            optDiv.classList.remove('selected', 'correct', 'wrong');
+            optDiv.querySelector('.explanation').style.display = 'none';
+          });
+          const selectedOptionDiv = e.target.closest('.quiz-option');
+          selectedOptionDiv.classList.add('selected');
+          selectedOptionDiv.querySelector('.explanation').style.display = 'block';
+          if (selectedOptionIndex === qData.correct) {
+            selectedOptionDiv.classList.add('correct');
+          } else {
+            selectedOptionDiv.classList.add('wrong');
+            const correctOpt = parentQuestionDiv.querySelector(`.quiz-option[data-option-index="${qData.correct}"]`);
+            if (correctOpt) {
+                correctOpt.classList.add('correct');
+                correctOpt.querySelector('.explanation').style.display = 'block';
+            }
+          }
+          parentQuestionDiv.querySelectorAll('input[type="radio"]').forEach(radio => radio.disabled = true);
+          const rationaleEl = parentQuestionDiv.querySelector('#quiz-rationale');
+          if (rationaleEl && qData.rationale){ rationaleEl.style.display = 'block'; rationaleEl.innerHTML = qData.rationale; }
+        }
+        
+        prevBtn.addEventListener('click', () => { if (currentQuestionIndex > 0) { currentQuestionIndex--; renderQuestion(); } });
+        nextBtn.addEventListener('click', () => { if (currentQuestionIndex < questionsData.length - 1) { currentQuestionIndex++; renderQuestion(); } });
+        renderQuestion();
+      }
+
+      // Initialize the Quiz
+      setupQuiz('quiz-demo', quizQuestions);
+
+
+      // ========== PERMISSION SEEDER DATA (Added more + descriptions for modal) ==========
+      const seederData = [
+            { group: "File System (High Risk!)", id: "Edit", name: "Edit()", desc: "Lets Claude change any file that *already exists*. Super powerful for fixing code or refactoring, but grant with caution!" },
+            { group: "File System (High Risk!)", id: "Write", name: "Write()", desc: "Lets Claude create *brand new files*. Great for building new components, but make sure Claude knows where to put them!" },
+            { group: "File System (Super Safe!)", id: "Glob", name: "Glob()", desc: "Lets Claude *search* for files using patterns (like `*.py` or `src/**/*.js`). Essential for finding things in big projects." },
+            { group: "File System (Super Safe!)", id: "Read", name: "Read()", desc: "Lets Claude *read* any file. It can't change anything, just look. Very safe and often needed." },
+            { group: "Git (Safe!)", id: "GitStatus", name: "Bash(git status:*)", desc: "Lets Claude check the *status* of your project (e.g., 'what files changed?'). Read-only and safe." },
+            { group: "Git (Safe!)", id: "GitDiff", name: "Bash(git diff:*)", desc: "Lets Claude *see* the changes you made before saving ('committing') them. Read-only and safe." },
+            { group: "Git (Safe!)", id: "GitAdd", name: "Bash(git add:*)", desc: "Lets Claude *stage* files, marking them as 'ready to be saved'. Needed before committing." },
+            { group: "Git (Medium Risk)", id: "GitCommit", name: "Bash(git commit:*)", desc: "Lets Claude *save* your work (staged files) to your *local* computer's history. Usually safe, but can clutter history." },
+            { group: "Git (Medium Risk)", id: "GitPull", name: "Bash(git pull:*)", desc: "Lets Claude *get* updates from your team's shared online code. Can sometimes cause 'merge conflicts' if you both changed the same line." },
+            { group: "Git (High Risk!)", id: "GitPush", name: "Bash(git push:*)", desc: "Lets Claude *share* your saved code changes with your team online (e.g., GitHub). Make sure the code is ready!" },
+            { group: "Node.js (Medium Risk)", id: "NpmInstall", name: "Bash(npm install:*)", desc: "Lets Claude *download* and install code 'packages' from the internet (npm registry). Essential, but involves running external code." },
+            { group: "Node.js (Safe!)", id: "NpmTest", name: "Bash(npm run test:*)", desc: "Lets Claude run your project's automated tests using the 'npm test' command." },
+            { group: "Node.js (Safe!)", id: "NpmBuild", name: "Bash(npm run build:*)", desc: "Lets Claude 'build' your project (e.g., compile code) using 'npm run build'." },
+            { group: "Node.js (Safe!)", id: "NpmLint", name: "Bash(npm run lint:*)", desc: "Lets Claude check your code style using 'npm run lint'." },
+            { group: "Python (Medium Risk)", id: "PipInstall", name: "Bash(pip install:*)", desc: "Lets Claude *download* and install Python packages from the internet (PyPI). Similar risk to npm install." },
+            { group: "Python (Safe!)", id: "PipFreeze", name: "Bash(pip freeze:*)", desc: "Lets Claude *list* the Python packages currently installed in your project." },
+            { group: "Python (Safe!)", id: "Pytest", name: "Bash(pytest:*)", desc: "Lets Claude run your Python tests using the 'pytest' command." },
+            { group: "Web Access (Medium Risk)", id: "WebFetchGH", name: "WebFetch(domain: \"github.com\")", desc: "Lets Claude *read* pages from github.com (e.g., documentation, issues)." },
+            { group: "Web Access (Medium Risk)", id: "WebFetchSO", name: "WebFetch(domain: \"stackoverflow.com\")", desc: "Lets Claude *search* for answers on stackoverflow.com." },
+        ];
+
+      // ========== PRESETS (Profiles) ==========
+      const presets = {
+        safeExploration: {
+          title: 'Safe Exploration',
+          allow: [
+            'Read()', 'Glob()', 'Bash(git status:*)', 'Bash(git diff:*)'
+          ],
+          ask: [
+            'Bash(git add:*)', 'Bash(git commit:*)'
+          ],
+          deny: [
+            'Write(*)', 'Edit(*)', 'Bash(npm install:*)', 'Bash(pip install:*)', 'Bash(git push:*)', 'Read(.env)'
+          ],
+          mode: { key: 'plan', label: 'Plan mode', note: 'Explore/architect safely; approve plans before execution.' }
+        },
+        frontendDev: {
+          title: 'Frontend Development',
+          allow: [
+            'Read()', 'Glob()', 'Edit(src/**)', 'Write(src/**)', 'Bash(npm run lint:*)', 'Bash(npm run test:*)', 'Bash(npm run build:*)'
+          ],
+          ask: [
+            'Bash(npm install:*)', 'Bash(git add:*)', 'Bash(git commit:*)'
+          ],
+          deny: [
+            'Bash(git push:*)', 'Write(./production/**)', 'Read(.env)'
+          ],
+          mode: { key: 'normal', label: 'Normal mode', note: 'Implement with confirmation in unfamiliar spots.' }
+        },
+        maintenance: {
+          title: 'Maintenance / Refactor',
+          allow: [
+            'Read()', 'Glob()', 'Edit(src/**)', 'Bash(npm run test:*)'
+          ],
+          ask: [
+            'Bash(git add:*)', 'Bash(git commit:*)'
+          ],
+          deny: [
+            'Write(*)', 'Bash(npm install:*)', 'Bash(pip install:*)'
+          ],
+          mode: { key: 'auto', label: 'Auto-accept (scoped)', note: 'Speed refactors in known directories; keep scope tight.' }
+        },
+        lockdown: {
+          title: 'Maximum Lockdown',
+          allow: [
+            'Read()', 'Glob()'
+          ],
+          ask: [
+            'Bash(git status:*)', 'Bash(git diff:*)'
+          ],
+          deny: [
+            'Edit(*)', 'Write(*)', 'Bash(*)', 'WebFetch(domain: "*")'
+          ],
+          mode: { key: 'plan', label: 'Plan mode', note: 'Read-only reviews and design; no autonomous writes.' }
+        },
+        cicd: {
+          title: 'Full Stack with CI/CD',
+          allow: [
+            'Read()', 'Glob()', 'Bash(docker:*)', 'Bash(git add:*)', 'Bash(git commit:*)', 'Bash(git push:*)', 'Bash(npm run build:*)', 'Bash(npm run test:*)'
+          ],
+          ask: [
+            'Bash(npm install:*)'
+          ],
+          deny: [
+            'Write(./production/**)', 'Read(.env)'
+          ],
+          mode: { key: 'normal', label: 'Normal mode', note: 'Confirm deploy-adjacent operations; keep push under review.' }
+        }
+      };
+
+
+      // ========== PERMISSION SEEDER SETUP ==========
+      (function(){
+        const listEl = document.getElementById('seeder-permission-list');
+        const generateBtn = document.getElementById('generate-btn');
+        const outputEl = document.getElementById('json-output');
+        const copyHelper = document.getElementById('copy-helper'); // Get helper input
+        const presetContainer = document.getElementById('preset-controls');
+        const modeGuidanceEl = document.getElementById('mode-guidance');
+        const profileNameEl = document.getElementById('profile-name');
+        const profileSaveBtn = document.getElementById('profile-save');
+        const profileListEl = document.getElementById('profile-list');
+        const profileDeleteBtn = document.getElementById('profile-delete');
+        const profileExportBtn = document.getElementById('profile-export');
+        const profileImportBtn = document.getElementById('profile-import');
+        const profileImportFileEl = document.getElementById('profile-import-file');
+        const profileHintEl = document.getElementById('profile-hint');
+        const quickStartBtn = document.getElementById('quickstart-btn');
+        const presetLearnBtn = document.getElementById('preset-learn-btn');
+        const copyTemplateBtn = document.getElementById('copy-template-btn');
+        let activePresetKey = null;
+        
+        if (!listEl || !generateBtn || !outputEl || !copyHelper) return;
+
+        // Group permissions
+        const groups = seederData.reduce((acc, p) => {
+            if (!acc[p.group]) acc[p.group] = [];
+            acc[p.group].push(p);
+            return acc;
+        }, {});
+
+        // Render the list with help icons
+        for (const groupName in groups) {
+            const groupEl = document.createElement('div');
+            groupEl.className = 'permission-group';
+            groupEl.innerHTML = `<h3>${groupName}</h3>`;
+            
+            groups[groupName].forEach(p => {
+                const itemEl = document.createElement('div');
+                itemEl.className = 'permission-item';
+                // Added help icon with data attributes
+                itemEl.innerHTML = `
+                    <input type="checkbox" id="${p.id}" data-permission="${p.name.replace(/"/g, '\\"')}">
+                    <label for="${p.id}">
+                        <strong>${p.name}</strong>
+                        <span>${p.desc.split('(')[0]}</span> 
+                    </label>
+                    <span class="help-icon" data-title="${p.name}" data-desc="${p.desc}" aria-label="Help for ${p.name}">?</span>
+                `;
+                groupEl.appendChild(itemEl);
+            });
+            listEl.appendChild(groupEl);
+        }
+
+        // Build a set of all seeded rule names for merge logic
+        const seededRuleSet = new Set(seederData.map(p => p.name));
+
+        // Apply preset -> checks matching allow in UI and stores ask/deny
+        let presetAsk = [];
+        let presetDeny = [];
+        let presetAllowExtras = [];
+
+        function applyPreset(pKey){
+          const preset = presets[pKey];
+          if (!preset) return;
+          activePresetKey = pKey;
+          // Clear all checkboxes first
+          document.querySelectorAll('#seeder-permission-list input[type="checkbox"]').forEach(cb => { cb.checked = false; });
+          // Check those present in seeder for allow
+          preset.allow.forEach(rule => {
+            if (seededRuleSet.has(rule)) {
+              const cb = document.querySelector(`#seeder-permission-list input[data-permission="${rule.replace(/"/g, '\\"')}"]`);
+              if (cb) cb.checked = true;
+            }
+          });
+          // Store ask/deny and extras for generator
+          presetAsk = Array.from(new Set(preset.ask || []));
+          presetDeny = Array.from(new Set(preset.deny || []));
+          presetAllowExtras = (preset.allow || []).filter(r => !seededRuleSet.has(r));
+          // Reflect JSON preview immediately
+          updateOutputJSON();
+          const hint = document.getElementById('preset-hint');
+          if (hint) hint.textContent = `Applied preset: ${preset.title}. You can tweak checkboxes and copy the merged config.`;
+          if (modeGuidanceEl && preset.mode) {
+            modeGuidanceEl.innerHTML = `<strong>Mode:</strong> ${preset.mode.label} — ${preset.mode.note}`;
+          }
+        }
+
+        // Wire preset buttons
+        if (presetContainer){
+          presetContainer.addEventListener('click', (e) => {
+            const btn = e.target.closest('button[data-preset]');
+            if (!btn) return;
+            applyPreset(btn.getAttribute('data-preset'));
+          });
+        }
+
+        function getSelectedSeededAllow(){
+          const selected = [];
+          document.querySelectorAll('#seeder-permission-list input[type="checkbox"]:checked').forEach(cb => {
+            selected.push(cb.dataset.permission);
+          });
+          return Array.from(new Set(selected));
+        }
+
+        function updateOutputJSON(){
+          const selectedPermissions = getSelectedSeededAllow();
+          const finalAllow = Array.from(new Set([ ...selectedPermissions, ...presetAllowExtras ]));
+          const config = {
+            permissions: {
+              allow: finalAllow,
+              deny: presetDeny,
+              ask: presetAsk
+            }
+          };
+          outputEl.value = JSON.stringify(config, null, 2);
+          // Update risk gauge
+          try { updateRiskUI(finalAllow); } catch(_) {}
+        }
+
+        // ===== Risk gauge logic (read-only; not draggable) =====
+        const riskFillEl = document.getElementById('risk-fill');
+        const riskLevelEl = document.getElementById('risk-level');
+        const riskScoreEl = document.getElementById('risk-score');
+        const warningsPanelEl = document.getElementById('warnings-panel');
+        const riskTooltipEl = document.getElementById('risk-tooltip');
+        const riskInfoBtn = document.getElementById('risk-info-btn');
+
+        const permissionRiskScores = {
+          'Read()': 1,
+          'Glob()': 1,
+          'WebFetch(domain: "*")': 10,
+          'Edit(src/**)': 4,
+          'Write(docs/**)': 3,
+          'Bash(npm run lint:*)': 3,
+          'Bash(npm run test:*)': 4,
+          'Bash(npm install:*)': 7,
+          'Bash(pip install:*)': 7,
+          'Bash(git commit:*)': 6,
+          'Edit(*)': 8,
+          'Write(*)': 10,
+          'Bash(git push:*)': 9,
+          'Bash(docker:*)': 11,
+          'Bash(*)': 20,
+          'Bash(rm:*)': 18,
+          'Bash(curl:*)': 15,
+          'Bash(sudo:*)': 20,
+          'Write(.env)': 16
+        };
+        const dangerousCombinations = [
+          { pattern: ['Bash(*)','Write(*)'], message: 'CRITICAL: Unrestricted bash + write enables arbitrary code execution and persistence.' },
+          { pattern: ['Bash(npm install:*)','Bash(curl:*)'], message: 'HIGH: Can download and execute code without verification.' },
+          { pattern: ['Write(.env)','Bash(git push:*)'], message: 'HIGH: Secrets in .env could be committed and pushed.' },
+          { pattern: ['Bash(sudo:*)'], message: 'CRITICAL: Grants system-level privileged execution.' }
+        ];
+
+        function calculateRiskScore(allowList){
+          let total = 0;
+          const contributions = [];
+          allowList.forEach(p => { const s = (permissionRiskScores[p] || 5); total += s; contributions.push([p,s]); });
+          if (allowList.includes('Bash(*)') && allowList.includes('Write(*)')) total *= 1.5;
+          if (allowList.some(p => p.startsWith('Bash(sudo'))) total *= 2;
+          const score = Math.min(Math.round(total), 100);
+          const level = score < 15 ? 'Safe' : score < 35 ? 'Caution' : score < 60 ? 'Dangerous' : 'Critical';
+          return { score, level, contributions };
+        }
+
+        function updateRiskUI(allowList){
+          if (!riskFillEl || !riskLevelEl || !riskScoreEl) return;
+          const { score, level, contributions } = calculateRiskScore(allowList || []);
+          riskFillEl.style.width = score + '%';
+          riskLevelEl.textContent = 'Level: ' + level;
+          riskScoreEl.textContent = score + '/100';
+          // Warnings
+          if (!warningsPanelEl) return;
+          const msgs = [];
+          dangerousCombinations.forEach(c => {
+            const hasAll = c.pattern.every(p => allowList.includes(p));
+            if (hasAll) msgs.push(c.message);
+          });
+          if (msgs.length){
+            warningsPanelEl.style.display = 'block';
+            warningsPanelEl.innerHTML = msgs.map(m => `<div>• ${m}</div>`).join('');
+          } else {
+            warningsPanelEl.style.display = 'none';
+            warningsPanelEl.innerHTML = '';
+          }
+          // Tooltip content
+          if (riskTooltipEl){
+            const top = contributions.sort((a,b)=>b[1]-a[1]).slice(0,5)
+              .map(([p,s]) => `<div><code>${p}</code> &rarr; ${s} pts</div>`).join('');
+            const mult = [
+              allowList.includes('Bash(*)') && allowList.includes('Write(*)') ? 'x1.5 for Bash(*) + Write(*)' : '',
+              allowList.some(p=>p.startsWith('Bash(sudo)')) ? 'x2 for any sudo' : ''
+            ].filter(Boolean).join(' • ') || 'None';
+            riskTooltipEl.innerHTML = `
+              <h5>How this score was calculated</h5>
+              <div>Base = sum of risk points for each allowed rule.</div>
+              <div style="margin:6px 0;"><strong>Top contributors</strong>${top ? '' : ': (none)'}${top}</div>
+              <div><strong>Multipliers</strong>: ${mult}</div>
+              <div style="margin-top:6px;"><strong>Final</strong>: ${score}/100 — ${level}</div>`;
+          }
+        }
+
+        // Recompute risk whenever selections change
+        listEl.addEventListener('change', () => updateOutputJSON());
+
+        // Tooltip show/hide
+        if (riskInfoBtn && riskTooltipEl){
+          const riskArea = document.getElementById('risk-area');
+          let hideTimer = null;
+          function showTip(){
+            if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; }
+            riskTooltipEl.classList.add('visible');
+          }
+          function hideTip(){
+            hideTimer = setTimeout(()=>{ riskTooltipEl.classList.remove('visible'); }, 150);
+          }
+          const anchor = riskArea || riskInfoBtn;
+          anchor.addEventListener('mouseenter', showTip);
+          anchor.addEventListener('mouseleave', hideTip);
+          riskTooltipEl.addEventListener('mouseenter', showTip);
+          riskTooltipEl.addEventListener('mouseleave', hideTip);
+          document.addEventListener('keydown', (e) => { if (e.key==='Escape') riskTooltipEl.classList.remove('visible'); });
+        }
+
+        // Quick Start (Safe Defaults): copy minimal safe config
+        function getQuickStartConfig(){
+          return {
+            permissions: {
+              allow: [ 'Read()', 'Glob()' ],
+              deny: [ 'Bash(rm:*)', 'Bash(sudo:*)', 'Write(.env)' ],
+              ask: [ 'Edit(*)', 'Write(*)', 'Bash(*)' ]
+            }
+          };
+        }
+        if (quickStartBtn){
+          quickStartBtn.addEventListener('click', () => {
+            const jsonString = JSON.stringify(getQuickStartConfig(), null, 2);
+            outputEl.value = jsonString;
+            // copy to clipboard with fallback
+            try {
+              if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(jsonString).then(() => {
+                  if (typeof showToast === 'function') showToast('✅ Safe starter config copied');
+                }).catch(() => {
+                  copyHelper.value = jsonString; copyHelper.select(); document.execCommand('copy');
+                  if (typeof showToast === 'function') showToast('✅ Safe starter config copied');
+                });
+              } else {
+                copyHelper.value = jsonString; copyHelper.select(); document.execCommand('copy');
+                if (typeof showToast === 'function') showToast('✅ Safe starter config copied');
+              }
+            } catch(_) {
+              // last resort: select textarea for manual copy
+              outputEl.select();
+              if (typeof showToast === 'function') showToast('Copy failed — copy manually');
+            } finally {
+              window.getSelection().removeAllRanges(); copyHelper.blur();
+            }
+          });
+        }
+
+        // Copy Template Example (balanced defaults)
+        function getTemplateConfig(){
+          return {
+            permissions: {
+              allow: [ 'Read()', 'Glob()', 'Edit(src/**)' ],
+              deny: [ 'Bash(rm:*)', 'Write(.env)' ],
+              ask: [ 'Bash(git push:*)' ]
+            }
+          };
+        }
+        if (copyTemplateBtn){
+          copyTemplateBtn.addEventListener('click', () => {
+            const jsonString = JSON.stringify(getTemplateConfig(), null, 2);
+            outputEl.value = jsonString;
+            try {
+              if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(jsonString).then(() => {
+                  if (typeof showToast === 'function') showToast('✅ Template config copied');
+                }).catch(() => { copyHelper.value = jsonString; copyHelper.select(); document.execCommand('copy'); if (typeof showToast === 'function') showToast('✅ Template config copied'); });
+              } else {
+                copyHelper.value = jsonString; copyHelper.select(); document.execCommand('copy'); if (typeof showToast === 'function') showToast('✅ Template config copied');
+              }
+            } catch(_) {
+              outputEl.select(); if (typeof showToast === 'function') showToast('Copy failed — copy manually');
+            } finally {
+              window.getSelection().removeAllRanges(); copyHelper.blur();
+            }
+          });
+        }
+
+        // Preset educational modal
+        if (presetLearnBtn){
+          presetLearnBtn.addEventListener('click', () => {
+            const modalOverlay = document.getElementById('help-modal');
+            const modalTitle = document.getElementById('modal-title');
+            const modalText = document.getElementById('modal-text');
+            if (!modalOverlay || !modalTitle || !modalText) return;
+            modalTitle.textContent = 'Learn Center';
+            const mc = document.querySelector('#help-modal .modal-content');
+            if (mc) mc.classList.add('large');
+            // Build tabbed modal content
+            const presetsHtml = (() => {
+              let grid = '<div class="preset-grid">';
+              Object.keys(presets).forEach(key => {
+                const p = presets[key];
+                const a = (p.allow||[]).slice(0,6).map(r=>`<code>${r}</code>`).join(', ');
+                const d = (p.deny||[]).slice(0,6).map(r=>`<code>${r}</code>`).join(', ');
+                const ask = (p.ask||[]).slice(0,6).map(r=>`<code>${r}</code>`).join(', ');
+                grid += `<div class="preset-card">
+                  <h5>${p.title}</h5>
+                  <div class="small">${p.mode ? p.mode.label : ''}</div>
+                  <div><strong>Allow:</strong> ${a || '—'}</div>
+                  <div><strong>Deny:</strong> ${d || '—'}</div>
+                  <div><strong>Ask:</strong> ${ask || '—'}</div>
+                </div>`;
+              });
+              grid += '</div>';
+              return grid;
+            })();
+            const modesHtml = `
+              <div>
+                <h5>Modes</h5>
+                <p><strong>Plan mode</strong>: Read-only workflow for exploration and architecture. Approve plans then enable edits.</p>
+                <p><strong>Normal mode</strong>: Standard development with confirmation prompts on riskier actions.</p>
+                <p><strong>Auto-accept (scoped)</strong>: Fast track repetitive refactors in a constrained directory.</p>
+              </div>`;
+            const tipsHtml = `
+              <div>
+                <h5>Best Practices</h5>
+                <ul>
+                  <li>Start with Read() + Glob(), add Ask rules for risky commands.</li>
+                  <li>Scope Edit()/Write() to directories like <code>src/**</code>.</li>
+                  <li>Keep <code>.env</code> and production paths denied.</li>
+                  <li>Prefer WebFetch with domain allowlists over shell curl/wget.</li>
+                </ul>
+              </div>`;
+            modalText.innerHTML = `
+              <div class="modal-tabs">
+                <button class="modal-tab active" data-tab="presets">Presets</button>
+                <button class="modal-tab" data-tab="modes">Modes</button>
+                <button class="modal-tab" data-tab="tips">Best Practices</button>
+              </div>
+              <div class="modal-panels">
+                <div class="modal-panel active" id="panel-presets">${presetsHtml}</div>
+                <div class="modal-panel" id="panel-modes">${modesHtml}</div>
+                <div class="modal-panel" id="panel-tips">${tipsHtml}</div>
+              </div>`;
+            // Tab behavior
+            const tabs = Array.from(document.querySelectorAll('#help-modal .modal-tab'));
+            function activateTab(key){
+              tabs.forEach(t=>t.classList.toggle('active', t.dataset.tab===key));
+              ['presets','modes','tips'].forEach(k=>{
+                const el = document.getElementById('panel-'+k);
+                if (el) el.classList.toggle('active', k===key);
+              });
+            }
+            tabs.forEach(t=> t.addEventListener('click', ()=> activateTab(t.dataset.tab)));
+            activateTab('presets');
+            modalOverlay.classList.add('visible');
+          });
+        }
+
+        // ===== Profiles: Local Storage CRUD =====
+        const PROFILE_STORE_KEY = 'ccpm_profiles_v1';
+        function getProfiles(){
+          try { return JSON.parse(localStorage.getItem(PROFILE_STORE_KEY) || '{}'); } catch(_) { return {}; }
+        }
+        function setProfiles(map){ localStorage.setItem(PROFILE_STORE_KEY, JSON.stringify(map)); }
+        function refreshProfileList(selected){
+          const map = getProfiles();
+          const names = Object.keys(map).sort();
+          profileListEl.innerHTML = '<option value="">Load profile...</option>' + names.map(n => `<option value="${n}">${n}</option>`).join('');
+          if (selected && names.includes(selected)) profileListEl.value = selected; else profileListEl.value = '';
+        }
+        function getCurrentConfig(){
+          try { return JSON.parse(outputEl.value); } catch(_) { return null; }
+        }
+        function applyProfileConfig(cfg){
+          if (!cfg || !cfg.permissions) return;
+          // Clear and set allow checkboxes for known rules
+          document.querySelectorAll('#seeder-permission-list input[type="checkbox"]').forEach(cb => { cb.checked = false; });
+          const allow = Array.isArray(cfg.permissions.allow) ? cfg.permissions.allow : [];
+          const ask = Array.isArray(cfg.permissions.ask) ? cfg.permissions.ask : [];
+          const deny = Array.isArray(cfg.permissions.deny) ? cfg.permissions.deny : [];
+          // Tick those present in seeder
+          allow.forEach(rule => {
+            if (seededRuleSet.has(rule)) {
+              const cb = document.querySelector(`#seeder-permission-list input[data-permission="${rule.replace(/"/g, '\\"')}"]`);
+              if (cb) cb.checked = true;
+            }
+          });
+          presetAsk = Array.from(new Set(ask));
+          presetDeny = Array.from(new Set(deny));
+          presetAllowExtras = allow.filter(r => !seededRuleSet.has(r));
+          updateOutputJSON();
+        }
+
+        // Save profile
+        if (profileSaveBtn){
+          profileSaveBtn.addEventListener('click', () => {
+            const name = (profileNameEl && profileNameEl.value.trim()) || '';
+            const cfg = getCurrentConfig();
+            if (!name) { if (profileHintEl) profileHintEl.textContent = 'Enter a profile name before saving.'; return; }
+            if (!cfg || !cfg.permissions) { if (profileHintEl) profileHintEl.textContent = 'Generate config first, then save profile.'; return; }
+            const map = getProfiles();
+            map[name] = { permissions: cfg.permissions, meta: { title: name, savedAt: new Date().toISOString() } };
+            setProfiles(map);
+            refreshProfileList(name);
+            if (profileHintEl) profileHintEl.textContent = `Saved profile: ${name}`;
+          });
+        }
+
+        // Load profile
+        if (profileListEl){
+          profileListEl.addEventListener('change', () => {
+            const name = profileListEl.value;
+            if (!name) return;
+            const map = getProfiles();
+            const prof = map[name];
+            if (!prof) return;
+            applyProfileConfig(prof);
+            if (profileNameEl) profileNameEl.value = name;
+            if (profileHintEl) profileHintEl.textContent = `Loaded profile: ${name}`;
+          });
+        }
+
+        // Delete profile
+        if (profileDeleteBtn){
+          profileDeleteBtn.addEventListener('click', () => {
+            const name = profileListEl && profileListEl.value ? profileListEl.value : (profileNameEl ? profileNameEl.value.trim() : '');
+            if (!name) { if (profileHintEl) profileHintEl.textContent = 'Select a profile to delete.'; return; }
+            const map = getProfiles();
+            if (!map[name]) { if (profileHintEl) profileHintEl.textContent = 'Profile not found.'; return; }
+            delete map[name];
+            setProfiles(map);
+            refreshProfileList('');
+            if (profileHintEl) profileHintEl.textContent = `Deleted profile: ${name}`;
+          });
+        }
+
+        // Export profile
+        if (profileExportBtn){
+          profileExportBtn.addEventListener('click', () => {
+            const name = profileListEl && profileListEl.value ? profileListEl.value : (profileNameEl ? profileNameEl.value.trim() : 'profile');
+            const cfg = getCurrentConfig();
+            if (!cfg) { if (profileHintEl) profileHintEl.textContent = 'No config to export.'; return; }
+            const blob = new Blob([JSON.stringify(cfg, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = `claude-permissions-${name || 'profile'}.json`; a.click();
+            URL.revokeObjectURL(url);
+            if (profileHintEl) profileHintEl.textContent = `Exported profile: ${name || 'profile'}`;
+          });
+        }
+
+        // Import profile (file)
+        if (profileImportBtn && profileImportFileEl){
+          profileImportBtn.addEventListener('click', () => { profileImportFileEl.click(); });
+          profileImportFileEl.addEventListener('change', (e) => {
+            const file = e.target.files && e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = () => {
+              try {
+                const cfg = JSON.parse(reader.result);
+                if (!cfg || !cfg.permissions) throw new Error('Invalid profile JSON');
+                applyProfileConfig(cfg);
+                const inferred = (profileNameEl && profileNameEl.value.trim()) || (file.name.replace(/\.json$/i,'') || `Imported-${Date.now()}`);
+                const map = getProfiles();
+                map[inferred] = { permissions: cfg.permissions, meta: { title: inferred, savedAt: new Date().toISOString() } };
+                setProfiles(map);
+                refreshProfileList(inferred);
+                if (profileHintEl) profileHintEl.textContent = `Imported profile: ${inferred}`;
+              } catch(err) {
+                if (profileHintEl) profileHintEl.textContent = 'Failed to import JSON.';
+              }
+            };
+            reader.readAsText(file);
+          });
+        }
+
+        // Share link (encode current config in URL hash)
+        function encodeForShare(jsonStr){
+          try { return btoa(unescape(encodeURIComponent(jsonStr))); } catch(_) { return ''; }
+        }
+        function decodeFromShare(b64){
+          try { return decodeURIComponent(escape(atob(b64))); } catch(_) { return ''; }
+        }
+        function copyToClipboard(text){
+          copyHelper.value = text; copyHelper.select(); copyHelper.setSelectionRange(0, 99999);
+          const tryModern = navigator.clipboard && navigator.clipboard.writeText ? navigator.clipboard.writeText(text) : Promise.reject();
+          tryModern.then(()=>true).catch(()=>document.execCommand('copy'));
+          window.getSelection().removeAllRanges(); copyHelper.blur();
+        }
+        const shareBtn = document.getElementById('profile-share');
+        if (shareBtn){
+          shareBtn.addEventListener('click', () => {
+            const cfg = getCurrentConfig();
+            if (!cfg) { if (profileHintEl) profileHintEl.textContent = 'No config to share.'; return; }
+            const b64 = encodeForShare(JSON.stringify(cfg));
+            if (!b64) { if (profileHintEl) profileHintEl.textContent = 'Failed to encode link.'; return; }
+            const link = `${location.origin}${location.pathname}#p=${b64}`;
+            copyToClipboard(link);
+            if (profileHintEl) profileHintEl.textContent = 'Share link copied to clipboard.';
+            if (typeof showToast === 'function') showToast('🔗 Share link copied');
+          });
+        }
+
+        // Auto-load from URL hash if provided
+        (function(){
+          const m = /[#&]p=([^&]+)/.exec(location.hash);
+          if (!m) { refreshProfileList(''); return; }
+          const jsonStr = decodeFromShare(m[1]);
+          try {
+            const cfg = JSON.parse(jsonStr);
+            if (cfg && cfg.permissions) { applyProfileConfig(cfg); if (profileHintEl) profileHintEl.textContent = 'Loaded config from link.'; }
+          } catch(_) {}
+          refreshProfileList('');
+        })();
+
+        // Generate Config and Copy (Using execCommand Fallback)
+        generateBtn.addEventListener('click', () => {
+            // Always refresh output before copying
+            updateOutputJSON();
+            const jsonString = outputEl.value;
+            outputEl.value = jsonString;
+
+            // --- Clipboard Logic with Fallback ---
+            copyHelper.value = jsonString;
+            copyHelper.select();
+            copyHelper.setSelectionRange(0, 99999); // For mobile devices
+
+            let copied = false;
+            try {
+                // Try modern clipboard API first (might fail in some contexts)
+                navigator.clipboard.writeText(jsonString).then(() => {
+                    copied = true;
+                    generateBtn.textContent = 'Copied! ✅';
+                    setTimeout(() => { generateBtn.textContent = 'Copy Config to Clipboard'; }, 2000);
+                    if (typeof showToast === 'function') showToast('✅ Config copied to clipboard');
+                }).catch(() => {
+                    // Fallback to execCommand if modern API fails
+                    copied = document.execCommand('copy');
+                    if (copied) {
+                        generateBtn.textContent = 'Copied! ✅';
+                        setTimeout(() => { generateBtn.textContent = 'Copy Config to Clipboard'; }, 2000);
+                        if (typeof showToast === 'function') showToast('✅ Config copied to clipboard');
+                    } else {
+                        throw new Error('execCommand failed');
+                    }
+                });
+            } catch (err) {
+                 // Fallback if navigator.clipboard is not available or execCommand fails
+                 try {
+                     copied = document.execCommand('copy');
+                     if (copied) {
+                         generateBtn.textContent = 'Copied! ✅';
+                         setTimeout(() => { generateBtn.textContent = 'Copy Config to Clipboard'; }, 2000);
+                         if (typeof showToast === 'function') showToast('✅ Config copied to clipboard');
+                     } else {
+                         throw new Error('execCommand failed');
+                     }
+                 } catch (execErr) {
+                    console.error('Failed to copy using both methods: ', execErr);
+                    outputEl.select(); // Select the text area so user can copy manually
+                    if (typeof showToast === 'function') showToast('Please copy manually (Ctrl+C / Cmd+C)');
+                 }
+            }
+             // Deselect helper input
+             window.getSelection().removeAllRanges();
+             copyHelper.blur();
+        });
+      })();
+      
+      
+      // ========== MODAL SETUP FOR HELP ICONS ==========
+      (function() {
+          const modalOverlay = document.getElementById('help-modal');
+          const modalTitle = document.getElementById('modal-title');
+          const modalText = document.getElementById('modal-text');
+          const closeModalBtn = document.getElementById('modal-close');
+          
+          if (!modalOverlay || !modalTitle || !modalText || !closeModalBtn) return;
+
+          document.getElementById('seeder-permission-list').addEventListener('click', (e) => {
+              if (e.target.classList.contains('help-icon')) {
+                  const title = e.target.dataset.title;
+                  const desc = e.target.dataset.desc;
+                  modalTitle.textContent = title || "Permission Help";
+                  modalText.innerHTML = renderWithCode(desc || "No description available.");
+                  modalOverlay.classList.add('visible');
+              }
+          });
+
+          function closeModal() {
+              modalOverlay.classList.remove('visible');
+              const mc = document.querySelector('#help-modal .modal-content');
+              if (mc) mc.classList.remove('large');
+          }
+
+          closeModalBtn.addEventListener('click', closeModal);
+          modalOverlay.addEventListener('click', (e) => {
+              // Close if clicked outside the content area
+              if (e.target === modalOverlay) {
+                  closeModal();
+              }
+          });
+          // Close modal on Escape key
+          document.addEventListener('keydown', (e) => {
+             if (e.key === "Escape" && modalOverlay.classList.contains('visible')) {
+                  closeModal();
+             }
+          });
+      })();
+
+      
+      // ========== RISK AUDITOR SETUP ==========
+      (function(){
+          const auditBtn = document.getElementById('audit-btn');
+          const configInput = document.getElementById('config-input');
+          const summaryEl = document.getElementById('audit-summary');
+          const listEl = document.getElementById('audit-list');
+          const adviceEl = document.getElementById('audit-advice'); // Added advice element
+          const traceBtn = document.getElementById('trace-btn');
+          const traceInput = document.getElementById('trace-input');
+          const traceOutput = document.getElementById('trace-output');
+          const tracePackSel = document.getElementById('trace-pack');
+          
+          if (!auditBtn || !configInput || !summaryEl || !listEl || !adviceEl) return;
+          
+          // Refined risk levels dictionary
+          const riskLevels = {
+              "Edit()": { level: "critical", advice: "Grants full file editing. Extremely powerful, use only for trusted tasks after planning." },
+              "Write()": { level: "critical", advice: "Allows creating any new file. Can clutter project if misused. Be specific in prompts." },
+              "Bash(rm:*)": { level: "critical", advice: "Allows deleting files/folders! Extremely dangerous. Recommend moving to 'deny' or 'ask'." },
+              "Bash(git push:*)": { level: "high", advice: "Sends code to shared repository. Ensure code is reviewed/tested before allowing this." },
+              "Bash(npm install:*)": { level: "high", advice: "Downloads & runs code from internet. Verify packages added to package.json." },
+              "Bash(pip install:*)": { level: "high", advice: "Downloads & runs Python code from internet. Verify installed packages." },
+              "Bash(git pull:*)": { level: "medium", advice: "Gets updates from shared repo. Can cause merge conflicts." },
+              "Bash(git commit:*)": { level: "medium", advice: "Saves work locally. Can create messy history if overused autonomously." },
+              "WebFetch(domain: \"*\")": { level: "medium", advice: "Allows fetching from *any* website. Consider restricting to specific domains like WebFetch(domain: \"github.com\")." },
+              "Bash(git status:*)": { level: "low", advice: "Safe read-only command to check Git status." },
+              "Bash(git diff:*)": { level: "low", advice: "Safe read-only command to view changes." },
+              "Bash(git add:*)": { level: "low", advice: "Stages changes for commit. Relatively safe, part of standard Git flow." },
+              "Bash(npm run test:*)": { level: "low", advice: "Runs project tests. Generally safe." },
+              "Bash(npm run lint:*)": { level: "low", advice: "Checks code style. Safe." },
+              "Bash(pytest:*)": { level: "low", advice: "Runs Python tests. Generally safe." },
+              "Read()": { level: "low", advice: "Allows reading any file. Safe read-only operation." },
+              "Glob()": { level: "low", advice: "Allows searching for files. Safe read-only operation." }
+          };
+          
+          function getRiskDetails(permission) {
+              // Check for exact match
+              if (riskLevels[permission]) return riskLevels[permission];
+              // Check for wildcard matches (prioritize more specific first)
+              if (permission.startsWith("Bash(rm")) return { level: "critical", advice: "Allows deleting files/folders! Extremely dangerous. Recommend moving to 'deny' or 'ask'." };
+              if (permission.startsWith("Bash(npm install")) return { level: "high", advice: "Downloads & runs code from internet. Verify packages added." };
+              if (permission.startsWith("Bash(pip install")) return { level: "high", advice: "Downloads & runs Python code from internet. Verify packages." };
+              if (permission.startsWith("Bash(git push")) return { level: "high", advice: "Sends code to shared repository. Ensure code is reviewed first." };
+              if (permission.startsWith("WebFetch")) return { level: "medium", advice: "Allows fetching from websites. Restrict domains if possible." };
+              if (permission.startsWith("Bash(git")) return { level: "low", advice: "Common Git command, usually safe read/stage/local save operation." };
+              if (permission.startsWith("Bash(npm run") || permission.startsWith("Bash(yarn")) return { level: "low", advice: "Runs scripts defined in package.json. Usually safe." };
+              return { level: "unknown", advice: "Risk level unknown. Review this command carefully." };
+          }
+          
+          auditBtn.addEventListener('click', () => {
+              let config;
+              listEl.innerHTML = ""; // Clear previous results
+              adviceEl.innerHTML = ""; // Clear previous advice
+              try {
+                  let text = configInput.value.trim();
+                  text = text.replace(/,\s*([}\]])/g, '$1'); 
+                  config = JSON.parse(text);
+              } catch (e) {
+                  summaryEl.innerHTML = "<strong>Error:</strong> Whoops! That doesn't look like valid JSON. Make sure you copy and paste the *entire* file, starting with `{` and ending with `}`.";
+                  return;
+              }
+              
+              if (!config.permissions || !config.permissions.allow || !Array.isArray(config.permissions.allow)) {
+                  summaryEl.innerHTML = "<strong>Error:</strong> Hmm, the JSON seems okay, but I can't find the `permissions.allow` list inside. It should look like `\"permissions\": {\"allow\": [...]}`.";
+                  return;
+              }
+              
+              const allowed = config.permissions.allow;
+              if (allowed.length === 0) {
+                  summaryEl.innerHTML = "<strong>Safety Check Complete:</strong> 👍 You have 0 rules in your 'allow' list. Super safe! Claude will ask permission for everything.";
+                  adviceEl.textContent = "This is the safest setting, but might slow you down if you trust Claude with simple tasks. Consider adding some low-risk rules from the 'Build Your Config' tab.";
+                  return;
+              }
+              
+              let counts = { critical: 0, high: 0, medium: 0, low: 0, unknown: 0 };
+              let adviceItems = [];
+
+              allowed.forEach(rule => {
+                  const details = getRiskDetails(rule);
+                  const riskClass = `risk-${details.level}`;
+                  counts[details.level]++;
+                  
+                  const li = document.createElement('li');
+                  li.className = riskClass;
+                  li.textContent = rule;
+                  listEl.appendChild(li);
+
+                  // Add advice for non-low risk items, avoiding duplicates
+                  if (details.level !== 'low' && !adviceItems.some(item => item.level === details.level)) {
+                     adviceItems.push(details);
+                  } else if (details.level === 'unknown' && !adviceItems.some(item => item.level === 'unknown')) {
+                     adviceItems.push(details); // Add general unknown advice once
+                  }
+              });
+              
+              summaryEl.innerHTML = `<strong>Safety Check Complete!</strong> Found ${allowed.length} 'allow' rules:<br>
+                  🔴 ${counts.critical} Critical &nbsp;&nbsp; 🟠 ${counts.high} High &nbsp;&nbsp; 🟡 ${counts.medium} Medium &nbsp;&nbsp; 🟢 ${counts.low} Safe &nbsp;&nbsp; ⚪️ ${counts.unknown} Unknown`;
+              
+              // Generate advice
+              if (adviceItems.length > 0) {
+                  adviceEl.innerHTML = "<strong>Quick Tips based on your allowed rules:</strong><ul>";
+                  adviceItems.sort((a, b) => { // Show critical first
+                      const order = { critical: 0, high: 1, medium: 2, unknown: 3, low: 4 };
+                      return order[a.level] - order[b.level];
+                  });
+                  adviceItems.forEach(item => {
+                      let icon = item.level === 'critical' ? '🔴' : item.level === 'high' ? '🟠' : item.level === 'medium' ? '🟡' : '⚪️';
+                      adviceEl.innerHTML += `<li>${icon} <strong>${item.level.charAt(0).toUpperCase() + item.level.slice(1)} Risk:</strong> ${item.advice}</li>`;
+                  });
+                   adviceEl.innerHTML += "</ul>";
+              } else {
+                  adviceEl.textContent = "Looks like you only have safe, low-risk rules enabled. Great job!";
+              }
+          });
+
+          // ========== RULE TRACE (Decision Explainer) ==========
+          function parseConfig() {
+            try {
+              let text = configInput.value.trim();
+              text = text.replace(/,\s*([}\]])/g, '$1');
+              const cfg = JSON.parse(text);
+              const perms = (cfg && cfg.permissions) ? cfg.permissions : {};
+              return {
+                allow: Array.isArray(perms.allow) ? perms.allow : [],
+                deny: Array.isArray(perms.deny) ? perms.deny : [],
+                ask: Array.isArray(perms.ask) ? perms.ask : []
+              };
+            } catch(_) { return { allow: [], deny: [], ask: [] }; }
+          }
+
+          function normalize(str){ return (str || '').trim(); }
+
+          function extractHead(rule){
+            const m = /^(\w+)\s*\((.*)\)$/.exec(rule.trim());
+            if (!m) return { tool: rule.trim(), arg: '' };
+            return { tool: m[1], arg: m[2] };
+          }
+
+          function wildcardToRegex(pattern){
+            // Support ** for any path, * for segment, and :* suffix for bash prefixes
+            let p = pattern
+              .replace(/[-/\\^$+?.()|\[\]{}]/g, '\\$&')
+              .replace(/\\\*\\\*/g, '.*')
+              .replace(/\\\*/g, '[^\n]*');
+            return new RegExp('^' + p + '$', 'i');
+          }
+
+          function matchBash(ruleArg, actionArg){
+            // Normalize spaces
+            const r = ruleArg.trim();
+            if (r === '*' || r === '') return true;
+            // Convert colon wildcard (e.g., npm install:*) into prefix .* regex
+            const colonWild = r.replace(/:\\\\\*$/,'');
+            if (/:\*$/.test(r)) {
+              const prefix = r.replace(/:\*$/, '').trim();
+              return actionArg.trim().toLowerCase().startsWith(prefix.toLowerCase());
+            }
+            // Fallback to wildcard matching
+            return wildcardToRegex(r).test(actionArg.trim());
+          }
+
+          function matchWebFetch(ruleArg, actionArg){
+            // ruleArg like: domain: "github.com" or "*"
+            const domainRule = /domain\s*:\s*"([^"]+)"/.exec(ruleArg);
+            const domainAction = /domain\s*:\s*"([^"]+)"/.exec(actionArg);
+            const r = domainRule ? domainRule[1] : '*';
+            const a = domainAction ? domainAction[1] : actionArg;
+            if (r === '*') return true;
+            // Exact or subdomain/path startswith
+            return a.toLowerCase().startsWith(r.toLowerCase());
+          }
+
+          function ruleMatchesAction(rule, action){
+            const rr = extractHead(rule);
+            const aa = extractHead(action);
+            const rrTool = (rr.tool || '').toLowerCase();
+            const aaTool = (aa.tool || '').toLowerCase();
+            if (rrTool !== aaTool) {
+              // Special: Bash(*) matches any Bash
+              if (!(rrTool === 'bash' && aaTool === 'bash')) return false;
+            }
+            if (rrTool === 'bash') return matchBash(rr.arg, aa.arg);
+            if (rrTool === 'webfetch') return matchWebFetch(rr.arg, aa.arg);
+            // File-oriented: Edit/Write/Read/Glob
+            if (rr.arg === '*' || rr.arg === '') return true;
+            return wildcardToRegex(rr.arg).test(aa.arg);
+          }
+
+          function coerceAction(input){
+            const s = (input || '').trim();
+            if (!s) return s;
+            // Already Tool(arg) shape
+            if (/^\w+\s*\(.*\)$/.test(s)) return s;
+            // Raw common commands → Bash()
+            if (/^(git|npm|yarn|pnpm|pip|python|pytest|docker|node)\b/i.test(s)) return `Bash(${s})`;
+            // Single filename → Read(filename)
+            if (/^[\w\./\\-]+\.[\w]+$/.test(s)) return `Read(${s})`;
+            return `Bash(${s})`;
+          }
+
+          function explainDecision(perms, action){
+            const matches = { deny: [], allow: [], ask: [] };
+            perms.deny.forEach(r => { if (ruleMatchesAction(r, action)) matches.deny.push(r); });
+            perms.allow.forEach(r => { if (ruleMatchesAction(r, action)) matches.allow.push(r); });
+            perms.ask.forEach(r => { if (ruleMatchesAction(r, action)) matches.ask.push(r); });
+            let decision = 'ask (default)';
+            let reason = 'No explicit rule matched; defaulting to ask.';
+            if (matches.deny.length) { decision = 'deny'; reason = `Matched deny rule: ${matches.deny[0]}`; }
+            else if (matches.allow.length) { decision = 'allow'; reason = `Matched allow rule: ${matches.allow[0]}`; }
+            else if (matches.ask.length) { decision = 'ask'; reason = `Matched ask rule: ${matches.ask[0]}`; }
+            return { decision, reason, matches };
+          }
+
+          function renderTrace(res, action){
+            let cls = 'trace-ask';
+            if (res.decision === 'allow') cls = 'trace-allow';
+            if (res.decision === 'deny') cls = 'trace-deny';
+            const header = `<div class="trace-header"><span class="trace-badge">${res.decision.toUpperCase()}</span><span>Action: <code>${action}</code></span></div>`;
+            const reason = `<div><strong>Reason:</strong> ${res.reason}</div>`;
+            const denySec = res.matches.deny.length ? `<div class="trace-section"><strong>Denied by:</strong> ${res.matches.deny.map(r=>`<code>${r}</code>`).join(' | ')}</div>` : '';
+            const allowSec = res.matches.allow.length ? `<div class="trace-section"><strong>Allowed by:</strong> ${res.matches.allow.map(r=>`<code>${r}</code>`).join(' | ')}</div>` : '';
+            const askSec = res.matches.ask.length ? `<div class="trace-section"><strong>Asks via:</strong> ${res.matches.ask.map(r=>`<code>${r}</code>`).join(' | ')}</div>` : '';
+            traceOutput.classList.remove('trace-allow','trace-ask','trace-deny');
+            traceOutput.classList.add(cls);
+            traceOutput.innerHTML = header + reason + denySec + allowSec + askSec;
+          }
+
+          if (traceBtn && traceInput && traceOutput){
+            traceBtn.addEventListener('click', () => {
+              const action = coerceAction(normalize(traceInput.value));
+              if (!action) { traceOutput.textContent = 'Enter an action to trace.'; return; }
+              const perms = parseConfig();
+              const res = explainDecision(perms, action);
+              renderTrace(res, action);
+            });
+          }
+
+          // Suggestion packs for datalist options
+          const baseOptions = [
+            'Bash(npm install lodash)','Bash(npm install:*)','Bash(npm run test)','Bash(npm run build)','Bash(npm run lint)',
+            'Bash(git status)','Bash(git diff HEAD)','Bash(git add .)','Bash(git commit:*)','Bash(git push origin main)',
+            'Bash(pip install requests)','Bash(pytest)','Bash(docker build .)','Bash(docker compose up)',
+            'Bash(curl:*)','Bash(rm -rf node_modules)','Edit(src/App.js)','Edit(src/**)','Edit(package.json)',
+            'Write(src/newFile.ts)','Write(tests/**)','Read(.env)','Read(README.md)','WebFetch(domain: "github.com")',
+            'WebFetch(domain: "stackoverflow.com")','WebFetch(domain: "*")','Glob(src/**/*.js)','Glob(**/*.test.js)',
+            'Bash(kubectl apply -f k8s.yaml)','Bash(terraform plan)','Bash(aws s3 ls)','Bash(gcloud app deploy)',
+            'Bash(gh pr create)','Bash(vercel --prod)','Bash(npm publish)','Bash(kubectl delete deployment web)',
+            'Bash(docker rm my-container)','Bash(aws s3 sync . s3://bucket)','Bash(conda install pandas)','Bash(pytest -k login)'
+          ];
+          const suggestionPacks = {
+            all: baseOptions,
+            nextjs: [
+              'Edit(pages/**)','Edit(app/**)','Edit(components/**)','Bash(npm run dev)','Bash(npm run build)','Bash(npm run lint)',
+              'Edit(next.config.js)','Write(src/lib/**)','WebFetch(domain: "nextjs.org")','Glob(pages/**/*.tsx)'
+            ],
+            htmld3: [
+              'Edit(public/index.html)','Edit(public/**)','Edit(src/styles/**)','Edit(css/**)','Write(public/js/chart.js)',
+              'Bash(npm run dev)','Bash(npm run build)','WebFetch(domain: "developer.mozilla.org")','WebFetch(domain: "d3js.org")',
+              'WebFetch(domain: "cdn.jsdelivr.net")','WebFetch(domain: "unpkg.com")','Glob(public/**/*.html)','Glob(src/**/*.css)'
+            ],
+            terraform: [
+              'Bash(terraform init)','Bash(terraform plan)','Bash(terraform validate)','Bash(terraform apply:*)',
+              'Edit(infra/**)','Write(infra/modules/**)','Read(.terraform.lock.hcl)'
+            ],
+            reactnative: [
+              'Bash(npm run ios)','Bash(npm run android)','Bash(react-native run-android)','Bash(react-native run-ios)',
+              'Bash(pod install)','Edit(ios/**)','Edit(android/**)','Write(src/screens/**)'
+            ],
+            dockerk8s: [
+              'Bash(docker build .)','Bash(docker compose up)','Bash(docker ps)','Bash(docker logs:*)','Bash(docker rm my-container)',
+              'Bash(kubectl apply -f k8s.yaml)','Bash(kubectl delete deployment web)','Edit(Dockerfile)','Edit(k8s/**)'
+            ],
+            pyml: [
+              'Bash(pip install:*)','Bash(conda install pandas)','Bash(pytest)','Bash(python train.py)','Write(models/**)','Write(outputs/**)',
+              'Read(data/raw/**)','Write(data/processed/**)','Edit(notebooks/**)'
+            ],
+            cicd: [
+              'Bash(gh pr create)','Bash(git push origin main)','Edit(.github/workflows/**)','Bash(npm run build)','Bash(vercel --prod)',
+              'Bash(docker login)','Bash(docker push:*)','Bash(gcloud app deploy)','Bash(aws s3 sync . s3://bucket)'
+            ]
+          };
+          function refreshTraceOptions(packKey){
+            const list = document.getElementById('trace-options');
+            if (!list) return;
+            list.innerHTML = '';
+            const items = suggestionPacks[packKey] || baseOptions;
+            items.slice(0, 40).forEach(v => {
+              const opt = document.createElement('option');
+              opt.value = v; list.appendChild(opt);
+            });
+          }
+          if (tracePackSel){
+            tracePackSel.addEventListener('change', () => refreshTraceOptions(tracePackSel.value));
+            refreshTraceOptions(tracePackSel.value || 'all');
+          }
+      })();
+
+    });
+    
+    // ===================================================================
+    // GLOSSARY L (3D CARD) BOOTSTRAP SCRIPT
+    // ===================================================================
+    (function(){
+      // === DATA FOR GLOSSARY L CARDS (Added Read, Glob, Git Add + Expanded FAQs) ===
+      var cards = [
+        // --- Edit() Card ---
+        { id:"CLAUDECODE001", concept:{ title:"Edit()", emoji:"✏️", description:"Let's start with the basics! This is one of the most powerful rules. Imagine you've asked a friend to help you edit a group project. This permission is like giving that friend permission to use their pen on *all the pages that are already in the binder*. They can cross things out, add new sentences, or fix typos on any existing page. It's super helpful, but you have to trust them!", examples:[ "You say: 'Can you rename 'Chapter 1' to 'My First Day' on all the pages?' Claude will do it everywhere without asking you on each page.", "You say: 'Please fix the spelling mistakes in my report.' Claude will read the existing file and fix the mistakes it finds.", "A *risky* example: You say, 'This page is messy, clean it up.' Claude might misunderstand and *erase* a paragraph it thinks is 'messy' but you wanted to keep!" ], formula:"Edit() — Lets Claude change files that *already exist*.", quickSummary:[ "Lets Claude *change* existing files.", "It *cannot* create brand new files (that's `Write()`).", "It *cannot* delete whole files (that's `Bash(rm:*)`).", "This is a HIGH TRUST / CRITICAL RISK rule. It's fast, but be sure your instructions are clear!", "You need this for almost all refactoring and debugging." ], practiceQuestions:[ "What's the main risk? (Answer: If your instruction is vague, Claude might change or delete code you wanted! You don't get a 'do you approve?' popup for each change.)", "What's the main benefit? (Answer: Speed! Claude can make hundreds of changes across your project in seconds.)", "What if I'm scared to turn this on? (Answer: That's smart! A great, safe way to use it is to first ask Claude for a 'plan'. Once you approve the *plan*, you can turn on `Edit()` just for that task, then turn it off again.)", "Will this cost me money in API fees? (Answer: Not directly for the permission itself. But, it lets Claude work by itself on big tasks, which *can* use more API tokens as it thinks and edits over time.)", "How is this different from `Write()`? (Answer: `Edit()` changes *old* files. `Write()` makes *new* files.)", "Is it safer than `Bash(rm:*)`? (Answer: Yes! `Edit()` can mess up content, but `Bash(rm:*)` can *delete the entire file* which is usually much worse!)", "Should I allow this in my team's shared settings? (Answer: Probably not! This is usually too risky for a shared config. Keep it in your personal `.local` file.)", "Can Claude edit files outside my project folder? (Answer: No, Claude Code is generally restricted to working within your current project directory for safety.)" ], tags:["Claude Code", "Permission", "File System", "Critical Risk", "Refactoring", "Automation", "settings.local.json"] } },
+        // --- Write() Card ---
+        { id:"CLAUDECODE002", concept:{ title:"Write()", emoji:"📄", description:"This is another big one! Sticking with our group project story, `Write()` is like giving your friend permission to **add new, blank pages** to the binder *wherever they think they're needed*. They can't change your existing pages, but they can add new ones. This is essential for building new parts of your project from scratch. For example, 'Please add a new 'About Me' section.'", examples:[ "You say: 'Please create a new file for me called `style.css` in the `my-project` folder.' Claude will make that new, empty file for you.", "You say: 'Let's build a new part of our app, a `UserProfile` page.' Claude might create two new files: `UserProfile.jsx` and `UserProfile.css`.", "A *risky* example: You say, 'Add all the files I need for my app.' Claude might misunderstand and create 200 files you don't actually need, making a big mess!" ], formula:"Write() — Lets Claude create *brand new* files.", quickSummary:[ "Lets Claude create *new* files.", "It *cannot* change existing files (that's `Edit()`).", "This is a HIGH TRUST / CRITICAL RISK rule. It's amazing for starting new things, but can make a mess if you're not specific.", "You need this to build new components or modules.", "Often used together with `Edit()` when building features." ], practiceQuestions:[ "What's the main risk? (Answer: A messy project! Claude could create lots of files in the wrong places or with wrong names if your prompt isn't clear.)", "What's the main benefit? (Answer: Building things super fast! Claude can set up the entire file structure for a new feature from one idea.)", "What's the difference between `Edit()` and `Write()`? (Answer: It's simple! `Edit()` changes *old* pages. `Write()` makes *new* pages.)", "Can `Write()` overwrite an existing file? (Answer: No. Its job is *creation*. If a file already exists, it usually won't touch it. Overwriting is handled by `Edit()`.)", "Does this cost API tokens? (Answer: The permission itself, no. The conversation *leading* to the file creation uses tokens.)", "Is it risky like `Edit()`? (Answer: Yes, both are critical risk. `Write()` can't delete your code, but it can make a big structural mess.)", "When should I allow this? (Answer: Best used when you tell Claude *exactly* what file to create and where, or after approving a plan.)" ], tags:["Claude Code", "Permission", "File System", "Critical Risk", "Scaffolding", "Automation", "settings.local.json"] } },
+        // --- Read() Card (NEW) ---
+        { id:"CLAUDECODE005", concept:{ title:"Read()", emoji:"🔎", description:"This is one of the safest and most common permissions! Think of it like giving Claude a library card. It can go into your project, open any file, and *read* its contents. But that's it! It absolutely *cannot* make any changes, write anything new, or delete anything. It's just looking. Claude needs this permission to understand your existing code before it can help you.", examples:[ "You say: 'Can you explain what the `calculateTotal` function in `utils.js` does?' Claude needs `Read()` to open and understand `utils.js`.", "You ask: 'Are there any security issues in my `auth.py` file?' Claude needs `Read()` to check the code.", "Claude needs `Read()` before it can use `Edit()` effectively – it has to read the code to know *what* to change!" ], formula:"Read() — Lets Claude open and read the content of *any* file.", quickSummary:[ "Lets Claude *read* any existing file.", "It *cannot* change files (`Edit()`).", "It *cannot* create new files (`Write()`).", "It *cannot* delete files (`Bash(rm:*)`).", "This is a VERY SAFE / LOW RISK rule.", "Almost always needed for Claude to understand your project." ], practiceQuestions:[ "What's the main risk? (Answer: Almost none! The only tiny risk is if you have super-secret passwords directly in a file, Claude could read them. But you shouldn't store secrets like that anyway!)", "What's the main benefit? (Answer: Context! It lets Claude understand your code, which is essential for almost any task.)", "Does Claude need this if I just copy-paste code into the chat? (Answer: No, if you paste it, it's already in the 'conversation'. `Read()` is for when Claude needs to open files *itself*.)", "Can I just allow `Read()` and nothing else? (Answer: Yes! This is super safe. Claude can act like a helpful reviewer who can read everything but can't touch.)", "Should this be in my team's shared settings? (Answer: Yes, `Read()` is almost always safe to allow for everyone.)", "Does it cost API tokens? (Answer: Reading large files *can* use a lot of tokens because the file content gets added to the conversation memory Claude sees.)" ], tags:["Claude Code", "Permission", "File System", "Low Risk", "Read Only", "Context", "settings.local.json"] } },
+        // --- Glob() Card (NEW) ---
+        { id:"CLAUDECODE006", concept:{ title:"Glob()", emoji:"🗺️", description:"This permission is like giving Claude a map and the ability to search for files based on patterns. 'Glob' is a fancy term for 'pattern matching' filenames. For example, you could ask Claude to find 'all files ending in `.js` inside the `src` folder'. Claude uses `Glob()` to perform that search and get a list of matching files. It doesn't read the files yet, just finds their names and locations.", examples:[ "You say: 'Find all the test files in my project.' Claude might use `Glob()` with patterns like `**/*.test.js` or `tests/**/*.py`.", "You ask: 'Where are all the CSS files?' Claude uses `Glob()` to find `**/*.css`.", "You say: 'Refactor all JavaScript files in the `components` folder.' Claude first uses `Glob(src/components/*.js)` to find the files, *then* uses `Read()` and `Edit()` on each one." ], formula:"Glob() — Lets Claude search for files using wildcard patterns.", quickSummary:[ "Lets Claude *search* for files based on patterns (like `*` or `?`).", "It does *not* read the content of the files (that's `Read()`).", "It does *not* change or create files.", "This is a VERY SAFE / LOW RISK rule.", "Often used *before* `Read()` or `Edit()` when working on multiple files." ], practiceQuestions:[ "What's the main risk? (Answer: Very little! It just finds filenames. It can't read or change anything.)", "What's the main benefit? (Answer: Working on many files at once! It lets Claude find all relevant files for a big task automatically.)", "What does `**/*.js` mean? (Answer: The `**` means 'look in this folder and all folders inside it', `*` means 'any characters', and `.js` means 'ending with .js'.)", "Does this cost API tokens? (Answer: The command itself is cheap, but if it finds *thousands* of files, the list of filenames sent back to Claude could use some tokens.)", "Is it needed if I always tell Claude the exact filename? (Answer: No. If you always say `@myFile.js`, Claude doesn't need to search.)" ], tags:["Claude Code", "Permission", "File System", "Low Risk", "Read Only", "Search", "Automation", "settings.local.json"] } },
+        // --- Bash(git add:*) Card (NEW) ---
+        { id:"CLAUDECODE007", concept:{ title:"Bash(git add:*)", emoji:"➕", description:"Let's talk about saving your work with Git again! Remember `git commit` is like taking a photo? Well, `git add` is like *choosing what goes into the photo*. Before you can commit (save), you have to 'stage' the changes you want to include using `git add`. This permission lets Claude stage files automatically. The `*` lets it choose *which* files to stage (e.g., `git add .` to stage everything, or `git add specificFile.js`).", examples:[ "You say: 'Fix the typo in `README.md` and commit it.' Claude will use `Edit()` to fix it, then `Bash(git add README.md)` to stage it, then `Bash(git commit:*)` to save it.", "Claude finishes refactoring 5 files and wants to save. It runs `Bash(git add file1.js file2.js ...)` to stage those 5 files.", "This is usually needed right before `Bash(git commit:*)`." ], formula:"Bash(git add:*) — Lets Claude 'stage' files, marking them ready for the next commit.", quickSummary:[ "Lets Claude mark files as 'ready to be saved' in Git.", "Does *not* actually save the changes (that's `commit`).", "Does *not* change the file content (that's `Edit()`).", "This is a VERY SAFE / LOW RISK rule.", "Almost always needed if you want Claude to use `git commit` autonomously." ], practiceQuestions:[ "What's the main risk? (Answer: Very low! The worst it can do is stage the wrong file, but you can easily 'unstage' it before committing.)", "What's the main benefit? (Answer: It completes the automation loop for saving work. Claude can now Edit -> Add -> Commit all by itself.)", "Why do I need `add` *and* `commit`? Why not just one 'save' command? (Answer: Git is designed this way! It lets you carefully choose *which* changes go into each 'photo' (commit). `add` is the choosing step.)", "What does `git add .` do? (Answer: The `.` means 'add all changed files in the current folder and subfolders'.)", "Can I allow `commit` but not `add`? (Answer: You could, but Claude would likely fail when it tries to commit because nothing is staged!)" ], tags:["Claude Code", "Permission", "Git", "Low Risk", "Version Control", "Automation", "settings.local.json"] } },
+        // --- Bash(git commit:*) Card ---
+        { id:"CLAUDECODE003", concept:{ title:"Bash(git commit:*)", emoji:"💾", description:"This one is super useful! `git` is a program that's like a 'Save' button for your whole project. But it's a special save... it's more like *taking a photo* of your project at a specific moment in time. This command, `git commit`, is the act of *taking the photo* (of the files you staged with `git add`). This permission lets Claude take that photo for you, all by itself. The `*` (star) just means you're letting Claude write a *caption* for the photo (like 'Fixed the typo!').", examples:[ "You say: 'Please fix that typo, stage it, and then save the work.' Claude will use `Edit()`, then `Bash(git add:*)`, and finally `Bash(git commit:*)`.", "Claude runs: `git commit -m \"Fix: Corrected spelling of 'permission'\"` (The `-m` part is the caption!)", "This lets Claude complete a whole task *and* save the result to your local history." ], formula:"Bash(git commit:*) — Lets Claude save a snapshot (a 'commit') of staged files to your *local* project history.", quickSummary:[ "Lets Claude 'save' staged work to your *local* computer's history.", "It *cannot* share this save with your team (that's `git push`).", "It *needs* files to be staged first (using `git add`).", "This is a MEDIUM RISK rule. Mostly safe locally, but can make history messy.", "Allows commit messages (`-m ...`) because of the `*`." ], practiceQuestions:[ "What's the main risk? (Answer: A messy history. Claude might save 50 times in a row with unclear captions, making it hard to look back.)", "What's the main benefit? (Answer: You don't have to remember to save! Claude completes the whole task.)", "Why did it still not work? (Answer: Did you allow `Bash(git add:*)`? You need to `add` before you can `commit`!)", "How is this different from `git push`? (Answer: `commit` saves to *your* computer. `push` sends those saves to the *team's* online space.)", "Can I tell Claude what caption (commit message) to use? (Answer: Yes! It's good practice to tell it, e.g., 'Commit the changes with the message: Fix login bug'.)", "Is this reversible? (Answer: Yes, Git makes it easy to undo local commits if needed, which is why it's only medium risk.)" ], tags:["Claude Code", "Permission", "Git", "Medium Risk", "Version Control", "Automation", "settings.local.json"] } },
+        // --- Bash(npm install:*) Card ---
+        { id:"CLAUDECODE004", concept:{ title:"Bash(npm install:*)", emoji:"📦", description:"This is a really common one! Your project is like a recipe. To make it work, you need *ingredients* (like special pieces of code for making forms, animations, or charts). `npm` is a giant, free 'supermarket' on the internet for these code ingredients. This permission lets Claude go to that supermarket and pick up any ingredients it needs to follow your recipe, all by itself! The `*` (star) just means it can pick *any* ingredient (like `npm install react`).", examples:[ "You say: 'I want to add charts to my project. Please install a chart library.' Claude will run `npm install chart.js`.", "You say: 'Let's start a new React project.' Claude will create a `package.json` file (the 'recipe list') and then run `npm install` to get all the starting ingredients.", "This saves you from having to look up the ingredient name and type the command yourself." ], formula:"Bash(npm install:*) — Lets Claude download code 'ingredients' from the `npm` supermarket.", quickSummary:[ "Lets Claude download and install code from the internet.", "Essential for starting new projects or adding features (like `react` or `jest`).", "This is a MEDIUM-HIGH RISK rule. The supermarket is mostly safe, but you're trusting Claude to pick the right ingredients (and not one with a weird name that might be bad!).", "Always check your `package.json` (recipe list) after Claude installs things!" ], practiceQuestions:[ "What's the main risk? (Answer: Security! Someone could put a 'bad' ingredient in the supermarket with a name that *looks* like a real one (a 'typo'). If Claude installs it, that bad code runs on your computer!)", "What's the main benefit? (Answer: So easy! Claude can set up a whole project, ingredients and all, from one command.)", "Will this cost me money? (Answer: Nope! The `npm` supermarket is free.)", "Will this fill up my computer? (Answer: It can! The ingredients folder (`node_modules`) can get HUGE!)", "What about `npm run test`? (Answer: This rule doesn't allow that. You need `Bash(npm run test:*)` separately.)", "Is `pip install` for Python the same idea? (Answer: Exactly! `Bash(pip install:*)` does the same thing but for Python ingredients.)", "How can I be safer? (Answer: Don't allow the `*`! Be specific, e.g., allow `Bash(npm install react)` but not `Bash(npm install:*)`. Or just don't allow it and run the command yourself after Claude tells you what's needed.)" ], tags:["Claude Code", "Permission", "NPM", "JavaScript", "High Risk", "Dependencies", "Automation", "settings.local.json"] } },
+        // ===== Preset Cards =====
+        { id:"PRESET001", concept:{ title:"Preset: Safe Exploration", emoji:"🔍", description:"Read-only exploration of a codebase with safe utilities. Use when you're reviewing, learning, or drafting a plan.", examples:[ "Allow: `Read()`, `Glob()`, `Bash(git status:*)`, `Bash(git diff:*)`", "Ask: `Bash(git add:*)`, `Bash(git commit:*)`", "Deny: `Edit(*)`, `Write(*)`, `Bash(npm install:*)`, `Bash(pip install:*)`, `Bash(git push:*)`, `Read(.env)`" ], formula:"Preset — Minimal risk. Ideal for plan mode.", quickSummary:[ "Great for onboarding and architecture review.", "No edits or writes; only reads and diffs.", "You can switch to a development preset after approval." ], practiceQuestions:[ "When is this insufficient? (Answer: When you need to make changes.)", "What's the suggested mode? (Answer: Plan mode.)" ], tags:["Preset","Read-only","Safe","Plan mode"] } },
+        { id:"PRESET002", concept:{ title:"Preset: Frontend Development", emoji:"⚛️", description:"Balanced permissions for day-to-day web UI work. Allows scripts, scoped edits, and tests.", examples:[ "Allow: `Read()`, `Glob()`, `Edit(src/**)`, `Write(src/**)`, `Bash(npm run lint:*)`, `Bash(npm run test:*)`, `Bash(npm run build:*)`", "Ask: `Bash(npm install:*)`, `Bash(git add:*)`, `Bash(git commit:*)`", "Deny: `Bash(git push:*)`, `Write(./production/**)`, `Read(.env)`" ], formula:"Preset — Implementation with confirmations.", quickSummary:[ "Edit and write inside `src/`.", "Run scripts and tests freely.", "Keep installs and commits under Ask; no pushes." ], practiceQuestions:[ "Why keep `git push` under Ask? (Answer: Prevent unintended pushes to shared repos.)", "Where are edits scoped? (Answer: `src/**`.)" ], tags:["Preset","Frontend","Web","Normal mode"] } },
+        { id:"PRESET003", concept:{ title:"Preset: Maintenance / Refactor", emoji:"🧹", description:"Speed up refactors safely in a known area with tests.", examples:[ "Allow: `Read()`, `Glob()`, `Edit(src/**)`, `Bash(npm run test:*)`", "Ask: `Bash(git add:*)`, `Bash(git commit:*)`", "Deny: `Write(*)`, `Bash(npm install:*)`, `Bash(pip install:*)`" ], formula:"Preset — Auto-accept (scoped) recommended.", quickSummary:[ "Great for repetitive edits in a specific directory.", "No package installs; rely on existing deps.", "Use tests to validate refactors." ], practiceQuestions:[ "Why deny installs here? (Answer: Keep environment stable.)" ], tags:["Preset","Refactor","Scoped edits","Auto-accept"] } },
+        { id:"PRESET004", concept:{ title:"Preset: Maximum Lockdown", emoji:"🔒", description:"Ask for almost everything; minimize autonomous actions. Ideal for sensitive repos or production code.", examples:[ "Allow: `Read()`, `Glob()`", "Ask: `Bash(git status:*)`, `Bash(git diff:*)`", "Deny: `Edit(*)`, `Write(*)`, `Bash(*)`, `WebFetch(domain: "*")`" ], formula:"Preset — Strong safety defaults.", quickSummary:[ "Best for audits, critical reviews, regulated codebases.", "No writes or shell until approved.", "Pair with plan mode." ], practiceQuestions:[ "When to use? (Answer: Production/sensitive contexts.)" ], tags:["Preset","Security","Safe","Plan mode"] } },
+        { id:"PRESET005", concept:{ title:"Preset: Full Stack with CI/CD", emoji:"🚀", description:"Comprehensive development across frontend, backend, and pipelines. Keep high-risk ops under Ask.", examples:[ "Allow: `Read()`, `Glob()`, `Bash(docker:*)`, `Bash(git add:*)`, `Bash(git commit:*)`, `Bash(git push:*)`, `Bash(npm run build:*)`, `Bash(npm run test:*)`", "Ask: `Bash(npm install:*)`", "Deny: `Write(./production/**)`, `Read(.env)`" ], formula:"Preset — Broad capabilities with review gates.", quickSummary:[ "Suitable for experienced users on trusted repos.", "Prefer Ask for installs and deploy steps.", "Protect production paths and secrets." ], practiceQuestions:[ "Why restrict production paths? (Answer: Prevent accidental writes.)" ], tags:["Preset","Full Stack","CI/CD","Normal mode"] } }
+      ];
+
+      // === LOGIC FOR GLOSSARY L CARDS ===
+      function escapeHtmlLocal(s){
+        return (s||'').replace(/[&<>]/g, function(c){ return ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]); });
+      }
+      function renderWithCodeLocal(s){
+        var text = String(s||'');
+        var parts = text.split('`');
+        var out = '';
+        for (var i=0;i<parts.length;i++){
+          var seg = escapeHtmlLocal(parts[i]);
+          out += (i % 2 === 1) ? ('<code>'+seg+'</code>') : seg;
+        }
+        return out;
+      }
+      var currentIndex = 0;
+      var cardElement = null;
+
+      function toTitleCase(str){ /* ... unchanged ... */ 
+        if(!str)return'';
+        return str.toLowerCase().split(' ').map(function(w){return w.charAt(0).toUpperCase()+w.slice(1);}).join(' ');
+      }
+      function populateCard(cardData){ /* updated to render <code> */ 
+        document.getElementById('bdx-card-emoji').textContent = cardData.emoji;
+        document.getElementById('bdx-card-title').textContent = toTitleCase(cardData.title);
+        document.getElementById('bdx-card-description').innerHTML = renderWithCodeLocal(cardData.description);
+        document.getElementById('bdx-card-formula').innerHTML = renderWithCodeLocal(cardData.formula);
+        var examplesList = document.getElementById('bdx-card-examples');
+        examplesList.innerHTML = '';
+        cardData.examples.forEach(function(item){ var li = document.createElement('li'); li.innerHTML = renderWithCodeLocal(item); examplesList.appendChild(li); });
+        document.getElementById('bdx-back-emoji').textContent = cardData.emoji;
+        document.getElementById('bdx-back-title').textContent = toTitleCase(cardData.title);
+        var summaryList = document.getElementById('bdx-quick-summary-list');
+        summaryList.innerHTML = '';
+        cardData.quickSummary.forEach(function(item){ var li = document.createElement('li'); li.innerHTML = renderWithCodeLocal(item); summaryList.appendChild(li); });
+        var questionsList = document.getElementById('bdx-practice-questions-list');
+        questionsList.innerHTML = '';
+        cardData.practiceQuestions.forEach(function(item){ var li = document.createElement('li'); li.innerHTML = renderWithCodeLocal(item); questionsList.appendChild(li); });
+        var tagsList = document.getElementById('bdx-tag-list');
+        tagsList.innerHTML = '';
+        cardData.tags.forEach(function(item){ var span = document.createElement('span'); span.className = 'bdx-tag'; span.textContent = item; tagsList.appendChild(span); });
+      }
+      function showCard(index){ /* ... unchanged ... */ 
+         if(cards[index]){ populateCard(cards[index].concept); } if (cardElement) { cardElement.classList.remove('flipped'); } 
+      }
+      function flipCard(){ /* ... unchanged ... */
+         if (cardElement) { cardElement.classList.toggle('flipped'); }
+      }
+
+      function mount(){
+        var section = document.getElementById('glossary-mount-point');
+        if (!section) { console.error("Glossary mount point not found."); return; }
+        
+        section.innerHTML = `
+          <div class="intro">Let's learn the rules! Use these 3D cards to see what each permission does. Click the card to flip it over for a quick summary and common questions.</div>
+          <div class="bdx-card-container">
+            <div class="bdx-card" id="bdx-concept-card">
+              <div class="bdx-card-face bdx-card-front">
+                <div class="bdx-card-content">
+                  <div class="bdx-card-header">
+                    <div class="bdx-emoji" id="bdx-card-emoji"></div>
+                    <h3 id="bdx-card-title"></h3>
+                  </div>
+                  <div class="bdx-card-body">
+                    <p class="bdx-description" id="bdx-card-description"></p>
+                    <div class="bdx-examples">
+                      <strong>Let's see it in action:</strong>
+                      <ul id="bdx-card-examples"></ul>
+                    </div>
+                  </div>
+                  <div class="bdx-card-footer">
+                    <div class="bdx-formula" id="bdx-card-formula"></div>
+                    <button class="bdx-flip-button" id="bdx-flip-btn-front">Flip to Back (Summary & FAQs)</button>
+                  </div>
+                </div>
+              </div>
+              <div class="bdx-card-face bdx-card-back">
+                <div class="bdx-card-content">
+                  <div class="bdx-card-header">
+                    <span class="bdx-back-emoji" id="bdx-back-emoji"></span>
+                    <h3 id="bdx-back-title"></h3>
+                  </div>
+                  <div class="bdx-card-body">
+                    <div class="bdx-quick-summary">
+                      <strong>Quick Summary (What you *really* need to know!):</strong>
+                      <ul id="bdx-quick-summary-list"></ul>
+                    </div>
+                    <div class="bdx-practice-questions">
+                      <strong>Common Questions (FAQs):</strong>
+                      <ul class="question-list" id="bdx-practice-questions-list"></ul>
+                    </div>
+                  </div>
+                  <div class="bdx-card-footer">
+                    <strong>Tags:</strong>
+                    <div class="bdx-tag-list" id="bdx-tag-list"></div>
+                    <button class="bdx-flip-button" id="bdx-flip-btn-back">Flip to Front (Description)</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="bdx-controls">
+            <button id="bdx-prev-btn">Previous</button>
+            <button id="bdx-next-btn">Next</button>
+          </div>`;
+
+        cardElement = document.getElementById('bdx-concept-card');
+        document.getElementById('bdx-flip-btn-front').addEventListener('click', flipCard);
+        document.getElementById('bdx-flip-btn-back').addEventListener('click', flipCard);
+        document.getElementById('bdx-next-btn').addEventListener('click', function(){ currentIndex = (currentIndex + 1) % cards.length; showCard(currentIndex); });
+        document.getElementById('bdx-prev-btn').addEventListener('click', function(){ currentIndex = (currentIndex - 1 + cards.length) % cards.length; showCard(currentIndex); });
+        showCard(currentIndex); // Initialize with the first card
+      }
+
+      // Mount the Glossary card after DOM loaded
+      try{ mount(); } catch(e){ console.error("Failed to mount Glossary L card:", e); }
+
+    })();
+  </script>
+
+</body>
+</html>
+
