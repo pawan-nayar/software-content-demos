@@ -1,0 +1,3009 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Code Refactoring Without AI | 20 Essential IDE Tasks</title>
+  <meta name="description" content="Master 20 refactoring tasks and 25 editor macros without AI. Learn IDE shortcuts for renaming, formatting, and cleaning code faster than any LLM.">
+  <meta name="keywords" content="code refactoring, IDE shortcuts, VS Code, developer productivity, code formatting, rename variable, editor macros, programming tips">
+  <meta name="author" content="Beyond Dictionary Dev Guide">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://your-website.com/ide_llm_tasks.html">
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://your-website.com/ide_llm_tasks.html">
+  <meta property="og:title" content="Code Refactoring Without AI | 20 Essential IDE Tasks">
+  <meta property="og:description" content="Master 20 refactoring tasks and 25 editor macros without AI. Learn IDE shortcuts for renaming, formatting, and cleaning code faster than any LLM.">
+  <meta property="og:image" content="https://your-website.com/your-social-preview-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Beyond Dictionary Dev Guide">
+  <meta property="og:locale" content="en_US">
+  <meta property="article:published_time" content="2025-10-29T00:00:00Z">
+  <meta property="article:author" content="Beyond Dictionary">
+  <meta property="article:section" content="Software Development">
+  <meta property="article:tag" content="Code Refactoring">
+  <meta property="article:tag" content="IDE Productivity">
+  <meta property="article:tag" content="Developer Tools">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://your-website.com/ide_llm_tasks.html">
+  <meta name="twitter:title" content="Code Refactoring Without AI | 20 Essential IDE Tasks">
+  <meta name="twitter:description" content="Master 20 refactoring tasks and 25 editor macros without AI. Learn IDE shortcuts for renaming, formatting, and cleaning code faster than any LLM.">
+  <meta name="twitter:image" content="https://your-website.com/your-social-preview-image.png">
+  <meta name="twitter:creator" content="@YourTwitterHandle">
+  <meta name="twitter:site" content="@YourTwitterHandle">
+  
+  <!-- Additional SEO -->
+  <meta name="theme-color" content="#fd7e14">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ================= Base / Theme ================= */
+    :root {
+      --text:#212529; --bg:#fff; --muted:#f8f9fa; --border:#e9ecef;
+      --accent:#fd7e14; --accent-2:#e87312; --header-bg:#212529; --header-fg:#f8f9fa;
+      --ok:#16a34a; --ok-soft:#dcfce7; --bad:#dc2626; --bad-soft:#fee2e2;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;scroll-behavior:smooth}
+    .container{max-width:800px;margin:auto;padding:24px;background:#fff}
+    a{color:var(--accent);text-decoration:none}
+    a:hover{text-decoration:underline}
+
+    /* ================= Shrinking Sticky Header ================= */
+    .site-header{
+      background:var(--header-bg);
+      color:var(--header-fg);
+      padding:20px 24px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      flex-wrap:wrap;
+      position:sticky;
+      top:0;
+      z-index:100;
+      transition:padding 0.3s ease, box-shadow 0.3s ease;
+    }
+    .site-header.shrink{
+      padding:10px 24px;
+      box-shadow:0 2px 8px rgba(0,0,0,0.15);
+    }
+    .logo{
+      font-weight:700;
+      font-size:1.15rem;
+      color:#fff;
+      transition:font-size 0.3s ease;
+    }
+    .site-header.shrink .logo{
+      font-size:1rem;
+    }
+    .site-header nav{display:flex;gap:14px}
+    .site-header nav a{color:#ced4da;transition:color 0.2s ease}
+    .site-header nav a:hover{color:#fff}
+    
+    .site-footer{background:var(--header-bg);color:var(--header-fg);text-align:center;margin-top:50px;padding:40px}
+    .breadcrumbs{margin-bottom:24px;font-size:0.9rem;color:#6c757d}
+    .breadcrumbs a{color:var(--accent)}
+
+    /* ================= Typography & Layout ================= */
+    h1{font-size:clamp(2rem,5vw,2.6rem);text-align:left;margin-bottom:8px;color:var(--text);line-height:1.2}
+    .byline{font-size:clamp(1rem,3vw,1.2rem);font-style:italic;color:#4a5568;margin-bottom:24px}
+    h2{font-size:clamp(1.5rem,4vw,2rem);color:var(--text);margin:48px 0 16px;border-bottom:2px solid var(--border);padding-bottom:8px}
+    h3{font-size:clamp(1.2rem,3vw,1.5rem);color:var(--text);margin-top:32px;margin-bottom:12px}
+    h4{font-size:clamp(1rem,2.5vw,1.2rem);font-weight:bold;color:var(--accent-2);margin-bottom:10px}
+    p{margin-bottom:16px;word-wrap:break-word}
+    ul{margin-left:24px;margin-bottom:24px;list-style-type:'🔸';padding-left:1em}
+    li{margin-bottom:12px;padding-left:0.5em}
+    .article-meta{display:flex;align-items:center;gap:12px;color:#6c757d;margin-bottom:32px;font-size:0.95rem}
+    .author-emoji{font-size:32px;line-height:1}
+    .intro{font-size:1.1rem;line-height:1.8;background:var(--muted);padding:20px;border-radius:12px;border-left:4px solid var(--accent);margin:24px 0}
+
+    /* ================= On This Page TOC ================= */
+    .page-toc{
+      background:var(--muted);
+      border:1px solid var(--border);
+      border-left:4px solid var(--accent);
+      padding:20px;
+      border-radius:12px;
+      margin-bottom:32px;
+    }
+    .page-toc h4{
+      margin:0 0 12px 0;
+      color:var(--text);
+      border:none;
+      font-size:1.1rem;
+    }
+    .page-toc ul{
+      list-style-type:none;
+      margin:0;
+      padding:0;
+    }
+    .page-toc li{
+      margin:0 0 8px 0;
+      padding:0;
+      font-weight:500;
+    }
+    .page-toc li a{
+      color:var(--text);
+      text-decoration:none;
+      transition:color 0.2s ease;
+    }
+    .page-toc li a:hover{
+      color:var(--accent);
+      text-decoration:underline;
+    }
+
+    /* ================= Share Widget ================= */
+    .share-widget{
+      margin-top:24px;
+      padding-top:16px;
+      border-top:1px solid var(--border);
+    }
+    .share-widget h4{
+      font-size:0.9rem;
+      margin-bottom:12px;
+      color:#6c757d;
+      border:none;
+      font-weight:600;
+      text-transform:uppercase;
+      letter-spacing:0.5px;
+    }
+    .share-links{
+      display:flex;
+      gap:10px;
+    }
+    .share-link{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      width:44px;
+      height:44px;
+      border-radius:50%;
+      text-decoration:none;
+      transition:all 0.2s ease;
+      box-shadow:0 2px 8px rgba(0,0,0,0.1);
+      font-size:20px;
+    }
+    .share-link:hover{
+      transform:translateY(-2px);
+      box-shadow:0 4px 12px rgba(0,0,0,0.15);
+      text-decoration:none;
+    }
+    .share-link.twitter{
+      background-color:#1DA1F2;
+      color:#fff;
+    }
+    .share-link.linkedin{
+      background-color:#0A66C2;
+      color:#fff;
+    }
+    .share-link.twitter:hover{
+      background-color:#1a8cd8;
+    }
+    .share-link.linkedin:hover{
+      background-color:#004182;
+    }
+    .share-link.whatsapp{
+      background-color:#25D366;
+      color:#fff;
+    }
+    .share-link.whatsapp:hover{
+      background-color:#1da851;
+    }
+
+    /* ================= Accordion ================= */
+    .accordion{display:grid;gap:8px;margin:24px 0}
+    .accordion-header{width:100%;text-align:left;background:var(--muted);border:1px solid var(--border);padding:16px 20px;border-radius:8px;cursor:pointer;font-size:1.1rem;font-weight:bold;display:flex;align-items:center}
+    .accordion-header .accordion-title{margin-right:auto;padding-right:1rem}
+    .accordion-header::after{content:'+';color:#6c757d;font-size:1.5rem}
+    .accordion-header[aria-expanded="true"]{background:#e9ecef;border-bottom-left-radius:0;border-bottom-right-radius:0}
+    .accordion-header[aria-expanded="true"]::after{content:'−'}
+    .accordion-content{padding:20px;display:none;border:1px solid var(--border);border-top:none;border-radius:0 0 8px 8px}
+
+    /* ================= Code Block Styles ================= */
+    .code-wrapper{margin:16px 0}
+    pre{margin:0}
+    .code-block{background:#2d2d2d;color:#f8f8f2;font-family:'Courier New',Courier,monospace;padding:1.2em;border-radius:8px;overflow-x:auto;font-size:0.95rem;line-height:1.5}
+    .code-block .comment{color:#75715e}
+    .code-block .keyword{color:#f92672}
+    .code-block .string{color:#e6db74}
+    .code-block .function{color:#a6e22e}
+    .code-block .number{color:#ae81ff}
+    .code-block .variable{color:#66d9ef}
+
+    /* ================= Pitfall Card Styles ================= */
+    .pitfall-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;margin:32px 0}
+    .pitfall-card{background:#fff;border-radius:12px;border-top:4px solid var(--bad);box-shadow:0 4px 15px rgba(0,0,0,0.05)}
+    .pitfall-card.good{border-top-color:var(--ok)}
+    .pitfall-header{padding:16px;border-bottom:1px solid var(--border)}
+    .pitfall-header h4{margin:0;font-size:1.1rem}
+    .pitfall-header h4.bad{color:var(--bad)}
+    .pitfall-header h4.good{color:var(--ok)}
+    .pitfall-body{padding:16px}
+    .pitfall-body p{font-size:0.95rem;margin-bottom:12px}
+
+    /* ================= Flip Card Carousel - IMPROVED ================= */
+    .carousel-section{margin:32px 0}
+    .carousel-container{
+      perspective:1000px;
+      position:relative;
+      padding:0 80px; /* extra space so nav buttons don't overlap the card */
+      margin:24px 0;
+    }
+    .flip-card{width:100%;min-height:320px;background-color:transparent;display:none;margin:12px 0}
+    .flip-card.active{display:block}
+    .flip-card-inner{
+      position:relative;
+      width:100%;
+      min-height:320px; /* baseline; JS will clamp to viewport */
+      text-align:center;
+      transition:transform 0.6s;
+      transform-style:preserve-3d;
+      cursor:pointer;
+      border-radius:12px;
+    }
+    .flip-card.flipped .flip-card-inner{transform:rotateY(180deg)}
+    
+    .flip-card-front, .flip-card-back{
+      position:absolute;
+      width:100%;
+      min-height:320px;
+      -webkit-backface-visibility:hidden;
+      backface-visibility:hidden;
+      display:flex;
+      flex-direction:column;
+      padding:32px;
+      border-radius:12px;
+      box-shadow:0 4px 20px rgba(0,0,0,0.1);
+    }
+    
+    /* Front side styling - IMPROVED */
+    .flip-card-front{
+      background:#fff;
+      border:2px solid var(--border);
+      justify-content:center;
+      align-items:center;
+      text-align:center;
+    }
+    .flip-card-front .card-emoji{
+      font-size:4rem;
+      margin-bottom:20px;
+      display:block;
+    }
+    .flip-card-front .card-icon{
+      width:120px;
+      height:120px;
+      margin:40px auto 20px;
+      display:block;
+    }
+    .flip-card-front .card-icon svg{
+      width:100%;
+      height:100%;
+      padding:8px;
+      box-sizing:border-box;
+    }
+    .flip-card-front h3{
+      font-size:1.8rem;
+      color:var(--accent-2);
+      margin-bottom:16px;
+      border:none;
+    }
+    .flip-card-front .card-subtitle{
+      font-size:1rem;
+      color:#6c757d;
+      font-weight:500;
+      margin-bottom:20px;
+      text-transform:uppercase;
+      letter-spacing:0.5px;
+    }
+    .flip-card-front p{
+      font-size:1.05rem;
+      line-height:1.7;
+      color:var(--text);
+      max-width:500px;
+    }
+    .flip-card-front .tap-hint{
+      margin-top:24px;
+      margin-bottom:30px;
+      font-size:0.9rem;
+      color:#adb5bd;
+      font-style:italic;
+    }
+    
+    /* Back side styling */
+    .flip-card-back{
+      background:#2d2d2d;
+      color:#f8f8f2;
+      transform:rotateY(180deg);
+      text-align:left;
+      overflow-y:auto; /* scroll when content is taller than clamped height */
+      scrollbar-width: thin; /* Firefox */
+      scrollbar-color: #64748b #0f172a; /* Firefox */
+    }
+    /* Elegant scrollbar styling for WebKit/Blink */
+    .flip-card-back::-webkit-scrollbar{width:10px}
+    .flip-card-back::-webkit-scrollbar-track{background:#0f172a;border-radius:8px}
+    .flip-card-back::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#fd7e14,#e87312);border-radius:8px;border:2px solid #0f172a}
+    .flip-card-back::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg,#ffa94d,#fd7e14)}
+    .flip-card-back h4{
+      color:var(--accent);
+      font-size:1.3rem;
+      margin-bottom:20px;
+      padding-bottom:12px;
+      border-bottom:2px solid #444;
+    }
+    .flip-card-back .detail-section{
+      margin-bottom:20px;
+    }
+    .flip-card-back .detail-section strong{
+      color:#a6e22e;
+      display:block;
+      margin-bottom:10px;
+      font-size:1rem;
+    }
+    .flip-card-back ul{
+      margin-left:0;
+      list-style-type:none;
+      padding-left:0;
+    }
+    .flip-card-back li{
+      margin-bottom:10px;
+      padding-left:20px;
+      position:relative;
+      font-size:0.95rem;
+      line-height:1.6;
+    }
+    .flip-card-back li:before{
+      content:'▸';
+      position:absolute;
+      left:0;
+      color:var(--accent);
+      font-weight:bold;
+    }
+    .flip-card-back code{
+      background:#1a1a1a;
+      padding:2px 6px;
+      border-radius:4px;
+      font-size:0.9em;
+      color:#e6db74;
+    }
+    
+    /* Carousel navigation - IMPROVED */
+    .carousel-nav{
+      position:absolute;
+      top:50%;
+      transform:translateY(-50%);
+      background:var(--accent);
+      color:white;
+      border:none;
+      border-radius:50%;
+      width:48px;
+      height:48px;
+      font-size:24px;
+      cursor:pointer;
+      z-index:10;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      transition:all 0.2s ease;
+      box-shadow:0 2px 10px rgba(0,0,0,0.15);
+    }
+    .carousel-nav:hover{
+      background:var(--accent-2);
+      transform:translateY(-50%) scale(1.1);
+    }
+    .carousel-nav:disabled{
+      background:#ced4da;
+      cursor:not-allowed;
+      transform:translateY(-50%);
+    }
+    #carousel-prev{left:0}
+    #carousel-next{right:0}
+    /* push nav buttons slightly outside the card area */
+    .carousel-container > .carousel-nav:first-of-type{left:-12px}
+    .carousel-container > .carousel-nav:nth-of-type(2){right:-12px}
+    
+    .carousel-footer{
+      text-align:center;
+      margin-top:24px;
+      padding-top:12px;
+    }
+    #carousel-counter{
+      font-weight:600;
+      color:#6c757d;
+      font-size:0.95rem;
+    }
+
+    /* ================= Quiz Styles ================= */
+    .quiz-container{padding:24px;border:2px solid var(--border);border-radius:12px;background:#fff;margin:48px 0}
+    .quiz-header{margin-bottom:24px;padding-bottom:16px;border-bottom:2px solid var(--accent)}
+    .quiz-header h3{margin:0;color:var(--accent-2)}
+    .quiz-navigation{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+    .quiz-body{display:none}
+    .quiz-body.active{display:block}
+    .quiz-question{font-size:1.1rem;font-weight:600;margin-bottom:20px;color:var(--text)}
+    .quiz-options{display:grid;gap:12px}
+    .quiz-option label{display:flex;align-items:center;gap:12px;padding:14px;border:2px solid var(--border);border-radius:8px;cursor:pointer;background:#f8f9fa;transition:all 0.2s ease}
+    .quiz-option label:hover{background:#e9ecef}
+    .quiz-option input[type="radio"]{flex-shrink:0;margin-top:4px}
+    .quiz-option .option-text{flex:1}
+    .quiz-option .explanation{display:none;margin-top:10px;padding:15px;border-radius:6px;border-left:4px solid #a0aec0;font-size:0.95rem}
+    .quiz-option.selected.correct label{background:var(--ok-soft);border-color:var(--ok)}
+    .quiz-option.selected.wrong label{background:var(--bad-soft);border-color:var(--bad)}
+    .quiz-option.correct .explanation{border-left-color:var(--ok);background:#f0fff4;display:block}
+    .quiz-option.wrong .explanation{border-left-color:var(--bad);background:#fff5f5;display:block}
+    .quiz-controls{display:flex;gap:12px;margin-top:20px}
+    .btn{background:var(--accent);color:#fff;border:none;padding:10px 18px;border-radius:8px;font-weight:600;cursor:pointer;transition:background-color 0.2s ease;font-size:0.95rem}
+    .btn:hover{background-color:var(--accent-2)}
+    .btn:disabled{background:#ced4da;cursor:not-allowed}
+    .btn-secondary{background:#6c757d}
+    .btn-secondary:hover{background:#495057}
+
+    /* ================= Table with Fixed First Column ================= */
+    .table-wrap{position:relative;border:1px solid var(--border);border-radius:12px;background:#fff;margin:32px 0;overflow:hidden}
+    .table-scroll{position:relative;overflow-x:auto}
+    table.data-table{width:100%;border-collapse:collapse;min-width:600px}
+    table.data-table th, table.data-table td{padding:12px 15px;border:1px solid var(--border);text-align:left;vertical-align:top}
+    table.data-table thead th{background:var(--muted);font-weight:600;position:sticky;top:0;z-index:2}
+    table.data-table tbody tr:nth-child(even){background:#f8f9fa}
+    table.data-table th:first-child, table.data-table td:first-child{
+      position:sticky;
+      left:0;
+      background:#fff;
+      z-index:1;
+      font-weight:600;
+      box-shadow:2px 0 5px rgba(0,0,0,0.05);
+    }
+    table.data-table thead th:first-child{
+      background:var(--muted);
+      z-index:3;
+    }
+    table.data-table tbody tr:nth-child(even) td:first-child{
+      background:#f8f9fa;
+    }
+    .table-hint{font-size:0.85rem;color:#6c757d;text-align:center;padding:8px;font-style:italic}
+
+    /* ================= SVG Animation Keyframes ================= */
+    @keyframes float{
+      0%, 100%{transform:translateY(0px)}
+      50%{transform:translateY(-10px)}
+    }
+    @keyframes rotate{
+      from{transform:rotate(0deg)}
+      to{transform:rotate(360deg)}
+    }
+    @keyframes pulse{
+      0%, 100%{transform:scale(1);opacity:1}
+      50%{transform:scale(1.05);opacity:0.8}
+    }
+    @keyframes bounce{
+      0%, 100%{transform:translateY(0)}
+      50%{transform:translateY(-15px)}
+    }
+    @keyframes fadeInOut{
+      0%, 100%{opacity:0.3}
+      50%{opacity:1}
+    }
+    @keyframes slideRight{
+      0%, 100%{transform:translateX(0)}
+      50%{transform:translateX(10px)}
+    }
+    @keyframes scaleUp{
+      0%, 100%{transform:scale(1)}
+      50%{transform:scale(1.1)}
+    }
+    .card-icon svg .animate-float{animation:float 3s ease-in-out infinite}
+    .card-icon svg .animate-rotate{animation:rotate 4s linear infinite}
+    .card-icon svg .animate-pulse{animation:pulse 2s ease-in-out infinite}
+    .card-icon svg .animate-bounce{animation:bounce 2s ease-in-out infinite}
+    .card-icon svg .animate-fade{animation:fadeInOut 2s ease-in-out infinite}
+    .card-icon svg .animate-slide{animation:slideRight 2s ease-in-out infinite}
+    .card-icon svg .animate-scale{animation:scaleUp 2s ease-in-out infinite}
+
+    /* ================= Glossary Modal Styles ================= */
+    .glossary-cloud{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px;justify-content:center}
+    .glossary-chip{position:relative;display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:999px;background:#fff7ed;border:1px solid #ffd8a8;color:#d9480f;font-weight:600;cursor:pointer;box-shadow:0 2px 6px rgba(253,126,20,.12);transition:all 0.2s ease}
+    .glossary-chip:hover{background:#ffecde;transform:translateY(-2px);box-shadow:0 4px 12px rgba(253,126,20,.2)}
+    .glossary-chip .emoji{font-size:1.2rem}
+    .glossary-modal{display:none;position:fixed;z-index:1000;left:0;top:0;width:100%;height:100%;background-color:rgba(0,0,0,0.5);backdrop-filter:blur(4px)}
+    .glossary-modal-content{background-color:#fff;margin:5% auto;padding:0;border-radius:16px;width:90%;max-width:600px;box-shadow:0 10px 40px rgba(0,0,0,0.2);animation:modalSlideIn 0.3s ease}
+    @keyframes modalSlideIn{from{transform:translateY(-50px);opacity:0}to{transform:translateY(0);opacity:1}}
+    .glossary-modal-header{padding:24px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:12px}
+    .glossary-modal-header .emoji{font-size:2rem}
+    .glossary-modal-header h3{margin:0;color:var(--accent-2)}
+    .glossary-modal-body{padding:24px;max-height:400px;overflow-y:auto}
+    .glossary-modal-body p{margin-bottom:16px;line-height:1.7}
+    .glossary-modal-body strong{color:var(--accent-2)}
+    .glossary-close{color:#aaa;float:right;font-size:28px;font-weight:bold;cursor:pointer;margin-left:auto}
+    .glossary-close:hover{color:#000}
+
+    /* ================= Responsive ================= */
+    @media(max-width:768px){
+      .carousel-container{padding:0 55px}
+      .carousel-nav{width:40px;height:40px;font-size:20px}
+      .site-header{padding:14px 16px}
+      .site-header.shrink{padding:10px 16px}
+      .container{padding:16px}
+      h1{font-size:1.8rem}
+      h2{font-size:1.5rem;margin:32px 0 12px}
+      .flip-card-front .card-emoji{font-size:3rem}
+      .flip-card-front h3{font-size:1.4rem}
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="site-header" id="mainHeader">
+    <div class="logo">💻 DevGuide</div>
+    <nav>
+      <a href="#intro">Home</a>
+      <a href="#tasks">Tasks</a>
+      <a href="#reference">Reference</a>
+      <a href="#macros">Macros</a>
+      <a href="#glossary">Glossary</a>
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+  <main class="container">
+    <!-- Breadcrumbs -->
+    <nav class="breadcrumbs">
+      <a href="#">Software</a> › <a href="#">Concepts</a> › <strong>Code Refactoring</strong>
+    </nav>
+
+    <!-- Title -->
+    <h1>Code Refactoring Without AI</h1>
+    <div class="byline">20 common tasks that are faster and more reliable when done manually</div>
+
+    <!-- Meta -->
+    <div class="article-meta">
+      <span class="author-emoji">👨‍💻</span>
+      <span>60 min read • Updated Oct 2025</span>
+    </div>
+
+    <!-- On This Page Navigation -->
+    <nav class="page-toc">
+      <h4>📑 On This Page</h4>
+      <ul>
+        <li><a href="#intro">Introduction</a></li>
+        <li><a href="#macros">⚡ Editor Macros & Snippets</a></li>
+        <li><a href="#tasks">🏷️ Naming & Identity Tasks</a></li>
+        <li><a href="#cleanup">🧹 Cleanup & Formatting Tasks</a></li>
+        <li><a href="#strings">📝 Strings & Literals Tasks</a></li>
+        <li><a href="#structure">🏗️ Structure & Logic Tasks</a></li>
+        <li><a href="#reference">🔄 Quick Reference Table</a></li>
+        <li><a href="#quiz">🧪 Quick Quiz (6 Questions)</a></li>
+        <li><a href="#build-macro">🛠️ Build Your First Macro</a></li>
+        <li><a href="#quiz-macros">🧪 Macro Quiz (3 Questions)</a></li>
+        <li><a href="#glossary">📖 Glossary (15 Terms)</a></li>
+        <li><a href="#faq">❓ FAQ</a></li>
+      </ul>
+      
+      <!-- Share Widget -->
+      <div class="share-widget">
+        <h4>🔗 Share</h4>
+        <div class="share-links">
+          <a href="https://twitter.com/intent/tweet?text=Master%20code%20refactoring%20without%20AI%20%E2%80%93%2020%20IDE%20tasks%20%2B%2025%20editor%20macros&url=https%3A%2F%2Fyour-website.com%2Fide_llm_tasks.html" class="share-link twitter" target="_blank" rel="noopener noreferrer" title="Share on Twitter">𝕏</a>
+          <a href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fyour-website.com%2Fide_llm_tasks.html" class="share-link linkedin" target="_blank" rel="noopener noreferrer" title="Share on LinkedIn">in</a>
+          <a href="https://wa.me/?text=Master%20code%20refactoring%20without%20AI%20%E2%80%93%2020%20IDE%20tasks%20%2B%2025%20editor%20macros%20https%3A%2F%2Fyour-website.com%2Fide_llm_tasks.html" class="share-link whatsapp" target="_blank" rel="noopener noreferrer" title="Share on WhatsApp">💬</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Introduction -->
+    <section id="intro">
+      <div class="intro">
+        Not every code improvement needs artificial intelligence. Many refactoring tasks are mechanical, predictable, and better handled by your IDE in seconds. This guide shows you which tasks to automate with keyboard shortcuts instead of asking an LLM.
+      </div>
+
+      <p>You've probably used ChatGPT or Claude to refactor code. It's powerful for complex changes—extracting functions, restructuring architecture, or applying design patterns. But for simple, everyday improvements? Your IDE is faster, more accurate, and already knows your entire codebase.</p>
+
+      <p>Think of it this way: You don't use a chainsaw to trim your fingernails. Similarly, you don't need an LLM to rename a variable or fix indentation. This guide teaches you when to reach for the right tool.</p>
+
+      <h3>What You'll Learn</h3>
+      <p>This guide covers two complementary areas so you can work faster and safer:</p>
+      <ul>
+        <li><strong>20 core refactoring techniques</strong> to improve code structure without AI (renaming, cleanup, strings, structure/logic, etc.).</li>
+        <li><strong>25 essential editor macros</strong> to automate repetitive typing and formatting (text editing, cleaning, boilerplate, and multi‑step chains).</li>
+      </ul>
+
+      <p><strong>Before we start</strong>, make sure you've configured auto-formatting in your editor. It's the single most important productivity boost for any developer. If you haven't done this yet, skip to the FAQ section and set it up now—it takes 2 minutes.</p>
+    </section>
+
+    <!-- Editor Macros & Snippets -->
+    <section id="macros">
+      <h2>⚡ Editor Macros & Snippets</h2>
+      <p>These pragmatic, editor-native automations eliminate repetitive keystrokes. Use them for fast text edits, consistent formatting, boilerplate insertion, and chained multi-step actions.</p>
+
+      <!-- Static macro lists removed to avoid duplication; interactive carousels below -->
+
+      <!-- Macros as interactive flip-card carousels -->
+      <h3 style="margin-top:24px">Text Editing Macros — Interactive Cards</h3>
+      <div class="carousel-section">
+        <div class="carousel-container">
+          <button class="carousel-nav" id="macros-edit-prev" aria-label="Previous">‹</button>
+          <button class="carousel-nav" id="macros-edit-next" aria-label="Next">›</button>
+
+          <!-- 1 Uppercase -->
+          <div class="flip-card active" data-carousel="macros-edit">
+            <div class="flip-card-inner">
+              <div class="flip-card-front">
+                <div class="card-icon">
+                  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <text x="50" y="40" font-size="20" fill="#fd7e14" text-anchor="middle" font-weight="bold" class="animate-bounce">ABC</text>
+                    <path d="M20,60 L80,60" stroke="#fd7e14" stroke-width="3" class="animate-pulse"/>
+                    <path d="M30,70 L50,80 L70,70" stroke="#fd7e14" stroke-width="3" fill="none" class="animate-float"/>
+                  </svg>
+                </div>
+                <div class="card-subtitle">Macro #1</div>
+                <h3>Convert Selection to Uppercase</h3>
+                <p>Instantly turn highlighted text into ALL CAPS for constants, headings, or callouts.</p>
+                <p class="tap-hint">Click to see how</p>
+              </div>
+              <div class="flip-card-back">
+                <h4>How to Uppercase Selection</h4>
+                <div class="detail-section"><strong>Process</strong>
+                  <ul>
+                    <li>Select text.</li>
+                    <li>Run command: Transform to Uppercase.</li>
+                  </ul>
+                </div>
+                <div class="detail-section"><strong>Shortcuts</strong>
+                  <ul>
+                    <li>VS Code / Cursor: Command Palette → <code>Transform to Uppercase</code>.</li>
+                    <li>Bind to a hotkey in <code>keybindings.json</code> for 1‑tap use.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2 Lowercase -->
+          <div class="flip-card" data-carousel="macros-edit">
+            <div class="flip-card-inner">
+              <div class="flip-card-front">
+                <div class="card-icon">
+                  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <text x="50" y="40" font-size="20" fill="#e87312" text-anchor="middle" font-weight="bold" class="animate-float">abc</text>
+                    <path d="M20,60 L80,60" stroke="#e87312" stroke-width="3" class="animate-pulse"/>
+                    <path d="M30,50 L50,40 L70,50" stroke="#e87312" stroke-width="3" fill="none" class="animate-bounce"/>
+                  </svg>
+                </div>
+                <div class="card-subtitle">Macro #2</div>
+                <h3>Convert Selection to Lowercase</h3>
+                <p>Normalize text to lowercase for case‑insensitive comparisons and slugs.</p>
+                <p class="tap-hint">Click to see how</p>
+              </div>
+              <div class="flip-card-back">
+                <h4>How to Lowercase Selection</h4>
+                <div class="detail-section"><strong>Process</strong>
+                  <ul>
+                    <li>Select text → Transform to Lowercase.</li>
+                  </ul>
+                </div>
+                <div class="detail-section"><strong>Shortcuts</strong>
+                  <ul>
+                    <li>VS Code / Cursor: Command Palette → <code>Transform to Lowercase</code>.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3 Title Case -->
+          <div class="flip-card" data-carousel="macros-edit">
+            <div class="flip-card-inner">
+              <div class="flip-card-front">
+                <div class="card-icon">
+                  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <text x="20" y="40" font-size="18" fill="#fd7e14" font-weight="bold" class="animate-pulse">T</text>
+                    <text x="35" y="40" font-size="14" fill="#e87312">itle</text>
+                    <text x="55" y="40" font-size="18" fill="#fd7e14" font-weight="bold" class="animate-pulse">C</text>
+                    <text x="70" y="40" font-size="14" fill="#e87312">ase</text>
+                    <rect x="15" y="50" width="70" height="3" fill="#fd7e14" class="animate-scale" opacity="0.5"/>
+                  </svg>
+                </div>
+                <div class="card-subtitle">Macro #3</div>
+                <h3>Convert Selection to Title Case</h3>
+                <p>Apply Title Case to headings and commit subjects for readable, consistent style.</p>
+                <p class="tap-hint">Click to see how</p>
+              </div>
+              <div class="flip-card-back">
+                <h4>How to Title‑Case</h4>
+                <div class="detail-section"><strong>Process</strong>
+                  <ul>
+                    <li>Select text → Run Title Case extension/macro.</li>
+                  </ul>
+                </div>
+                <div class="detail-section"><strong>Tip</strong>
+                  <ul>
+                    <li>Use a lightweight extension such as <code>Title Case</code> and bind a key.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4 Wrap Selection -->
+          <div class="flip-card" data-carousel="macros-edit">
+            <div class="flip-card-inner">
+              <div class="flip-card-front">
+                <div class="card-icon">
+                  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <text x="50" y="55" font-size="16" fill="#666" text-anchor="middle">text</text>
+                    <path d="M25,35 Q20,50 25,65" stroke="#fd7e14" stroke-width="4" fill="none" class="animate-pulse"/>
+                    <path d="M75,35 Q80,50 75,65" stroke="#fd7e14" stroke-width="4" fill="none" class="animate-pulse"/>
+                    <circle cx="23" cy="35" r="3" fill="#fd7e14" class="animate-bounce"/>
+                    <circle cx="77" cy="35" r="3" fill="#fd7e14" class="animate-bounce"/>
+                  </svg>
+                </div>
+                <div class="card-subtitle">Macro #4</div>
+                <h3>Wrap Selection</h3>
+                <p>Quickly surround selection with <code>() { } [ ] "" ''</code> using one hotkey.</p>
+                <p class="tap-hint">Click to see how</p>
+              </div>
+              <div class="flip-card-back">
+                <h4>How to Wrap</h4>
+                <div class="detail-section"><strong>Process</strong>
+                  <ul>
+                    <li>Select text → Command Palette → <code>Emmet: Wrap with Abbreviation</code>.</li>
+                    <li>Type the wrapper, e.g. <code>( $TM_SELECTED_TEXT )</code>.</li>
+                  </ul>
+                </div>
+                <div class="detail-section"><strong>Shortcuts</strong>
+                  <ul>
+                    <li>VS Code / Cursor: Emmet wrap; create a macro for common pairs.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5 Duplicate Down -->
+          <div class="flip-card" data-carousel="macros-edit">
+            <div class="flip-card-inner">
+              <div class="flip-card-front">
+                <div class="card-icon">
+                  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="25" y="30" width="50" height="8" fill="#fd7e14" rx="2"/>
+                    <rect x="25" y="50" width="50" height="8" fill="#e87312" rx="2" class="animate-float" opacity="0.7"/>
+                    <path d="M50,42 L50,48 M47,45 L50,48 L53,45" stroke="#fd7e14" stroke-width="3" fill="none" class="animate-bounce"/>
+                  </svg>
+                </div>
+                <div class="card-subtitle">Macro #5</div>
+                <h3>Duplicate Line/Selection Down</h3>
+                <p>Copy the active line or selection and paste immediately below.</p>
+                <p class="tap-hint">Click to see how</p>
+              </div>
+              <div class="flip-card-back">
+                <h4>Duplicate Down</h4>
+                <div class="detail-section"><strong>Shortcuts</strong>
+                  <ul>
+                    <li>VS Code / Cursor: <code>Shift+Alt+Down</code> (Win/Linux), <code>Shift+Option+Down</code> (Mac).</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 6 Duplicate Up -->
+          <div class="flip-card" data-carousel="macros-edit">
+            <div class="flip-card-inner">
+              <div class="flip-card-front">
+                <span class="card-emoji">⬆️</span>
+                <div class="card-subtitle">Macro #6</div>
+                <h3>Duplicate Line/Selection Up</h3>
+                <p>Paste the duplicate immediately above the current line/selection.</p>
+                <p class="tap-hint">Click to see how</p>
+              </div>
+              <div class="flip-card-back">
+                <h4>Duplicate Up</h4>
+                <div class="detail-section"><strong>Shortcuts</strong>
+                  <ul>
+                    <li>VS Code / Cursor: <code>Shift+Alt+Up</code> (Win/Linux), <code>Shift+Option+Up</code> (Mac).</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 7 Delete Line -->
+          <div class="flip-card" data-carousel="macros-edit">
+            <div class="flip-card-inner">
+              <div class="flip-card-front">
+                <span class="card-emoji">🗑️</span>
+                <div class="card-subtitle">Macro #7</div>
+                <h3>Delete Current Line</h3>
+                <p>Remove the entire line where the cursor is—no selection needed.</p>
+                <p class="tap-hint">Click to see how</p>
+              </div>
+              <div class="flip-card-back">
+                <h4>Delete Line</h4>
+                <div class="detail-section"><strong>Shortcuts</strong>
+                  <ul>
+                    <li>VS Code / Cursor: <code>Ctrl+Shift+K</code> (Win/Linux), <code>Cmd+Shift+K</code> (Mac).</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 8 Join Lines -->
+          <div class="flip-card" data-carousel="macros-edit">
+            <div class="flip-card-inner">
+              <div class="flip-card-front">
+                <span class="card-emoji">🧵</span>
+                <div class="card-subtitle">Macro #8</div>
+                <h3>Join Lines</h3>
+                <p>Merge the next line into the current one, removing the break cleanly.</p>
+                <p class="tap-hint">Click to see how</p>
+              </div>
+              <div class="flip-card-back">
+                <h4>Join Lines</h4>
+                <div class="detail-section"><strong>Shortcuts</strong>
+                  <ul>
+                    <li>VS Code / Cursor: Command Palette → <code>Join Lines</code>.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 9 Add Cursors to Line Ends -->
+          <div class="flip-card" data-carousel="macros-edit">
+            <div class="flip-card-inner">
+              <div class="flip-card-front">
+                <span class="card-emoji">🧷</span>
+                <div class="card-subtitle">Macro #9</div>
+                <h3>Add Cursors to Line Ends</h3>
+                <p>Batch‑edit multiple lines by placing a cursor at each selected line end.</p>
+                <p class="tap-hint">Click to see how</p>
+              </div>
+              <div class="flip-card-back">
+                <h4>Multi‑Cursor Line Ends</h4>
+                <div class="detail-section"><strong>Steps</strong>
+                  <ul>
+                    <li>Select lines → <code>Add Cursors to Line Ends</code>.</li>
+                  </ul>
+                </div>
+                <div class="detail-section"><strong>Shortcuts</strong>
+                  <ul>
+                    <li>VS Code / Cursor: Command Palette → <code>Add Cursors to Line Ends</code>.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 10 Select All Occurrences -->
+          <div class="flip-card" data-carousel="macros-edit">
+            <div class="flip-card-inner">
+              <div class="flip-card-front">
+                <span class="card-emoji">🔎</span>
+                <div class="card-subtitle">Macro #10</div>
+                <h3>Select All Occurrences</h3>
+                <p>Select a word, then select every other instance of that word in the file.</p>
+                <p class="tap-hint">Click to see how</p>
+              </div>
+              <div class="flip-card-back">
+                <h4>Select All Occurrences</h4>
+                <div class="detail-section"><strong>Shortcuts</strong>
+                  <ul>
+                    <li>VS Code / Cursor: <code>Ctrl+F2</code> (Win/Linux), <code>Cmd+Ctrl+G</code> (Mac).</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <div class="carousel-footer"><div id="macros-edit-counter">1 / 10</div></div>
+      </div>
+
+      <h3>🧹 Code Formatting & Cleaning — Interactive Cards</h3>
+      <div class="carousel-section">
+        <div class="carousel-container">
+          <button class="carousel-nav" id="macros-clean-prev" aria-label="Previous">‹</button>
+          <button class="carousel-nav" id="macros-clean-next" aria-label="Next">›</button>
+
+          <!-- 11 Format Document -->
+          <div class="flip-card active" data-carousel="macros-clean">
+            <div class="flip-card-inner">
+              <div class="flip-card-front">
+                <div class="card-icon">
+                  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="20" y="20" width="60" height="60" rx="4" fill="none" stroke="#ccc" stroke-width="2"/>
+                    <line x1="25" y1="30" x2="55" y2="30" stroke="#ccc" stroke-width="2"/>
+                    <line x1="30" y1="40" x2="60" y2="40" stroke="#ccc" stroke-width="2"/>
+                    <line x1="25" y1="50" x2="50" y2="50" stroke="#ccc" stroke-width="2"/>
+                    <circle cx="70" cy="50" r="15" fill="#fd7e14" class="animate-pulse"/>
+                    <path d="M65,50 L68,53 L75,46" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/>
+                    <g class="animate-rotate" transform-origin="70 50">
+                      <path d="M70,35 Q75,40 70,45 Q65,40 70,35" fill="none" stroke="#fd7e14" stroke-width="1" opacity="0.3"/>
+                    </g>
+                  </svg>
+                </div>
+                <div class="card-subtitle">Macro #11</div>
+                <h3>Format Document</h3>
+                <p>Apply the project's formatter/linter rules to the entire file.</p>
+                <p class="tap-hint">Click to see how</p>
+              </div>
+              <div class="flip-card-back">
+                <h4>Format Document</h4>
+                <div class="detail-section"><strong>Shortcuts</strong>
+                  <ul>
+                    <li>VS Code / Cursor: <code>Shift+Alt+F</code> (Win/Linux), <code>Shift+Option+F</code> (Mac).</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 12 Format Selection -->
+          <div class="flip-card" data-carousel="macros-clean">
+            <div class="flip-card-inner">
+              <div class="flip-card-front">
+                <span class="card-emoji">🧩</span>
+                <div class="card-subtitle">Macro #12</div>
+                <h3>Format Selection</h3>
+                <p>Format only the highlighted block—great for staged changes.</p>
+                <p class="tap-hint">Click to see how</p>
+              </div>
+              <div class="flip-card-back">
+                <h4>Format Selection</h4>
+                <div class="detail-section"><strong>Command</strong>
+                  <ul>
+                    <li>VS Code / Cursor: Command Palette → <code>Format Selection</code>.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 13 Trim Trailing Whitespace -->
+          <div class="flip-card" data-carousel="macros-clean">
+            <div class="flip-card-inner">
+              <div class="flip-card-front">
+                <span class="card-emoji">✂️</span>
+                <div class="card-subtitle">Macro #13</div>
+                <h3>Trim Trailing Whitespace</h3>
+                <p>Remove invisible end-of-line whitespace across the file.</p>
+                <p class="tap-hint">Click to see how</p>
+              </div>
+              <div class="flip-card-back">
+                <h4>Trim Whitespace</h4>
+                <div class="detail-section"><strong>Settings</strong>
+                  <ul>
+                    <li>VS Code / Cursor: <code>files.trimTrailingWhitespace: true</code>.</li>
+                    <li>Optional: add as a command to trigger on demand.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 14 Insert Final Newline -->
+          <div class="flip-card" data-carousel="macros-clean">
+            <div class="flip-card-inner">
+              <div class="flip-card-front">
+                <span class="card-emoji">⤵️</span>
+                <div class="card-subtitle">Macro #14</div>
+                <h3>Insert Final Newline</h3>
+                <p>Ensure the file ends with a POSIX‑friendly newline.</p>
+                <p class="tap-hint">Click to see how</p>
+              </div>
+              <div class="flip-card-back">
+                <h4>Final Newline</h4>
+                <div class="detail-section"><strong>Settings</strong>
+                  <ul>
+                    <li>VS Code / Cursor: <code>files.insertFinalNewline: true</code>.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 15 Fix All Linting Errors -->
+          <div class="flip-card" data-carousel="macros-clean">
+            <div class="flip-card-inner">
+              <div class="flip-card-front">
+                <span class="card-emoji">🧹</span>
+                <div class="card-subtitle">Macro #15</div>
+                <h3>Fix All Linting Errors</h3>
+                <p>Run the linter’s auto‑fix for quick wins before commit.</p>
+                <p class="tap-hint">Click to see how</p>
+              </div>
+              <div class="flip-card-back">
+                <h4>Fix All</h4>
+                <div class="detail-section"><strong>Commands</strong>
+                  <ul>
+                    <li>VS Code / Cursor: Command Palette → <code>ESLint: Fix all auto-fixable Problems</code>.</li>
+                    <li>CLI: <code>eslint --fix</code> on the file or project.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <div class="carousel-footer"><div id="macros-clean-counter">1 / 5</div></div>
+      </div>
+
+      <h3>🏗️ Code Insertion & Boilerplate — Interactive Cards</h3>
+      <div class="carousel-section">
+        <div class="carousel-container">
+          <button class="carousel-nav" id="macros-snippets-prev" aria-label="Previous">‹</button>
+          <button class="carousel-nav" id="macros-snippets-next" aria-label="Next">›</button>
+
+          <!-- 16 console.log -->
+          <div class="flip-card active" data-carousel="macros-snippets">
+            <div class="flip-card-inner">
+              <div class="flip-card-front">
+                <div class="card-icon">
+                  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="15" y="20" width="70" height="60" rx="8" fill="#2d2d2d" stroke="#fd7e14" stroke-width="2"/>
+                    <text x="20" y="40" font-size="10" fill="#66d9ef" font-family="monospace">console</text>
+                    <text x="55" y="40" font-size="10" fill="#f8f8f2" font-family="monospace">.</text>
+                    <text x="60" y="40" font-size="10" fill="#a6e22e" font-family="monospace" class="animate-pulse">log</text>
+                    <text x="20" y="55" font-size="10" fill="#f8f8f2" font-family="monospace">(</text>
+                    <rect x="25" y="48" width="3" height="10" fill="#fd7e14" class="animate-fade"/>
+                    <text x="30" y="55" font-size="10" fill="#f8f8f2" font-family="monospace">)</text>
+                  </svg>
+                </div>
+                <div class="card-subtitle">Macro #16</div>
+                <h3>Insert console.log</h3>
+                <p>Type <code>clg</code> and expand to <code>console.log($1);</code> with cursor inside.</p>
+                <p class="tap-hint">Click to see how</p>
+              </div>
+              <div class="flip-card-back">
+                <h4>Snippet: console.log</h4>
+                <div class="detail-section"><strong>Snippet Body</strong>
+                  <ul>
+                    <li>VS Code / Cursor user snippet: <code>console.log(${"$1"});</code></li>
+                    <li>Trigger: <code>clg</code>.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 17 log variable -->
+          <div class="flip-card" data-carousel="macros-snippets">
+            <div class="flip-card-inner">
+              <div class="flip-card-front">
+                <span class="card-emoji">🧷</span>
+                <div class="card-subtitle">Macro #17</div>
+                <h3>Insert log‑variable</h3>
+                <p>Wrap a variable: <code>console.log('myVar:', myVar);</code> for quick inspection.</p>
+                <p class="tap-hint">Click to see how</p>
+              </div>
+              <div class="flip-card-back">
+                <h4>Snippet: log variable</h4>
+                <div class="detail-section"><strong>Snippet Body</strong>
+                  <ul>
+                    <li><code>console.log('${"$TM_SELECTED_TEXT"}:', ${"$TM_SELECTED_TEXT"});</code></li>
+                    <li>Select a token first to auto‑wrap.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 18 HTML5 Boilerplate -->
+          <div class="flip-card" data-carousel="macros-snippets">
+            <div class="flip-card-inner">
+              <div class="flip-card-front">
+                <span class="card-emoji">🧱</span>
+                <div class="card-subtitle">Macro #18</div>
+                <h3>Insert HTML5 Boilerplate</h3>
+                <p>Use <code>!</code> to create a complete HTML scaffold in new files.</p>
+                <p class="tap-hint">Click to see how</p>
+              </div>
+              <div class="flip-card-back">
+                <h4>Emmet: HTML5</h4>
+                <div class="detail-section"><strong>Steps</strong>
+                  <ul>
+                    <li>New <code>.html</code> file → type <code>!</code> → press <code>Tab</code>.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 19 Function/Component -->
+          <div class="flip-card" data-carousel="macros-snippets">
+            <div class="flip-card-inner">
+              <div class="flip-card-front">
+                <span class="card-emoji">🧩</span>
+                <div class="card-subtitle">Macro #19</div>
+                <h3>Insert Function/Component</h3>
+                <p>Use a snippet like <code>rafce</code> to scaffold a React component instantly.</p>
+                <p class="tap-hint">Click to see how</p>
+              </div>
+              <div class="flip-card-back">
+                <h4>Snippet: Component</h4>
+                <div class="detail-section"><strong>Tip</strong>
+                  <ul>
+                    <li>Install React snippets or create a custom snippet for your team template.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 20 for...of loop -->
+          <div class="flip-card" data-carousel="macros-snippets">
+            <div class="flip-card-inner">
+              <div class="flip-card-front">
+                <span class="card-emoji">🔁</span>
+                <div class="card-subtitle">Macro #20</div>
+                <h3>Insert Loop</h3>
+                <p>Use <code>forof</code> to expand a typed loop with placeholders.</p>
+                <p class="tap-hint">Click to see how</p>
+              </div>
+              <div class="flip-card-back">
+                <h4>Snippet: for..of</h4>
+                <div class="detail-section"><strong>Snippet Body</strong>
+                  <ul>
+                    <li><code>for (const ${"$1"} of ${"$2"}) {\n  ${"$0"}\n}</code></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <div class="carousel-footer"><div id="macros-snippets-counter">1 / 5</div></div>
+      </div>
+
+      <h3>🏃 Multi‑Step Command Sequences — Interactive Cards</h3>
+      <div class="carousel-section">
+        <div class="carousel-container">
+          <button class="carousel-nav" id="macros-chains-prev" aria-label="Previous">‹</button>
+          <button class="carousel-nav" id="macros-chains-next" aria-label="Next">›</button>
+
+          <!-- 21 Save and Format -->
+          <div class="flip-card active" data-carousel="macros-chains">
+            <div class="flip-card-inner">
+              <div class="flip-card-front">
+                <div class="card-icon">
+                  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="25" y="25" width="30" height="35" rx="3" fill="#fd7e14" class="animate-pulse"/>
+                    <rect x="28" y="50" width="24" height="10" fill="#fff"/>
+                    <path d="M40,32 L40,45" stroke="#fff" stroke-width="2"/>
+                    <path d="M35,40 L40,45 L45,40" stroke="#fff" stroke-width="2" fill="none"/>
+                    <g class="animate-float">
+                      <circle cx="65" cy="45" r="12" fill="#16a34a"/>
+                      <path d="M60,45 L63,48 L70,41" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/>
+                    </g>
+                    <path d="M50,45 L58,45 M55,42 L58,45 L55,48" stroke="#e87312" stroke-width="2" class="animate-slide"/>
+                  </svg>
+                </div>
+                <div class="card-subtitle">Macro #21</div>
+                <h3>Save and Format</h3>
+                <p>One key to save then format document. Perfect for pre‑commit polish.</p>
+                <p class="tap-hint">Click to see how</p>
+              </div>
+              <div class="flip-card-back">
+                <h4>Command Chain</h4>
+                <div class="detail-section"><strong>VS Code / Cursor</strong>
+                  <ul>
+                    <li>In <code>keybindings.json</code>, chain <code>workbench.action.files.save</code> then <code>editor.action.formatDocument</code>.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 22 Log and Move -->
+          <div class="flip-card" data-carousel="macros-chains">
+            <div class="flip-card-inner">
+              <div class="flip-card-front">
+                <span class="card-emoji">📍</span>
+                <div class="card-subtitle">Macro #22</div>
+                <h3>“Log and Move” for Debugging</h3>
+                <p>Insert <code>console.log('HERE');</code> on a new line, then return to origin.</p>
+                <p class="tap-hint">Click to see how</p>
+              </div>
+              <div class="flip-card-back">
+                <h4>Command Chain</h4>
+                <div class="detail-section"><strong>VS Code / Cursor</strong>
+                  <ul>
+                    <li>Chain: <em>Insert Line Below → Insert Snippet → Cursor Undo</em>.</li>
+                    <li>Snippet body: <code>console.log('HERE');</code></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 23 Duplicate and Comment Out -->
+          <div class="flip-card" data-carousel="macros-chains">
+            <div class="flip-card-inner">
+              <div class="flip-card-front">
+                <span class="card-emoji">🧪</span>
+                <div class="card-subtitle">Macro #23</div>
+                <h3>Duplicate and Comment Out</h3>
+                <p>Clone a line then comment out the original to experiment safely.</p>
+                <p class="tap-hint">Click to see how</p>
+              </div>
+              <div class="flip-card-back">
+                <h4>Command Chain</h4>
+                <div class="detail-section"><strong>Steps</strong>
+                  <ul>
+                    <li>Duplicate line down → Toggle Line Comment on previous line.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 24 Open File and Split View -->
+          <div class="flip-card" data-carousel="macros-chains">
+            <div class="flip-card-inner">
+              <div class="flip-card-front">
+                <span class="card-emoji">🪟</span>
+                <div class="card-subtitle">Macro #24</div>
+                <h3>Open File and Split View</h3>
+                <p>Open a related file (e.g., tests) and move it to a split editor pane.</p>
+                <p class="tap-hint">Click to see how</p>
+              </div>
+              <div class="flip-card-back">
+                <h4>Command Chain</h4>
+                <div class="detail-section"><strong>VS Code / Cursor</strong>
+                  <ul>
+                    <li>Chain: <em>Quick Open → Focus Right Group → Move Editor Right</em>.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 25 Run Build & Toggle Panel -->
+          <div class="flip-card" data-carousel="macros-chains">
+            <div class="flip-card-inner">
+              <div class="flip-card-front">
+                <span class="card-emoji">🏗️</span>
+                <div class="card-subtitle">Macro #25</div>
+                <h3>Run Build & Toggle Panel</h3>
+                <p>Execute the build task and reveal the output/terminal in one keystroke.</p>
+                <p class="tap-hint">Click to see how</p>
+              </div>
+              <div class="flip-card-back">
+                <h4>Command Chain</h4>
+                <div class="detail-section"><strong>VS Code / Cursor</strong>
+                  <ul>
+                    <li>Chain: <em>Run Task</em> (e.g., <code>npm run build</code>) → <em>Toggle Panel</em>.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <div class="carousel-footer"><div id="macros-chains-counter">1 / 5</div></div>
+      </div>
+    </section>
+
+    <!-- Section 1: Naming & Identity -->
+    <section id="tasks">
+      <h2>🏷️ Naming & Identity</h2>
+      <p>Ever spent 10 minutes doing find-and-replace across a file, only to miss three references and break your code? That's what we're fixing here.</p>
+      
+      <p>Variable and function names matter more than you think. A well-named constant makes code self-documenting. A poorly-named loop variable creates confusion that cascades through code reviews and debugging sessions.</p>
+
+      <p>These four tasks help you rename things safely—across your entire project if needed—without the risk of breaking references.</p>
+
+      <div class="carousel-section">
+        <div class="carousel-container">
+          <button class="carousel-nav" id="naming-prev" aria-label="Previous">‹</button>
+          <button class="carousel-nav" id="naming-next" aria-label="Next">›</button>
+
+          <!-- Card 1 -->
+          <div class="flip-card active" data-carousel="naming">
+            <div class="flip-card-inner">
+              <div class="flip-card-front">
+                <div class="card-icon">
+                  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <text x="30" y="40" font-size="14" fill="#999" text-decoration="line-through">oldName</text>
+                    <text x="30" y="65" font-size="16" fill="#fd7e14" font-weight="bold" class="animate-pulse">newName</text>
+                    <path d="M25,45 L70,45 M67,42 L70,45 L67,48" stroke="#fd7e14" stroke-width="2" fill="none" class="animate-float"/>
+                  </svg>
+                </div>
+                <div class="card-subtitle">Task #1</div>
+                <h3>Rename a Variable</h3>
+                <p>Change a variable name and <strong>automatically update all references</strong> in the current scope. Your IDE finds every usage—even in nested functions or closures—and updates them atomically.</p>
+                <p class="tap-hint">Click to see how</p>
+              </div>
+              <div class="flip-card-back">
+                <h4>How to Rename a Variable</h4>
+                <div class="detail-section">
+                  <strong>Process</strong>
+                  <ul>
+                    <li>Place cursor on the variable name anywhere it appears</li>
+                    <li>Press F2 (VS Code) or Shift+F6 (IntelliJ/WebStorm)</li>
+                    <li>Type the new name</li>
+                    <li>Press Enter—all references update instantly</li>
+                  </ul>
+                </div>
+                <div class="detail-section">
+                  <strong>Tools & Shortcuts</strong>
+                  <ul>
+                    <li>VS Code: <code>F2</code> or Right-click → Rename Symbol</li>
+                    <li>IntelliJ/WebStorm/PyCharm: <code>Shift+F6</code></li>
+                    <li>Most modern IDEs support this natively</li>
+                  </ul>
+                </div>
+                <div class="detail-section">
+                  <strong>Pro Tips</strong>
+                  <ul>
+                    <li>Works across entire file or project scope automatically</li>
+                    <li>Preview changes before applying if you're nervous</li>
+                    <li>Choose descriptive names: <code>userData</code> beats <code>x</code></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2 -->
+          <div class="flip-card" data-carousel="naming">
+            <div class="flip-card-inner">
+              <div class="flip-card-front">
+                <div class="card-icon">
+                  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="20" y="25" width="60" height="50" rx="8" fill="none" stroke="#fd7e14" stroke-width="3" class="animate-pulse"/>
+                    <text x="50" y="50" font-size="12" fill="#e87312" text-anchor="middle" font-family="monospace" class="animate-float">fn()</text>
+                    <circle cx="30" cy="35" r="2" fill="#fd7e14"/>
+                    <circle cx="70" cy="35" r="2" fill="#fd7e14"/>
+                    <path d="M30,68 L70,68" stroke="#fd7e14" stroke-width="2" class="animate-scale"/>
+                  </svg>
+                </div>
+                <div class="card-subtitle">Task #2</div>
+                <h3>Rename a Function</h3>
+                <p>Update function names across your codebase, including all call sites. Critical for public APIs where a single missed reference could break production.</p>
+                <p class="tap-hint">Click to see how</p>
+              </div>
+              <div class="flip-card-back">
+                <h4>How to Rename a Function</h4>
+                <div class="detail-section">
+                  <strong>Process</strong>
+                  <ul>
+                    <li>Click on the function name (definition or any usage)</li>
+                    <li>Use the same rename shortcut: F2 or Shift+F6</li>
+                    <li>IDE searches for all invocations across files</li>
+                    <li>Type new name—updates propagate everywhere</li>
+                  </ul>
+                </div>
+                <div class="detail-section">
+                  <strong>Important Notes</strong>
+                  <ul>
+                    <li>Same shortcuts as variable rename—muscle memory wins</li>
+                    <li>Works for methods, classes, interfaces too</li>
+                    <li>Check for method overloads—they need special attention</li>
+                  </ul>
+                </div>
+                <div class="detail-section">
+                  <strong>Pro Tips</strong>
+                  <ul>
+                    <li>Be cautious with exported/public functions—external code may depend on them</li>
+                    <li>Run tests immediately after renaming</li>
+                    <li>Use version control to easily revert if something breaks</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 3 -->
+          <div class="flip-card" data-carousel="naming">
+            <div class="flip-card-inner">
+              <div class="flip-card-front">
+                <span class="card-emoji">🔢</span>
+                <div class="card-subtitle">Task #3</div>
+                <h3>Replace Magic Numbers</h3>
+                <p>See <code>86400</code> in your code and have no idea what it means? Convert mysterious numbers into <strong>named constants</strong> like <code>SECONDS_PER_DAY</code>.</p>
+                <p class="tap-hint">Click to see how</p>
+              </div>
+              <div class="flip-card-back">
+                <h4>How to Replace Magic Numbers</h4>
+                <div class="detail-section">
+                  <strong>Process</strong>
+                  <ul>
+                    <li>Find the unexplained number in your code</li>
+                    <li>Create a named constant at the top of your file or class</li>
+                    <li>Use Find & Replace (Ctrl+H) to swap all occurrences</li>
+                    <li>Test to ensure the meaning hasn't changed</li>
+                  </ul>
+                </div>
+                <div class="detail-section">
+                  <strong>Tools</strong>
+                  <ul>
+                    <li>Manual: <code>Ctrl+H</code> (Find & Replace)</li>
+                    <li>Some IDEs: "Extract Constant" refactor command</li>
+                    <li>Search carefully—context matters for numbers</li>
+                  </ul>
+                </div>
+                <div class="detail-section">
+                  <strong>Pro Tips</strong>
+                  <ul>
+                    <li>Use UPPER_SNAKE_CASE for constants by convention</li>
+                    <li>Group related constants together for organization</li>
+                    <li>Example: <code>MAX_RETRIES = 3</code> is self-explanatory</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 4 -->
+          <div class="flip-card" data-carousel="naming">
+            <div class="flip-card-inner">
+              <div class="flip-card-front">
+                <span class="card-emoji">🔁</span>
+                <div class="card-subtitle">Task #4</div>
+                <h3>Rename Loop Variables</h3>
+                <p>Replace generic <code>i</code> with meaningful names like <code>userIndex</code>. Makes nested loops readable and prevents off-by-one errors.</p>
+                <p class="tap-hint">Click to see how</p>
+              </div>
+              <div class="flip-card-back">
+                <h4>How to Rename Loop Variables</h4>
+                <div class="detail-section">
+                  <strong>Process</strong>
+                  <ul>
+                    <li>Select the loop variable in its declaration</li>
+                    <li>Use F2 or manual find-replace within the loop block</li>
+                    <li>Ensure the scope is limited to just this loop</li>
+                    <li>Verify no outer scope conflicts</li>
+                  </ul>
+                </div>
+                <div class="detail-section">
+                  <strong>Tools</strong>
+                  <ul>
+                    <li>F2 works best—it's scope-aware automatically</li>
+                    <li>Multi-cursor editing: <code>Ctrl+D</code> in VS Code</li>
+                    <li>Check that only loop references change</li>
+                  </ul>
+                </div>
+                <div class="detail-section">
+                  <strong>Pro Tips</strong>
+                  <ul>
+                    <li>Nested loops: avoid i, j, k—use <code>rowIndex, colIndex</code></li>
+                    <li>Modern style: prefer <code>for item in items</code> when possible</li>
+                    <li>Descriptive names prevent bugs in complex iterations</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="carousel-footer">
+          <div id="naming-counter">1 / 4</div>
+        </div>
+      </div>
+
+      <!-- Pitfall Example -->
+      <h3>Example: Magic Numbers in Action</h3>
+      <p>Here's what happens when you don't use named constants. The first version leaves readers guessing. The second version documents itself.</p>
+      
+      <div class="pitfall-grid">
+        <div class="pitfall-card">
+          <div class="pitfall-header">
+            <h4 class="bad">❌ Before: Mysterious Numbers</h4>
+          </div>
+          <div class="pitfall-body">
+            <p>What do these numbers mean? Why 100? Why 0.85?</p>
+            <div class="code-wrapper">
+              <pre class="code-block"><span class="keyword">function</span> <span class="function">calculatePrice</span>(qty) {
+  <span class="keyword">if</span> (qty > <span class="number">100</span>) {
+    <span class="keyword">return</span> qty * <span class="number">9.99</span> * <span class="number">0.85</span>;
+  }
+  <span class="keyword">return</span> qty * <span class="number">9.99</span>;
+}</pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="pitfall-card good">
+          <div class="pitfall-header">
+            <h4 class="good">✅ After: Self-Documenting Code</h4>
+          </div>
+          <div class="pitfall-body">
+            <p>The code explains itself. Future you will be grateful.</p>
+            <div class="code-wrapper">
+              <pre class="code-block"><span class="keyword">const</span> UNIT_PRICE = <span class="number">9.99</span>;
+<span class="keyword">const</span> BULK_THRESHOLD = <span class="number">100</span>;
+<span class="keyword">const</span> BULK_DISCOUNT = <span class="number">0.85</span>;
+
+<span class="keyword">function</span> <span class="function">calculatePrice</span>(qty) {
+  <span class="keyword">if</span> (qty > BULK_THRESHOLD) {
+    <span class="keyword">return</span> qty * UNIT_PRICE * BULK_DISCOUNT;
+  }
+  <span class="keyword">return</span> qty * UNIT_PRICE;
+}</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2: Code Cleanup -->
+    <section id="cleanup">
+      <h2>📝 Code Cleanup & Formatting</h2>
+      <p>Technical debt accumulates slowly. A commented-out function here. An unused import there. Six months later, your file is a archaeological dig site.</p>
+      
+      <p>These cleanup tasks remove cruft automatically. Most take under 5 seconds to execute, and they make your code dramatically easier to read and maintain.</p>
+
+      <div class="carousel-section">
+        <div class="carousel-container">
+          <button class="carousel-nav" id="cleanup-prev" aria-label="Previous">‹</button>
+          <button class="carousel-nav" id="cleanup-next" aria-label="Next">›</button>
+
+          <!-- Cleanup Card 1 -->
+          <div class="flip-card active" data-carousel="cleanup">
+            <div class="flip-card-inner">
+              <div class="flip-card-front">
+                <div class="card-icon">
+                  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <line x1="20" y1="25" x2="50" y2="25" stroke="#ccc" stroke-width="2"/>
+                    <line x1="35" y1="35" x2="65" y2="35" stroke="#ccc" stroke-width="2"/>
+                    <line x1="25" y1="45" x2="70" y2="45" stroke="#ccc" stroke-width="2"/>
+                    <line x1="20" y1="60" x2="50" y2="60" stroke="#fd7e14" stroke-width="2" class="animate-pulse"/>
+                    <line x1="30" y1="70" x2="60" y2="70" stroke="#fd7e14" stroke-width="2" class="animate-pulse"/>
+                    <line x1="40" y1="80" x2="70" y2="80" stroke="#fd7e14" stroke-width="2" class="animate-pulse"/>
+                    <path d="M75,50 L85,50 M82,47 L85,50 L82,53" stroke="#16a34a" stroke-width="2" fill="none" class="animate-slide"/>
+                  </svg>
+                </div>
+                <div class="card-subtitle">Task #5</div>
+                <h3>Fix Indentation</h3>
+                <p>One keyboard shortcut fixes every spacing issue in your file. Works after copy-pasting code or merging branches with different styles.</p>
+                <p class="tap-hint">Click to see how</p>
+              </div>
+              <div class="flip-card-back">
+                <h4>How to Fix Indentation</h4>
+                <div class="detail-section">
+                  <strong>Process</strong>
+                  <ul>
+                    <li>Open the file with messy indentation</li>
+                    <li>Press Shift+Alt+F (Windows) or Shift+Option+F (Mac)</li>
+                    <li>Formatter applies consistent rules across entire file</li>
+                    <li>Save—you're done</li>
+                  </ul>
+                </div>
+                <div class="detail-section">
+                  <strong>Tools</strong>
+                  <ul>
+                    <li>VS Code: <code>Shift+Alt+F</code> or "Format Document"</li>
+                    <li>Prettier, ESLint with <code>--fix</code></li>
+                    <li>Language-specific: Black (Python), gofmt (Go)</li>
+                  </ul>
+                </div>
+                <div class="detail-section">
+                  <strong>Pro Tips</strong>
+                  <ul>
+                    <li>Enable "Format on Save" in settings—never think about it again</li>
+                    <li>Configure rules in project config for team consistency</li>
+                    <li>Use EditorConfig to sync settings across editors</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Cleanup Card 2 -->
+          <div class="flip-card" data-carousel="cleanup">
+            <div class="flip-card-inner">
+              <div class="flip-card-front">
+                <span class="card-emoji">💬</span>
+                <div class="card-subtitle">Task #6</div>
+                <h3>Delete Commented Code</h3>
+                <p>That "just in case" code block you commented out 6 months ago? Delete it. Version control is your safety net.</p>
+                <p class="tap-hint">Click to see how</p>
+              </div>
+              <div class="flip-card-back">
+                <h4>How to Delete Commented Code</h4>
+                <div class="detail-section">
+                  <strong>Process</strong>
+                  <ul>
+                    <li>Search for comment patterns: <code>//</code> or <code>/*</code></li>
+                    <li>Review each commented block carefully</li>
+                    <li>Delete if it's genuinely unused code</li>
+                    <li>Keep only meaningful documentation comments</li>
+                  </ul>
+                </div>
+                <div class="detail-section">
+                  <strong>Tools</strong>
+                  <ul>
+                    <li>Manual: Multi-line selection + Delete key</li>
+                    <li>Regex search for specific patterns</li>
+                    <li>Some linters flag commented code as warnings</li>
+                  </ul>
+                </div>
+                <div class="detail-section">
+                  <strong>Pro Tips</strong>
+                  <ul>
+                    <li>If you need it later, use Git to retrieve it</li>
+                    <li>Keep TODO comments with ticket numbers and dates</li>
+                    <li>Remove debug print statements too</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Continue with remaining cleanup cards... -->
+          <!-- Card 3: Delete Unused Imports -->
+          <div class="flip-card" data-carousel="cleanup">
+            <div class="flip-card-inner">
+              <div class="flip-card-front">
+                <span class="card-emoji">📦</span>
+                <div class="card-subtitle">Task #7</div>
+                <h3>Remove Unused Imports</h3>
+                <p>Your IDE grays out unused imports automatically. One command removes them all. Cleaner code, smaller bundles.</p>
+                <p class="tap-hint">Click to see how</p>
+              </div>
+              <div class="flip-card-back">
+                <h4>How to Remove Unused Imports</h4>
+                <div class="detail-section">
+                  <strong>Process</strong>
+                  <ul>
+                    <li>IDE highlights unused imports (grayed out text)</li>
+                    <li>Press Ctrl+Shift+O (VS Code) or Ctrl+Alt+O (IntelliJ)</li>
+                    <li>Command removes unused, sorts alphabetically</li>
+                    <li>Done—file is cleaner instantly</li>
+                  </ul>
+                </div>
+                <div class="detail-section">
+                  <strong>Tools</strong>
+                  <ul>
+                    <li>VS Code: <code>Ctrl+Shift+O</code> or "Organize Imports"</li>
+                    <li>ESLint: <code>no-unused-vars</code> rule with --fix</li>
+                    <li>IntelliJ: <code>Ctrl+Alt+O</code></li>
+                  </ul>
+                </div>
+                <div class="detail-section">
+                  <strong>Pro Tips</strong>
+                  <ul>
+                    <li>Run before committing code—good habit</li>
+                    <li>Catches refactoring mistakes early</li>
+                    <li>Reduces bundle size in frontend applications</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 4: Delete Unused Variables -->
+          <div class="flip-card" data-carousel="cleanup">
+            <div class="flip-card-inner">
+              <div class="flip-card-front">
+                <span class="card-emoji">🗑️</span>
+                <div class="card-subtitle">Task #8</div>
+                <h3>Delete Unused Variables</h3>
+                <p>Declared but never used? Your linter knows. Delete it before someone wastes time wondering why it exists.</p>
+                <p class="tap-hint">Click to see how</p>
+              </div>
+              <div class="flip-card-back">
+                <h4>How to Delete Unused Variables</h4>
+                <div class="detail-section">
+                  <strong>Process</strong>
+                  <ul>
+                    <li>Look for grayed-out or underlined variable names</li>
+                    <li>Verify it's truly unused (check all scopes)</li>
+                    <li>Delete the declaration line</li>
+                    <li>Run linter to confirm no warnings remain</li>
+                  </ul>
+                </div>
+                <div class="detail-section">
+                  <strong>Tools</strong>
+                  <ul>
+                    <li>ESLint: <code>no-unused-vars</code> with --fix flag</li>
+                    <li>IDE warnings and hints (hover to see)</li>
+                    <li>TypeScript compiler errors catch these</li>
+                  </ul>
+                </div>
+                <div class="detail-section">
+                  <strong>Pro Tips</strong>
+                  <ul>
+                    <li>Be careful with side-effect assignments</li>
+                    <li>Unused function params: prefix with underscore <code>_param</code></li>
+                    <li>Clean code = fewer bugs lurking</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 5: Delete Unused Functions -->
+          <div class="flip-card" data-carousel="cleanup">
+            <div class="flip-card-inner">
+              <div class="flip-card-front">
+                <span class="card-emoji">🔧</span>
+                <div class="card-subtitle">Task #9</div>
+                <h3>Delete Unused Functions</h3>
+                <p>Functions that are never called waste mental energy. Use "Find All References" to verify, then delete confidently.</p>
+                <p class="tap-hint">Click to see how</p>
+              </div>
+              <div class="flip-card-back">
+                <h4>How to Delete Unused Functions</h4>
+                <div class="detail-section">
+                  <strong>Process</strong>
+                  <ul>
+                    <li>Right-click function name → Find All References</li>
+                    <li>If only the definition shows up (no calls), it's safe to delete</li>
+                    <li>Check tests too—might be tested but unused in production</li>
+                    <li>Delete both function and its tests</li>
+                  </ul>
+                </div>
+                <div class="detail-section">
+                  <strong>Tools</strong>
+                  <ul>
+                    <li>IDE: Right-click → Find All References</li>
+                    <li>ESLint with --fix (limited support)</li>
+                    <li>Dead code detection tools for large projects</li>
+                  </ul>
+                </div>
+                <div class="detail-section">
+                  <strong>Pro Tips</strong>
+                  <ul>
+                    <li>Cautious with exported/public functions—external code may use them</li>
+                    <li>Check if used dynamically (string-based calls)</li>
+                    <li>Git history preserves deleted code if needed later</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 6: Reformat File -->
+          <div class="flip-card" data-carousel="cleanup">
+            <div class="flip-card-inner">
+              <div class="flip-card-front">
+                <span class="card-emoji">✨</span>
+                <div class="card-subtitle">Task #10</div>
+                <h3>Reformat Entire File</h3>
+                <p>Applies every code style rule in one shot. Quotes, semicolons, line breaks—all consistent instantly.</p>
+                <p class="tap-hint">Click to see how</p>
+              </div>
+              <div class="flip-card-back">
+                <h4>How to Reformat a File</h4>
+                <div class="detail-section">
+                  <strong>Process</strong>
+                  <ul>
+                    <li>Open file that needs formatting</li>
+                    <li>Same as "Fix Indentation" but more comprehensive</li>
+                    <li>Formatter applies all configured style rules</li>
+                    <li>Can reformat selection or entire project</li>
+                  </ul>
+                </div>
+                <div class="detail-section">
+                  <strong>Tools</strong>
+                  <ul>
+                    <li>Prettier: <code>prettier --write .</code></li>
+                    <li>ESLint: <code>eslint --fix src/</code></li>
+                    <li>IDE: Format Document command</li>
+                  </ul>
+                </div>
+                <div class="detail-section">
+                  <strong>Pro Tips</strong>
+                  <ul>
+                    <li>Set up pre-commit hooks to auto-format before commits</li>
+                    <li>Choose one formatter per project to avoid conflicts</li>
+                    <li>Document style choices in README or CONTRIBUTING.md</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="carousel-footer">
+          <div id="cleanup-counter">1 / 6</div>
+        </div>
+      </div>
+
+    <!-- Section 3: Strings & Literals (Tasks 11-14) -->
+    <section id="strings">
+      <h2>🔡 Strings & Literals</h2>
+      <p>Keep strings intentional and portable. These tasks reduce duplication, prepare code for i18n, and enforce consistent style.</p>
+
+      <div class="carousel-section">
+        <div class="carousel-container">
+          <button class="carousel-nav" id="strings-prev" aria-label="Previous">‹</button>
+          <button class="carousel-nav" id="strings-next" aria-label="Next">›</button>
+
+          <!-- 11 Extract hardcoded string -->
+          <div class="flip-card active" data-carousel="strings">
+            <div class="flip-card-inner">
+              <div class="flip-card-front">
+                <div class="card-icon">
+                  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <text x="50" y="35" font-size="10" fill="#999" text-anchor="middle" font-family="monospace">"Hello World"</text>
+                    <path d="M50,40 L50,55 M47,52 L50,55 L53,52" stroke="#fd7e14" stroke-width="2" class="animate-bounce"/>
+                    <rect x="25" y="60" width="50" height="20" rx="4" fill="#fd7e14" opacity="0.2" class="animate-pulse"/>
+                    <text x="50" y="73" font-size="9" fill="#e87312" text-anchor="middle" font-family="monospace" font-weight="bold">GREETING</text>
+                  </svg>
+                </div>
+                <div class="card-subtitle">Task #11</div>
+                <h3>Extract Hardcoded String</h3>
+                <p>Replace magic text with a named constant or i18n key to avoid duplication and enable translation.</p>
+                <p class="tap-hint">Click to see how</p>
+              </div>
+              <div class="flip-card-back">
+                <h4>How to Extract a String</h4>
+                <div class="detail-section"><strong>Process</strong>
+                  <ul>
+                    <li>Locate repeated/important string literal.</li>
+                    <li>Create a constant or localization entry.</li>
+                    <li>Find & replace usages with the new identifier.</li>
+                  </ul>
+                </div>
+                <div class="detail-section"><strong>Tools</strong>
+                  <ul>
+                    <li>Refactor: Extract Constant (where supported)</li>
+                    <li>Find & Replace across project</li>
+                  </ul>
+                </div>
+                <div class="detail-section"><strong>Pro Tips</strong>
+                  <ul>
+                    <li>Prefer constants module or i18n file for discoverability.</li>
+                    <li>Avoid leaking UI strings into business logic.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 12 Replace quotes -->
+          <div class="flip-card" data-carousel="strings">
+            <div class="flip-card-inner">
+              <div class="flip-card-front">
+                <span class="card-emoji">❝</span>
+                <div class="card-subtitle">Task #12</div>
+                <h3>Replace Quotes</h3>
+                <p>Standardize on single or double quotes using your formatter to reduce churn in diffs.</p>
+                <p class="tap-hint">Click to see how</p>
+              </div>
+              <div class="flip-card-back">
+                <h4>How to Standardize Quotes</h4>
+                <div class="detail-section"><strong>Settings</strong>
+                  <ul>
+                    <li>Prettier: <code>singleQuote</code> (true/false)</li>
+                    <li>Format document to apply consistently</li>
+                  </ul>
+                </div>
+                <div class="detail-section"><strong>Pro Tips</strong>
+                  <ul>
+                    <li>Pick one style per project; document it.</li>
+                    <li>Run on save to avoid style-only diffs.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 13 Merge string literals -->
+          <div class="flip-card" data-carousel="strings">
+            <div class="flip-card-inner">
+              <div class="flip-card-front">
+                <span class="card-emoji">🧵</span>
+                <div class="card-subtitle">Task #13</div>
+                <h3>Merge String Literals</h3>
+                <p>Combine adjacent string pieces into a single literal/template for clarity.</p>
+                <p class="tap-hint">Click to see how</p>
+              </div>
+              <div class="flip-card-back">
+                <h4>How to Merge Literals</h4>
+                <div class="detail-section"><strong>Process</strong>
+                  <ul>
+                    <li>Join adjacent pieces into one string or template literal.</li>
+                    <li>Keep interpolation clear and minimal.</li>
+                  </ul>
+                </div>
+                <div class="detail-section"><strong>Tip</strong>
+                  <ul>
+                    <li>Prefer template literals for multi‑value composition.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 14 Change constant value -->
+          <div class="flip-card" data-carousel="strings">
+            <div class="flip-card-inner">
+              <div class="flip-card-front">
+                <span class="card-emoji">🔧</span>
+                <div class="card-subtitle">Task #14</div>
+                <h3>Change Constant Value</h3>
+                <p>Update a constant and verify intent across usages to avoid subtle behavior shifts.</p>
+                <p class="tap-hint">Click to see how</p>
+              </div>
+              <div class="flip-card-back">
+                <h4>How to Update a Constant</h4>
+                <div class="detail-section"><strong>Process</strong>
+                  <ul>
+                    <li>Edit the constant definition.</li>
+                    <li>Search references; confirm the new value remains correct.</li>
+                    <li>Run tests or quick checks where value matters.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <div class="carousel-footer"><div id="strings-counter">1 / 4</div></div>
+      </div>
+    </section>
+
+    <!-- Section 4: Structure & Logic (Tasks 15-20) -->
+    <section id="structure">
+      <h2>🔩 Structure & Logic</h2>
+      <p>Make code easier to read, test, and maintain by improving structure and simplifying logic flows.</p>
+
+      <div class="carousel-section">
+        <div class="carousel-container">
+          <button class="carousel-nav" id="structure-prev" aria-label="Previous">‹</button>
+          <button class="carousel-nav" id="structure-next" aria-label="Next">›</button>
+
+          <!-- 15 Split long line -->
+          <div class="flip-card active" data-carousel="structure">
+            <div class="flip-card-inner">
+              <div class="flip-card-front">
+                <div class="card-icon">
+                  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <line x1="15" y1="30" x2="85" y2="30" stroke="#999" stroke-width="2"/>
+                    <line x1="15" y1="50" x2="60" y2="50" stroke="#fd7e14" stroke-width="2" class="animate-pulse"/>
+                    <line x1="25" y1="65" x2="70" y2="65" stroke="#fd7e14" stroke-width="2" class="animate-pulse"/>
+                    <path d="M65,50 Q70,57 65,65" stroke="#e87312" stroke-width="2" fill="none" class="animate-float"/>
+                    <circle cx="65" cy="50" r="3" fill="#fd7e14"/>
+                    <circle cx="65" cy="65" r="3" fill="#fd7e14"/>
+                  </svg>
+                </div>
+                <div class="card-subtitle">Task #15</div>
+                <h3>Split Long Line</h3>
+                <p>Break long expressions at logical boundaries so code wraps cleanly and reads well.</p>
+                <p class="tap-hint">Click to see how</p>
+              </div>
+              <div class="flip-card-back">
+                <h4>How to Split Lines</h4>
+                <div class="detail-section"><strong>Process</strong>
+                  <ul>
+                    <li>Break after commas or operators.</li>
+                    <li>Indent continuation lines for clarity.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 16 Simplify expressions -->
+          <div class="flip-card" data-carousel="structure">
+            <div class="flip-card-inner">
+              <div class="flip-card-front">
+                <span class="card-emoji">🧮</span>
+                <div class="card-subtitle">Task #16</div>
+                <h3>Simplify Expressions</h3>
+                <p>Remove redundant operations: <code>x + 0</code> → <code>x</code>, <code>y * 1</code> → <code>y</code>, unnecessary double negations, etc.</p>
+                <p class="tap-hint">Click to see how</p>
+              </div>
+              <div class="flip-card-back">
+                <h4>How to Simplify</h4>
+                <div class="detail-section"><strong>Process</strong>
+                  <ul>
+                    <li>Scan for neutral operations and remove them.</li>
+                    <li>Prefer direct expressions over nested conditionals.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 17 Inline variable -->
+          <div class="flip-card" data-carousel="structure">
+            <div class="flip-card-inner">
+              <div class="flip-card-front">
+                <span class="card-emoji">📦</span>
+                <div class="card-subtitle">Task #17</div>
+                <h3>Inline Variable</h3>
+                <p>Replace a one‑time variable with its value to reduce indirection and mental load.</p>
+                <p class="tap-hint">Click to see how</p>
+              </div>
+              <div class="flip-card-back">
+                <h4>How to Inline</h4>
+                <div class="detail-section"><strong>Tools</strong>
+                  <ul>
+                    <li>IntelliJ: <em>Inline Variable</em></li>
+                    <li>Manual: Replace then delete declaration</li>
+                  </ul>
+                </div>
+                <div class="detail-section"><strong>Tip</strong>
+                  <ul>
+                    <li>Only inline when it truly increases clarity.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 18 Reorder parameters -->
+          <div class="flip-card" data-carousel="structure">
+            <div class="flip-card-inner">
+              <div class="flip-card-front">
+                <span class="card-emoji">🔀</span>
+                <div class="card-subtitle">Task #18</div>
+                <h3>Reorder Parameters</h3>
+                <p>Place required parameters first, optional later, and propagate changes to all call sites.</p>
+                <p class="tap-hint">Click to see how</p>
+              </div>
+              <div class="flip-card-back">
+                <h4>How to Reorder</h4>
+                <div class="detail-section"><strong>Process</strong>
+                  <ul>
+                    <li>Change function signature.</li>
+                    <li>Find all references; update call sites accordingly.</li>
+                    <li>Run tests for behavior regressions.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 19 Move file -->
+          <div class="flip-card" data-carousel="structure">
+            <div class="flip-card-inner">
+              <div class="flip-card-front">
+                <span class="card-emoji">📂</span>
+                <div class="card-subtitle">Task #19</div>
+                <h3>Move File</h3>
+                <p>Relocate modules the IDE way so imports update automatically and history is preserved.</p>
+                <p class="tap-hint">Click to see how</p>
+              </div>
+              <div class="flip-card-back">
+                <h4>How to Move</h4>
+                <div class="detail-section"><strong>Process</strong>
+                  <ul>
+                    <li>Use IDE move/drag; verify updated import paths.</li>
+                    <li>With Git, prefer <code>git mv</code> to retain history.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 20 Add/update docstring -->
+          <div class="flip-card" data-carousel="structure">
+            <div class="flip-card-inner">
+              <div class="flip-card-front">
+                <span class="card-emoji">📝</span>
+                <div class="card-subtitle">Task #20</div>
+                <h3>Add/Update Docstring</h3>
+                <p>Document purpose, inputs, and outputs. Future readers will thank you.</p>
+                <p class="tap-hint">Click to see how</p>
+              </div>
+              <div class="flip-card-back">
+                <h4>How to Document</h4>
+                <div class="detail-section"><strong>Shortcuts</strong>
+                  <ul>
+                    <li>JS/TS: type <code>/**</code> then Enter to scaffold.</li>
+                    <li>Describe purpose, params, return types clearly.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <div class="carousel-footer"><div id="structure-counter">1 / 6</div></div>
+      </div>
+    </section>
+
+      <h3>Example: Dead Code Clutter</h3>
+      <p>Compare these two files. The first has commented code and unused imports. The second is clean, focused, and ready for production.</p>
+
+      <div class="pitfall-grid">
+        <div class="pitfall-card">
+          <div class="pitfall-header">
+            <h4 class="bad">❌ Before: Messy Imports</h4>
+          </div>
+          <div class="pitfall-body">
+            <p>Commented code, unused imports—hard to scan.</p>
+            <div class="code-wrapper">
+              <pre class="code-block"><span class="keyword">import</span> React <span class="keyword">from</span> <span class="string">'react'</span>;
+<span class="keyword">import</span> { useState, useEffect } <span class="keyword">from</span> <span class="string">'react'</span>;
+<span class="keyword">import</span> lodash <span class="keyword">from</span> <span class="string">'lodash'</span>; <span class="comment">// unused</span>
+
+<span class="comment">// function oldImplementation() {</span>
+<span class="comment">//   return fetchData();</span>
+<span class="comment">// }</span>
+
+<span class="keyword">function</span> <span class="function">App</span>() {
+  <span class="keyword">const</span> [data, setData] = useState(null);
+  <span class="comment">// render...</span>
+}</pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="pitfall-card good">
+          <div class="pitfall-header">
+            <h4 class="good">✅ After: Clean and Focused</h4>
+          </div>
+          <div class="pitfall-body">
+            <p>Only what's needed. Easier to read, faster to understand.</p>
+            <div class="code-wrapper">
+              <pre class="code-block"><span class="keyword">import</span> React, { useState } <span class="keyword">from</span> <span class="string">'react'</span>;
+
+<span class="keyword">function</span> <span class="function">App</span>() {
+  <span class="keyword">const</span> [data, setData] = useState(null);
+  <span class="comment">// render...</span>
+}</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quick Reference Table -->
+    <section id="reference">
+      <h2>🔄 Quick Reference</h2>
+      <p>All 20 tasks in one place. The first column stays fixed when you scroll horizontally—especially useful on mobile devices.</p>
+
+      <div class="table-wrap">
+        <div class="table-scroll">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Task</th>
+                <th>Process</th>
+                <th>Tool / Shortcut</th>
+                <th>Tips</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Rename variable</td>
+                <td>Right-click or F2 → Rename</td>
+                <td>VS Code: F2, IntelliJ: Shift+F6</td>
+                <td>Updates all references automatically</td>
+              </tr>
+              <tr>
+                <td>Rename function/method</td>
+                <td>Right-click or F2 → Rename</td>
+                <td>F2 or Shift+F6</td>
+                <td>Watch for overloads/exports</td>
+              </tr>
+              <tr>
+                <td>Replace magic number</td>
+                <td>Create constant, use find-replace</td>
+                <td>Ctrl+H (Find & Replace)</td>
+                <td>Use descriptive constant names</td>
+              </tr>
+              <tr>
+                <td>Rename loop variable</td>
+                <td>F2 on variable in loop</td>
+                <td>F2, Shift+F6</td>
+                <td>Use descriptive names in nested loops</td>
+              </tr>
+              <tr>
+                <td>Fix indentation</td>
+                <td>Format document command</td>
+                <td>Shift+Alt+F (VS Code)</td>
+                <td>Enable format-on-save</td>
+              </tr>
+              <tr>
+                <td>Remove commented code</td>
+                <td>Search and delete manually</td>
+                <td>Find <code>//</code> or <code>/*</code></td>
+                <td>Trust version control</td>
+              </tr>
+              <tr>
+                <td>Delete unused imports</td>
+                <td>Organize imports command</td>
+                <td>Ctrl+Shift+O (VS Code)</td>
+                <td>Run before every commit</td>
+              </tr>
+              <tr>
+                <td>Delete unused variables</td>
+                <td>Find grayed-out vars, delete</td>
+                <td>ESLint --fix, IDE hints</td>
+                <td>Prefix unused params with _</td>
+              </tr>
+              <tr>
+                <td>Delete unused functions</td>
+                <td>Find All References, delete</td>
+                <td>Right-click → Find References</td>
+                <td>Check for dynamic calls first</td>
+              </tr>
+              <tr>
+                <td>Reformat file</td>
+                <td>Run formatter on entire file</td>
+                <td>Prettier, ESLint --fix</td>
+                <td>Set up pre-commit hooks</td>
+              </tr>
+              <tr>
+                <td>Extract hardcoded string</td>
+                <td>Create constant, replace all</td>
+                <td>Ctrl+H (Find & Replace)</td>
+                <td>Prepares code for i18n</td>
+              </tr>
+              <tr>
+                <td>Replace quotes</td>
+                <td>Configure formatter rules</td>
+                <td>Prettier singleQuote setting</td>
+                <td>Pick one style per project</td>
+              </tr>
+              <tr>
+                <td>Merge string literals</td>
+                <td>Combine adjacent strings</td>
+                <td>Manual editing</td>
+                <td>Watch for escape characters</td>
+              </tr>
+              <tr>
+                <td>Change constant value</td>
+                <td>Edit value, grep usages</td>
+                <td>Find All References</td>
+                <td>Verify intent across codebase</td>
+              </tr>
+              <tr>
+                <td>Split long line</td>
+                <td>Insert break at logical point</td>
+                <td>Enter key + manual indent</td>
+                <td>Break after commas in args</td>
+              </tr>
+              <tr>
+                <td>Simplify expressions</td>
+                <td>Remove redundant operations</td>
+                <td>Manual editing</td>
+                <td>x + 0 becomes x, y * 1 becomes y</td>
+              </tr>
+              <tr>
+                <td>Inline variable</td>
+                <td>Replace with value, delete</td>
+                <td>IntelliJ: Inline Variable</td>
+                <td>Only if used once and clear</td>
+              </tr>
+              <tr>
+                <td>Reorder parameters</td>
+                <td>Change signature + all calls</td>
+                <td>Find All References</td>
+                <td>Required params before optional</td>
+              </tr>
+              <tr>
+                <td>Move file</td>
+                <td>Drag-drop in file explorer</td>
+                <td>IDE updates imports automatically</td>
+                <td>Use git mv to preserve history</td>
+              </tr>
+              <tr>
+                <td>Add/update docstring</td>
+                <td>Type doc comment above function</td>
+                <td>Type <code>/**</code> + Enter (JS/TS)</td>
+                <td>Describe purpose, params, return</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="table-hint">← Scroll horizontally on mobile →</div>
+      </div>
+    </section>
+
+    <!-- Quiz (3 questions) -->
+    <section id="quiz">
+      <h2>🧪 Quick Quiz</h2>
+      <div class="quiz-container" id="quiz">
+        <div class="quiz-header">
+          <h3>Test your knowledge</h3>
+        </div>
+
+        <!-- Q1 -->
+        <div class="quiz-body active" data-q="1">
+          <div class="quiz-question">When should you use Rename (F2) instead of Find & Replace?</div>
+          <div class="quiz-options">
+            <div class="quiz-option" data-correct="true">
+              <label><input type="radio" name="q1"> When you want to update all symbol references safely across scope</label>
+              <div class="explanation">Rename is scope‑aware and updates definitions/usages atomically.</div>
+            </div>
+            <div class="quiz-option">
+              <label><input type="radio" name="q1"> When you only need to change text in the current file regardless of scope</label>
+              <div class="explanation">That’s Find & Replace—useful but not symbol‑aware.</div>
+            </div>
+          </div>
+          <div class="quiz-controls"><button class="btn" data-next>Next</button></div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="quiz-body" data-q="2">
+          <div class="quiz-question">Which is best to remove end‑of‑line whitespace project‑wide?</div>
+          <div class="quiz-options">
+            <div class="quiz-option" data-correct="true">
+              <label><input type="radio" name="q2"> Enable files.trimTrailingWhitespace (and run formatter)</label>
+              <div class="explanation">This enforces consistent whitespace with minimal effort.</div>
+            </div>
+            <div class="quiz-option">
+              <label><input type="radio" name="q2"> Manually delete spaces line by line</label>
+              <div class="explanation">Too slow and error‑prone.</div>
+            </div>
+          </div>
+          <div class="quiz-controls"><button class="btn" data-prev>Back</button><button class="btn" data-next>Next</button></div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="quiz-body" data-q="3">
+          <div class="quiz-question">What’s the fastest way to insert a console.log with the cursor inside parentheses?</div>
+          <div class="quiz-options">
+            <div class="quiz-option" data-correct="true">
+              <label><input type="radio" name="q3"> Use a snippet (e.g., clg → console.log($1);)</label>
+              <div class="explanation">Snippets reduce keystrokes and place the cursor correctly.</div>
+            </div>
+            <div class="quiz-option">
+              <label><input type="radio" name="q3"> Type it manually each time</label>
+              <div class="explanation">Snippets are faster and more consistent.</div>
+            </div>
+          </div>
+          <div class="quiz-controls"><button class="btn" data-prev>Back</button><button class="btn" data-next>Next</button></div>
+        </div>
+
+        <!-- Q4 -->
+        <div class="quiz-body" data-q="4">
+          <div class="quiz-question">When should you extract a hardcoded string into a constant or i18n key?</div>
+          <div class="quiz-options">
+            <div class="quiz-option" data-correct="true">
+              <label><input type="radio" name="q4"> When it’s reused or needs translation/central control</label>
+              <div class="explanation">Extraction avoids duplication and enables localization.</div>
+            </div>
+            <div class="quiz-option">
+              <label><input type="radio" name="q4"> Never—leave strings inline for speed</label>
+              <div class="explanation">Inline strings become scattered and hard to maintain.</div>
+            </div>
+          </div>
+          <div class="quiz-controls"><button class="btn" data-prev>Back</button><button class="btn" data-next>Next</button></div>
+        </div>
+
+        <!-- Q5 -->
+        <div class="quiz-body" data-q="5">
+          <div class="quiz-question">Which macro is best for batch editing multiple lines at once?</div>
+          <div class="quiz-options">
+            <div class="quiz-option" data-correct="true">
+              <label><input type="radio" name="q5"> Add Cursors to Line Ends</label>
+              <div class="explanation">Adds a cursor to each selected line for simultaneous edits.</div>
+            </div>
+            <div class="quiz-option">
+              <label><input type="radio" name="q5"> Duplicate Line Down</label>
+              <div class="explanation">Useful for duplication, not batch edits across lines.</div>
+            </div>
+          </div>
+          <div class="quiz-controls"><button class="btn" data-prev>Back</button><button class="btn" data-next>Next</button></div>
+        </div>
+
+        <!-- Q6 -->
+        <div class="quiz-body" data-q="6">
+          <div class="quiz-question">What’s the safest way to move a file so imports and history remain intact?</div>
+          <div class="quiz-options">
+            <div class="quiz-option" data-correct="true">
+              <label><input type="radio" name="q6"> Use the IDE move/drag (or git mv) so imports update</label>
+              <div class="explanation">This preserves references and keeps version history clean.</div>
+            </div>
+            <div class="quiz-option">
+              <label><input type="radio" name="q6"> Move in the OS file manager and hope nothing breaks</label>
+              <div class="explanation">External moves won’t rewrite imports or track history.</div>
+            </div>
+          </div>
+          <div class="quiz-controls"><button class="btn" data-prev>Back</button><button class="btn" data-next>Next</button></div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Build Your First Macro -->
+    <section id="build-macro">
+      <h2>👩‍💻 Build Your First Macro</h2>
+      <p>Create a real multi‑step macro using VS Code/Cursor <code>keybindings.json</code>. This example duplicates the current line, moves the cursor back up, and comments out the original.</p>
+      <ol>
+        <li>Open Command Palette → <em>Preferences: Open Keyboard Shortcuts (JSON)</em>.</li>
+        <li>Add the following object to the array and save.</li>
+      </ol>
+      <div class="code-wrapper">
+        <pre class="code-block">// In VS Code or Cursor, open "Preferences: Open Keyboard Shortcuts (JSON)"
+// Add this to the array:
+{
+  "key": "ctrl+alt+d", // or choose your preferred shortcut
+  "command": "runCommands",
+  "args": {
+    "commands": [
+      "editor.action.copyLinesDownAction",
+      "editor.action.moveLinesUpAction",
+      "editor.action.addCommentLine"
+    ]
+  },
+  "when": "editorTextFocus && !editorReadonly"
+}
+</pre>
+      </div>
+      <p class="table-hint">Tip: On macOS you can use <code>cmd+alt+d</code> or any free chord. You can create more chains the same way (e.g., Save → Format → Toggle Panel).</p>
+
+      <h3>Macro 2 — Save and Format</h3>
+      <p>One key to save the file and then apply your formatter.</p>
+      <div class="code-wrapper">
+        <pre class="code-block">{
+  "key": "ctrl+alt+s",
+  "command": "runCommands",
+  "args": {
+    "commands": [
+      "workbench.action.files.save",
+      "editor.action.formatDocument"
+    ]
+  },
+  "when": "editorTextFocus && !editorReadonly"
+}
+</pre>
+      </div>
+
+      <h3>Macro 3 — Run Build & Toggle Panel</h3>
+      <p>Kick off your default build task and reveal the output panel.</p>
+      <div class="code-wrapper">
+        <pre class="code-block">{
+  "key": "ctrl+alt+b",
+  "command": "runCommands",
+  "args": {
+    "commands": [
+      "workbench.action.tasks.build",
+      "workbench.action.togglePanel"
+    ]
+  },
+  "when": "editorTextFocus && !editorReadonly"
+}
+</pre>
+      </div>
+      
+      <h3>When to use which macro?</h3>
+      <ul>
+        <li><strong>Duplicate & Comment Out</strong>: When you want to try a new line or small refactor but keep the original for reference. Great during risky edits and debugging.</li>
+        <li><strong>Save & Format</strong>: Before staging/committing, or anytime you paste code and want instant style conformity. Helps avoid noise in diffs.</li>
+        <li><strong>Run Build & Toggle Panel</strong>: For quick feedback loops while iterating on code, especially when you want the output/terminal to pop open automatically.</li>
+      </ul>
+    </section>
+
+    <!-- Macro Quiz Add-on (3 questions) -->
+    <section id="quiz-macros">
+      <h2>🧪 Macro Quiz</h2>
+      <div class="quiz-container" id="quiz-macros">
+        <div class="quiz-header">
+          <h3>Which macro fits the situation?</h3>
+        </div>
+        <div class="quiz-body active" data-q="1">
+          <div class="quiz-question">You’re about to commit. Which macro helps remove style noise?</div>
+          <div class="quiz-options">
+            <div class="quiz-option" data-correct="true">
+              <label><input type="radio" name="mq1"> Save and Format</label>
+              <div class="explanation">Saves then formats to apply consistent style before commit.</div>
+            </div>
+            <div class="quiz-option">
+              <label><input type="radio" name="mq1"> Duplicate & Comment Out</label>
+              <div class="explanation">Useful for experimentation, not formatting.</div>
+            </div>
+          </div>
+          <div class="quiz-controls"><button class="btn" data-next>Next</button></div>
+        </div>
+
+        <div class="quiz-body" data-q="2">
+          <div class="quiz-question">You want to try a risky change but keep the original line visible. Which macro?</div>
+          <div class="quiz-options">
+            <div class="quiz-option" data-correct="true">
+              <label><input type="radio" name="mq2"> Duplicate & Comment Out</label>
+              <div class="explanation">Clones the line and comments the original for safe edits.</div>
+            </div>
+            <div class="quiz-option">
+              <label><input type="radio" name="mq2"> Run Build & Toggle Panel</label>
+              <div class="explanation">Great for feedback, but not for preserving originals.</div>
+            </div>
+          </div>
+          <div class="quiz-controls"><button class="btn" data-prev>Back</button><button class="btn" data-next>Next</button></div>
+        </div>
+
+        <div class="quiz-body" data-q="3">
+          <div class="quiz-question">You need quick feedback from your build after a change. Which macro?</div>
+          <div class="quiz-options">
+            <div class="quiz-option" data-correct="true">
+              <label><input type="radio" name="mq3"> Run Build & Toggle Panel</label>
+              <div class="explanation">Runs the build and opens the output panel automatically.</div>
+            </div>
+            <div class="quiz-option">
+              <label><input type="radio" name="mq3"> Save and Format</label>
+              <div class="explanation">Helps styling, not build feedback.</div>
+            </div>
+          </div>
+          <div class="quiz-controls"><button class="btn" data-prev>Back</button><button class="btn" data-finish>Finish</button></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq">
+      <h2>❔ Frequently Asked Questions</h2>
+      <p>Common questions about when to use manual refactoring versus AI tools, plus setup tips to maximize your productivity.</p>
+
+      <div class="accordion">
+        <button class="accordion-header" aria-expanded="true">
+          <span class="accordion-title">What other quick refactoring tasks can I do manually?</span>
+        </button>
+        <div class="accordion-content" style="display: block;">
+          <p>Beyond the 20 main tasks, here are 15 more mechanical refactorings your IDE can handle:</p>
+          <ul>
+            <li><strong>Change access modifiers:</strong> Switch private/public/protected—just update the keyword and verify usages.</li>
+            <li><strong>Add/remove blank lines:</strong> Improves visual grouping. Most formatters handle this automatically.</li>
+            <li><strong>Convert single-line if to multi-line:</strong> Expand <code>if (x) return y;</code> to block style for consistency.</li>
+            <li><strong>Sort imports alphabetically:</strong> Use "Organize Imports" command for instant alphabetization.</li>
+            <li><strong>Collapse nested ifs:</strong> Simplify <code>if (a) { if (b) {} }</code> to <code>if (a && b) {}</code> when logical.</li>
+            <li><strong>Convert tabs to spaces:</strong> Single editor command or setting handles project-wide conversion.</li>
+            <li><strong>Reorder class members:</strong> Drag-drop methods/properties for better logical grouping.</li>
+            <li><strong>Fix typos in comments:</strong> Simple text edit that improves documentation quality.</li>
+            <li><strong>Switch for to forEach:</strong> Modern syntax when array structure is simple.</li>
+            <li><strong>Use spread operator:</strong> Replace manual array operations with cleaner <code>[...arr]</code> syntax.</li>
+            <li><strong>Remove unnecessary escapes:</strong> Clean up strings like <code>"don\'t"</code> when using proper quotes.</li>
+            <li><strong>Convert var to let/const:</strong> Modern JavaScript—<code>let</code> for mutable, <code>const</code> for immutable.</li>
+            <li><strong>Add trailing commas:</strong> Cleaner git diffs, easier to add items later.</li>
+            <li><strong>Remove redundant parentheses:</strong> <code>return (x);</code> simplifies to <code>return x;</code></li>
+            <li><strong>Convert to arrow functions:</strong> <code>function() {}</code> becomes <code>() => {}</code> when appropriate.</li>
+          </ul>
+        </div>
+
+        <button class="accordion-header" aria-expanded="false">
+          <span class="accordion-title">When should I use an LLM instead of my IDE?</span>
+        </button>
+        <div class="accordion-content">
+          <p>Use AI when the refactoring requires understanding the "why" behind your code, not just the "what." Specifically:</p>
+          <ul>
+            <li><strong>Architectural changes:</strong> Applying design patterns, restructuring module boundaries, separating concerns.</li>
+            <li><strong>Complex extractions:</strong> Breaking large functions into well-named smaller ones with clear responsibilities.</li>
+            <li><strong>Logic transformations:</strong> Converting imperative to functional style, optimizing algorithms.</li>
+            <li><strong>Cross-file coordination:</strong> Changes spanning many files with complex interdependencies.</li>
+            <li><strong>Test generation:</strong> Writing comprehensive test cases for refactored code.</li>
+            <li><strong>Documentation:</strong> Generating detailed API docs or explaining complex logic.</li>
+          </ul>
+          <p><strong>Simple rule:</strong> If it's mechanical and your IDE has a button for it, don't use AI. If it requires judgment about business logic or architecture, AI excels.</p>
+        </div>
+
+        <button class="accordion-header" aria-expanded="false">
+          <span class="accordion-title">What tools should I configure first?</span>
+        </button>
+        <div class="accordion-content">
+          <p>Set up these essentials to make refactoring effortless:</p>
+          
+          <h4>Code Formatter</h4>
+          <ul>
+            <li>JavaScript/TypeScript: Prettier</li>
+            <li>Python: Black or autopep8</li>
+            <li>Go: gofmt (built-in)</li>
+            <li>Rust: rustfmt</li>
+          </ul>
+          <p>Configure "format on save" in your editor settings. This single change saves hours.</p>
+
+          <h4>Linter</h4>
+          <ul>
+            <li>JavaScript/TypeScript: ESLint</li>
+            <li>Python: Pylint or Flake8</li>
+            <li>Ruby: RuboCop</li>
+          </ul>
+          <p>Enable the <code>--fix</code> flag to auto-correct simple issues.</p>
+
+          <h4>Editor Configuration</h4>
+          <ul>
+            <li>Add <code>.editorconfig</code> file to ensure team consistency</li>
+            <li>Enable "Organize Imports on Save"</li>
+            <li>Learn keyboard shortcuts: F2 (rename), Shift+Alt+F (format)</li>
+            <li>Install language extensions for your IDE</li>
+          </ul>
+
+          <h4>Version Control Hooks</h4>
+          <ul>
+            <li>Use Husky (JavaScript) or pre-commit (Python)</li>
+            <li>Auto-format before every commit</li>
+            <li>Run linter checks in CI/CD pipeline</li>
+          </ul>
+
+          <p>With these tools configured, most refactoring becomes one-click operations.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Best Practices -->
+    <section>
+      <h2>💡 Making Refactoring a Habit</h2>
+      <p>The difference between codebases that age gracefully and those that become unmaintainable isn't the initial quality—it's whether refactoring happens continuously or never.</p>
+
+      <p><strong>Refactor when you're already there.</strong> Don't wait for a dedicated "cleanup sprint." Fix formatting issues as you encounter them. Rename variables when their purpose becomes clearer. Extract constants when you see magic numbers. Small improvements compound over time.</p>
+
+      <p><strong>Set up auto-format on save.</strong> This eliminates 90% of formatting debates and manual work. In VS Code, add <code>"editor.formatOnSave": true</code> to your settings. In IntelliJ, enable "Reformat code" under Actions on Save. You'll never think about indentation again.</p>
+
+      <p><strong>Learn keyboard shortcuts.</strong> Muscle memory makes refactoring effortless. Print a cheat sheet or practice these daily: F2 (rename), Shift+Alt+F (format), Ctrl+Shift+O (organize imports), Ctrl+D (select next occurrence). Speed comes from repetition.</p>
+
+      <p><strong>Make small, atomic commits.</strong> One commit for "Rename variables," another for "Remove dead code." This makes code review easier, makes rollbacks simple if something breaks, and creates clear history showing your intent.</p>
+
+      <p><strong>Test after each change.</strong> Even "safe" refactorings can surprise you. Run tests—or at least manually verify—after renaming public functions, moving files, reordering parameters, or deleting code you think is unused.</p>
+
+      <p><strong>Trust version control.</strong> Never keep commented code "just in case." Git history preserves everything. Delete boldly, knowing you can retrieve it if needed. Clean code beats code archaeology.</p>
+    </section>
+
+    <!-- Glossary -->
+    <section id="glossary">
+      <h2>📖 Glossary</h2>
+      <p>Key terms used throughout this guide. Click any term to see its definition and how it applies to refactoring.</p>
+
+      <div class="glossary-cloud">
+        <button class="glossary-chip" data-term="magic-number">
+          <span class="emoji">🔢</span>
+          <span>Magic Number</span>
+        </button>
+        <button class="glossary-chip" data-term="dead-code">
+          <span class="emoji">💀</span>
+          <span>Dead Code</span>
+        </button>
+        <button class="glossary-chip" data-term="linter">
+          <span class="emoji">🔍</span>
+          <span>Linter</span>
+        </button>
+        <button class="glossary-chip" data-term="formatter">
+          <span class="emoji">✨</span>
+          <span>Formatter</span>
+        </button>
+        <button class="glossary-chip" data-term="refactoring">
+          <span class="emoji">🔧</span>
+          <span>Refactoring</span>
+        </button>
+        <button class="glossary-chip" data-term="scope">
+          <span class="emoji">📦</span>
+          <span>Scope</span>
+        </button>
+        <button class="glossary-chip" data-term="ide">
+          <span class="emoji">💻</span>
+          <span>IDE</span>
+        </button>
+        <button class="glossary-chip" data-term="rename">
+          <span class="emoji">🔤</span>
+          <span>Rename</span>
+        </button>
+        <button class="glossary-chip" data-term="constant">
+          <span class="emoji">📌</span>
+          <span>Constant</span>
+        </button>
+        <button class="glossary-chip" data-term="i18n">
+          <span class="emoji">🌐</span>
+          <span>i18n</span>
+        </button>
+        <button class="glossary-chip" data-term="find-replace">
+          <span class="emoji">🔎</span>
+          <span>Find & Replace</span>
+        </button>
+        <button class="glossary-chip" data-term="multicursor">
+          <span class="emoji">🖱️</span>
+          <span>Multi‑cursor</span>
+        </button>
+        <button class="glossary-chip" data-term="snippet">
+          <span class="emoji">🧩</span>
+          <span>Snippet</span>
+        </button>
+        <button class="glossary-chip" data-term="macro">
+          <span class="emoji">⚡</span>
+          <span>Macro</span>
+        </button>
+        <button class="glossary-chip" data-term="version-control">
+          <span class="emoji">🔗</span>
+          <span>Version Control</span>
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <p>&copy; Beyond Dictionary, 2025, Dev Guide. Helping developers write better code, one refactor at a time.</p>
+  </footer>
+
+  <!-- Glossary Modal -->
+  <div id="glossary-modal" class="glossary-modal">
+    <div class="glossary-modal-content">
+      <div class="glossary-modal-header">
+        <span class="emoji" id="modal-emoji">🔢</span>
+        <h3 id="modal-title">Term</h3>
+        <span class="glossary-close">&times;</span>
+      </div>
+      <div class="glossary-modal-body" id="modal-body">
+        <p>Definition goes here...</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ============ Shrinking Header on Scroll ============
+    window.addEventListener('scroll', function() {
+      var header = document.getElementById('mainHeader');
+      if (window.scrollY > 50) {
+        header.classList.add('shrink');
+      } else {
+        header.classList.remove('shrink');
+      }
+    });
+
+    // ============ Accordion Functionality ============
+    document.querySelectorAll('.accordion-header').forEach(function(header) {
+      header.addEventListener('click', function() {
+        var expanded = this.getAttribute('aria-expanded') === 'true';
+        this.setAttribute('aria-expanded', !expanded);
+        var content = this.nextElementSibling;
+        content.style.display = expanded ? 'none' : 'block';
+      });
+    });
+
+    // ============ Flip Card Carousels ============
+    function clampCardHeight(card) {
+      var header = document.getElementById('mainHeader');
+      var headerH = header ? header.offsetHeight : 0;
+      var viewportH = window.innerHeight || document.documentElement.clientHeight;
+      var maxAllowed = Math.max(320, viewportH - headerH - 120); // keep breathing room top/bottom
+
+      var front = card.querySelector('.flip-card-front');
+      var back = card.querySelector('.flip-card-back');
+      // Measure both sides to maintain equal height during flip
+      var contentH = Math.max(front.scrollHeight, back.scrollHeight, 320);
+      var targetH = Math.min(contentH, maxAllowed);
+
+      card.style.height = targetH + 'px';
+      var inner = card.querySelector('.flip-card-inner');
+      inner.style.height = targetH + 'px';
+      front.style.height = targetH + 'px';
+      back.style.height = targetH + 'px';
+    }
+
+    function initCarousel(prefix) {
+      var cards = document.querySelectorAll('.flip-card[data-carousel="' + prefix + '"]');
+      var prevBtn = document.getElementById(prefix + '-prev');
+      var nextBtn = document.getElementById(prefix + '-next');
+      var counter = document.getElementById(prefix + '-counter');
+      var currentIndex = 0;
+
+      function showCard(index) {
+        cards.forEach(function(card, i) {
+          card.classList.toggle('active', i === index);
+          if (i === index) {
+            card.classList.remove('flipped');
+            clampCardHeight(card);
+          }
+        });
+        if (counter) {
+          counter.textContent = (index + 1) + ' / ' + cards.length;
+        }
+        prevBtn.disabled = (index === 0);
+        nextBtn.disabled = (index === cards.length - 1);
+      }
+
+      prevBtn.addEventListener('click', function() {
+        if (currentIndex > 0) {
+          currentIndex--;
+          showCard(currentIndex);
+        }
+      });
+
+      nextBtn.addEventListener('click', function() {
+        if (currentIndex < cards.length - 1) {
+          currentIndex++;
+          showCard(currentIndex);
+        }
+      });
+
+      // Click to flip card
+      cards.forEach(function(card) {
+        card.querySelector('.flip-card-inner').addEventListener('click', function() {
+          card.classList.toggle('flipped');
+          // adjust height after flip to accommodate opposite side
+          setTimeout(function(){ clampCardHeight(card); }, 0);
+        });
+      });
+
+      showCard(0);
+
+      // Re-clamp on resize for active card
+      window.addEventListener('resize', function(){
+        var active = document.querySelector('.flip-card[data-carousel="' + prefix + '"].active');
+        if (active) clampCardHeight(active);
+      });
+    }
+
+    initCarousel('naming');
+    initCarousel('cleanup');
+    initCarousel('strings');
+    initCarousel('structure');
+    initCarousel('macros-edit');
+    initCarousel('macros-clean');
+    initCarousel('macros-snippets');
+    initCarousel('macros-chains');
+
+    // ============ Glossary Modal ============
+    var modal = document.getElementById('glossary-modal');
+    var modalTitle = document.getElementById('modal-title');
+    var modalEmoji = document.getElementById('modal-emoji');
+    var modalBody = document.getElementById('modal-body');
+    var closeBtn = document.querySelector('.glossary-close');
+
+    var glossaryData = {
+      'magic-number': {
+        emoji: '🔢',
+        title: 'Magic Number',
+        content: '<p>A hard-coded numeric literal without explanation. For example, <code>if (age > 65)</code> uses the magic number 65.</p><p><strong>Problem:</strong> Readers don\'t know why 65 is significant. Is it retirement age? Eligibility threshold?</p><p><strong>Solution:</strong> Replace with a named constant like <code>RETIREMENT_AGE = 65</code>. The code documents itself.</p>'
+      },
+      'dead-code': {
+        emoji: '💀',
+        title: 'Dead Code',
+        content: '<p>Code that is never executed or referenced. This includes unused variables, functions, imports, or commented-out code blocks.</p><p><strong>Problem:</strong> Clutters the codebase and confuses readers who waste time trying to understand its purpose.</p><p><strong>Solution:</strong> Delete it. Version control preserves history if you ever need it back.</p>'
+      },
+      'linter': {
+        emoji: '🔍',
+        title: 'Linter',
+        content: '<p>A static analysis tool that examines code for potential errors, style violations, and quality issues without running it.</p><p><strong>Examples:</strong> ESLint (JavaScript), Pylint (Python), RuboCop (Ruby).</p><p><strong>Benefits:</strong> Catches bugs early, enforces coding standards, identifies security issues. Most linters include a <code>--fix</code> flag for auto-correction.</p>'
+      },
+      'formatter': {
+        emoji: '✨',
+        title: 'Formatter',
+        content: '<p>A tool that automatically reformats code to follow consistent style rules—indentation, line breaks, quotes, spacing.</p><p><strong>Examples:</strong> Prettier (JS/TS), Black (Python), gofmt (Go).</p><p><strong>Benefits:</strong> Eliminates style debates, ensures consistency, saves time. Enable "format on save" for zero-effort consistency.</p>'
+      },
+      'refactoring': {
+        emoji: '🔧',
+        title: 'Refactoring',
+        content: '<p>Improving code structure, readability, and maintainability without changing its external behavior.</p><p><strong>Key principle:</strong> Tests should still pass after refactoring. You\'re reorganizing the "how" while preserving the "what."</p><p>Refactoring is continuous—not a one-time event. Small, frequent improvements keep codebases healthy.</p>'
+      },
+      'scope': {
+        emoji: '📦',
+        title: 'Scope',
+        content: '<p>The region of code where a variable, function, or identifier can be accessed.</p><p><strong>Types:</strong> Global scope (everywhere), module scope (one file), function scope (inside function), block scope (inside <code>{}</code>).</p><p><strong>Refactoring note:</strong> When renaming with IDE tools, they\'re scope-aware—only references within the correct scope are renamed.</p>'
+      },
+      'ide': {
+        emoji: '💻',
+        title: 'IDE',
+        content: '<p>Integrated Development Environment—a comprehensive application combining code editing, debugging, building, and project management.</p><p><strong>Examples:</strong> VS Code, IntelliJ IDEA, PyCharm, Visual Studio.</p><p><strong>Why IDEs matter:</strong> They understand code structure (not just text), enabling safe refactoring operations like symbol renaming across entire projects.</p>'
+      },
+      'rename': {
+        emoji: '🔤',
+        title: 'Rename',
+        content: '<p>Symbol-aware operation that updates definitions and all usages consistently.</p><p><strong>Shortcut:</strong> F2 (VS Code), Shift+F6 (JetBrains).</p>'
+      },
+      'constant': {
+        emoji: '📌',
+        title: 'Constant',
+        content: '<p>A named, immutable value used to avoid magic literals and enable reuse.</p><p><strong>Tip:</strong> Group in a dedicated module for discoverability.</p>'
+      },
+      'i18n': {
+        emoji: '🌐',
+        title: 'i18n',
+        content: '<p>Internationalization: storing UI strings in locale files to support translations.</p><p><strong>Practice:</strong> Extract user-facing text early.</p>'
+      },
+      'find-replace': {
+        emoji: '🔎',
+        title: 'Find & Replace',
+        content: '<p>Text-based replacement that is not scope-aware.</p><p><strong>Use when:</strong> You want to change raw text, not symbols.</p>'
+      },
+      'multicursor': {
+        emoji: '🖱️',
+        title: 'Multi-cursor',
+        content: '<p>Editing with multiple cursors to change many lines simultaneously.</p><p><strong>Example:</strong> Add Cursors to Line Ends.</p>'
+      },
+      'snippet': {
+        emoji: '🧩',
+        title: 'Snippet',
+        content: '<p>Expandable template that inserts boilerplate with tabstops.</p><p><strong>Example:</strong> <code>clg</code> → <code>console.log($1);</code></p>'
+      },
+      'macro': {
+        emoji: '⚡',
+        title: 'Macro',
+        content: '<p>A chained series of editor commands under one hotkey.</p><p><strong>Example:</strong> Save → Format → Toggle Panel.</p>'
+      },
+      'version-control': {
+        emoji: '🔗',
+        title: 'Version Control',
+        content: '<p>Tracks changes over time and enables collaboration.</p><p><strong>Tip:</strong> Use <code>git mv</code> when moving files to preserve history.</p>'
+      }
+    };
+
+    document.querySelectorAll('.glossary-chip').forEach(function(chip) {
+      chip.addEventListener('click', function() {
+        var term = this.getAttribute('data-term');
+        var data = glossaryData[term];
+        if (data) {
+          modalEmoji.textContent = data.emoji;
+          modalTitle.textContent = data.title;
+          modalBody.innerHTML = data.content;
+          modal.style.display = 'block';
+        }
+      });
+    });
+
+    closeBtn.addEventListener('click', function() {
+      modal.style.display = 'none';
+    });
+
+    window.addEventListener('click', function(event) {
+      if (event.target == modal) {
+        modal.style.display = 'none';
+      }
+    });
+
+    // ============ Simple Quiz Logic ============
+    (function(){
+      var quiz = document.getElementById('quiz');
+      if (!quiz) return;
+      function show(q){
+        quiz.querySelectorAll('.quiz-body').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-q') === String(q)); });
+      }
+      // option selection
+      quiz.querySelectorAll('.quiz-option input[type="radio"]').forEach(function(input){
+        input.addEventListener('change', function(){
+          var option = input.closest('.quiz-option');
+          var body = input.closest('.quiz-body');
+          body.querySelectorAll('.quiz-option').forEach(function(o){ o.classList.remove('selected','correct','wrong'); o.querySelector('.explanation').style.display = 'none'; });
+          option.classList.add('selected');
+          var isCorrect = option.getAttribute('data-correct') === 'true';
+          option.classList.add(isCorrect ? 'correct' : 'wrong');
+          var exp = option.querySelector('.explanation'); if (exp) exp.style.display = 'block';
+        });
+      });
+      // navigation
+      quiz.querySelectorAll('[data-next]').forEach(function(btn){
+        btn.addEventListener('click', function(){
+          var body = btn.closest('.quiz-body');
+          var q = Number(body.getAttribute('data-q')) + 1; show(q);
+        });
+      });
+      quiz.querySelectorAll('[data-prev]').forEach(function(btn){
+        btn.addEventListener('click', function(){
+          var body = btn.closest('.quiz-body');
+          var q = Number(body.getAttribute('data-q')) - 1; show(q);
+        });
+      });
+      var finish = quiz.querySelector('[data-finish]');
+      if (finish) finish.addEventListener('click', function(){ alert('Nice work! Keep practicing the refactors and macros.'); });
+    })();
+
+    // Quiz logic for macro quiz
+    (function(){
+      var quiz = document.getElementById('quiz-macros');
+      if (!quiz) return;
+      function show(q){
+        quiz.querySelectorAll('.quiz-body').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-q') === String(q)); });
+      }
+      quiz.querySelectorAll('.quiz-option input[type="radio"]').forEach(function(input){
+        input.addEventListener('change', function(){
+          var option = input.closest('.quiz-option');
+          var body = input.closest('.quiz-body');
+          body.querySelectorAll('.quiz-option').forEach(function(o){ o.classList.remove('selected','correct','wrong'); o.querySelector('.explanation').style.display = 'none'; });
+          option.classList.add('selected');
+          var isCorrect = option.getAttribute('data-correct') === 'true';
+          option.classList.add(isCorrect ? 'correct' : 'wrong');
+          var exp = option.querySelector('.explanation'); if (exp) exp.style.display = 'block';
+        });
+      });
+      quiz.querySelectorAll('[data-next]').forEach(function(btn){
+        btn.addEventListener('click', function(){
+          var body = btn.closest('.quiz-body');
+          var q = Number(body.getAttribute('data-q')) + 1; show(q);
+        });
+      });
+      quiz.querySelectorAll('[data-prev]').forEach(function(btn){
+        btn.addEventListener('click', function(){
+          var body = btn.closest('.quiz-body');
+          var q = Number(body.getAttribute('data-q')) - 1; show(q);
+        });
+      });
+      var finish = quiz.querySelector('[data-finish]');
+      if (finish) finish.addEventListener('click', function(){ alert('Great! You matched macros to the right scenarios.'); });
+    })();
+  </script>
+</body>
+</html>
