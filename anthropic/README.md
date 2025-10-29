@@ -27,13 +27,13 @@ The Claude Ecosystem is a complete, hands-on curriculum of interconnected learni
 
 ## Our Three-Pillar Pedagogical Philosophy
 
-* **1. A Welcoming Tone for Domain Experts:**
+1. **A Welcoming Tone for Domain Experts:**
     This curriculum provides a gentle on-ramp for non-coders, intentionally replacing jargon with clarity. Every module is designed to create psychological safety, allowing top professionals to learn a technical new skill without feeling like a beginner.
 
-* **2. Incremental Depth for Coders:**
+2. **Incremental Depth for Coders:**
     For technical learners, the journey is a structured ascent from tactical execution to architectural thinking. Concepts are introduced with increasing complexity, allowing developers to build on their existing skills, not just learn a new tool.
 
-* **3. Meticulous Optimization for Professional Domains:**
+3. **Meticulous Optimization for Professional Domains:**
     The applied modules for Finance and Medicine are meticulously optimized to speak the language, respect the ethics, and mirror the real-world workflows of these high-stakes professions.
 
 ---
@@ -48,6 +48,8 @@ The Claude Ecosystem is a complete, hands-on curriculum of interconnected learni
     1.  **Mastering the Web UI for Rapid Development:** Start by using Claude's chat interface as a powerful tool for ideation, boilerplate generation, and debugging. The **[Claude Console](claude-console-interactive.html)** provides a safe sandbox to perfect this conversational workflow.
     2.  **Transitioning to Programmatic Use (APIs):** Move from interactive use to scalable, programmatic integration. The **[Developer Guide](developer_guide_for_claude_code.html)** provides the architectural principles for building robust applications that leverage Claude's APIs for specific tasks.
     3.  **Adopting a Reflective "Claude Code" Workflow:** This is the most advanced stage. First, learn the fundamentals with **[Git & GitHub: The Reflective Workflow](git-and-github-with-claude-code.html)**. Then, elevate your craft to an elite level with **[Git & GitHub: Serious Mode](git-and-github-with-claude-code-serious-mode.html)**, mastering disciplined, AI-enforced version ethics.
+
+    -  **Security & Permissions:** Design and audit safe permission sets with the **[Claude Code Permission Manager](claude_code_permissions_manager.html)**.
 
 * ### **For Domain Experts: A Scalable Blueprint for Applied Mastery**
     Apply your skills to complex, real-world scenarios. These modules are blueprints for any domain:
