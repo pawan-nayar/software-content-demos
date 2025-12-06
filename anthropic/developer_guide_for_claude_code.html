@@ -13,14 +13,15 @@
       --ok:#16a34a; --ok-soft:#dcfce7; --bad:#dc2626; --bad-soft:#fee2e2;
       --warning:#eab308; --warning-soft:#fef3c7;
     }
-    *{box-sizing:border-box;margin:0;padding:0}
-    html,body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;}
-    .container{max-width:900px;margin:auto;padding:24px;background:#fff}
+    *{box-sizing:border-box;margin:0;padding:0;max-width:100%}
+    html,body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;overflow-x:hidden;scroll-behavior:smooth}
+    img,video,iframe{max-width:100%;height:auto}
+    .container{max-width:900px;margin:auto;padding:24px;background:#fff;overflow:hidden}
     a{color:var(--accent);text-decoration:none}
     a:hover{text-decoration:underline}
 
     .site-header,.site-footer{background:var(--header-bg);color:var(--header-fg);padding:14px 24px}
-    .site-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;position:sticky;top:0;z-index:100;padding:12px 20px}
+    .site-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;position:sticky;top:0;z-index:100;padding:12px 20px;box-shadow:0 2px 10px rgba(0,0,0,0.1)}
     .logo{font-weight:700;font-size:1.15rem;color:#fff}
     .site-header nav{display:flex;align-items:center;gap:20px}
     .site-header nav a{color:#ced4da;text-decoration:none;padding:8px 12px;border-radius:6px;transition:all 0.2s ease}
@@ -52,7 +53,7 @@
 
     .interactive-box{background:#f8f9fa;border:1px solid var(--border);border-radius:12px;padding:24px;margin:24px 0}
     .table-wrap{position:relative;border:1px solid var(--border);border-radius:12px;background:#fff;margin:24px 0;overflow:hidden}
-    .table-scroll{position:relative;overflow-x:auto}
+    .table-scroll{position:relative;overflow-x:auto;-webkit-overflow-scrolling:touch}
     table.data-table{width:100%;border-collapse:collapse;}
     table.data-table th,table.data-table td{padding:12px 15px;border:1px solid var(--border);text-align:left;vertical-align:top;}
     table.data-table thead th{background:var(--muted);font-weight:600;}
@@ -62,17 +63,54 @@
     .table-actions button{padding:4px 8px;font-size:0.85rem;border-radius:6px;border:1px solid var(--accent);background:#fff;color:var(--accent);cursor:pointer;font-weight:600;}
     .table-actions button:hover{background:#fff7ed;}
 
+    /* Autocomplete dropdown */
+    .autocomplete-wrapper{position:relative;}
+    .autocomplete-dropdown{
+      position:absolute;
+      top:100%;
+      left:0;
+      right:0;
+      background:#fff;
+      border:1px solid var(--border);
+      border-top:none;
+      border-radius:0 0 6px 6px;
+      box-shadow:0 4px 12px rgba(0,0,0,0.1);
+      max-height:200px;
+      overflow-y:auto;
+      z-index:1000;
+      display:none;
+    }
+    .autocomplete-dropdown.active{display:block;}
+    .autocomplete-item{
+      padding:10px 12px;
+      cursor:pointer;
+      border-bottom:1px solid var(--muted);
+      transition:background 0.15s;
+      font-size:0.95rem;
+    }
+    .autocomplete-item:last-child{border-bottom:none;}
+    .autocomplete-item:hover{background:#fff7ed;}
+    .autocomplete-item.selected{background:var(--muted);}
+    .autocomplete-item mark{
+      background:var(--accent);
+      color:#fff;
+      padding:2px 4px;
+      border-radius:3px;
+      font-weight:600;
+    }
+
     .accordion{display:grid;gap:8px}
-    .accordion-header{width:100%;text-align:left;background:var(--muted);border:1px solid var(--border);padding:16px 20px;border-radius:8px;cursor:pointer;font-size:1.05rem;font-weight:bold;display:flex;align-items:center}
-    .accordion-header .accordion-title{margin-right:auto;padding-right:1rem;}
-    .accordion-header::after{content:'+';color:#6c757d;font-size:1.5rem}
+    .accordion-header{width:100%;text-align:left;background:var(--muted);border:1px solid var(--border);padding:16px 20px;border-radius:8px;cursor:pointer;font-size:1.05rem;font-weight:bold;display:flex;align-items:center;word-wrap:break-word;overflow-wrap:break-word}
+    .accordion-header .accordion-title{margin-right:auto;padding-right:1rem;word-wrap:break-word;overflow-wrap:break-word;max-width:100%}
+    .accordion-header::after{content:'+';color:#6c757d;font-size:1.5rem;flex-shrink:0}
     .accordion-header[aria-expanded="true"]{background:#e9ecef;border-bottom-left-radius:0;border-bottom-right-radius:0}
     .accordion-header[aria-expanded="true"]::after{content:'−'}
-    .accordion-content{padding:20px;display:none;border:1px solid var(--border);border-top:none;border-radius:0 0 8px 8px}
+    .accordion-content{padding:20px;display:none;border:1px solid var(--border);border-top:none;border-radius:0 0 8px 8px;overflow:hidden;word-wrap:break-word;overflow-wrap:break-word}
+    .accordion-content *{max-width:100%;word-wrap:break-word;overflow-wrap:break-word}
 
-    .code-wrapper{margin:16px 0;}
-    pre{margin:0;}
-    .code-block{background:#2d2d2d;color:#f8f8f2;font-family:'Courier New',Courier,monospace;padding:1.2em;border-radius:8px;overflow-x:auto;font-size:0.9rem;line-height:1.6;}
+    .code-wrapper{margin:16px 0;max-width:100%;overflow:hidden}
+    pre{margin:0;max-width:100%}
+    .code-block{background:#2d2d2d;color:#f8f8f2;font-family:'Courier New',Courier,monospace;padding:1.2em;border-radius:8px;overflow-x:auto;font-size:0.9rem;line-height:1.6;max-width:100%;white-space:pre-wrap;word-wrap:break-word}
     .code-block .comment{color:#75715e;}
     .code-block .keyword{color:#f92672;}
     .code-block .string{color:#e6db74;}
@@ -177,18 +215,74 @@
     .lang-btn.active{background:var(--accent);color:#fff}
 
     @media(max-width:768px){
-      .carousel-container{padding:0 30px}
-      .carousel-nav{width:30px;height:30px;font-size:18px}
-      .wrong-right-grid{grid-template-columns:1fr;gap:10px}
+      /* Header - graceful mobile behavior */
+      .site-header{padding:12px 16px;flex-wrap:nowrap}
+      .logo{flex:0 0 auto;font-size:1.05rem}
+      .site-header nav{gap:12px;flex-wrap:wrap}
+      .site-header nav a{padding:6px 10px;font-size:0.9rem}
+      .progress-badge{padding:6px 12px;font-size:0.8rem}
+      
+      /* Carousel - reduce padding to prevent cutoff */
+      .carousel-container{padding:0 24px}
+      .carousel-nav{width:32px;height:32px;font-size:18px}
+      
+      /* Grids - all become single column on mobile and stay contained */
+      .wrong-right-grid{grid-template-columns:1fr;gap:10px;max-width:100%;overflow:hidden}
+      .wrong-right-grid > *{max-width:100%;overflow:hidden}
+      .goals-grid{grid-template-columns:1fr;max-width:100%}
+      .tour-options{grid-template-columns:1fr;max-width:100%}
+      
+      /* Sliders - vertical on mobile */
       .slider-container{height:auto}
       .slider-content{flex-direction:column}
       .slider-side{flex:0 0 auto;min-height:200px}
       .slider-handle{display:none}
-      .goals-grid{grid-template-columns:1fr}
-      .site-header{padding:8px 15px;flex-wrap:wrap}
-      .site-header nav{gap:12px;flex-wrap:wrap}
-      .site-header nav a{padding:6px 10px;font-size:0.9rem}
-      .progress-badge{padding:6px 12px;font-size:0.8rem}
+      
+      /* Spacing reduction - 25-30% smaller on mobile */
+      .interactive-box{padding:18px}
+      .intro{padding:16px}
+      .slide-container{padding:20px;min-height:280px}
+      
+      /* Touch targets - minimum 48px for buttons */
+      .btn{min-width:48px;min-height:48px}
+      .control-btn{width:48px;height:48px}
+      
+      /* Quiz buttons - already use arrows, ensure touch-friendly */
+      #quiz-prev, #quiz-next{min-width:48px;min-height:48px;padding:0;display:flex;align-items:center;justify-content:center;font-size:1.3rem}
+      
+      /* Accordion - ensure all content stays within mobile bounds */
+      .accordion{max-width:100%;overflow:hidden}
+      .accordion-header{padding:14px 18px;font-size:1rem;word-wrap:break-word;overflow-wrap:break-word}
+      .accordion-content{padding:16px;overflow:hidden;max-width:100%}
+      .accordion-content *{max-width:100%!important;word-wrap:break-word!important;overflow-wrap:break-word!important}
+      .accordion-content pre,.accordion-content code{white-space:pre-wrap!important;word-wrap:break-word!important}
+      .accordion-content .code-block{overflow-x:auto;max-width:100%}
+    }
+    
+    /* Small phone breakpoint - iPhone SE and smaller */
+    @media(max-width:480px){
+      /* Even tighter spacing */
+      .container{padding:12px}
+      .interactive-box{padding:12px}
+      .intro{padding:12px}
+      .slide-container{padding:15px;min-height:auto}
+      
+      /* Smaller typography on very small screens */
+      body{font-size:0.95rem}
+      
+      /* Carousel adjustments for small screens */
+      .carousel-container{padding:0 8px}
+      .carousel-nav{width:28px;height:28px;font-size:16px}
+      
+      /* Progress badge even more compact */
+      .progress-badge{padding:4px 8px;font-size:0.75rem}
+      
+      /* Buttons remain touch-friendly but more compact padding */
+      .btn{padding:8px 12px}
+      
+      /* Autocomplete on mobile */
+      .autocomplete-item{padding:12px 10px;font-size:0.9rem}
+      .autocomplete-dropdown{max-height:150px}
     }
 
     /* ============================================
@@ -702,8 +796,120 @@
       border-width: 0;
     }
 
-    /* Responsive Adjustments for Audio Tour */
+    /* Hamburger menu - hidden on desktop */
+    .hamburger{
+      display:none;
+      background:none;
+      border:1px solid rgba(255,255,255,0.4);
+      color:#fff;
+      border-radius:8px;
+      padding:8px 10px;
+      font-size:1rem;
+      cursor:pointer;
+      line-height:1;
+      transition:background 0.2s;
+    }
+    .hamburger:hover,.hamburger[aria-expanded="true"]{
+      background:rgba(255,255,255,0.15);
+    }
+
+    /* Time button row - second row below header */
+    .time-button-row{
+      background:var(--muted);
+      padding:12px 16px;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      border-bottom:1px solid var(--border);
+    }
+    .time-app-button{
+      background:linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+      color:#fff;
+      border:none;
+      padding:12px 24px;
+      border-radius:12px;
+      font-weight:600;
+      font-size:0.95rem;
+      box-shadow:0 4px 12px rgba(253, 126, 20, 0.3);
+      cursor:pointer;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      transition:all 0.2s ease;
+    }
+    .time-app-button:hover{
+      transform:translateY(-2px);
+      box-shadow:0 6px 16px rgba(253, 126, 20, 0.4);
+    }
+    .time-app-button:active{
+      transform:translateY(0);
+    }
+
+    /* Mobile header - CBSE pattern */
     @media (max-width: 768px) {
+      .site-header{
+        flex-wrap:nowrap !important;
+        padding:8px 15px;
+      }
+      .logo{
+        font-size:1.05rem;
+        flex:0 0 auto;
+      }
+      .hamburger{
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        margin-left:auto;
+        min-width:48px;
+        min-height:48px;
+      }
+      .site-header nav{
+        display:none;
+        position:absolute;
+        top:100%;
+        right:16px;
+        flex-direction:column;
+        gap:0;
+        background:var(--header-bg);
+        padding:8px 0;
+        border-radius:8px;
+        box-shadow:0 10px 25px rgba(0,0,0,0.35);
+        min-width:200px;
+      }
+      .site-header nav.open{
+        display:flex;
+      }
+      .site-header nav a{
+        display:block;
+        padding:10px 18px;
+        color:#f8f9fa;
+        white-space:nowrap;
+      }
+      .site-header nav a + a{
+        border-top:1px solid rgba(255,255,255,0.15);
+      }
+      .progress-badge{
+        padding:6px 12px;
+        font-size:0.8rem;
+      }
+      
+      /* Time button on mobile */
+      .time-button-row{
+        padding:10px 12px;
+      }
+      .time-app-button{
+        padding:10px 20px;
+        font-size:0.9rem;
+      }
+    }
+
+    /* ============================================
+       MOBILE RESPONSIVE STYLES
+       ============================================ */
+    @media (max-width: 768px) {
+      /* Ensure all sections and content respect mobile boundaries */
+      section{max-width:100%;overflow:hidden}
+      *{max-width:100%}
       .slide-container {
         padding: 15px;
         min-height: 280px;
@@ -765,7 +971,8 @@
 <body>
   <header class="site-header">
     <a href="#" class="logo">Claude Code Mastery</a>
-    <nav>
+    <button class="hamburger" id="hamburger-btn" aria-expanded="false" aria-label="Toggle navigation">☰</button>
+    <nav id="primary-nav">
       <a href="#playground">Try Live</a>
       <a href="#pitfalls-deep">Top 20 Pitfalls</a>
       <a href="#wizard">🎬 Full Tour</a>
@@ -774,6 +981,13 @@
       <span class="progress-badge" id="header-progress">0% Complete</span>
     </nav>
   </header>
+  
+  <div class="time-button-row">
+    <button class="time-app-button" id="time-button">
+      <span>⏱️</span>
+      <span>Session Time: <span id="session-time">0:00</span></span>
+    </button>
+  </div>
 
 
   <div class="container">
@@ -873,7 +1087,11 @@
         </div>
       </div>
 
-      <div class="table-wrap" style="margin-top:30px">
+      <p style="margin-top:24px;font-size:1.05rem;font-weight:600;color:var(--text);background:var(--muted);padding:14px;border-radius:8px;border-left:4px solid var(--accent)">
+        📊 <strong>Quick Model Comparison — 5 columns to help you choose</strong> This table compares Sonnet 4.5 vs Opus 4.1 across key dimensions. <strong>Focus on the rightmost column ("When to Use")</strong> to quickly identify which model fits your task. On mobile, scroll horizontally to see all columns.
+      </p>
+
+      <div class="table-wrap" style="margin-top:16px">
         <div class="table-scroll">
           <table class="data-table">
             <thead>
@@ -906,11 +1124,16 @@
 
     <section id="pitfalls-table">
       <h2>📊 The Top 20 Pitfalls: Quick Reference</h2>
-      <p>This table is your cheat sheet. Bookmark this page! Each pitfall shows the impact level, a quick fix, and links to dive deeper. Use the search to find specific topics.</p>
+      <p style="font-size:1.05rem;font-weight:600;color:var(--text);background:var(--muted);padding:14px;border-radius:8px;border-left:4px solid var(--accent);margin-bottom:20px">
+        📋 <strong>Master reference table with 5 columns for quick lookup</strong> — This table lists all 20 pitfalls with their severity (Impact column). <strong>Start by scanning the "Impact" column (🔴 Critical, 🟡 High, 🟢 Important)</strong> to prioritize what to learn first. Use the search box to find specific issues. <strong>On mobile, scroll horizontally</strong> to see Quick Fix and Actions columns.
+      </p>
       
       <div class="interactive-box">
-        <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap">
-          <input type="text" id="table-search" placeholder="🔍 Search pitfalls..." style="flex:1;min-width:200px;padding:10px;border:1px solid var(--border);border-radius:6px">
+        <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;align-items:flex-start">
+          <div class="autocomplete-wrapper" style="flex:1;min-width:200px;position:relative">
+            <input type="text" id="table-search" placeholder="🔍 Search pitfalls..." style="width:100%;padding:10px;border:1px solid var(--border);border-radius:6px" autocomplete="off">
+            <div id="autocomplete-dropdown" class="autocomplete-dropdown"></div>
+          </div>
           <select id="table-filter" style="padding:10px;border:1px solid var(--border);border-radius:6px">
             <option value="all">All Levels</option>
             <option value="critical">🔴 Critical Only</option>
@@ -1715,7 +1938,138 @@ How my team could benefit:"></textarea>
       });
     }
 
-    document.getElementById('table-search')?.addEventListener('input', populateTable);
+    // ============================================
+    // AUTOCOMPLETE FOR TABLE SEARCH
+    // ============================================
+    (function() {
+      const searchInput = document.getElementById('table-search');
+      const dropdown = document.getElementById('autocomplete-dropdown');
+      if (!searchInput || !dropdown) return;
+
+      let selectedIndex = -1;
+      let currentSuggestions = [];
+
+      // Get all searchable terms from pitfalls
+      function getSearchTerms(query) {
+        if (!query || query.length === 0) return [];
+        
+        const terms = new Set();
+        const lowerQuery = query.toLowerCase();
+        
+        pitfallsData.forEach(p => {
+          // Add full title if matches
+          if (p.title.toLowerCase().includes(lowerQuery)) {
+            terms.add(p.title);
+          }
+          // Add description if matches
+          if (p.desc.toLowerCase().includes(lowerQuery)) {
+            terms.add(p.desc);
+          }
+          // Add individual words from title that match
+          p.title.split(' ').forEach(word => {
+            if (word.toLowerCase().includes(lowerQuery) && word.length > 2) {
+              terms.add(word);
+            }
+          });
+        });
+        
+        // Return top 3 matches
+        return Array.from(terms).slice(0, 3);
+      }
+
+      // Highlight matching text
+      function highlightMatch(text, query) {
+        const regex = new RegExp(`(${query})`, 'gi');
+        return text.replace(regex, '<mark>$1</mark>');
+      }
+
+      // Show autocomplete dropdown
+      function showAutocomplete(query) {
+        currentSuggestions = getSearchTerms(query);
+        selectedIndex = -1;
+
+        if (currentSuggestions.length === 0) {
+          dropdown.classList.remove('active');
+          return;
+        }
+
+        dropdown.innerHTML = currentSuggestions.map((term, idx) => 
+          `<div class="autocomplete-item" data-index="${idx}">${highlightMatch(term, query)}</div>`
+        ).join('');
+
+        dropdown.classList.add('active');
+
+        // Add click handlers to items
+        dropdown.querySelectorAll('.autocomplete-item').forEach(item => {
+          item.addEventListener('click', () => {
+            searchInput.value = item.textContent;
+            dropdown.classList.remove('active');
+            populateTable();
+          });
+        });
+      }
+
+      // Hide autocomplete
+      function hideAutocomplete() {
+        dropdown.classList.remove('active');
+        selectedIndex = -1;
+      }
+
+      // Handle keyboard navigation
+      function handleKeyboard(e) {
+        const items = dropdown.querySelectorAll('.autocomplete-item');
+        
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          selectedIndex = Math.min(selectedIndex + 1, items.length - 1);
+          updateSelection(items);
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          selectedIndex = Math.max(selectedIndex - 1, -1);
+          updateSelection(items);
+        } else if (e.key === 'Enter') {
+          if (selectedIndex >= 0 && items[selectedIndex]) {
+            e.preventDefault();
+            searchInput.value = items[selectedIndex].textContent;
+            hideAutocomplete();
+            populateTable();
+          }
+        } else if (e.key === 'Escape') {
+          hideAutocomplete();
+        }
+      }
+
+      // Update visual selection
+      function updateSelection(items) {
+        items.forEach((item, idx) => {
+          item.classList.toggle('selected', idx === selectedIndex);
+        });
+        if (selectedIndex >= 0) {
+          items[selectedIndex].scrollIntoView({block: 'nearest'});
+        }
+      }
+
+      // Event listeners
+      searchInput.addEventListener('input', (e) => {
+        const query = e.target.value.trim();
+        if (query.length > 0) {
+          showAutocomplete(query);
+        } else {
+          hideAutocomplete();
+        }
+        populateTable();
+      });
+
+      searchInput.addEventListener('keydown', handleKeyboard);
+
+      // Close dropdown when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!searchInput.contains(e.target) && !dropdown.contains(e.target)) {
+          hideAutocomplete();
+        }
+      });
+    })();
+
     document.getElementById('table-filter')?.addEventListener('change', populateTable);
 
     function expandPitfall(id) {
@@ -3891,6 +4245,58 @@ How my team could benefit:"></textarea>
           }
         }
       }, 1000);
+    })();
+
+    // ============================================
+    // HAMBURGER MENU TOGGLE
+    // ============================================
+    (function() {
+      const hamburger = document.getElementById('hamburger-btn');
+      const nav = document.getElementById('primary-nav');
+      
+      if (!hamburger || !nav) return;
+      
+      hamburger.addEventListener('click', () => {
+        const isOpen = nav.classList.toggle('open');
+        hamburger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      });
+      
+      // Close menu when clicking nav links
+      nav.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+          nav.classList.remove('open');
+          hamburger.setAttribute('aria-expanded', 'false');
+        });
+      });
+      
+      // Close menu when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!hamburger.contains(e.target) && !nav.contains(e.target)) {
+          nav.classList.remove('open');
+          hamburger.setAttribute('aria-expanded', 'false');
+        }
+      });
+    })();
+
+    // ============================================
+    // SESSION TIMER
+    // ============================================
+    (function() {
+      const timeDisplay = document.getElementById('session-time');
+      if (!timeDisplay) return;
+      
+      let startTime = Date.now();
+      
+      function updateTimer() {
+        const elapsed = Date.now() - startTime;
+        const minutes = Math.floor(elapsed / 60000);
+        const seconds = Math.floor((elapsed % 60000) / 1000);
+        timeDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+      }
+      
+      // Update every second
+      setInterval(updateTimer, 1000);
+      updateTimer(); // Initial call
     })();
   </script>
 </body>

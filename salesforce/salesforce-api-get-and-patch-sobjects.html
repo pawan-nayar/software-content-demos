@@ -3,1104 +3,770 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Salesforce API Learning Architecture</title>
+    <title>Salesforce API Learning</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         :root {
-            --primary-blue: #0176d3;
-            --secondary-blue: #014486;
-            --success-green: #4bca81;
-            --warning-orange: #fe9339;
-            --error-red: #ea001e;
-            --neutral-gray: #747474;
-            --light-gray: #f3f3f3;
-            --white: #ffffff;
-            --text-dark: #080707;
-            --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            --border-radius: 8px;
-            --transition: all 0.3s ease;
+            --text: #212529;
+            --bg: #fff;
+            --muted: #f8f9fa;
+            --border: #e9ecef;
+            --accent: #fd7e14;
+            --accent-2: #e87312;
+            --header-bg: #1a1a2e;
+            --header-fg: #f8f9fa;
+            --ok: #16a34a;
+            --ok-soft: #dcfce7;
+            --bad: #dc2626;
+            --bad-soft: #fee2e2;
+            --code-bg: #1e1e1e;
+            --code-fg: #d4d4d4;
         }
-
-        body {
-            font-family: 'Salesforce Sans', 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, #f3f3f3 0%, #e8ecef 100%);
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+            color: var(--text);
+            line-height: 1.6;
             min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
         }
 
-        .header {
-            background: var(--primary-blue);
-            color: var(--white);
-            padding: 1rem 2rem;
-            box-shadow: var(--shadow);
+        /* Header */
+        .site-header {
+            background: var(--header-bg);
+            color: var(--header-fg);
+            padding: 14px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             position: sticky;
             top: 0;
-            z-index: 1000;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
         }
-
-        .header h1 {
-            font-size: 1.5rem;
-            font-weight: 300;
+        .logo { font-weight: 700; font-size: 1.1rem; color: #fff; }
+        .info-btn {
+            background: rgba(255,255,255,0.15);
+            border: none;
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
         }
+        .info-btn:hover { background: rgba(255,255,255,0.25); transform: scale(1.1); }
 
+        /* Main 3-Pane Layout */
         .main-container {
             display: grid;
-            grid-template-columns: 300px 1fr 350px;
-            gap: 1rem;
-            padding: 1rem;
-            min-height: calc(100vh - 80px);
+            grid-template-columns: 280px 1fr 340px;
+            gap: 16px;
+            padding: 16px;
+            min-height: calc(100vh - 60px);
         }
 
-        .pane {
-            background: var(--white);
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-            overflow: hidden;
-            transition: var(--transition);
-        }
-
-        .pane:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-        }
-
-        .pane-header {
-            padding: 1rem;
-            font-weight: 600;
-            font-size: 1.1rem;
-            border-bottom: 1px solid var(--light-gray);
-        }
-
-        .field-pane .pane-header {
-            background: linear-gradient(45deg, var(--primary-blue), var(--secondary-blue));
-            color: var(--white);
-        }
-
-        .see-pane .pane-header {
-            background: linear-gradient(45deg, var(--success-green), #2e844a);
-            color: var(--white);
-        }
-
-        .learn-pane .pane-header {
-            background: linear-gradient(45deg, var(--warning-orange), #cc6600);
-            color: var(--white);
-        }
-
-        .pane-content {
-            padding: 1rem;
-            height: calc(100vh - 160px);
-            overflow-y: auto;
-        }
-
-        /* Field Pane Styles */
-        .api-selector {
-            margin-bottom: 1.5rem;
-        }
-
-        .api-selector select {
-            width: 100%;
-            padding: 0.75rem;
-            border: 2px solid var(--light-gray);
-            border-radius: var(--border-radius);
-            font-size: 1rem;
-            background: var(--white);
-            transition: var(--transition);
-        }
-
-        .api-selector select:focus {
-            outline: none;
-            border-color: var(--primary-blue);
-            box-shadow: 0 0 0 3px rgba(1, 118, 211, 0.1);
-        }
-
-        .api-card {
-            border: 1px solid var(--light-gray);
-            border-radius: var(--border-radius);
-            padding: 1rem;
-            margin-bottom: 1rem;
-            transition: var(--transition);
-            opacity: 0;
-            transform: translateY(20px);
-            animation: slideIn 0.5s ease forwards;
-        }
-
-        @keyframes slideIn {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .api-method {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-
-        .method-get { background: #e3f2fd; color: #1976d2; }
-        .method-post { background: #e8f5e8; color: #388e3c; }
-        .method-patch { background: #fff3e0; color: #f57c00; }
-        .method-delete { background: #ffebee; color: #d32f2f; }
-
-        .use-case-tags {
+        /* Panel Base */
+        .panel {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
             display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            margin: 0.75rem 0;
+            flex-direction: column;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            overflow: hidden;
+        }
+        .panel-header {
+            padding: 12px 16px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            border-bottom: 1px solid var(--border);
+            background: var(--muted);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .panel-header .icon { font-size: 1.1rem; }
+        .panel-body {
+            padding: 16px;
+            flex-grow: 1;
+            overflow-y: auto;
+            max-height: calc(100vh - 140px);
         }
 
-        .tag {
-            background: var(--light-gray);
-            color: var(--text-dark);
-            padding: 0.25rem 0.5rem;
+        /* Field Pane */
+        .api-select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-family: inherit;
+            background: var(--bg);
+            cursor: pointer;
+        }
+        .api-select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(253,126,20,0.15);
+        }
+        .api-card {
+            margin-top: 16px;
+            padding: 14px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: linear-gradient(135deg, #fafafa, #fff);
+        }
+        .api-card h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--accent-2);
+        }
+        .api-card p { font-size: 0.88rem; margin-bottom: 6px; }
+        .method-badge {
+            display: inline-block;
+            padding: 3px 10px;
             border-radius: 12px;
             font-size: 0.75rem;
+            font-weight: 600;
+            font-family: 'SF Mono', monospace;
+            margin-bottom: 8px;
         }
-
-        .scenario-snap {
-            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-            padding: 0.75rem;
-            border-radius: var(--border-radius);
-            font-style: italic;
-            color: #495057;
-            border-left: 4px solid var(--primary-blue);
-        }
-
-        /* See Pane Styles */
-        .persona-tabs {
-            display: flex;
-            margin-bottom: 1rem;
-            border-bottom: 1px solid var(--light-gray);
-        }
-
-        .persona-tab {
-            flex: 1;
-            padding: 0.75rem;
-            background: none;
-            border: none;
-            cursor: pointer;
+        .method-get { background: #dbeafe; color: #1d4ed8; }
+        .method-post { background: #dcfce7; color: #16a34a; }
+        .method-patch { background: #fef3c7; color: #d97706; }
+        .method-delete { background: #fee2e2; color: #dc2626; }
+        .tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0; }
+        .tag {
+            background: var(--muted);
+            border: 1px solid var(--border);
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 0.72rem;
             font-weight: 500;
-            transition: var(--transition);
-            position: relative;
         }
-
-        .persona-tab.active {
-            color: var(--primary-blue);
-        }
-
-        .persona-tab.active::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: var(--primary-blue);
-        }
-
-        .api-demo {
-            margin-bottom: 1.5rem;
-        }
-
-        .demo-section {
-            margin-bottom: 1rem;
-        }
-
-        .demo-section h4 {
-            margin-bottom: 0.5rem;
-            color: var(--secondary-blue);
-            font-size: 0.9rem;
-        }
-
-        .code-block {
-            background: #1e1e1e;
-            color: #d4d4d4;
-            padding: 1rem;
-            border-radius: var(--border-radius);
-            font-family: 'Monaco', 'Consolas', monospace;
+        .scenario-box {
+            background: #fff;
+            border-left: 3px solid var(--accent);
+            padding: 10px 12px;
+            border-radius: 0 8px 8px 0;
             font-size: 0.85rem;
-            overflow-x: auto;
-            position: relative;
+            margin-top: 10px;
         }
 
-        .code-block::before {
-            content: attr(data-lang);
-            position: absolute;
-            top: 0.5rem;
-            right: 0.5rem;
-            font-size: 0.7rem;
-            color: #888;
-            text-transform: uppercase;
+        /* ========== TABS WITH MOTION ========== */
+        .tabs {
+            display: flex;
+            background: var(--muted);
+            padding: 6px;
+            gap: 6px;
+            border-radius: 12px;
+            margin-bottom: 14px;
         }
-
-        .industry-examples {
-            display: grid;
-            gap: 0.75rem;
-        }
-
-        .industry-card {
-            border: 1px solid var(--light-gray);
-            border-radius: var(--border-radius);
-            padding: 0.75rem;
+        .tab-btn {
+            flex: 1;
+            padding: 10px 8px;
+            border: none;
+            background: transparent;
+            font-size: 0.82rem;
+            font-weight: 600;
             cursor: pointer;
-            transition: var(--transition);
-            opacity: 0.7;
+            border-radius: 8px;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: inherit;
+            color: #666;
+        }
+        .tab-btn:hover { 
+            background: rgba(253,126,20,0.12); 
+            color: var(--accent);
+            transform: translateY(-2px);
+        }
+        .tab-btn:active {
+            transform: scale(0.95);
+        }
+        .tab-btn.active {
+            color: #fff;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            box-shadow: 0 4px 14px rgba(253,126,20,0.4);
+            transform: translateY(-2px);
         }
 
-        .industry-card.active {
-            opacity: 1;
-            border-color: var(--primary-blue);
-            background: linear-gradient(135deg, #f8fbff, #e8f4fd);
+        /* ========== INDUSTRY CARDS WITH MOTION ========== */
+        .industry-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        .industry-card {
+            padding: 14px 8px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-align: center;
+            font-size: 0.72rem;
+            font-weight: 600;
+            background: #fff;
+            color: #555;
+        }
+        .industry-card:hover { 
+            border-color: var(--accent); 
+            background: #fffaf5;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(253,126,20,0.18);
+        }
+        .industry-card:active {
+            transform: scale(0.94);
+        }
+        .industry-card.active { 
+            border-color: var(--accent); 
+            background: linear-gradient(135deg, #fff7ed, #ffedd5);
+            box-shadow: 0 6px 18px rgba(253,126,20,0.25);
+            transform: translateY(-3px);
+            color: var(--accent-2);
+        }
+        .industry-card .icon { 
+            font-size: 1.6rem; 
+            display: block; 
+            margin-bottom: 6px;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .industry-card:hover .icon {
+            transform: scale(1.2) rotate(-8deg);
         }
 
-        .industry-card:hover {
-            transform: translateX(5px);
+        /* Code Block */
+        .code-block {
+            background: var(--code-bg);
+            color: var(--code-fg);
+            padding: 12px;
+            border-radius: 8px;
+            font-family: 'SF Mono', 'Monaco', monospace;
+            font-size: 0.75rem;
+            line-height: 1.5;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
         }
 
-        .industry-icon {
-            font-size: 1.5rem;
-            margin-bottom: 0.5rem;
+        /* Demo Section */
+        .demo-section { margin-bottom: 14px; }
+        .demo-section h4 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--accent-2);
+            margin-bottom: 10px;
         }
-
-        .ui-simulation {
-            background: var(--light-gray);
-            border-radius: var(--border-radius);
-            padding: 1rem;
-            margin: 1rem 0;
-            position: relative;
-            overflow: hidden;
+        .state-box {
+            background: var(--muted);
+            padding: 12px 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            margin-bottom: 12px;
         }
-
-        .ui-state {
-            display: none;
-            animation: fadeIn 0.5s ease;
-        }
-
-        .ui-state.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .status-indicator {
+        .state-box strong { font-weight: 600; }
+        .status-dot {
             display: inline-block;
             width: 8px;
             height: 8px;
             border-radius: 50%;
-            margin-right: 0.5rem;
+            margin-right: 8px;
         }
+        .status-loading { background: var(--accent); animation: pulse 1s infinite; }
+        .status-success { background: var(--ok); }
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
 
-        .status-loading { background: var(--warning-orange); animation: pulse 1s infinite; }
-        .status-success { background: var(--success-green); }
-        .status-error { background: var(--error-red); }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+        /* Run Button */
+        .run-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: inherit;
+            box-shadow: 0 4px 14px rgba(253,126,20,0.3);
         }
-
-        /* Learn Pane Styles */
-        .learn-section {
-            margin-bottom: 1.5rem;
-            border: 1px solid var(--light-gray);
-            border-radius: var(--border-radius);
-            overflow: hidden;
+        .run-btn:hover { 
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(253,126,20,0.4);
         }
+        .run-btn:active {
+            transform: scale(0.97);
+        }
+        .run-btn:disabled { background: #ccc; cursor: not-allowed; box-shadow: none; transform: none; }
 
-        .learn-section-header {
-            background: var(--light-gray);
-            padding: 0.75rem;
+        /* Learn Pane - Accordion */
+        .accordion { border: 1px solid var(--border); border-radius: 10px; margin-bottom: 10px; overflow: hidden; }
+        .accordion-header {
+            width: 100%;
+            padding: 12px 14px;
+            background: var(--muted);
+            border: none;
+            text-align: left;
+            font-size: 0.88rem;
             font-weight: 600;
             cursor: pointer;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            font-family: inherit;
+            transition: background 0.2s;
         }
-
-        .learn-section-content {
-            padding: 0;
-            max-height: 0;
-            overflow: hidden;
-            transition: all 0.3s ease;
+        .accordion-header:hover { background: #eee; }
+        .accordion-header .chevron { transition: transform 0.2s; }
+        .accordion-header.open .chevron { transform: rotate(180deg); }
+        .accordion-body {
+            display: none;
+            padding: 14px;
+            background: #fff;
+            border-top: 1px solid var(--border);
         }
-
-        .learn-section.expanded .learn-section-content {
-            max-height: 500px;
-            padding: 1rem;
-        }
-
-        .parameter-list {
-            list-style: none;
-        }
-
-        .parameter-item {
-            padding: 0.5rem;
-            border-bottom: 1px solid #eee;
+        .accordion-body.open { display: block; }
+        .param-list { list-style: none; }
+        .param-item {
             display: flex;
             justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+            font-size: 0.82rem;
+        }
+        .param-item:last-child { border-bottom: none; }
+        .param-name { font-weight: 600; color: var(--accent-2); font-family: monospace; }
+        .param-type { color: #666; font-size: 0.78rem; }
+        .tip-box {
+            background: var(--ok-soft);
+            border-left: 3px solid var(--ok);
+            padding: 10px 12px;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.82rem;
+            margin: 8px 0;
+        }
+        .warn-box {
+            background: var(--bad-soft);
+            border-left: 3px solid var(--bad);
+            padding: 10px 12px;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.82rem;
+            margin: 8px 0;
         }
 
-        .parameter-name {
-            font-weight: 600;
-            color: var(--secondary-blue);
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(3px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
         }
-
-        .parameter-type {
-            color: var(--neutral-gray);
-            font-size: 0.85rem;
+        .modal-overlay.show { display: flex; }
+        .modal-box {
+            background: #fff;
+            border-radius: 14px;
+            padding: 28px;
+            max-width: 420px;
+            width: 100%;
+            position: relative;
+            animation: modalIn 0.25s ease;
         }
-
-        .best-practice {
-            background: linear-gradient(135deg, #e8f5e8, #f1f8f1);
-            border-left: 4px solid var(--success-green);
-            padding: 0.75rem;
-            margin: 0.5rem 0;
-            border-radius: 0 var(--border-radius) var(--border-radius) 0;
-        }
-
-        .anti-pattern {
-            background: linear-gradient(135deg, #ffebee, #ffedef);
-            border-left: 4px solid var(--error-red);
-            padding: 0.75rem;
-            margin: 0.5rem 0;
-            border-radius: 0 var(--border-radius) var(--border-radius) 0;
-        }
-
-        .run-button {
-            background: var(--success-green);
-            color: var(--white);
+        @keyframes modalIn { from { opacity: 0; transform: scale(0.95) translateY(-10px); } }
+        .modal-close {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: var(--muted);
             border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: var(--border-radius);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
             cursor: pointer;
+            font-size: 1rem;
+        }
+        .modal-close:hover { background: #ddd; }
+        .modal-box h2 { font-size: 1.3rem; margin-bottom: 10px; color: var(--accent-2); }
+        .modal-box p { font-size: 0.92rem; margin-bottom: 16px; color: #555; }
+        .modal-steps { display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px; }
+        .modal-step {
+            display: flex;
+            gap: 12px;
+            padding: 12px;
+            background: var(--muted);
+            border-radius: 10px;
+        }
+        .modal-step .step-icon { font-size: 1.3rem; }
+        .modal-step strong { display: block; margin-bottom: 2px; font-size: 0.9rem; }
+        .modal-step span { font-size: 0.8rem; color: #666; }
+        .modal-cta {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
             font-weight: 600;
-            transition: var(--transition);
-            margin: 1rem 0;
+            cursor: pointer;
+        }
+        .modal-cta:hover { opacity: 0.95; }
+
+        /* ========== MOBILE ========== */
+        .mobile-tab-bar { display: none; }
+
+        @media (max-width: 900px) {
+            .main-container { grid-template-columns: 1fr; }
+            .panel { display: none; }
+            .panel.active { display: flex; }
+            .mobile-tab-bar {
+                display: flex;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: #fff;
+                border-top: 1px solid var(--border);
+                padding: 8px 12px;
+                padding-bottom: calc(8px + env(safe-area-inset-bottom));
+                z-index: 100;
+                box-shadow: 0 -4px 16px rgba(0,0,0,0.08);
+                gap: 8px;
+            }
+            .mobile-tab-bar .m-tab {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 4px;
+                padding: 10px 8px;
+                border: none;
+                background: var(--muted);
+                border-radius: 12px;
+                font-size: 0.68rem;
+                font-weight: 600;
+                cursor: pointer;
+                font-family: inherit;
+                transition: all 0.2s;
+            }
+            .mobile-tab-bar .m-tab:active { transform: scale(0.95); }
+            .mobile-tab-bar .m-tab.active {
+                background: linear-gradient(135deg, var(--accent), var(--accent-2));
+                color: #fff;
+                box-shadow: 0 4px 12px rgba(253,126,20,0.3);
+            }
+            .mobile-tab-bar .m-tab .m-icon { font-size: 1.3rem; }
+            .main-container { padding-bottom: 90px; }
+            .panel-body { max-height: none; }
+            .site-header { padding: 12px 16px; }
+            .logo { font-size: 0.95rem; }
+            .industry-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
         }
 
-        .run-button:hover {
-            background: #2e844a;
-            transform: translateY(-2px);
-        }
-
-        .run-button:disabled {
-            background: var(--neutral-gray);
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 1200px) {
-            .main-container {
-                grid-template-columns: 1fr;
-                grid-template-rows: auto auto auto;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .header {
-                padding: 1rem;
-            }
-            
-            .main-container {
-                padding: 0.5rem;
-                gap: 0.5rem;
-            }
-            
-            .pane-content {
-                height: auto;
-                min-height: 400px;
-            }
+        @media (max-width: 400px) {
+            .industry-card { padding: 10px 6px; }
+            .industry-card .icon { font-size: 1.3rem; }
         }
     </style>
 </head>
 <body>
-    <header class="header">
-        <h1>🌟 Salesforce API Learning Architecture</h1>
+    <header class="site-header">
+        <span class="logo">🚀 Salesforce API Learning</span>
+        <button class="info-btn" id="infoBtn">ⓘ</button>
     </header>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal-box">
+            <button class="modal-close" id="modalClose">✕</button>
+            <h2>🎓 Welcome!</h2>
+            <p>Master Salesforce REST APIs through an immersive 3-step experience.</p>
+            <div class="modal-steps">
+                <div class="modal-step"><span class="step-icon">🎯</span><div><strong>Field</strong><span>Select an API to explore</span></div></div>
+                <div class="modal-step"><span class="step-icon">👁️</span><div><strong>See</strong><span>Watch real industry scenarios</span></div></div>
+                <div class="modal-step"><span class="step-icon">📚</span><div><strong>Learn</strong><span>Master parameters & best practices</span></div></div>
+            </div>
+            <button class="modal-cta" id="modalStart">Let's Begin →</button>
+        </div>
+    </div>
 
     <div class="main-container">
         <!-- FIELD PANE -->
-        <div class="pane field-pane">
-            <div class="pane-header">
-                🎯 Field - Orientation
-            </div>
-            <div class="pane-content">
-                <div class="api-selector">
-                    <select id="apiSelect">
-                        <option value="">Select an API to explore...</option>
-                        <option value="case-get">GET /sobjects/Case/{ID}</option>
-                        <option value="case-patch">PATCH /sobjects/Case/{ID}</option>
-                        <option value="case-post">POST /sobjects/Case</option>
-                        <option value="contact-get">GET /sobjects/Contact/{ID}</option>
-                        <option value="query-soql">GET /query?q=SELECT...</option>
-                    </select>
-                </div>
-
-                <div id="apiDetails" class="api-details">
-                    <!-- API details will be populated here -->
-                </div>
+        <div class="panel active" data-pane="field">
+            <div class="panel-header"><span class="icon">🎯</span> Field</div>
+            <div class="panel-body">
+                <select class="api-select" id="apiSelect">
+                    <option value="">Select an API...</option>
+                    <option value="case-get">GET /sobjects/Case/{ID}</option>
+                    <option value="case-patch" selected>PATCH /sobjects/Case/{ID}</option>
+                    <option value="case-post">POST /sobjects/Case</option>
+                    <option value="contact-get">GET /sobjects/Contact/{ID}</option>
+                    <option value="query-soql">GET /query?q=SELECT...</option>
+                </select>
+                <div id="apiDetails"></div>
             </div>
         </div>
 
         <!-- SEE PANE -->
-        <div class="pane see-pane">
-            <div class="pane-header">
-                👁️ See - Experience It
-            </div>
-            <div class="pane-content">
-                <div class="persona-tabs">
-                    <button class="persona-tab active" data-persona="agent">👩‍💼 Agent</button>
-                    <button class="persona-tab" data-persona="supervisor">👨‍💻 Supervisor</button>
-                    <button class="persona-tab" data-persona="automation">🤖 Automation</button>
+        <div class="panel" data-pane="see">
+            <div class="panel-header"><span class="icon">👁️</span> See</div>
+            <div class="panel-body">
+                <div class="tabs">
+                    <button class="tab-btn active" data-persona="agent">👩‍💼 Agent</button>
+                    <button class="tab-btn" data-persona="supervisor">👨‍💻 Super</button>
+                    <button class="tab-btn" data-persona="automation">🤖 Auto</button>
                 </div>
-
-                <div id="apiDemo" class="api-demo">
-                    <!-- API demonstration will be populated here -->
+                <div class="industry-grid" id="industryGrid">
+                    <div class="industry-card active" data-industry="finance"><span class="icon">🏦</span>Finance</div>
+                    <div class="industry-card" data-industry="education"><span class="icon">🎓</span>Education</div>
+                    <div class="industry-card" data-industry="realestate"><span class="icon">🏠</span>Real Estate</div>
+                    <div class="industry-card" data-industry="fashion"><span class="icon">👗</span>Fashion</div>
+                    <div class="industry-card" data-industry="healthcare"><span class="icon">🏥</span>Healthcare</div>
+                    <div class="industry-card" data-industry="saas"><span class="icon">💻</span>SaaS</div>
                 </div>
-
-                <div class="industry-examples">
-                    <div class="industry-card active" data-industry="finance">
-                        <div class="industry-icon">🏦</div>
-                        <strong>Finance & Banking</strong>
-                        <p>Fraud alerts and account issues</p>
-                    </div>
-                    <div class="industry-card" data-industry="education">
-                        <div class="industry-icon">🎓</div>
-                        <strong>Education</strong>
-                        <p>Student portal and exam emergencies</p>
-                    </div>
-                    <div class="industry-card" data-industry="realestate">
-                        <div class="industry-icon">🏠</div>
-                        <strong>Real Estate</strong>
-                        <p>Property transactions and closings</p>
-                    </div>
-                    <div class="industry-card" data-industry="fashion">
-                        <div class="industry-icon">👗</div>
-                        <strong>Fashion E-commerce</strong>
-                        <p>Returns and VIP experiences</p>
-                    </div>
-                    <div class="industry-card" data-industry="healthcare">
-                        <div class="industry-icon">🏥</div>
-                        <strong>Healthcare</strong>
-                        <p>Medical devices and patient care</p>
-                    </div>
-                    <div class="industry-card" data-industry="saas">
-                        <div class="industry-icon">💻</div>
-                        <strong>SaaS Platform</strong>
-                        <p>API outages and enterprise support</p>
-                    </div>
-                </div>
-
-                <button class="run-button" id="runDemo">▶️ Run Live Demo</button>
+                <div id="demoContent"></div>
+                <button class="run-btn" id="runDemo">▶️ Run Demo</button>
             </div>
         </div>
 
         <!-- LEARN PANE -->
-        <div class="pane learn-pane">
-            <div class="pane-header">
-                📚 Learn - Master It
-            </div>
-            <div class="pane-content">
-                <div id="learnContent">
-                    <!-- Learning content will be populated here -->
-                </div>
-            </div>
+        <div class="panel" data-pane="learn">
+            <div class="panel-header"><span class="icon">📚</span> Learn</div>
+            <div class="panel-body" id="learnContent"></div>
         </div>
     </div>
 
+    <!-- Mobile Tab Bar -->
+    <nav class="mobile-tab-bar">
+        <button class="m-tab active" data-pane="field"><span class="m-icon">🎯</span>Field</button>
+        <button class="m-tab" data-pane="see"><span class="m-icon">👁️</span>See</button>
+        <button class="m-tab" data-pane="learn"><span class="m-icon">📚</span>Learn</button>
+    </nav>
+
     <script>
-        const APIs = {
-            'case-get': {
-                name: 'GET /sobjects/Case/{ID}',
-                method: 'GET',
-                purpose: 'Retrieve a single Case record by ID',
-                description: 'Fetches complete case details including subject, status, priority, and related information.',
-                resource: 'Case',
-                useCases: ['📩 Ticket details', '🔄 Status check', '📊 Escalation review'],
-                scenario: 'When Sarah, a support agent, clicks on a case in her queue to see customer details and issue history.',
-                triggers: ['Agent clicks case in queue', 'Customer portal status check', 'Escalation workflow'],
-                downstream: ['Contact lookup', 'Asset queries', 'Case history'],
-                upstream: ['Queue filtering', 'Dashboard metrics', 'Notification systems'],
-                roles: {
-                    agent: 'Views case details to understand customer issue',
-                    supervisor: 'Monitors case resolution progress',
-                    automation: 'Triggers follow-up workflows'
-                }
-            },
-            'case-patch': {
-                name: 'PATCH /sobjects/Case/{ID}',
-                method: 'PATCH',
-                purpose: 'Update specific fields in an existing Case',
-                description: 'Modifies case status, priority, assignment, or adds resolution notes.',
-                resource: 'Case',
-                useCases: ['✍️ Agent update', '✅ Resolution flag', '🚨 SLA breach'],
-                scenario: 'When Sarah updates a case status from "In Progress" to "Resolved" after helping a customer.',
-                triggers: ['Status change', 'Assignment transfer', 'Priority escalation'],
-                downstream: ['Email notifications', 'SLA calculations', 'Reporting updates'],
-                upstream: ['Agent actions', 'Workflow rules', 'Approval processes'],
-                roles: {
-                    agent: 'Updates case with resolution details',
-                    supervisor: 'Sees real-time progress updates',
-                    automation: 'Triggers closure workflows'
-                }
-            },
-            'case-post': {
-                name: 'POST /sobjects/Case',
-                method: 'POST',
-                purpose: 'Create a new case/ticket',
-                description: 'Creates a new support case with customer information and issue details.',
-                resource: 'Case',
-                useCases: ['🆕 Ticket creation', '🤖 Bot intake', '🎫 App-generated complaints'],
-                scenario: 'When a customer submits a support request through the web portal or calls the help desk.',
-                triggers: ['Web form submission', 'Phone call logging', 'Email parsing'],
-                downstream: ['Assignment rules', 'Auto-response emails', 'SLA timers'],
-                upstream: ['Customer portal', 'Email-to-case', 'API integrations'],
-                roles: {
-                    agent: 'Creates case from phone calls',
-                    supervisor: 'Monitors case creation rates',
-                    automation: 'Auto-creates from various channels'
-                }
-            },
-            'contact-get': {
-                name: 'GET /sobjects/Contact/{ID}',
-                method: 'GET',
-                purpose: 'Retrieve contact information',
-                description: 'Fetches customer contact details associated with cases or accounts.',
-                resource: 'Contact',
-                useCases: ['👤 Customer profile', '📞 Contact tracing', '🧾 Case–contact link'],
-                scenario: 'When Sarah needs to call a customer back and needs their current phone number and contact preferences.',
-                triggers: ['Case detail view', 'Customer lookup', 'Account research'],
-                downstream: ['Phone dialing', 'Email composition', 'Communication logging'],
-                upstream: ['Case records', 'Account views', 'Search queries'],
-                roles: {
-                    agent: 'Accesses customer contact info',
-                    supervisor: 'Reviews contact interaction history',
-                    automation: 'Updates contact preferences'
-                }
-            },
-            'query-soql': {
-                name: 'GET /query?q=SELECT...',
-                method: 'GET',
-                purpose: 'SOQL-based dynamic querying',
-                description: 'Executes custom SOQL queries to retrieve filtered and sorted data.',
-                resource: 'Multiple Objects',
-                useCases: ['📄 Reporting', '📊 Agent dashboard', '🔍 Filtered search'],
-                scenario: 'When a supervisor needs to see all open high-priority cases assigned to their team this week.',
-                triggers: ['Dashboard loading', 'Report generation', 'Search requests'],
-                downstream: ['Chart rendering', 'List displays', 'Export files'],
-                upstream: ['User filters', 'Scheduled reports', 'Real-time dashboards'],
-                roles: {
-                    agent: 'Searches for related cases',
-                    supervisor: 'Generates team reports',
-                    automation: 'Monitors SLA compliance'
-                }
-            }
-        };
+    // ========== DATA ==========
+    const APIs = {
+        'case-get': { name: 'GET /sobjects/Case/{ID}', method: 'GET', purpose: 'Retrieve a single Case record by ID', resource: 'Case', useCases: ['📩 Ticket details', '🔄 Status check', '📊 Escalation'], scenario: 'Agent clicks case to see customer details and issue history.' },
+        'case-patch': { name: 'PATCH /sobjects/Case/{ID}', method: 'PATCH', purpose: 'Update specific fields in an existing Case', resource: 'Case', useCases: ['✍️ Agent update', '✅ Resolution', '🚨 Escalation'], scenario: 'Agent updates case status from "In Progress" to "Resolved".' },
+        'case-post': { name: 'POST /sobjects/Case', method: 'POST', purpose: 'Create a new case/ticket', resource: 'Case', useCases: ['🆕 Ticket creation', '🤖 Bot intake', '🎫 Complaints'], scenario: 'Customer submits support request through web portal.' },
+        'contact-get': { name: 'GET /sobjects/Contact/{ID}', method: 'GET', purpose: 'Retrieve contact information', resource: 'Contact', useCases: ['👤 Customer profile', '📞 Contact lookup', '🧾 Case link'], scenario: 'Agent needs customer phone and contact preferences.' },
+        'query-soql': { name: 'GET /query?q=SELECT...', method: 'GET', purpose: 'SOQL-based dynamic querying', resource: 'Multiple', useCases: ['📄 Reporting', '📊 Dashboard', '🔍 Search'], scenario: 'Supervisor needs all open high-priority cases this week.' }
+    };
 
-        // Generic scenarios for APIs that don't have an industry-specific entry
-        const DefaultScenarios = {
-            'case-post': {
-                agent: { title: 'New Support Ticket Created', before: 'Customer reports an issue via web form', during: 'Agent confirms details and submits Case with Subject, Origin, Priority', after: 'Case ID returned, assigned to Web queue', uiState: 'Case Created ✅ - Queue: Web Support' },
-                supervisor: { title: 'Ticket Intake Monitoring', before: 'Spike in new tickets from portal', during: 'Supervisor monitors creation rates and routing', after: 'Staffing adjusted for Web queue', uiState: 'Intake: 42/hr - Staffing adjusted' },
-                automation: { title: 'Auto Intake', before: 'Webhook payload received', during: 'Automation creates Case and links Contact/Account', after: 'Assignment and auto-response triggered', uiState: 'Auto-created Case - Auto-response sent' }
-            },
-            'contact-get': {
-                agent: { title: 'Customer Profile Lookup', before: 'Agent needs to confirm customer details', during: 'System fetches Contact fields', after: 'Agent calls using preferred channel', uiState: 'Contact: Priya Nair - Email: priya@example.com' },
-                supervisor: { title: 'Contact Interaction Review', before: 'Escalation requires contact history', during: 'Supervisor reviews interactions and preferences', after: 'Coaching note added', uiState: 'History reviewed - Coaching note' },
-                automation: { title: 'Preference Sync', before: 'Contact updated externally', during: 'Automation reads Contact and syncs preferences', after: 'Downstream systems updated', uiState: 'Prefs synced across systems' }
-            },
-            'query-soql': {
-                agent: { title: 'Related Cases Lookup', before: 'Agent checks for similar issues', during: 'SOQL finds last 5 related cases', after: 'Insights help faster resolution', uiState: '5 related cases found' },
-                supervisor: { title: 'Supervisor Dashboard Query', before: 'Supervisor filters team workload', during: 'SOQL query aggregates open cases by priority', after: 'Dashboard updated', uiState: 'Open cases: 37 (High: 8)' },
-                automation: { title: 'SLA Monitor', before: 'Cron checks approaching SLAs', during: 'SOQL returns cases due within 2 hours', after: 'Alerts dispatched', uiState: 'SLA alerts queued: 6' }
-            }
-        };
+    const Scenarios = {
+        finance: {
+            'case-get': { agent: { title: 'Fraud Alert Investigation', before: 'Customer reports unauthorized $2,500 charge', during: 'Agent views fraud flags and transaction details', after: 'Card frozen, escalated to fraud team', ui: 'Case #FR8901 - Critical - Security Breach' }, supervisor: { title: 'Fraud Audit', before: 'Spike in fraud alerts', during: 'Reviews SLA timers', after: 'Reassigns to fraud pod', ui: '17 critical cases - SLA risk: 3' }, automation: { title: 'Auto Classification', before: 'Anomaly detected', during: 'Routes to Fraud queue', after: 'Verification email sent', ui: 'Fraud-HighPriority' }},
+            'case-patch': { agent: { title: 'Fraud Resolution', before: 'Case under investigation - customer anxious', during: 'Status → Resolved, Refund $2,500, New Card expedited', after: 'Customer notified, monitoring enhanced', ui: 'Resolved ✅ - Refund: $2,500' }, supervisor: { title: 'Refund Approval', before: 'Large refund pending', during: 'Approves and verifies', after: 'Compliance logged', ui: 'Approval: Complete' }, automation: { title: 'Auto Close', before: 'Resolved 72hrs', during: 'Verifies no reopens', after: 'Survey sent', ui: 'Auto-Closed' }},
+            'case-post': { agent: { title: 'New Fraud Case', before: 'Customer calls', during: 'Creates case', after: 'Routed', ui: 'Created' }, supervisor: { title: 'Monitor', before: 'Spike', during: 'Reviews', after: 'Adjusted', ui: 'Monitored' }, automation: { title: 'Auto Create', before: 'Alert', during: 'Creates', after: 'Assigned', ui: 'Auto' }},
+            'contact-get': { agent: { title: 'Customer Lookup', before: 'Verify identity', during: 'Fetches details', after: 'Confirmed', ui: 'Found' }, supervisor: { title: 'Review', before: 'Escalation', during: 'Reviews', after: 'Done', ui: 'Done' }, automation: { title: 'Sync', before: 'Update', during: 'Syncs', after: 'Done', ui: 'Synced' }},
+            'query-soql': { agent: { title: 'Find Related', before: 'Check similar', during: 'SOQL finds', after: 'Insights', ui: '5 related' }, supervisor: { title: 'Report', before: 'Metrics', during: 'Aggregates', after: 'Dashboard', ui: '37 open' }, automation: { title: 'SLA Check', before: 'Scheduled', during: 'Finds due', after: 'Alerts', ui: '6 alerts' }}
+        },
+        education: {
+            'case-get': { agent: { title: 'Student Portal Crisis', before: 'Student can\'t access final exam - 2hrs left', during: 'Views: 200+ students affected', after: 'IT escalation, deadline extended', ui: 'Case #EDU456 - Emergency' }, supervisor: { title: 'Outage Monitor', before: 'Incident spike', during: 'Reviews staffing', after: 'Surge team active', ui: 'Surge team' }, automation: { title: 'Bulk Notify', before: 'Outage detected', during: 'Sends updates', after: 'Students notified', ui: '247 emails' }},
+            'case-patch': { agent: { title: 'Emergency Resolution', before: 'Portal down, students panicking', during: 'Status → Resolved, Portal Online', after: 'Mass email sent', ui: 'Resolved ✅ - Extension: 4hrs' }, supervisor: { title: 'Postmortem', before: 'Resolved', during: 'Adds RCA', after: 'Tasks created', ui: 'RCA logged' }, automation: { title: 'Close Children', before: 'Parent resolved', during: 'Closes linked', after: 'Metrics updated', ui: '247 closed' }},
+            'case-post': { agent: { title: 'New Ticket', before: 'Call', during: 'Creates', after: 'Routed', ui: 'Created' }, supervisor: { title: 'Monitor', before: 'Spike', during: 'Reviews', after: 'Adjusted', ui: 'Done' }, automation: { title: 'Auto', before: 'Form', during: 'Creates', after: 'Assigned', ui: 'Auto' }},
+            'contact-get': { agent: { title: 'Student Lookup', before: 'Need info', during: 'Fetches', after: 'Found', ui: 'Found' }, supervisor: { title: 'Review', before: 'Esc', during: 'Views', after: 'Done', ui: 'Done' }, automation: { title: 'Sync', before: 'Update', during: 'Syncs', after: 'Done', ui: 'Synced' }},
+            'query-soql': { agent: { title: 'Search', before: 'Need', during: 'Query', after: 'Found', ui: 'Found' }, supervisor: { title: 'Report', before: 'Need', during: 'Query', after: 'Done', ui: 'Done' }, automation: { title: 'Check', before: 'Job', during: 'Runs', after: 'Done', ui: 'Done' }}
+        },
+        realestate: {
+            'case-get': { agent: { title: 'Closing Day Crisis', before: 'Plumbing issue 2hrs before $450K closing', during: 'Views: Inspection missed, lawyers involved', after: 'Closing delayed, repair scheduled', ui: 'Case #RE2024 - Critical' }, supervisor: { title: 'Escalation Routing', before: 'Multiple at risk', during: 'Reassigns senior', after: 'Risk reduced', ui: 'Senior assigned' }, automation: { title: 'Vendor Dispatch', before: 'Urgent repair', during: 'Triggers plumber', after: 'En route', ui: 'ETA 45m' }},
+            'case-patch': { agent: { title: 'Settlement Agreement', before: 'Negotiations, buyer may walk', during: 'Agreement: $8K seller credit', after: 'All parties agree, contracts updated', ui: 'Resolved ✅ - Credit: $8,000' }, supervisor: { title: 'Exception Approval', before: 'Exceeds policy', during: 'Approves', after: 'Deal saved', ui: 'Approved' }, automation: { title: 'Docs Sync', before: 'Rescheduled', during: 'Updates calendars', after: 'Notified', ui: 'Synced' }},
+            'case-post': { agent: { title: 'New Case', before: 'Issue', during: 'Creates', after: 'Done', ui: 'Created' }, supervisor: { title: 'Monitor', before: 'Check', during: 'Reviews', after: 'Done', ui: 'Done' }, automation: { title: 'Auto', before: 'Trigger', during: 'Creates', after: 'Done', ui: 'Auto' }},
+            'contact-get': { agent: { title: 'Lookup', before: 'Need', during: 'Gets', after: 'Found', ui: 'Found' }, supervisor: { title: 'Review', before: 'Esc', during: 'Views', after: 'Done', ui: 'Done' }, automation: { title: 'Sync', before: 'Update', during: 'Syncs', after: 'Done', ui: 'Synced' }},
+            'query-soql': { agent: { title: 'Search', before: 'Need', during: 'Query', after: 'Found', ui: 'Found' }, supervisor: { title: 'Report', before: 'Need', during: 'Query', after: 'Done', ui: 'Done' }, automation: { title: 'Check', before: 'Job', during: 'Runs', after: 'Done', ui: 'Done' }}
+        },
+        fashion: {
+            'case-get': { agent: { title: 'VIP Return Request', before: 'VIP wants to return $500 jacket', during: 'Sees VIP status, $12K lifetime value', after: 'Immediate replacement + apology gift', ui: 'Case #123456 - VIP ⭐' }, supervisor: { title: 'VIP Queue', before: 'High returns', during: 'Checks SLAs', after: 'Staff added', ui: 'VIP +1 agent' }, automation: { title: 'Priority Tag', before: 'High-value detected', during: 'Applies VIP tag', after: 'RMA emailed', ui: 'VIP, Free-Return' }},
+            'case-patch': { agent: { title: 'VIP Resolution', before: 'Investigating, VIP waiting', during: 'Replacement + $50 credit, Next-day ship', after: 'Customer delighted, social media praise', ui: 'Resolved ✅ - Credit: $50' }, supervisor: { title: 'Goodwill Check', before: 'Multiple credits', during: 'Adjusts per policy', after: 'Happy customer', ui: 'Policy OK' }, automation: { title: 'CSAT Follow-up', before: 'Resolved', during: 'Sends CSAT + points', after: 'Captured', ui: 'CSAT + 200pts' }},
+            'case-post': { agent: { title: 'New Return', before: 'Call', during: 'Creates', after: 'Done', ui: 'Created' }, supervisor: { title: 'Monitor', before: 'Check', during: 'Reviews', after: 'Done', ui: 'Done' }, automation: { title: 'Auto', before: 'Form', during: 'Creates', after: 'Done', ui: 'Auto' }},
+            'contact-get': { agent: { title: 'Lookup', before: 'Need', during: 'Gets', after: 'Found', ui: 'Found' }, supervisor: { title: 'Review', before: 'Esc', during: 'Views', after: 'Done', ui: 'Done' }, automation: { title: 'Sync', before: 'Update', during: 'Syncs', after: 'Done', ui: 'Synced' }},
+            'query-soql': { agent: { title: 'Search', before: 'Need', during: 'Query', after: 'Found', ui: 'Found' }, supervisor: { title: 'Report', before: 'Need', during: 'Query', after: 'Done', ui: 'Done' }, automation: { title: 'Check', before: 'Job', during: 'Runs', after: 'Done', ui: 'Done' }}
+        },
+        healthcare: {
+            'case-get': { agent: { title: 'Critical Device Alert', before: 'Insulin pump malfunction - blood sugar unstable', during: 'Views: Critical priority, warranty active', after: 'Clinical team escalation, 15min callback', ui: 'Case #MED789 - CRITICAL' }, supervisor: { title: 'Clinical Triage', before: 'Device alerts trending', during: 'Triages cases', after: 'On-call MD alerted', ui: 'MD alerted' }, automation: { title: 'FDA Lookup', before: 'Device captured', during: 'Fetches UDI + safety', after: 'Attached to case', ui: 'UDI attached' }},
+            'case-patch': { agent: { title: 'Life-Critical Resolution', before: 'Patient waiting, blood sugar fluctuating', during: 'Replacement shipped overnight, temp solution provided', after: 'Patient safe, nurse follow-up scheduled', ui: 'Resolved ✅ - Express Ship' }, supervisor: { title: 'QA Audit', before: 'Replacement done', during: 'Verifies lot/batch', after: 'QA linked', ui: 'QA: QAR-8821' }, automation: { title: 'Care Plan', before: 'Resolved + shipped', during: 'Schedules 7-day follow-up', after: 'Nurse task created', ui: 'Task: 7 days' }},
+            'case-post': { agent: { title: 'New Case', before: 'Call', during: 'Creates', after: 'Done', ui: 'Created' }, supervisor: { title: 'Monitor', before: 'Check', during: 'Reviews', after: 'Done', ui: 'Done' }, automation: { title: 'Auto', before: 'Alert', during: 'Creates', after: 'Done', ui: 'Auto' }},
+            'contact-get': { agent: { title: 'Patient Lookup', before: 'Need', during: 'Gets', after: 'Found', ui: 'Found' }, supervisor: { title: 'Review', before: 'Esc', during: 'Views', after: 'Done', ui: 'Done' }, automation: { title: 'Sync', before: 'Update', during: 'Syncs', after: 'Done', ui: 'Synced' }},
+            'query-soql': { agent: { title: 'Search', before: 'Need', during: 'Query', after: 'Found', ui: 'Found' }, supervisor: { title: 'Report', before: 'Need', during: 'Query', after: 'Done', ui: 'Done' }, automation: { title: 'Check', before: 'Job', during: 'Runs', after: 'Done', ui: 'Done' }}
+        },
+        saas: {
+            'case-get': { agent: { title: 'Enterprise API Outage', before: 'Acme Corp: API 500 errors - $50K/day impact', during: 'Views: 47 failed webhooks, SLA 0.5hrs left', after: 'Senior engineer + CSM notified', ui: 'Case #API001 - P1 - $50K/day' }, supervisor: { title: 'SLA Heatmap', before: 'Multiple enterprise outages', during: 'Escalates severity', after: 'Exec alerted', ui: 'P1 - Exec pinged' }, automation: { title: 'Diagnostics', before: 'Integration error', during: 'Attaches logs + repro', after: 'PagerDuty fired', ui: 'Logs + PD' }},
+            'case-patch': { agent: { title: 'Enterprise Crisis Resolution', before: 'API failing, CEO on call with your CEO', during: 'Endpoint restored, $25K credit applied', after: 'QBR scheduled, relationship saved', ui: 'Resolved ✅ - Credit: $25K' }, supervisor: { title: 'RCA + Comms', before: 'Fix deployed', during: 'Posts RCA, exec update', after: 'Stakeholders aligned', ui: 'RCA posted' }, automation: { title: 'Churn Risk', before: 'High-risk account', during: 'Updates health score', after: 'CSM cadence started', ui: 'Health updated' }},
+            'case-post': { agent: { title: 'New P1', before: 'API issue', during: 'Creates P1', after: 'Routed', ui: 'P1 Created' }, supervisor: { title: 'Monitor', before: 'Alert', during: 'Reviews', after: 'Escalated', ui: 'Escalated' }, automation: { title: 'Auto Create', before: 'Monitor alert', during: 'Creates case', after: 'Eng notified', ui: 'Auto + PD' }},
+            'contact-get': { agent: { title: 'POC Lookup', before: 'Need CTO', during: 'Gets contact', after: 'Found', ui: 'CTO: Jane' }, supervisor: { title: 'Stakeholder Map', before: 'Escalation', during: 'Reviews contacts', after: 'Exec found', ui: 'Exec: Bob' }, automation: { title: 'CRM Sync', before: 'Deal update', during: 'Syncs', after: 'Done', ui: 'Synced' }},
+            'query-soql': { agent: { title: 'Similar Issues', before: 'Check history', during: 'SOQL finds 3', after: 'Pattern found', ui: '3 similar P1s' }, supervisor: { title: 'SLA Report', before: 'Exec meeting', during: 'Query SLA', after: 'Report ready', ui: 'SLA: 94.2%' }, automation: { title: 'Health Calc', before: 'Nightly', during: 'Aggregates', after: 'Scores updated', ui: 'Refreshed' }}
+        }
+    };
 
-        const IndustryScenarios = {
-            finance: {
-                'case-get': {
-                    agent: { title: 'Fraud Alert Investigation', before: 'Customer reports unauthorized $2,500 charge on credit card', during: 'Agent views case: Fraud flags triggered, transaction details, customer verification needed', after: 'Agent sees spending patterns, initiates card freeze, escalates to fraud team', uiState: 'Case #FR8901 - Critical - Security Breach - Customer: Sarah Chen - Account: ****4567' },
-                    supervisor: { title: 'Fraud Case Audit', before: 'Queue shows spike in fraud alerts', during: 'Supervisor reviews case details and SLA timers', after: 'Reassigns to fraud pod, enables war-room alerts', uiState: 'Dashboard: 17 critical fraud cases - SLA risk: 3' },
-                    automation: { title: 'Auto Fraud Classification', before: 'Transaction stream flags anomaly', during: 'Rule assigns case to Fraud-HighPriority queue', after: 'Auto-email to customer for verification sent', uiState: 'Routing Engine: Fraud-HighPriority - Email: Sent' }
-                },
-                'case-patch': {
-                    agent: { title: 'Fraud Resolution Update', before: 'Case status: "Under Investigation" - Customer anxious, card frozen', during: 'Agent updates: Status → "Resolved", Amount Refunded → $2,500, New Card → Expedited', after: 'Customer relief! Auto-text sent, fraud monitoring enhanced, case closed', uiState: 'Status: Resolved ✅ - Refund: $2,500 Processed - New Card: 2-Day Express' },
-                    supervisor: { title: 'Refund Approval', before: 'Large refund pending manager approval', during: 'Supervisor approves refund and verifies notes', after: 'Compliance log updated, finance notified', uiState: 'Approval: Completed - Compliance ID: CMP-4492' },
-                    automation: { title: 'Auto Close After SLA', before: 'Case in Resolved for 72 hours', during: 'Automation verifies no reopens and closes case', after: 'Survey sent, metrics updated', uiState: 'Auto-Close: Complete - CSAT Survey: Sent' }
-                }
-            },
-            education: {
-                'case-get': {
-                    agent: { title: 'Student Portal Access Issue', before: 'Student Emily can\'t access final exam - deadline in 2 hours!', during: 'Agent views case: Technical issue, exam portal down, 200+ affected students', after: 'Agent escalates to IT, extends deadline, notifies all affected students', uiState: 'Case #EDU456 - Emergency - Exam Portal - Affected: 247 Students - Deadline: Extended' },
-                    supervisor: { title: 'Outage Monitoring', before: 'Spike in exam portal incidents', during: 'Supervisor checks incident trend and staffing', after: 'Activates surge team and communication template', uiState: 'Ops: Surge team active - Notif template pushed' },
-                    automation: { title: 'Bulk Student Notifications', before: 'Outage detected with 200+ students', during: 'Automation drafts and sends outage update', after: 'Students notified with new deadline', uiState: 'Comms: 247 emails queued and delivered' }
-                },
-                'case-patch': {
-                    agent: { title: 'Emergency Resolution', before: 'Portal still down, students panicking, dean getting calls', during: 'Agent updates: Status → "Resolved", Portal → "Online", Deadline → "Extended 4hrs"', after: 'Mass email sent, students relieved, portal monitoring increased', uiState: 'Status: Resolved ✅ - Portal: Online - Extension: 4 hours - Students Notified' },
-                    supervisor: { title: 'Postmortem Note', before: 'Outage resolved', during: 'Supervisor adds root cause and action items', after: 'Follow-up tasks created for IT', uiState: 'RCA logged - 3 tasks created' },
-                    automation: { title: 'Close Child Incidents', before: 'Parent outage resolved', during: 'Automation closes linked student tickets', after: 'Metrics updated for incident set', uiState: 'Child tickets closed: 247' }
-                }
-            },
-            realestate: {
-                'case-get': {
-                    agent: { title: 'Closing Day Crisis', before: 'Buyer discovers major plumbing issue 2 hours before $450K house closing', during: 'Agent views case: Inspection missed, title company alerted, lawyers involved', after: 'Agent coordinates with all parties, delays closing, schedules emergency repair assessment', uiState: 'Case #RE2024 - Critical - Closing Delayed - Property: 123 Oak St - Value: $450K' },
-                    supervisor: { title: 'Escalation Routing', before: 'Multiple closings at risk', during: 'Supervisor reviews at-risk pipeline and reassigns senior agent', after: 'Risk reduced, communications aligned', uiState: 'Escalation: Senior agent assigned' },
-                    automation: { title: 'Vendor Dispatch', before: 'Urgent repair flagged', during: 'Automation triggers plumber dispatch workflow', after: 'Vendor en route, ETA 45 mins', uiState: 'Dispatch: Plumber ETA 45m' }
-                },
-                'case-patch': {
-                    agent: { title: 'Settlement Agreement', before: 'Negotiations ongoing, buyer threatens to walk, seller upset', during: 'Agent updates: Status → "Resolved", Agreement → "$8K seller credit", Closing → "Rescheduled"', after: 'All parties agree, new closing date set, contracts updated, everyone relieved', uiState: 'Status: Resolved ✅ - Credit: $8,000 - New Closing: Friday 2PM - All Parties Agreed' },
-                    supervisor: { title: 'Exception Approval', before: 'Concession exceeds policy', during: 'Supervisor approves exception with note', after: 'Deal saved, audit trail updated', uiState: 'Approval: Exception OK - Audit recorded' },
-                    automation: { title: 'Docs Sync', before: 'Closing rescheduled', during: 'Automation updates calendar invites and doc templates', after: 'All parties notified', uiState: 'Calendar + Docs updated' }
-                }
-            },
-            fashion: {
-                'case-get': {
-                    agent: { title: 'Luxury Return Request', before: 'Customer Emma wants to return a $500 designer jacket', during: 'Agent views case: "Item damaged on arrival, customer upset"', after: 'Agent sees purchase history, VIP status, offers immediate replacement', uiState: 'Case #123456 - Priority: High - Emma Thompson - VIP Customer' },
-                    supervisor: { title: 'VIP Queue Review', before: 'High return volume week', during: 'Supervisor checks VIP SLAs and workloads', after: 'Adds one more agent to VIP queue', uiState: 'VIP queue staffing +1' },
-                    automation: { title: 'Priority Tagging', before: 'High-value customer detected', during: 'Automation applies VIP priority and free-return tag', after: 'RMA label auto-emailed', uiState: 'Tags applied: VIP, Free-Return' }
-                },
-                'case-patch': {
-                    agent: { title: 'VIP Resolution Update', before: 'Case shows "Investigating" status, VIP customer waiting', during: 'Agent updates: Status → "Resolved", Action → "Replacement + $50 credit", Shipping → "Next-day"', after: 'Customer delighted, loyalty increased, social media praise posted', uiState: 'Status: Resolved ✅ - Replacement Sent - Bonus: $50 Credit - Delivery: Tomorrow' },
-                    supervisor: { title: 'Goodwill Policy Check', before: 'Multiple credits issued this month', during: 'Supervisor adjusts credit amount per policy', after: 'Spend within limit, customer still happy', uiState: 'Credit policy balance OK' },
-                    automation: { title: 'CSAT Follow-up', before: 'Case resolved', during: 'Automation sends CSAT and loyalty points', after: 'Response captured, points granted', uiState: 'CSAT sent - Points +200' }
-                }
-            },
-            healthcare: {
-                'case-get': {
-                    agent: { title: 'Patient Equipment Issue', before: 'Patient calls about malfunctioning medical device', during: 'Agent retrieves case: Critical priority, device model, warranty', after: 'Agent escalates to technical team, patient gets priority callback', uiState: 'Case #MED789 - Critical - Device: InsulinPump Pro - Warranty: Active' },
-                    supervisor: { title: 'Clinical Triage', before: 'Critical device alerts trending', during: 'Supervisor triages and re-prioritizes cases', after: 'Critical routed to on-call clinician', uiState: 'Triage: On-call alerted' },
-                    automation: { title: 'UDI Lookup', before: 'Device model captured', during: 'Automation fetches FDA UDI and safety notices', after: 'Reference attached to case', uiState: 'UDI + Safety notices attached' }
-                },
-                'case-patch': {
-                    agent: { title: 'Life-Critical Device Fix', before: 'Patient waiting for replacement insulin pump, blood sugar unstable', during: 'Agent updates: Status → "Resolved", Device → "Replacement shipped overnight", Temp Solution → "Provided"', after: 'Patient safe, device arrives next morning, follow-up care scheduled', uiState: 'Status: Resolved ✅ - Replacement: Express Delivery - Patient: Stable - Follow-up: Scheduled' },
-                    supervisor: { title: 'QA Audit', before: 'Device replacement processed', during: 'Supervisor verifies lot/batch and compliance fields', after: 'QA record linked', uiState: 'QA Link: QAR-8821' },
-                    automation: { title: 'Care Plan Trigger', before: 'Resolved and shipped', during: 'Automation schedules 7-day follow-up task', after: 'Nurse call task created', uiState: 'Task: Nurse follow-up in 7 days' }
-                }
-            },
-            saas: {
-                'case-get': {
-                    agent: { title: 'Integration Failure', before: 'Customer reports API connection issues', during: 'Agent views case: Enterprise client, integration errors, revenue impact', after: 'Agent assigns to senior engineer, customer success manager notified', uiState: 'Case #API001 - Enterprise - Revenue Impact: $50K/day - SLA: 4hrs' },
-                    supervisor: { title: 'SLA Heatmap', before: 'Multiple enterprise outages', during: 'Supervisor checks SLA heatmap and escalates severity', after: 'Exec alert sent', uiState: 'Severity raised to P1 - Exec pinged' },
-                    automation: { title: 'Webhook Diagnostics', before: 'Integration error detected', during: 'Automation attaches logs and repro steps', after: 'Engineering notified with context', uiState: 'Logs attached, PagerDuty triggered' }
-                },
-                'case-patch': {
-                    agent: { title: 'Enterprise Crisis Resolution', before: 'API still failing, customer losing $50K/day, CEO escalation', during: 'Agent updates: Status → "Resolved", Fix → "API endpoint restored", Credits → "$25K applied"', after: 'Customer operations restored, goodwill credit applied, relationship saved', uiState: 'Status: Resolved ✅ - API: Restored - Credit: $25K - Relationship: Saved' },
-                    supervisor: { title: 'RC + Comms', before: 'Fix deployed', during: 'Supervisor posts RCA summary and sends exec update', after: 'Stakeholders aligned', uiState: 'RCA posted - Exec note sent' },
-                    automation: { title: 'Churn Risk Monitor', before: 'High-risk account', during: 'Automation adds health score note and triggers outreach cadence', after: 'CSM alerted', uiState: 'Health score updated - Cadence started' }
-                }
-            }
-        };
+    const LearnData = {
+        'case-get': {
+            concept: { title: 'What is GET /sobjects/Case/{ID}?', text: 'Retrieves a single Case record by its unique 18-character Salesforce ID. Returns all accessible fields based on user permissions.', analogy: 'Like looking up a patient chart - provide the ID, get back authorized info.' },
+            params: [['Id','String (Required) - 18-char record ID'],['fields','Optional - comma-separated fields'],['Subject','String - case title'],['Status','Picklist - New/Working/Closed'],['Priority','Picklist - Low/Med/High/Critical']],
+            tips: ['Validate ID format before calling','Use fields param to reduce payload','Cache frequently-accessed cases','Use If-Modified-Since for polling'],
+            warns: ['Don\'t fetch same record in loops','Don\'t expose sensitive fields','Don\'t hardcode IDs (sandbox vs prod)'],
+            glossary: [['sObject','Salesforce Object - database table type'],['Record ID','Unique 18-char identifier'],['FLS','Field-Level Security'],['Governor Limits','API/query/CPU limits']],
+            related: ['GET /sobjects/Contact/{ID}','GET /sobjects/Account/{ID}','GET /query?q=SELECT...'],
+            faq: [['What if ID doesn\'t exist?','404 NOT_FOUND - handle gracefully'],['Can I get related records?','Yes: ?fields=Contact.Name,Account.Name'],['Why do fields return null?','Empty or no FLS permission']]
+        },
+        'case-patch': {
+            concept: { title: 'What is PATCH /sobjects/Case/{ID}?', text: 'Updates specific fields on an existing Case. Only modifies fields in the request body - others unchanged.', analogy: 'Like editing a Google Doc - change specific parts, others stay intact.' },
+            params: [['Id','String (Required in URL)'],['Status','Picklist - change status'],['Priority','Escalate/de-escalate'],['OwnerId','Reassign agent/queue'],['Description','Add resolution notes']],
+            tips: ['Send ONLY changed fields','Always add resolution notes when closing','Use ETags for optimistic locking','Batch with Composite API'],
+            warns: ['Don\'t overwrite unfetched fields','Don\'t ignore 403 errors','Don\'t update read-only fields'],
+            glossary: [['PATCH','HTTP method for partial updates'],['Optimistic Locking','Prevent overwriting via ETags'],['Composite API','Batch multiple operations'],['Validation Rule','Server-side field validation']],
+            related: ['GET /sobjects/Case/{ID}','POST /composite','POST /sobjects/CaseComment'],
+            faq: [['PATCH vs PUT?','PATCH = partial, PUT = full replace'],['Update multiple cases?','POST /composite/sobjects - up to 200'],['Update failed silently?','Check validation rules + triggers']]
+        },
+        'case-post': {
+            concept: { title: 'What is POST /sobjects/Case?', text: 'Creates a new Case record. Provide required/optional fields, Salesforce returns the new ID.', analogy: 'Like opening a support ticket - fill form, submit, get ticket number.' },
+            params: [['Subject','String (Required)'],['Origin','Phone/Web/Email/Chat'],['Priority','Initial urgency'],['ContactId','Link to customer'],['AccountId','Link to company']],
+            tips: ['Validate required fields first','Set Origin accurately for SLA','Let assignment rules auto-route','Return new ID to redirect user'],
+            warns: ['Check for duplicates first','Don\'t expose raw errors','Don\'t skip Origin field'],
+            glossary: [['Assignment Rules','Auto-route to queues/agents'],['Auto-Response','Automatic email replies'],['Web-to-Case','Cases from web forms']],
+            related: ['GET /sobjects/Case/{ID}','POST /sobjects/CaseComment','POST /sobjects/Attachment'],
+            faq: [['Prevent duplicates?','Query same Subject+Contact in 24hrs'],['Create case + comment together?','Use POST /composite'],['How assignment rules work?','Evaluate criteria, set OwnerId auto']]
+        },
+        'contact-get': {
+            concept: { title: 'What is GET /sobjects/Contact/{ID}?', text: 'Retrieves a Contact record - person associated with Case or Account. Contains name, email, phone, preferences.', analogy: 'Like pulling up a customer profile card - all their details in one place.' },
+            params: [['Id','String (Required)'],['Name','Full name'],['Email','Primary email'],['Phone','Primary phone'],['HasOptedOutOfEmail','Email preference']],
+            tips: ['Check HasOptedOutOfEmail before marketing','Mask PII for non-privileged users','Cache contact info during case handling'],
+            warns: ['Don\'t store PII in logs','Don\'t ignore opt-out (GDPR/CAN-SPAM)','Don\'t over-fetch unnecessary fields'],
+            glossary: [['PII','Personally Identifiable Information'],['GDPR','European data protection'],['Opt-Out','No communications preference']],
+            related: ['GET /sobjects/Account/{ID}','GET /sobjects/Case/{ID}'],
+            faq: [['Contact vs Lead?','Contacts have Accounts, Leads don\'t'],['Multiple Accounts?','Use AccountContactRelation'],['Handle duplicates?','Salesforce Duplicate Management']]
+        },
+        'query-soql': {
+            concept: { title: 'What is GET /query?q=SOQL?', text: 'Executes a SOQL query and returns matching records. Like SQL but for Salesforce\'s multi-tenant architecture.', analogy: 'Smart search filter - ask "show urgent cases this week" and get exactly that.' },
+            params: [['q','String (Required) - URL-encoded SOQL'],['SELECT','Fields to return'],['FROM','Object to query'],['WHERE','Filter conditions'],['LIMIT','Max records (default 2000)']],
+            tips: ['Always include WHERE clause','SELECT only needed fields','Use LIMIT for pagination','Use indexed fields in WHERE'],
+            warns: ['Don\'t SELECT * equivalent','Don\'t query on every keystroke','Don\'t ignore queryMore for large sets','Sanitize user input - injection risk!'],
+            glossary: [['SOQL','Salesforce Object Query Language'],['Governor Limits','100 queries/transaction, 50K records'],['Indexed Fields','Optimized for WHERE'],['queryMore','Pagination endpoint']],
+            related: ['GET /queryAll','GET /query/{nextRecordsUrl}','GET /sobjects/{sObject}/describe'],
+            faq: [['Max records?','2000/request - use queryMore'],['Query related objects?','SELECT Id, Contact.Name FROM Case'],['Query slow?','Non-indexed fields - check Query Plan']]
+        }
+    };
 
-        let currentAPI = null;
-        let currentPersona = 'agent';
-        let currentIndustry = 'finance';
+    // ========== STATE ==========
+    let currentAPI = 'case-patch';
+    let currentPersona = 'agent';
+    let currentIndustry = 'finance';
 
-        // Initialize the application
-        document.addEventListener('DOMContentLoaded', function() {
-            setupEventListeners();
+    // ========== RENDER ==========
+    function renderField() {
+        const api = APIs[currentAPI];
+        if (!api) { document.getElementById('apiDetails').innerHTML = ''; return; }
+        document.getElementById('apiDetails').innerHTML = `
+            <div class="api-card">
+                <span class="method-badge method-${api.method.toLowerCase()}">${api.method}</span>
+                <h3>${api.name}</h3>
+                <p><strong>Purpose:</strong> ${api.purpose}</p>
+                <p><strong>Resource:</strong> ${api.resource}</p>
+                <div class="tags">${api.useCases.map(u => `<span class="tag">${u}</span>`).join('')}</div>
+                <div class="scenario-box">💡 ${api.scenario}</div>
+            </div>
+        `;
+    }
+
+    function renderSee() {
+        const scenario = Scenarios[currentIndustry]?.[currentAPI]?.[currentPersona];
+        const api = APIs[currentAPI];
+        if (!scenario || !api) { document.getElementById('demoContent').innerHTML = '<p style="color:#888;font-size:0.9rem;">Select an API...</p>'; return; }
+        
+        let http = api.method === 'GET' ? `GET /services/data/v59.0/sobjects/${api.resource}/{ID}\nAuthorization: Bearer {token}\n\n200 OK { "Subject": "${scenario.title}", "Status": "Open" }` :
+                   api.method === 'PATCH' ? `PATCH /services/data/v59.0/sobjects/${api.resource}/{ID}\nContent-Type: application/json\n\n{ "Status": "Resolved" }\n\n204 No Content` :
+                   `POST /services/data/v59.0/sobjects/${api.resource}\nContent-Type: application/json\n\n{ "Subject": "${scenario.title}" }\n\n201 Created { "id": "500..." }`;
+        
+        document.getElementById('demoContent').innerHTML = `
+            <div class="demo-section">
+                <h4>📱 ${currentPersona.charAt(0).toUpperCase() + currentPersona.slice(1)}: ${scenario.title}</h4>
+                <div class="state-box" id="stateBox"><span class="status-dot status-loading"></span><strong>Before:</strong> ${scenario.before}</div>
+                <div class="code-block">${http}</div>
+                <div style="margin-top:10px;padding:10px 12px;background:#fff7ed;border-radius:8px;border-left:3px solid var(--accent);font-size:0.85rem;"><strong>🖥️ UI:</strong> ${scenario.ui}</div>
+            </div>
+        `;
+    }
+
+    function renderLearn() {
+        const d = LearnData[currentAPI];
+        if (!d) { document.getElementById('learnContent').innerHTML = '<p style="color:#888;">Select an API...</p>'; return; }
+        document.getElementById('learnContent').innerHTML = `
+            <div class="accordion"><button class="accordion-header open">💡 Concept <span class="chevron">▼</span></button><div class="accordion-body open"><h4 style="color:var(--accent-2);margin-bottom:6px;font-size:0.95rem;">${d.concept.title}</h4><p style="margin-bottom:8px;font-size:0.85rem;">${d.concept.text}</p><div class="scenario-box" style="font-style:italic;font-size:0.82rem;">🎯 ${d.concept.analogy}</div></div></div>
+            <div class="accordion"><button class="accordion-header">📋 Parameters <span class="chevron">▼</span></button><div class="accordion-body"><ul class="param-list">${d.params.map(p => `<li class="param-item"><span class="param-name">${p[0]}</span><span class="param-type">${p[1]}</span></li>`).join('')}</ul></div></div>
+            <div class="accordion"><button class="accordion-header">✅ Best Practices <span class="chevron">▼</span></button><div class="accordion-body">${d.tips.map(t => `<div class="tip-box">${t}</div>`).join('')}</div></div>
+            <div class="accordion"><button class="accordion-header">❌ Avoid <span class="chevron">▼</span></button><div class="accordion-body">${d.warns.map(w => `<div class="warn-box">${w}</div>`).join('')}</div></div>
+            <div class="accordion"><button class="accordion-header">📖 Glossary <span class="chevron">▼</span></button><div class="accordion-body">${d.glossary.map(g => `<div style="margin-bottom:8px;font-size:0.82rem;"><strong style="color:var(--accent-2);">${g[0]}</strong>: ${g[1]}</div>`).join('')}</div></div>
+            <div class="accordion"><button class="accordion-header">🔗 Related <span class="chevron">▼</span></button><div class="accordion-body">${d.related.map(r => `<div style="margin-bottom:6px;padding:6px 8px;background:var(--muted);border-radius:6px;font-size:0.8rem;font-family:monospace;">${r}</div>`).join('')}</div></div>
+            <div class="accordion"><button class="accordion-header">❓ FAQs <span class="chevron">▼</span></button><div class="accordion-body">${d.faq.map(f => `<div style="margin-bottom:10px;font-size:0.82rem;"><strong style="display:block;margin-bottom:2px;">${f[0]}</strong><span style="color:#555;">${f[1]}</span></div>`).join('')}</div></div>
+        `;
+        setupAccordions();
+    }
+
+    function renderAll() { renderField(); renderSee(); renderLearn(); }
+
+    // ========== EVENTS ==========
+    function setupAccordions() {
+        document.querySelectorAll('.accordion-header').forEach(h => {
+            h.onclick = () => { h.classList.toggle('open'); h.nextElementSibling.classList.toggle('open'); };
         });
+    }
 
-        function setupEventListeners() {
-            // API Selection
-            document.getElementById('apiSelect').addEventListener('change', function(e) {
-                if (e.target.value) {
-                    loadAPI(e.target.value);
-                }
-            });
+    document.getElementById('apiSelect').onchange = e => { currentAPI = e.target.value; renderAll(); };
 
-            // Persona Tabs
-            document.querySelectorAll('.persona-tab').forEach(tab => {
-                tab.addEventListener('click', function() {
-                    currentPersona = this.dataset.persona;
-                    updatePersonaTabs();
-                    updateSeePane();
-                });
-            });
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.onclick = () => {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentPersona = btn.dataset.persona;
+            renderSee();
+        };
+    });
 
-            // Industry Cards
-            document.querySelectorAll('.industry-card').forEach(card => {
-                card.addEventListener('click', function() {
-                    currentIndustry = this.dataset.industry;
-                    updateIndustryCards();
-                    updateSeePane();
-                });
-            });
+    document.querySelectorAll('.industry-card').forEach(card => {
+        card.onclick = () => {
+            document.querySelectorAll('.industry-card').forEach(c => c.classList.remove('active'));
+            card.classList.add('active');
+            currentIndustry = card.dataset.industry;
+            renderSee();
+        };
+    });
 
-            // Run Demo Button
-            document.getElementById('runDemo').addEventListener('click', runLiveDemo);
+    document.getElementById('runDemo').onclick = () => {
+        const box = document.getElementById('stateBox');
+        const scenario = Scenarios[currentIndustry]?.[currentAPI]?.[currentPersona];
+        if (!box || !scenario) return;
+        const btn = document.getElementById('runDemo');
+        btn.disabled = true; btn.textContent = '⏳ Running...';
+        setTimeout(() => { box.innerHTML = `<span class="status-dot status-loading"></span><strong>During:</strong> ${scenario.during}`; }, 600);
+        setTimeout(() => { box.innerHTML = `<span class="status-dot status-success"></span><strong>After:</strong> ${scenario.after}`; btn.disabled = false; btn.textContent = '▶️ Run Demo'; }, 1800);
+    };
 
-            // Learn Section Toggles
-            document.addEventListener('click', function(e) {
-                if (e.target.classList.contains('learn-section-header')) {
-                    e.target.parentElement.classList.toggle('expanded');
-                }
-            });
-        }
+    document.querySelectorAll('.m-tab').forEach(tab => {
+        tab.onclick = () => {
+            document.querySelectorAll('.m-tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            document.querySelector(`.panel[data-pane="${tab.dataset.pane}"]`).classList.add('active');
+        };
+    });
 
-        function loadAPI(apiKey) {
-            currentAPI = apiKey;
-            const api = APIs[apiKey];
-            
-            // Update Field Pane
-            updateFieldPane(api);
-            
-            // Update See Pane
-            updateSeePane();
-            
-            // Update Learn Pane
-            updateLearnPane(api);
-        }
+    document.getElementById('infoBtn').onclick = () => document.getElementById('modal').classList.add('show');
+    document.getElementById('modalClose').onclick = () => document.getElementById('modal').classList.remove('show');
+    document.getElementById('modalStart').onclick = () => document.getElementById('modal').classList.remove('show');
+    document.getElementById('modal').onclick = e => { if (e.target.id === 'modal') e.target.classList.remove('show'); };
 
-        function updateFieldPane(api) {
-            const details = document.getElementById('apiDetails');
-            details.innerHTML = `
-                <div class="api-card">
-                    <div class="api-method method-${api.method.toLowerCase()}">${api.method}</div>
-                    <h3>${api.name}</h3>
-                    <p><strong>Purpose:</strong> ${api.purpose}</p>
-                    <p><strong>Resource:</strong> ${api.resource}</p>
-                    
-                    <div class="use-case-tags">
-                        ${api.useCases.map(tag => `<span class="tag">${tag}</span>`).join('')}
-                    </div>
-                    
-                    <div class="scenario-snap">
-                        💡 <strong>Real Scenario:</strong> ${api.scenario}
-                    </div>
-                    
-                    <div style="margin-top: 1rem;">
-                        <h4>🔄 System Flow</h4>
-                        <p><strong>Triggers:</strong> ${api.triggers.join(', ')}</p>
-                        <p><strong>Upstream:</strong> ${api.upstream.join(', ')}</p>
-                        <p><strong>Downstream:</strong> ${api.downstream.join(', ')}</p>
-                    </div>
-                    
-                    <div style="margin-top: 1rem;">
-                        <h4>👥 Role Mapping</h4>
-                        <p><strong>Agent:</strong> ${api.roles.agent}</p>
-                        <p><strong>Supervisor:</strong> ${api.roles.supervisor}</p>
-                        <p><strong>Automation:</strong> ${api.roles.automation}</p>
-                    </div>
-                </div>
-            `;
-        }
-
-        function buildHttpExample(apiKey, api, scenario) {
-            // Return tailored HTTP example per API
-            if (apiKey === 'case-post') {
-                return `POST /services/data/vXX.X/sobjects/Case\nHost: your-instance.salesforce.com\nAuthorization: Bearer your_access_token\nContent-Type: application/json\n\n{\n  "Subject": "${scenario.title}",\n  "Origin": "Web",\n  "Priority": "Medium",\n  "ContactId": "0033X00002abcdeQAA",\n  "Description": "Customer submitted issue from portal"\n}\n\nResponse: 201 Created\n{\n  "id": "5003X00001AbCdE",\n  "success": true,\n  "errors": []\n}`;
-            }
-            if (apiKey === 'contact-get') {
-                return `GET /services/data/vXX.X/sobjects/Contact/{ID}\nHost: your-instance.salesforce.com\nAuthorization: Bearer your_access_token\n\nResponse: 200 OK\n{\n  "Id": "0033X00002abcdeQAA",\n  "Name": "Aarav Patel",\n  "Email": "aarav@example.com",\n  "Phone": "+1-415-555-0199",\n  "HasOptedOutOfEmail": false\n}`;
-            }
-            if (apiKey === 'query-soql') {
-                return `GET /services/data/vXX.X/query?q=SELECT+Id,Subject,Status,Priority+FROM+Case+WHERE+Status='New'+AND+Priority='High'+ORDER+BY+CreatedDate+DESC+LIMIT+5\nHost: your-instance.salesforce.com\nAuthorization: Bearer your_access_token\n\nResponse: 200 OK\n{\n  "totalSize": 5,\n  "done": true,\n  "records": [\n    { "Id": "500...1", "Subject": "Payment failed", "Status": "New", "Priority": "High" },\n    { "Id": "500...2", "Subject": "Login issue", "Status": "New", "Priority": "High" }\n  ]\n}`;
-            }
-            // Fallback to existing simple example
-            return `${api.method} ${api.name.split(' ')[1]}\nHost: your-instance.salesforce.com\nAuthorization: Bearer your_access_token\n\nResponse: 200 OK\n{\n  "Id": "5003000000D8cuI",\n  "Subject": "${scenario.title}",\n  "Status": "In Progress",\n  "Priority": "High"\n}`;
-        }
-
-        function updateSeePane() {
-            if (!currentAPI) return;
-            
-            const demo = document.getElementById('apiDemo');
-            const api = APIs[currentAPI];
-            const industryEntry = IndustryScenarios[currentIndustry]?.[currentAPI];
-            const defaultEntry = DefaultScenarios[currentAPI];
-            const scenario = (industryEntry && industryEntry[currentPersona]) || (defaultEntry && defaultEntry[currentPersona]);
-            
-            if (!scenario) {
-                demo.innerHTML = '<p>Demo scenario coming soon for this industry...</p>';
-                return;
-            }
-            
-            demo.innerHTML = `
-                <div class="demo-section">
-                    <h4>📱 ${currentPersona.charAt(0).toUpperCase() + currentPersona.slice(1)} View: ${scenario.title}</h4>
-                    
-                    <div class="ui-simulation">
-                        <div class="ui-state active" id="beforeState">
-                            <span class="status-indicator status-loading"></span>
-                            <strong>Before:</strong> ${scenario.before}
-                        </div>
-                        <div class="ui-state" id="duringState">
-                            <span class="status-indicator status-loading"></span>
-                            <strong>During:</strong> ${scenario.during}
-                        </div>
-                        <div class="ui-state" id="afterState">
-                            <span class="status-indicator status-success"></span>
-                            <strong>After:</strong> ${scenario.after}
-                        </div>
-                    </div>
-                    
-                    <div class="code-block" data-lang="http">${buildHttpExample(currentAPI, api, scenario)}</div>
-                </div>
-                
-                <div style="margin-top: 1rem; padding: 0.75rem; background: #f8f9fa; border-radius: 8px;">
-                    <strong>UI State:</strong> ${scenario.uiState}
-                </div>
-            `;
-        }
-
-        function updateLearnPane(api) {
-            const content = document.getElementById('learnContent');
-            const learnConfigs = {
-                'case-get': {
-                    params: [
-                        ['Id','String (Required)'],
-                        ['Subject','String (255 chars)'],
-                        ['Status','Picklist'],
-                        ['Priority','Picklist']
-                    ],
-                    best: [
-                        'Validate IDs before calling to avoid 404s',
-                        'Respect field-level security (FLS) and object permissions',
-                        'Cache frequently-read data to reduce API calls'
-                    ],
-                    anti: [
-                        "Don't fetch the same record repeatedly without need",
-                        "Don't expose sensitive fields to unauthorized users",
-                        "Don't hardcode record IDs"
-                    ],
-                    related: [
-                        'GET /sobjects/Contact/{ID} - Fetch case contact details',
-                        'GET /sobjects/Account/{ID} - Get account information',
-                        'POST /sobjects/CaseComment - Add case comments'
-                    ],
-                    errors: [
-                        ['NOT_FOUND','Record does not exist or insufficient access'],
-                        ['INSUFFICIENT_ACCESS','User lacks read access']
-                    ]
-                },
-                'case-patch': {
-                    params: [
-                        ['Id','String (Required in URL)'],
-                        ['Status','Picklist'],
-                        ['Priority','Picklist'],
-                        ['OwnerId','Reference']
-                    ],
-                    best: [
-                        'Send only changed fields to minimize validation impact',
-                        'Audit updates and capture resolution notes',
-                        'Use composite for bulk updates'
-                    ],
-                    anti: [
-                        'Avoid overwriting fields you did not fetch',
-                        'Do not ignore 403 validation or FLS errors'
-                    ],
-                    related: [
-                        'POST /sobjects/Case - Create a new Case',
-                        'GET /sobjects/Case/{ID} - Verify updates'
-                    ],
-                    errors: [
-                        ['INSUFFICIENT_ACCESS_OR_READONLY','User cannot update field'],
-                        ['INVALID_FIELD','One or more fields are invalid']
-                    ]
-                },
-                'case-post': {
-                    params: [
-                        ['Subject','String (Required)'],
-                        ['Origin','Picklist (e.g., Web, Phone, Email)'],
-                        ['Priority','Picklist'],
-                        ['ContactId','Reference (Optional)'],
-                        ['AccountId','Reference (Optional)'],
-                        ['Description','Long Text (Optional)']
-                    ],
-                    best: [
-                        'Validate required fields and picklist values before submit',
-                        'Leverage assignment rules and auto-response',
-                        'Return new Case Id to client and navigate to detail'
-                    ],
-                    anti: [
-                        'Avoid creating duplicates — de-duplicate by subject/contact/time',
-                        'Do not expose internal error messages to end users'
-                    ],
-                    related: [
-                        'POST /sobjects/CaseComment - Add initial note',
-                        'GET /sobjects/Case/{ID} - Read back created record'
-                    ],
-                    errors: [
-                        ['REQUIRED_FIELD_MISSING','A required field was not provided'],
-                        ['INVALID_OR_NULL_FOR_RESTRICTED_PICKLIST','Invalid picklist value']
-                    ]
-                },
-                'contact-get': {
-                    params: [
-                        ['Id','String (Required)'],
-                        ['Name, Email, Phone','Returned fields']
-                    ],
-                    best: [
-                        'Mask or limit sensitive PII for non-privileged users',
-                        'Use If-Modified-Since to reduce payloads when applicable'
-                    ],
-                    anti: [
-                        'Do not store PII unencrypted in logs',
-                        'Avoid over-fetching fields you do not display'
-                    ],
-                    related: [
-                        'GET /sobjects/Case/{ID} - View related Case',
-                        'GET /sobjects/Account/{ID} - Account context'
-                    ],
-                    errors: [
-                        ['NOT_FOUND','Contact not found'],
-                        ['INSUFFICIENT_ACCESS','Lacks read access to Contact']
-                    ]
-                },
-                'query-soql': {
-                    params: [
-                        ['q','SOQL query string (Required)'],
-                        ['limit/offset','Use in SOQL rather than query params']
-                    ],
-                    best: [
-                        'Select only required fields; avoid SELECT Id, Name, ...*',
-                        'Filter with WHERE and LIMIT to respect governor limits',
-                        'Use ORDER BY and pagination patterns for large data sets'
-                    ],
-                    anti: [
-                        'Avoid unbounded queries (no WHERE/LIMIT)',
-                        'Do not run SOQL on every keystroke — debounce UI filters'
-                    ],
-                    related: [
-                        'GET /query/next/?nextRecordsUrl - Paginate results',
-                        'Tooling API for metadata queries'
-                    ],
-                    errors: [
-                        ['MALFORMED_QUERY','Check SOQL syntax'],
-                        ['REQUEST_LIMIT_EXCEEDED','Reduce frequency or batch requests']
-                    ]
-                }
-            };
-
-            const cfg = learnConfigs[currentAPI] || learnConfigs['case-get'];
-
-            const paramsHTML = cfg.params.map(p => `
-                            <li class="parameter-item">
-                                <span class="parameter-name">${p[0]}</span>
-                                <span class="parameter-type">${p[1]}</span>
-                            </li>`).join('');
-
-            const bestHTML = cfg.best.map(txt => `<div class="best-practice"><strong>Tip:</strong> ${txt}</div>`).join('');
-            const antiHTML = cfg.anti.map(txt => `<div class="anti-pattern"><strong>Avoid:</strong> ${txt}</div>`).join('');
-            const relatedHTML = cfg.related.map(txt => `<p><strong>${txt.split(' - ')[0]}</strong> - ${txt.split(' - ')[1] || ''}</p>`).join('');
-            const errorsJSON = `// Common Error Responses\n${cfg.errors.map(e => `{"message": "${e[0]}", "errorCode": "${e[0]}"}`).join('\n')}`;
-
-            content.innerHTML = `
-                <div class="learn-section expanded">
-                    <div class="learn-section-header">
-                        📋 Parameters & Fields
-                        <span>▼</span>
-                    </div>
-                    <div class="learn-section-content">
-                        <ul class="parameter-list">${paramsHTML}
-                        </ul>
-                    </div>
-                </div>
-                
-                <div class="learn-section">
-                    <div class="learn-section-header">
-                        ✅ Best Practices
-                        <span>▼</span>
-                    </div>
-                    <div class="learn-section-content">${bestHTML}
-                    </div>
-                </div>
-                
-                <div class="learn-section">
-                    <div class="learn-section-header">
-                        ❌ Anti-Patterns
-                        <span>▼</span>
-                    </div>
-                    <div class="learn-section-content">${antiHTML}
-                    </div>
-                </div>
-                
-                <div class="learn-section">
-                    <div class="learn-section-header">
-                        🔧 Error Handling
-                        <span>▼</span>
-                    </div>
-                    <div class="learn-section-content">
-                        <div class="code-block" data-lang="json">${errorsJSON}</div>
-                    </div>
-                </div>
-                
-                <div class="learn-section">
-                    <div class="learn-section-header">
-                        🔗 Related APIs
-                        <span>▼</span>
-                    </div>
-                    <div class="learn-section-content">${relatedHTML}
-                    </div>
-                </div>
-            `;
-        }
-
-        function updatePersonaTabs() {
-            document.querySelectorAll('.persona-tab').forEach(tab => {
-                tab.classList.toggle('active', tab.dataset.persona === currentPersona);
-            });
-        }
-
-        function updateIndustryCards() {
-            document.querySelectorAll('.industry-card').forEach(card => {
-                card.classList.toggle('active', card.dataset.industry === currentIndustry);
-            });
-        }
-
-        function runLiveDemo() {
-            if (!currentAPI) return;
-            
-            const button = document.getElementById('runDemo');
-            const demoArea = document.getElementById('apiDemo');
-            
-            // Scroll to demo area for better focus
-            demoArea.scrollIntoView({ 
-                behavior: 'smooth', 
-                block: 'start' 
-            });
-            
-            button.disabled = true;
-            button.textContent = '⏳ Running Demo...';
-            
-            // Simulate the API call states
-            const states = ['beforeState', 'duringState', 'afterState'];
-            let currentStateIndex = 0;
-            
-            const cycleStates = () => {
-                document.querySelectorAll('.ui-state').forEach(state => {
-                    state.classList.remove('active');
-                });
-                
-                document.getElementById(states[currentStateIndex]).classList.add('active');
-                currentStateIndex++;
-                
-                if (currentStateIndex < states.length) {
-                    setTimeout(cycleStates, 2000);
-                } else {
-                    button.disabled = false;
-                    button.textContent = '▶️ Run Live Demo';
-                }
-            };
-            
-            setTimeout(cycleStates, 1000);
-        }
-
-        // Auto-load the PATCH API to showcase the update scenarios
-        setTimeout(() => {
-            document.getElementById('apiSelect').value = 'case-patch';
-            loadAPI('case-patch');
-        }, 500);
+    // Init with default
+    renderAll();
     </script>
 </body>
 </html>

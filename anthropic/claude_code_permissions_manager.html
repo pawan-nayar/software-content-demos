@@ -19,19 +19,37 @@
       --tabs-sticky-top: 60px; /* distance from top when sticky (desktop) */
     }
     *{box-sizing:border-box;margin:0;padding:0}
-    html,body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;scroll-behavior:smooth}
-    .container{max-width:800px;margin:auto;padding:24px;background:#fff}
+    html,body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;scroll-behavior:smooth;overflow-x:hidden}
+    .container{max-width:800px;margin:auto;padding:24px;background:#fff;width:100%}
     a{color:var(--accent);text-decoration:none}
     a:hover{text-decoration:underline}
+    
+    @media (max-width: 768px) {
+      .container{padding:16px;width:100%;overflow-x:hidden}
+      #profile-name, #profile-list{min-width:100px !important;flex:1 1 auto}
+    }
 
     /* ================= Header / Footer ================= */
     .site-header,.site-footer{background:var(--header-bg);color:var(--header-fg);padding:14px 24px}
     .site-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;position:sticky;top:0;z-index:100}
-    .logo{font-weight:700;font-size:1.15rem;color:#fff}
-    .site-header nav{display:flex;gap:14px}
-    .site-header nav a{color:#ced4da}
+    .logo{font-weight:700;font-size:1.15rem;color:#fff;line-height:1.2}
+    .site-header nav{display:flex;gap:14px;align-items:center}
+    .site-header nav a{color:#ced4da;white-space:nowrap;text-decoration:none;transition:color 0.2s ease;font-size:0.95rem}
     .site-header nav a:hover{color:#fff}
     .site-footer{text-align:center;margin-top:50px;padding:40px}
+    .hamburger{display:none;flex-direction:column;gap:4px;background:none;border:none;cursor:pointer;padding:8px;margin-left:auto}
+    .hamburger span{display:block;width:24px;height:3px;background:#f8f9fa;border-radius:2px;transition:all 0.3s ease}
+
+    @media (max-width: 768px) {
+      .site-header{flex-wrap:nowrap}
+      .site-header nav{position:fixed;top:60px;right:0;background:#212529;flex-direction:column;width:200px;padding:20px;gap:16px;transform:translateX(100%);transition:transform 0.3s ease;box-shadow:-4px 0 12px rgba(0,0,0,0.3);height:calc(100vh - 60px);overflow-y:auto}
+      .site-header nav.open{transform:translateX(0)}
+      .site-header nav a{font-size:1rem;padding:8px 0;display:block}
+      .hamburger{display:flex}
+      .hamburger.open span:nth-child(1){transform:rotate(45deg) translate(6px, 6px)}
+      .hamburger.open span:nth-child(2){opacity:0}
+      .hamburger.open span:nth-child(3){transform:rotate(-45deg) translate(6px, -6px)}
+    }
 
     /* ================= Typography & Layout ================= */
     h1{font-size:clamp(2rem,5vw,2.6rem);text-align:left;margin-bottom:8px;color:var(--text);line-height:1.2}
@@ -44,23 +62,46 @@
     ul{margin-left:24px;margin-bottom:24px;list-style-type:'🔸';padding-left:1em}
     li{margin-bottom:12px;padding-left:0.5em}
     .intro{font-size:1.1rem;line-height:1.8;background:transparent;padding:0;border-radius:0;border-left:none;margin:16px 0 8px}
-    .btn{background:var(--accent);color:#fff;border:none;padding:10px 14px;border-radius:10px;font-weight:700;cursor:pointer;transition:background-color 0.2s ease}
+    .btn{background:var(--accent);color:#fff;border:none;padding:12px 20px;border-radius:10px;font-weight:700;cursor:pointer;transition:all 0.2s ease;min-height:48px;display:inline-flex;align-items:center;justify-content:center;text-align:center}
     .btn:hover{background-color:var(--accent-2)}
-    .btn:disabled{background:#ced4da;cursor:not-allowed}
+    .btn:disabled{background:#ced4da;cursor:not-allowed;opacity:0.6}
+    .btn-secondary{background:transparent;color:var(--text);border:2px solid var(--border);font-weight:600}
+    .btn-secondary:hover{background:#f8f9fa;border-color:#adb5bd;color:var(--text)}
     strong { font-weight: 600; } /* Ensure strong tag is used, not Markdown */
     
     /* ================= Tabs ================= */
-    .tabs{display:flex;flex-wrap:wrap;gap:8px;border-bottom:2px solid var(--border);margin:16px 0 12px;justify-content:flex-start;align-items:center;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-ms-overflow-style:none}
-    .tabs::-webkit-scrollbar{display:none;height:0}
-    @media (min-width: 900px){ .tabs{flex-wrap:nowrap; position: sticky; top: var(--tabs-sticky-top); background: var(--bg); z-index: 90; padding-top:4px} .tabs.tabs-stuck{box-shadow:0 6px 14px rgba(0,0,0,0.08);} }
-    .tab-button{background:none;border:none;padding:10px 12px;font-size:1rem;font-weight:600;cursor:pointer;border-bottom:3px solid transparent;transition:all .2s ease;color:#6c757d;white-space:nowrap}
+    .tabs-wrapper{position:relative;margin:16px 0 12px}
+    .tabs{display:flex;flex-wrap:wrap;gap:8px;border-bottom:2px solid var(--border);justify-content:flex-start;align-items:center;overflow-x:auto;overflow-y:hidden;scrollbar-width:thin;scrollbar-color:#ddd transparent;scroll-behavior:smooth}
+    .tabs::-webkit-scrollbar{height:6px}
+    .tabs::-webkit-scrollbar-track{background:transparent}
+    .tabs::-webkit-scrollbar-thumb{background:#ddd;border-radius:3px}
+    .tabs::-webkit-scrollbar-thumb:hover{background:#bbb}
+    .tab-button{background:none;border:none;padding:10px 12px;font-size:1rem;font-weight:600;cursor:pointer;border-bottom:3px solid transparent;transition:all .2s ease;color:#6c757d;white-space:nowrap;min-height:48px;display:flex;align-items:center}
     .tab-button.active{color:#fff;border-bottom-color:transparent;background:var(--accent);border-radius:8px}
     .tabs .btn.cta-start{margin-left:auto;white-space:nowrap;background:transparent;color:var(--accent-2);border:2px solid var(--accent);padding:8px 12px}
     .tabs .btn.cta-start:hover{background:var(--accent);color:#fff}
     .tab-button:hover{color:var(--text);}
+    .tab-scroll-btn{display:none;position:absolute;top:50%;transform:translateY(-50%);background:var(--accent);color:#fff;border:none;width:36px;height:36px;border-radius:50%;cursor:pointer;z-index:10;box-shadow:0 2px 8px rgba(0,0,0,0.2);font-size:1.2rem;align-items:center;justify-content:center}
+    .tab-scroll-btn:hover{background:var(--accent-2)}
+    .tab-scroll-btn.left{left:-18px}
+    .tab-scroll-btn.right{right:-18px}
     .tab-panel{display:none;animation:fadeIn .3s; padding-top: 24px;}
     .tab-panel.active{display:block}
     @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+    
+    @media (max-width: 768px) {
+      .tabs-wrapper{display:none !important}
+      .tab-panel{display:block !important;padding-top:0;margin-top:40px;border-top:3px solid var(--border)}
+      .tab-panel:first-of-type{margin-top:0;border-top:none}
+      .tab-panel h2{display:block !important;font-size:1.8rem;margin:0 0 20px 0;padding-bottom:12px;border-bottom:2px solid var(--border)}
+    }
+
+    @media (min-width: 769px) {
+      .tabs{flex-wrap:nowrap;position:sticky;top:var(--tabs-sticky-top);background:var(--bg);z-index:90;padding-top:4px}
+      .tabs.tabs-stuck{box-shadow:0 6px 14px rgba(0,0,0,0.08)}
+      .tab-panel h2{display:none}
+      .tab-scroll-btn{display:none}
+    }
     
     /* ================= Quiz Styles ================= */
     .quiz-container{padding:20px;border:2px solid var(--border);border-radius:12px;background:#fff}
@@ -68,14 +109,19 @@
     .quiz-body{display:none}
     .quiz-body.active{display:block}
     .quiz-options{display:grid;gap:12px}
-    .quiz-option label{display:flex;align-items:flex-start;gap:12px;padding:14px;border:2px solid var(--border);border-radius:8px;cursor:pointer;background:#f8f9fa}
-    .quiz-option input[type="radio"]{flex-shrink:0; margin-top: 5px;}
+    .quiz-option label{display:flex;align-items:flex-start;gap:12px;padding:14px;border:2px solid var(--border);border-radius:8px;cursor:pointer;background:#f8f9fa;min-height:60px}
+    .quiz-option input[type="radio"]{flex-shrink:0;margin-top:5px;transform:scale(1.2);min-width:20px;min-height:20px;cursor:pointer}
     .quiz-option .explanation{display:none;margin-top:10px;padding:15px;border-radius:6px;border-left:4px solid #a0aec0}
     .quiz-option.selected.correct label{background:var(--ok-soft);border-color:var(--ok)}
     .quiz-option.selected.wrong label{background:var(--bad-soft);border-color:var(--bad)}
     .quiz-option.correct .explanation{border-left-color:var(--ok);background:#f0fff4}
     .quiz-option.wrong .explanation{border-left-color:var(--bad);background:#fff5f5}
     .quiz-rationale{display:none;margin-top:14px;padding:14px;border-radius:6px;border:1px solid var(--border);background:#f8fafc}
+    
+    @media (max-width: 768px) {
+      .quiz-option label{padding:18px;gap:16px;min-height:72px}
+      .quiz-option input[type="radio"]{transform:scale(1.5);min-width:24px;min-height:24px;margin-top:8px}
+    }
 
     /* ================= PERMISSION SEEDER (New Component) ================= */
     .permission-group { margin: 1.5rem 0rem; }
@@ -83,44 +129,79 @@
     .permission-item {
         display: flex;
         align-items: flex-start; /* Align to top for multi-line */
-        padding: 12px 0;
+        padding: 16px 0;
         border-bottom: 1px solid #f0f0f0;
+        gap: 12px;
     }
     .permission-item:last-child { border-bottom: none; }
-    .permission-item input { margin-right: 12px; transform: scale(1.2); margin-top: 5px; flex-shrink: 0;}
+    .permission-item input {
+        margin: 0;
+        transform: scale(1.3);
+        flex-shrink: 0;
+        min-width: 24px;
+        min-height: 24px;
+        cursor: pointer;
+        margin-top: 0;
+        align-self: flex-start;
+    }
     .permission-item label {
         flex-grow: 1;
         display: flex;
         flex-direction: column;
         cursor: pointer;
         line-height: 1.5;
-        margin-right: 10px; /* Space before help icon */
+    }
+    .permission-item .permission-name {
+        display: flex;
+        align-items: center;
+        gap: 0;
+        margin-bottom: 4px;
+        line-height: 1.4;
     }
     .permission-item strong {
         font-family: "Courier New", Courier, monospace;
-        font-size: 1.1em;
-        color: var(--accent-2); /* Using brand color */
+        font-size: 1rem;
+        color: var(--accent-2);
+        font-weight: 600;
     }
-    .permission-item span { font-size: 0.9em; color: #555; }
-    /* Help Icon (?) Styling */
+    .permission-item .permission-desc { 
+        font-size: 0.9rem; 
+        color: #555; 
+        line-height: 1.4;
+    }
+    /* Help Icon (i) Styling */
     .help-icon {
-        display: inline-block;
-        width: 20px;
-        height: 20px;
-        background-color: #e9ecef;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 18px;
+        height: 18px;
+        background-color: transparent;
         color: #6c757d;
+        border: 1.5px solid #adb5bd;
         border-radius: 50%;
-        text-align: center;
-        line-height: 20px;
         font-weight: bold;
-        font-size: 0.8rem;
+        font-size: 0.75rem;
+        font-style: italic;
         cursor: pointer;
-        margin-left: auto; /* Pushes icon to the right */
         flex-shrink: 0;
-        margin-top: 4px;
-        transition: background-color 0.2s;
+        transition: all 0.2s;
+        margin-left: 6px;
     }
-    .help-icon:hover { background-color: #ced4da; }
+    .help-icon:hover { 
+      background-color: var(--accent); 
+      border-color: var(--accent);
+      color: #fff;
+    }
+    
+    @media (max-width: 768px) {
+      .permission-item{padding:16px 0;gap:12px;align-items:center}
+      .permission-item input{transform:scale(1.4);min-width:26px;min-height:26px;margin-top:0}
+      .permission-item label{padding:0;font-size:1rem}
+      .permission-item strong{font-size:1rem;font-weight:600}
+      .permission-item .permission-desc{font-size:0.9rem}
+      .help-icon{width:20px;height:20px;font-size:0.8rem;margin-left:8px}
+    }
     
     .output-area { padding: 1.5rem 0rem; background: #fdfdfd; }
     .output-area button {
@@ -130,6 +211,7 @@
     }
     #json-output {
         width: 100%;
+        max-width: 100%;
         height: 250px;
         margin-top: 1rem;
         font-family: "Courier New", Courier, monospace;
@@ -139,8 +221,9 @@
         border: 1px solid #ccc;
         border-radius: 5px;
         padding: 10px;
-        box-sizing: border-box; /* Ensures padding doesn't affect width */
-        white-space: pre; /* Ensure whitespace is preserved */
+        box-sizing: border-box;
+        white-space: pre;
+        overflow-x: auto;
     }
     
     /* Simple Modal for Help Popups */
@@ -155,6 +238,7 @@
         visibility: hidden;
         transition: opacity 0.3s, visibility 0.3s;
         z-index: 1000;
+        padding: 16px;
     }
     .modal-overlay.visible {
         opacity: 1;
@@ -165,11 +249,13 @@
         padding: 25px;
         border-radius: 12px;
         max-width: 500px;
-        width: 90%;
+        width: 100%;
+        max-height: 90vh;
+        overflow-y: auto;
         box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         position: relative;
     }
-    .modal-content.large { max-width: 960px; width: 96%; }
+    .modal-content.large { max-width: 960px; }
     .modal-content h4 { margin-top: 0; color: var(--accent-2); }
     .modal-close-btn {
         position: absolute;
@@ -181,8 +267,20 @@
         background: none;
         border: none;
         cursor: pointer;
+        min-width: 48px;
+        min-height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
     .modal-close-btn:hover { color: #333; }
+    
+    @media (max-width: 768px) {
+      .modal-overlay{padding:8px;align-items:flex-start;padding-top:40px}
+      .modal-content{width:100%;max-width:100%;padding:20px;max-height:calc(100vh - 48px)}
+      .modal-content.large{max-width:100%}
+      .modal-close-btn{min-width:44px;min-height:44px;font-size:1.8rem}
+    }
 
     /* Learn Modal UI */
     .modal-tabs { display:flex; gap:10px; border-bottom:1px solid var(--border); margin: 6px 0 12px 0; }
@@ -191,10 +289,53 @@
     .modal-panels { height: 60vh; overflow:auto; }
     .modal-panel { display:none; }
     .modal-panel.active { display:block; }
-    .preset-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap:12px; }
-    .preset-card { border:1px solid var(--border); border-radius:10px; padding:12px; background:#fff; }
-    .preset-card h5 { margin: 0 0 6px 0; }
-    .preset-card .small { color:#64748b; font-size:0.9em; }
+    .preset-grid { display:grid; grid-template-columns: repeat(2, 1fr); gap:12px; margin-bottom:12px; width:100%; max-width:100%; }
+    .preset-card { 
+      border:2px solid var(--border); 
+      border-radius:12px; 
+      padding:16px 12px; 
+      background:#fff; 
+      cursor:pointer;
+      transition:all 0.2s ease;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:8px;
+      min-height:100px;
+      text-align:center;
+    }
+    .preset-card:hover { 
+      border-color:var(--accent); 
+      background:#fff9f5;
+      transform:translateY(-2px);
+      box-shadow:0 4px 12px rgba(253,126,20,0.15);
+    }
+    .preset-card.active {
+      border-color:var(--accent);
+      background:var(--accent);
+      color:#fff;
+    }
+    .preset-icon { font-size:2rem; line-height:1; }
+    .preset-label { font-size:0.9rem; font-weight:600; line-height:1.3; }
+    .preset-card.active .preset-label { color:#fff; }
+    
+    @media (max-width:400px) {
+      .preset-grid { grid-template-columns: 1fr; }
+    }
+    
+    @media (min-width:769px) {
+      .preset-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    
+    @media (min-width:1024px) {
+      .preset-grid { grid-template-columns: repeat(5, 1fr); }
+    }
+    
+    /* Modal preset grid (different from main preset grid) */
+    .modal-panels .preset-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+    .modal-panels .preset-card { border:1px solid var(--border); padding:12px; min-height:auto; align-items:flex-start; text-align:left; }
+    .modal-panels .preset-card h5 { margin: 0 0 6px 0; }
+    .modal-panels .preset-card .small { color:#64748b; font-size:0.9em; }
     
     /* ================= RISK AUDITOR (New Component) ================= */
     .auditor-container {
@@ -204,12 +345,15 @@
     }
     .auditor-container textarea {
         width: 100%;
+        max-width: 100%;
         height: 200px;
         font-family: "Courier New", Courier, monospace;
         font-size: 0.9em;
         border: 1px solid var(--border);
         border-radius: 8px;
         padding: 10px;
+        box-sizing: border-box;
+        overflow-x: auto;
     }
     .auditor-report {
         background: var(--muted);
@@ -240,7 +384,11 @@
     /* ================= Glossary L (3D Flip Card) ================= */
     .bdx-glossaryL-section{max-width:700px;margin:40px auto;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
     .bdx-glossaryL-section h2{display: none;} /* Hiding the h2 as it's in the tab */
-    .bdx-glossaryL-section .intro{text-align:center;color:#64748b;margin-bottom:1.5rem;font-size:0.95rem}
+    .bdx-glossaryL-section .intro{text-align:left;color:#64748b;margin-bottom:1.5rem;font-size:0.95rem}
+    
+    @media (max-width: 768px) {
+      .bdx-glossaryL-section .intro{display:none}
+    }
     .bdx-card-container{perspective:1200px;width:100%;max-width:700px;height:580px;max-height:85vh;margin:0 auto}
     .bdx-card{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform 0.7s cubic-bezier(0.25,1,0.5,1)}
     .bdx-card.flipped{transform:rotateY(180deg)}
@@ -255,8 +403,8 @@
     .bdx-card-body{flex-grow:1;overflow-y:auto;min-height:0;padding-right:0.5rem;margin-right:-0.5rem}
     .bdx-card-footer{flex-shrink:0;padding-top:1rem;margin-top:auto;border-top:1px solid #eee}
     /* Branded emoji background */
-    .bdx-emoji{font-size:2rem;width:2.2em;height:2.2em;background:#fff0dc;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 0.5rem}
-    .bdx-card h3{font-size:1.25rem;font-weight:700;margin:0;text-align:center;line-height:1.2}
+    .bdx-emoji{font-size:2rem;width:2.2em;height:2.2em;background:#fff0dc;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 0 0.5rem 0}
+    .bdx-card h3{font-size:1.25rem;font-weight:700;margin:0;text-align:left;line-height:1.2}
     .bdx-description{font-size:0.95rem;line-height:1.5;margin:0 0 1.25rem 0} /* Slightly larger desc font */
     .bdx-examples strong{display:block;margin-bottom:0.5rem;font-size:0.95rem}
     .bdx-examples ul{margin:0;padding-left:1.2rem; list-style-type: '👉';}
@@ -273,7 +421,7 @@
     .bdx-card-body::-webkit-scrollbar-track{background:transparent}
     .bdx-card-body::-webkit-scrollbar-thumb{background:#ccc;border-radius:3px}
     .bdx-card-body::-webkit-scrollbar-thumb:hover{background:#999}
-    .bdx-card-back .bdx-card-header{display:flex;align-items:center;justify-content:center;gap:0.5rem}
+    .bdx-card-back .bdx-card-header{display:flex;align-items:center;justify-content:flex-start;gap:0.5rem}
     .bdx-back-emoji{font-size:1.25rem}
     .bdx-controls{margin-top:1rem;display:flex;gap:0.5rem;justify-content:center}
     .bdx-controls button{padding:0.5rem 1rem;font-size:1rem;border:1px solid #ccc;border-radius:0.5rem;background-color:#fff;cursor:pointer;transition:all 0.2s ease-in-out}
@@ -281,6 +429,18 @@
     /* Branded flip button */
     .bdx-flip-button{width:100%;background:#fff0dc;font-weight:600;border:1px solid #fdb;border-radius:0.5rem;padding:0.5rem;cursor:pointer;transition:all 0.2s}
     .bdx-flip-button:hover{background:#ffe0c4}
+    
+    @media (max-width: 768px) {
+      .bdx-card-container{height:auto;min-height:auto;max-height:none}
+      .bdx-card{position:static;height:auto;transform:none}
+      .bdx-card-face{position:static;height:auto}
+      .bdx-card-back{display:none}
+      .bdx-card.flipped .bdx-card-front{display:none}
+      .bdx-card.flipped .bdx-card-back{display:block;transform:none}
+      .bdx-card-content{padding:1rem 1.25rem}
+      .bdx-flip-button{padding:12px;font-size:1rem;min-height:48px}
+      .bdx-controls button{padding:12px 16px;font-size:1rem;min-height:48px}
+    }
 
     /* ================= Mode Guidance ================= */
     .mode-guidance { background: #f8f9fa; border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin: 8px 0 14px 0; }
@@ -289,9 +449,40 @@
     /* ====== Seeder live preview & risk ====== */
     .seeder-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
     @media (min-width: 900px){ .seeder-grid { grid-template-columns: 1fr 1fr; align-items: start; } }
-    .preview-panel { border: 1px solid var(--border); border-radius: 8px; background: #0f172a; color: #e2e8f0; padding: 12px; }
-    .preview-header { display:flex; justify-content: space-between; align-items:center; margin-bottom:8px; gap:8px; }
-    .preview-code { font-family: "Courier New", Courier, monospace; font-size: 0.9em; overflow:auto; max-height: 360px; line-height: 1.5; }
+    .preview-panel { border: 1px solid var(--border); border-radius: 8px; background: #0f172a; color: #e2e8f0; padding: 12px; width:100%; max-width:100%; overflow:hidden; }
+    .preview-header { display:flex; justify-content: space-between; align-items:center; margin-bottom:12px; gap:8px; flex-wrap:wrap; }
+    .preview-header strong { color: #f1f5f9; font-size: 1rem; font-weight: 600; }
+    .preview-panel small { color: #cbd5e1 !important; }
+    .preview-panel code { color: #86efac; background: rgba(134, 239, 172, 0.1); padding: 2px 6px; border-radius: 4px; }
+    .preview-panel .btn-secondary { 
+      background: #1e293b; 
+      color: #e2e8f0; 
+      border-color: #475569;
+      font-size: 0.85rem;
+      padding: 8px 12px;
+    }
+    .preview-panel .btn-secondary:hover { 
+      background: #334155; 
+      border-color: #64748b;
+      color: #f1f5f9;
+    }
+    .preview-code { font-family: "Courier New", Courier, monospace; font-size: 0.9em; overflow:auto; max-height: 360px; line-height: 1.5; max-width:100%; }
+    
+    @media (max-width: 768px) {
+      .preview-header { flex-direction: column; align-items: flex-start; margin-bottom: 12px; }
+      .preview-header strong { font-size: 0.95rem; }
+      .preview-header > div { width: 100%; }
+      .preview-panel .btn-secondary { 
+        font-size: 0.8rem; 
+        padding: 10px 12px;
+        flex: 1 1 auto;
+        min-width: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .preview-code { font-size: 0.85em; max-height: 250px; }
+    }
     .preview-line { display: grid; grid-template-columns: 3ch auto; gap: 12px; }
     .gutter { color: #64748b; text-align: right; user-select: none; }
     .tok-key { color: #60a5fa; }
@@ -325,6 +516,10 @@
     .risk-tooltip.visible { display:block; }
     .risk-tooltip h5 { margin:0 0 6px 0; color:#93c5fd; }
     .risk-tooltip code { color:#86efac; }
+    
+    @media (max-width: 768px) {
+      .risk-tooltip{position:fixed;left:8px;right:8px;top:auto;bottom:8px;max-width:none;z-index:1001}
+    }
 
   </style>
 </head>
@@ -332,6 +527,11 @@
 
   <header class="site-header">
       <a href="https://docs.claude.com/en/docs/claude-code/settings" target="_blank" rel="noopener" class="logo">Claude Code Setup</a>
+      <button class="hamburger" aria-label="Menu" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
       <nav><a href="#learn">Permissions</a><a href="#test">Quiz</a><a href="#build">Build</a><a href="#audit">Audit</a></nav>
   </header>
 
@@ -352,16 +552,21 @@
     </p>
 
     <!-- ================= TABS ================= -->
-    <div class="tabs" role="tablist" aria-label="Tool Tabs">
-      <button class="tab-button active" role="tab" aria-selected="true" aria-controls="tabp-1" id="tab-1">Learn Permissions</button>
-      <button class="tab-button" role="tab" aria-selected="false" aria-controls="tabp-2" id="tab-2">Test Your Knowledge</button>
-      <button class="tab-button" role="tab" aria-selected="false" aria-controls="tabp-3" id="tab-3">Build Your Config</button>
-      <button class="tab-button" role="tab" aria-selected="false" aria-controls="tabp-4" id="tab-4">Audit Your Config</button>
-      <a class="btn cta-start" id="cta-start" href="#build">Get Started</a>
+    <div class="tabs-wrapper">
+      <button class="tab-scroll-btn left" id="tab-scroll-left" aria-label="Scroll tabs left">‹</button>
+      <div class="tabs" role="tablist" aria-label="Tool Tabs">
+        <button class="tab-button active" role="tab" aria-selected="true" aria-controls="tabp-1" id="tab-1">Learn Permissions</button>
+        <button class="tab-button" role="tab" aria-selected="false" aria-controls="tabp-2" id="tab-2">Test Your Knowledge</button>
+        <button class="tab-button" role="tab" aria-selected="false" aria-controls="tabp-3" id="tab-3">Build Your Config</button>
+        <button class="tab-button" role="tab" aria-selected="false" aria-controls="tabp-4" id="tab-4">Audit Your Config</button>
+        <a class="btn cta-start" id="cta-start" href="#build">Get Started</a>
+      </div>
+      <button class="tab-scroll-btn right" id="tab-scroll-right" aria-label="Scroll tabs right">›</button>
     </div>
 
     <!-- ================= TAB PANEL 1: LEARN (Glossary) ================= -->
     <div id="tabp-1" class="tab-panel active" role="tabpanel" aria-labelledby="tab-1">
+      <h2 id="learn">Learn Permissions</h2>
       <section class="bdx-glossaryL-section" id="glossary-mount-point">
         <!-- The bdx-glossaryL-bootstrap script will build the component here -->
       </section>
@@ -369,15 +574,15 @@
 
     <!-- ================= TAB PANEL 2: QUIZ ================= -->
     <div id="tabp-2" class="tab-panel" role="tabpanel" aria-labelledby="tab-2">
+      <h2 id="test">Test Your Knowledge</h2>
       <section id="quiz-demo">
-        <h2>Test Your Knowledge!</h2>
-        <p>Let's check our understanding with a few quick questions. No grades here, just for fun!</p>
+        <p class="intro">Let's check our understanding with a few quick questions. No grades here, just for fun!</p>
         
         <div class="quiz-container">
           <div class="quiz-navigation">
-            <button class="btn" id="mainPrevBtn">⮜</button>
+            <button class="btn btn-secondary" id="mainPrevBtn">⮜</button>
             <span class="question-counter"><span id="mainCurrentQ">1</span> of <span id="mainTotalQ">...</span></span>
-            <button class="btn" id="mainNextBtn">⮞</button>
+            <button class="btn btn-secondary" id="mainNextBtn">⮞</button>
           </div>
           <div id="quiz-body-container">
             <!-- Quiz questions will be injected here by JavaScript -->
@@ -389,19 +594,34 @@
     <!-- ================= TAB PANEL 3: BUILD (Seeder) ================= -->
     <div id="tabp-3" class="tab-panel" role="tabpanel" aria-labelledby="tab-3">
       <section id="permission-seeder">
-        <h2>Build Your Config (Seeder)</h2>
+        <h2 id="build">Build Your Config</h2>
         <p>You're in control! Check the boxes for the permissions you want to allow. Need a quick reminder? Click the <code>(?)</code> icon next to any permission! This tool will create the special JSON text you need. Just copy it and paste it into your <code>.claude/settings.local.json</code> file in VS Code.</p>
         
         <div id="preset-controls" style="margin: 14px 0;">
           <details class="acc" open>
             <summary>Presets</summary>
             <div class="acc-body">
-              <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px;">
-                <button class="btn" data-preset="safeExploration" type="button">Safe Exploration</button>
-                <button class="btn" data-preset="frontendDev" type="button">Frontend Development</button>
-                <button class="btn" data-preset="maintenance" type="button">Maintenance / Refactor</button>
-                <button class="btn" data-preset="lockdown" type="button">Maximum Lockdown</button>
-                <button class="btn" data-preset="cicd" type="button">Full Stack with CI/CD</button>
+              <div class="preset-grid">
+                <button class="preset-card" data-preset="safeExploration" type="button">
+                  <span class="preset-icon">🔍</span>
+                  <span class="preset-label">Safe Exploration</span>
+                </button>
+                <button class="preset-card" data-preset="frontendDev" type="button">
+                  <span class="preset-icon">⚛️</span>
+                  <span class="preset-label">Frontend Dev</span>
+                </button>
+                <button class="preset-card" data-preset="maintenance" type="button">
+                  <span class="preset-icon">🧹</span>
+                  <span class="preset-label">Maintain / Refactor</span>
+                </button>
+                <button class="preset-card" data-preset="lockdown" type="button">
+                  <span class="preset-icon">🔒</span>
+                  <span class="preset-label">Lockdown</span>
+                </button>
+                <button class="preset-card" data-preset="cicd" type="button">
+                  <span class="preset-icon">🚀</span>
+                  <span class="preset-label">Full Stack CI/CD</span>
+                </button>
               </div>
               <small id="preset-hint" style="color:#6c757d;display:block;">Tip: Applying a preset will set checkboxes (for matching rules) and include ask/deny in the generated JSON.</small>
               <div id="mode-guidance" class="mode-guidance">
@@ -414,15 +634,15 @@
             <summary>Quick Start & Templates</summary>
             <div class="acc-body">
               <div id="quickstart-controls" style="margin:8px 0 0 0;">
-                <button class="btn" id="quickstart-btn" type="button">Quick Start (Copy Safe Defaults)</button>
+                <button class="btn btn-secondary" id="quickstart-btn" type="button">Quick Start (Copy Safe Defaults)</button>
                 <small style="color:#6c757d;display:block;">Copies a safe starter settings.json to your clipboard.</small>
               </div>
               <div style="margin:6px 0 0 0;">
-                <button class="btn" id="preset-learn-btn" type="button">Learn about Presets</button>
+                <button class="btn btn-secondary" id="preset-learn-btn" type="button">Learn about Presets</button>
                 <small style="color:#6c757d;display:block;">See what each preset allows, denies, and when to use it.</small>
               </div>
               <div id="template-controls" style="margin:8px 0 0 0;">
-                <button class="btn" id="copy-template-btn" type="button">Copy Template Example</button>
+                <button class="btn btn-secondary" id="copy-template-btn" type="button">Copy Template Example</button>
                 <small style="color:#6c757d;display:block;">Copies a balanced template (allow Edit in src/, protect .env).</small>
               </div>
             </div>
@@ -434,15 +654,15 @@
               <div id="profile-controls" style="margin-top:0;">
                 <h3 style="margin: 0 0 10px 0;">Profiles</h3>
                 <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px;align-items:center;">
-                  <input id="profile-name" type="text" placeholder="Profile name" style="padding:10px;border:1px solid var(--border);border-radius:8px;min-width:180px;">
-                  <button class="btn" id="profile-save" type="button">Save</button>
-                  <select id="profile-list" style="padding:10px;border:1px solid var(--border);border-radius:8px;min-width:200px;">
+                  <input id="profile-name" type="text" placeholder="Profile name" style="padding:10px;border:1px solid var(--border);border-radius:8px;min-width:180px;max-width:100%;">
+                  <button class="btn btn-secondary" id="profile-save" type="button">Save</button>
+                  <select id="profile-list" style="padding:10px;border:1px solid var(--border);border-radius:8px;min-width:200px;max-width:100%;">
                     <option value="">Load profile...</option>
                   </select>
-                  <button class="btn" id="profile-delete" type="button">Delete</button>
-                  <button class="btn" id="profile-export" type="button">Export</button>
-                  <button class="btn" id="profile-import" type="button">Import</button>
-                  <button class="btn" id="profile-share" type="button">Copy Share Link</button>
+                  <button class="btn btn-secondary" id="profile-delete" type="button">Delete</button>
+                  <button class="btn btn-secondary" id="profile-export" type="button">Export</button>
+                  <button class="btn btn-secondary" id="profile-import" type="button">Import</button>
+                  <button class="btn btn-secondary" id="profile-share" type="button">Copy Share Link</button>
                   <input id="profile-import-file" type="file" accept="application/json" style="display:none;">
                 </div>
                 <small id="profile-hint" style="color:#6c757d;display:block;">Save your current config, load later, or share with teammates.</small>
@@ -483,9 +703,9 @@
               <div class="preview-header">
                 <strong>Live JSON Preview</strong>
                 <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                  <button class="btn" id="btn-download-json" type="button">Download settings.json</button>
-                  <button class="btn" id="btn-download-jsonc" type="button">Download settings.jsonc</button>
-                  <button class="btn" id="btn-download-local" type="button">Download settings.local.json</button>
+                  <button class="btn btn-secondary" id="btn-download-json" type="button">Download settings.json</button>
+                  <button class="btn btn-secondary" id="btn-download-jsonc" type="button">Download settings.jsonc</button>
+                  <button class="btn btn-secondary" id="btn-download-local" type="button">Download settings.local.json</button>
                 </div>
               </div>
               <small style="color:#cbd5e1;margin-top:4px;display:block;">📁 Save to: <code>~/.claude/settings.json</code> (user-level) or <code>./.claude/settings.local.json</code> (project-level)</small>
@@ -506,7 +726,7 @@
     <!-- ================= TAB PANEL 4: AUDIT (Manager) ================= -->
     <div id="tabp-4" class="tab-panel" role="tabpanel" aria-labelledby="tab-4">
       <section id="config-auditor">
-        <h2>Audit Your Config (Manager)</h2>
+        <h2 id="audit">Audit Your Config</h2>
         <p>Already have a <code>settings.local.json</code> file? Awesome! Let's do a quick safety check. Paste the *entire* contents of your file below to get an instant report on its risk level.</p>
 
         <div class="auditor-container">
@@ -696,6 +916,57 @@
           window.addEventListener('resize', onScroll);
           onScroll();
         } catch(_) {}
+      })();
+
+      // ========== TAB SCROLL BUTTONS SETUP ==========
+      (function(){
+        const tabsContainer = document.querySelector('.tabs');
+        const leftBtn = document.getElementById('tab-scroll-left');
+        const rightBtn = document.getElementById('tab-scroll-right');
+        if(!tabsContainer || !leftBtn || !rightBtn) return;
+        
+        const scrollAmount = 200; // pixels to scroll
+        
+        leftBtn.addEventListener('click', () => {
+          tabsContainer.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+        });
+        
+        rightBtn.addEventListener('click', () => {
+          tabsContainer.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+        });
+        
+        // Update button visibility based on scroll position
+        function updateScrollButtons(){
+          const isAtStart = tabsContainer.scrollLeft <= 10;
+          const isAtEnd = tabsContainer.scrollLeft + tabsContainer.clientWidth >= tabsContainer.scrollWidth - 10;
+          leftBtn.style.opacity = isAtStart ? '0.3' : '1';
+          leftBtn.style.pointerEvents = isAtStart ? 'none' : 'auto';
+          rightBtn.style.opacity = isAtEnd ? '0.3' : '1';
+          rightBtn.style.pointerEvents = isAtEnd ? 'none' : 'auto';
+        }
+        
+        tabsContainer.addEventListener('scroll', updateScrollButtons);
+        window.addEventListener('resize', updateScrollButtons);
+        updateScrollButtons();
+      })();
+
+      // ========== HAMBURGER MENU SETUP ==========
+      (function(){
+        const hamburger = document.querySelector('.hamburger');
+        const nav = document.querySelector('.site-header nav');
+        if(!hamburger || !nav) return;
+        hamburger.addEventListener('click', () => {
+          nav.classList.toggle('open');
+          hamburger.classList.toggle('open');
+          hamburger.setAttribute('aria-expanded', nav.classList.contains('open') ? 'true' : 'false');
+        });
+        document.addEventListener('click', (e) => {
+          if(!hamburger.contains(e.target) && !nav.contains(e.target)){
+            nav.classList.remove('open');
+            hamburger.classList.remove('open');
+            hamburger.setAttribute('aria-expanded', 'false');
+          }
+        });
       })();
 
       // ========== QUIZ DATA (Expanded to 10 Questions) ==========
@@ -988,10 +1259,12 @@
                 itemEl.innerHTML = `
                     <input type="checkbox" id="${p.id}" data-permission="${p.name.replace(/"/g, '\\"')}">
                     <label for="${p.id}">
-                        <strong>${p.name}</strong>
-                        <span>${p.desc.split('(')[0]}</span> 
+                        <div class="permission-name">
+                            <strong>${p.name}</strong>
+                            <span class="help-icon" data-title="${p.name}" data-desc="${p.desc}" aria-label="Help for ${p.name}">i</span>
+                        </div>
+                        <span class="permission-desc">${p.desc.split('(')[0]}</span>
                     </label>
-                    <span class="help-icon" data-title="${p.name}" data-desc="${p.desc}" aria-label="Help for ${p.name}">?</span>
                 `;
                 groupEl.appendChild(itemEl);
             });
@@ -1010,6 +1283,10 @@
           const preset = presets[pKey];
           if (!preset) return;
           activePresetKey = pKey;
+          // Update active state on preset cards
+          document.querySelectorAll('.preset-card').forEach(card => {
+            card.classList.toggle('active', card.dataset.preset === pKey);
+          });
           // Clear all checkboxes first
           document.querySelectorAll('#seeder-permission-list input[type="checkbox"]').forEach(cb => { cb.checked = false; });
           // Check those present in seeder for allow

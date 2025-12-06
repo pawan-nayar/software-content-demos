@@ -16,7 +16,11 @@
       --text:#212529; --bg:#fff; --muted:#f8f9fa; --border:#e9ecef;
       --accent:#fd7e14; --accent-2:#e87312; --header-bg:#212529; --header-fg:#f8f9fa;
       --ok:#16a34a; --ok-soft:#dcfce7; --bad:#dc2626; --bad-soft:#fee2e2;
-      --happy:#16a34a; --ineffective:#dc2626; --resolution:#fd7e14; --process:#4dabf7;
+      /* Improved high-contrast path colors for better readability */
+      --happy:#0d7a3e; --happy-light:#e8f5e9; --happy-text:#065f2e;
+      --ineffective:#b91c1c; --ineffective-light:#fef2f2; --ineffective-text:#7f1d1d;
+      --resolution:#c2410c; --resolution-light:#fff7ed; --resolution-text:#9a3412;
+      --process:#4dabf7;
       --warning:#f59e0b; --info:#3b82f6; --purple:#8b5cf6;
     }
     *{box-sizing:border-box;margin:0;padding:0}
@@ -92,7 +96,7 @@
       cursor:pointer;
     }
 
-    /* Path Selector */
+    /* Path Selector - Improved contrast */
     .path-selector{
       display:flex;
       gap:12px;
@@ -101,32 +105,78 @@
     .path-btn{
       flex:1;
       padding:12px 16px;
-      border:2px solid var(--border);
+      border:3px solid var(--border);
       background:#fff;
-      border-radius:8px;
+      border-radius:10px;
       cursor:pointer;
-      font-weight:600;
+      font-weight:700;
       transition:all 0.3s;
       text-align:center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     }
-    .path-btn.happy{border-color:var(--happy);color:var(--happy)}
-    .path-btn.ineffective{border-color:var(--ineffective);color:var(--ineffective)}
-    .path-btn.resolution{border-color:var(--resolution);color:var(--resolution)}
-    .path-btn.active{color:#fff}
-    .path-btn.happy.active{background:var(--happy)}
-    .path-btn.ineffective.active{background:var(--ineffective)}
-    .path-btn.resolution.active{background:var(--resolution)}
+    .path-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .path-btn.happy{
+      border-color:var(--happy);
+      color:var(--happy-text);
+      background:var(--happy-light);
+    }
+    .path-btn.ineffective{
+      border-color:var(--ineffective);
+      color:var(--ineffective-text);
+      background:var(--ineffective-light);
+    }
+    .path-btn.resolution{
+      border-color:var(--resolution);
+      color:var(--resolution-text);
+      background:var(--resolution-light);
+    }
+    .path-btn.active{
+      color:#fff;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    }
+    .path-btn.happy.active{
+      background:var(--happy);
+      border-color:var(--happy);
+    }
+    .path-btn.ineffective.active{
+      background:var(--ineffective);
+      border-color:var(--ineffective);
+    }
+    .path-btn.resolution.active{
+      background:var(--resolution);
+      border-color:var(--resolution);
+    }
 
     /* SVG and Animation Styles */
     .flow-diagram{
-      background:#fffbfa;
-      border:1px solid var(--accent-2);
+      background:#fafafa;
+      border:2px solid var(--border);
       border-radius:12px;
       padding:20px;
       margin:24px 0;
       position:relative;
       min-height:600px;
+      scroll-margin-top: 100px; /* For smooth scroll positioning */
     }
+    
+    /* Active path indicator on diagram */
+    .flow-diagram[data-active-path="happy"] {
+      border-color: var(--happy);
+      background: var(--happy-light);
+    }
+    .flow-diagram[data-active-path="ineffective"] {
+      border-color: var(--ineffective);
+      background: var(--ineffective-light);
+    }
+    .flow-diagram[data-active-path="resolution"] {
+      border-color: var(--resolution);
+      background: var(--resolution-light);
+    }
+    
     svg{
       width:100%;
       height:auto;
@@ -139,11 +189,17 @@
     .hotspot:focus .halo,.hotspot:hover .halo{stroke:var(--accent);stroke-width:3;fill:transparent}
     .halo{stroke:transparent;stroke-width:3;fill:transparent}
     
-    /* Path-specific styles */
+    /* Path-specific styles - Higher contrast fills */
     .happy-path{stroke:var(--happy);fill:var(--happy)}
     .ineffective-path{stroke:var(--ineffective);fill:var(--ineffective)}
     .resolution-path{stroke:var(--resolution);fill:var(--resolution)}
     .process-step{fill:var(--process);stroke:#fff;stroke-width:2}
+    
+    /* Ensure text is white and readable on colored backgrounds */
+    .path-flow text {
+      fill: #fff !important;
+      font-weight: 600;
+    }
     
     /* Animation states - Enhanced visibility */
     .flow-arrow{stroke-width:3;fill:none;marker-end:url(#arrowhead);transition:all 0.3s ease}
@@ -297,7 +353,7 @@
     .metric-ineffective{color:var(--ineffective)}
     .metric-resolution{color:var(--resolution)}
 
-    /* Tooltip */
+    /* Tooltip - Desktop only */
     .tooltip{
       position:fixed;
       pointer-events:none; z-index:70;
@@ -306,13 +362,207 @@
       box-shadow:0 8px 24px rgba(0,0,0,0.15); font-size:.9rem; line-height:1.5; display:none;
     }
     .tooltip-title{font-weight:600;color:var(--accent-2);margin-bottom:6px;font-size:1rem}
-    .tooltip-path{font-size:0.85rem;font-weight:600;margin-bottom:8px;padding:4px 8px;border-radius:4px}
-    .tooltip-path.happy{background:var(--ok-soft);color:var(--happy)}
-    .tooltip-path.ineffective{background:var(--bad-soft);color:var(--ineffective)}
-    .tooltip-path.resolution{background:#fef7f0;color:var(--resolution)}
+    .tooltip-path{font-size:0.85rem;font-weight:700;margin-bottom:8px;padding:6px 10px;border-radius:6px}
+    .tooltip-path.happy-path{background:var(--happy-light);color:var(--happy-text);border:1px solid var(--happy)}
+    .tooltip-path.ineffective-path{background:var(--ineffective-light);color:var(--ineffective-text);border:1px solid var(--ineffective)}
+    .tooltip-path.resolution-path{background:var(--resolution-light);color:var(--resolution-text);border:1px solid var(--resolution)}
     .tooltip-description{margin-bottom:8px}
     .tooltip-code{background:#f8f9fa;padding:8px;border-radius:4px;margin:8px 0;font-family:monospace;font-size:0.8rem}
     .tooltip-complexity{background:#f0f9ff;padding:8px;border-radius:4px;margin-top:8px;border-left:3px solid var(--info)}
+
+    /* ===== HOP 1: Mobile Tooltip Overlay (Glossary-style Bottom Sheet) ===== */
+    .mobile-tooltip-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 9999;
+      backdrop-filter: blur(3px);
+      -webkit-backdrop-filter: blur(3px);
+    }
+    
+    .mobile-tooltip-overlay.active {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 16px;
+      animation: overlayFadeIn 0.2s ease-out;
+    }
+    
+    @keyframes overlayFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    .mobile-tooltip-content {
+      background: #fff;
+      color: var(--text);
+      border-radius: 16px 16px 8px 8px;
+      max-width: calc(100% - 32px);
+      width: 100%;
+      max-height: 65vh;
+      overflow-y: auto;
+      box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.3);
+      animation: tooltipSlideUp 0.25s ease-out;
+    }
+    
+    @keyframes tooltipSlideUp {
+      from { transform: translateY(30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    
+    .mobile-tooltip-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      background: var(--muted);
+      border-radius: 16px 16px 0 0;
+      position: sticky;
+      top: 0;
+    }
+    
+    .mobile-tooltip-header h4 {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--accent-2);
+    }
+    
+    .mobile-tooltip-close {
+      background: var(--border);
+      border: none;
+      color: var(--text);
+      font-size: 1.3rem;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+    
+    .mobile-tooltip-close:hover {
+      background: var(--accent);
+      color: #fff;
+    }
+    
+    .mobile-tooltip-body {
+      padding: 16px;
+    }
+    
+    .mobile-tooltip-body .tooltip-path {
+      display: inline-block;
+      margin-bottom: 12px;
+    }
+    
+    .mobile-tooltip-body .tooltip-description {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+    
+    .mobile-tooltip-body .tooltip-code {
+      background: var(--header-bg);
+      color: #e2e8f0;
+      padding: 12px;
+      border-radius: 8px;
+      font-family: monospace;
+      font-size: 0.85rem;
+      overflow-x: auto;
+      white-space: pre-wrap;
+    }
+    
+    .mobile-tooltip-body .tooltip-complexity {
+      background: #f0f9ff;
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 12px;
+      border-left: 4px solid var(--info);
+      font-size: 0.9rem;
+    }
+    
+    /* Path-specific styling for mobile tooltip - High contrast */
+    .mobile-tooltip-content.happy-path-style {
+      box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.3), 0 0 0 3px var(--happy);
+    }
+    .mobile-tooltip-content.happy-path-style .mobile-tooltip-header {
+      background: var(--happy-light);
+      border-bottom-color: var(--happy);
+    }
+    .mobile-tooltip-content.happy-path-style .mobile-tooltip-header h4 {
+      color: var(--happy-text);
+    }
+    
+    .mobile-tooltip-content.ineffective-path-style {
+      box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.3), 0 0 0 3px var(--ineffective);
+    }
+    .mobile-tooltip-content.ineffective-path-style .mobile-tooltip-header {
+      background: var(--ineffective-light);
+      border-bottom-color: var(--ineffective);
+    }
+    .mobile-tooltip-content.ineffective-path-style .mobile-tooltip-header h4 {
+      color: var(--ineffective-text);
+    }
+    
+    .mobile-tooltip-content.resolution-path-style {
+      box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.3), 0 0 0 3px var(--resolution);
+    }
+    .mobile-tooltip-content.resolution-path-style .mobile-tooltip-header {
+      background: var(--resolution-light);
+      border-bottom-color: var(--resolution);
+    }
+    .mobile-tooltip-content.resolution-path-style .mobile-tooltip-header h4 {
+      color: var(--resolution-text);
+    }
+
+    /* ===== HOP 2: Scenario Tabs - Horizontal Scroll ===== */
+    .scenario-tabs{
+      display:flex;
+      gap:8px;
+      margin:20px 0;
+      border-bottom:2px solid var(--border);
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none; /* Firefox */
+      position: relative;
+    }
+    .scenario-tabs::-webkit-scrollbar {
+      display: none; /* Chrome, Safari */
+    }
+    .scenario-tab{
+      padding:12px 20px;
+      background:none;
+      border:none;
+      font-weight:600;
+      cursor:pointer;
+      border-bottom:3px solid transparent;
+      transition:all 0.3s;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .scenario-tab.active{
+      border-bottom-color:var(--accent);
+      color:var(--accent);
+    }
+    
+    /* Scroll hint indicator */
+    .tabs-scroll-hint {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 2px;
+      width: 40px;
+      background: linear-gradient(to right, transparent, var(--bg) 70%);
+      pointer-events: none;
+    }
 
     /* Mobile responsive */
     @media (max-width:768px){
@@ -323,36 +573,120 @@
         width:100%;
         margin:16px 0;
       }
+      
+      /* Hide desktop tooltip on mobile */
       .tooltip{
-        position:fixed;
-        top:10px !important;
-        left:10px !important;
-        right:10px !important;
-        max-width:none;
-        width:auto;
-        transform:none;
+        display: none !important;
+      }
+      
+      /* HOP 2: Show scroll hint on mobile */
+      .tabs-scroll-hint {
+        display: block;
+      }
+      
+      /* HOP 3: Larger touch targets */
+      .control-btn {
+        padding: 12px 18px;
+        min-height: 44px;
+        font-size: 0.95rem;
+      }
+      
+      .speed-slider {
+        width: 100%;
+        height: 8px;
+        margin: 8px 0;
+      }
+      
+      .path-btn {
+        padding: 14px 16px;
+        min-height: 60px;
+      }
+      
+      .scenario-tab {
+        padding: 14px 18px;
+        min-height: 44px;
+      }
+      
+      /* HOP 4: Better SVG touch targets */
+      .hotspot {
+        cursor: pointer;
+      }
+      
+      /* ===== MOBILE SVG - PROPER SIZING via ViewBox ===== */
+      .flow-diagram {
+        padding: 12px;
+        min-height: auto;
+        overflow: visible;
+      }
+      
+      /* SVG container - full width, proper aspect ratio */
+      .flow-diagram .svg-wrapper {
+        width: 100%;
+        background: #fff;
+        border-radius: 8px;
+        padding: 8px;
+        box-shadow: inset 0 0 0 1px var(--border);
+      }
+      
+      /* SVG fills container, viewBox controls zoom */
+      .flow-diagram svg {
+        width: 100%;
+        height: auto;
+        min-height: 280px;
+        max-height: 350px;
+        display: block;
+      }
+      
+      /* Tap hint */
+      .flow-diagram::after {
+        content: '👆 Tap any shape for details';
+        display: block;
+        text-align: center;
+        padding: 12px;
+        font-size: 0.9rem;
+        color: var(--text);
+        font-weight: 600;
+        background: var(--muted);
+        border-radius: 8px;
+        margin-top: 12px;
+      }
+      
+      /* Hide the side panels on mobile - they're shown below */
+      .performance-panel,
+      .code-execution,
+      .variable-tracker {
+        position: static !important;
+        width: 100% !important;
+        margin: 12px 0 !important;
       }
     }
-
-    /* Scenario Tabs */
-    .scenario-tabs{
-      display:flex;
-      gap:8px;
-      margin:20px 0;
-      border-bottom:2px solid var(--border);
+    
+    @media (max-width:480px){
+      .control-btn {
+        padding: 10px 12px;
+        font-size: 0.85rem;
+      }
+      
+      .control-buttons {
+        flex-wrap: wrap;
+      }
+      
+      .scenario-tab {
+        padding: 12px 14px;
+        font-size: 0.9rem;
+      }
+      
+      .flow-diagram svg {
+        min-height: 250px;
+        max-height: 320px;
+      }
     }
-    .scenario-tab{
-      padding:12px 20px;
-      background:none;
-      border:none;
-      font-weight:600;
-      cursor:pointer;
-      border-bottom:3px solid transparent;
-      transition:all 0.3s;
-    }
-    .scenario-tab.active{
-      border-bottom-color:var(--accent);
-      color:var(--accent);
+    
+    @media (max-width:380px){
+      .flow-diagram svg {
+        min-height: 220px;
+        max-height: 280px;
+      }
     }
     .scenario-content{
       display:none;
@@ -391,6 +725,20 @@
   </style>
 </head>
 <body>
+
+<!-- Mobile Tooltip Overlay (Glossary-style Bottom Sheet) -->
+<div class="mobile-tooltip-overlay" id="mobileTooltipOverlay">
+    <div class="mobile-tooltip-content" id="mobileTooltipContent">
+        <div class="mobile-tooltip-header">
+            <h4 id="mobileTooltipTitle">Step Details</h4>
+            <button class="mobile-tooltip-close" id="mobileTooltipClose" aria-label="Close">&times;</button>
+        </div>
+        <div class="mobile-tooltip-body" id="mobileTooltipBody">
+            <!-- Content populated by JavaScript -->
+        </div>
+    </div>
+</div>
+
 <header class="site-header">
   <a class="logo" href="#">Beyond Dictionary</a>
   <nav>
@@ -440,19 +788,21 @@
   </div>
 
   <!-- Scenario Tabs -->
-  <div class="scenario-tabs">
+  <div class="scenario-tabs" id="scenarioTabs">
     <button class="scenario-tab active" data-scenario="conditional">if/elif/else</button>
     <button class="scenario-tab" data-scenario="loops">for/while Loops</button>
     <button class="scenario-tab" data-scenario="nested">Nested Structures</button>
     <button class="scenario-tab" data-scenario="control">break/continue</button>
     <button class="scenario-tab" data-scenario="patterns">Pattern Examples</button>
+    <div class="tabs-scroll-hint" id="tabsScrollHint"></div>
   </div>
 
   <!-- Interactive Flow Diagrams -->
   <div class="scenario-content active" id="conditional-content">
     <h3>Conditional Statements: if/elif/else</h3>
-    <div class="flow-diagram" id="conditional-diagram">
-      <svg viewBox="0 0 1000 700" role="img">
+    <div class="flow-diagram" id="conditional-diagram" data-active-path="happy">
+      <div class="svg-wrapper">
+      <svg viewBox="0 0 1000 700" role="img" data-original-viewbox="0 0 1000 700">
         <defs>
           <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
             <polygon points="0 0, 10 3.5, 0 7" fill="var(--accent)" />
@@ -617,6 +967,7 @@
           </g>
         </g>
       </svg>
+      </div><!-- end svg-wrapper -->
 
       <!-- Performance Panel -->
       <div class="performance-panel">
@@ -736,8 +1087,9 @@
 
   <div class="scenario-content" id="nested-content">
     <h3>Nested Structures: Loops within Conditions</h3>
-    <div class="flow-diagram" id="nested-diagram">
-      <svg viewBox="0 0 800 600" role="img">
+    <div class="flow-diagram" id="nested-diagram" data-active-path="happy">
+      <div class="svg-wrapper">
+      <svg viewBox="0 0 800 600" role="img" data-original-viewbox="0 0 800 600">
         <!-- Happy Path: Efficient Nested Structure -->
         <g class="path-flow happy-flow" data-path="happy">
           <!-- Outer loop start -->
@@ -819,6 +1171,7 @@
           </g>
         </g>
       </svg>
+      </div><!-- end svg-wrapper -->
     </div>
 
     <div class="learning-grid">
@@ -857,8 +1210,9 @@
 
   <div class="scenario-content" id="control-content">
     <h3>break/continue Statements: Flow Control</h3>
-    <div class="flow-diagram" id="control-diagram">
-      <svg viewBox="0 0 800 500" role="img">
+    <div class="flow-diagram" id="control-diagram" data-active-path="happy">
+      <div class="svg-wrapper">
+      <svg viewBox="0 0 800 500" role="img" data-original-viewbox="0 0 800 500">
         <!-- Happy Path: Proper break/continue usage -->
         <g class="path-flow happy-flow" data-path="happy">
           <!-- Loop with break -->
@@ -915,6 +1269,7 @@
           </g>
         </g>
       </svg>
+      </div><!-- end svg-wrapper -->
     </div>
 
     <div class="learning-grid">
@@ -953,8 +1308,9 @@
 
   <div class="scenario-content" id="patterns-content">
     <h3>Pattern Examples: Real-world Applications</h3>
-    <div class="flow-diagram" id="patterns-diagram">
-      <svg viewBox="0 0 900 600" role="img">
+    <div class="flow-diagram" id="patterns-diagram" data-active-path="happy">
+      <div class="svg-wrapper">
+      <svg viewBox="0 0 900 600" role="img" data-original-viewbox="0 0 900 600">
         <!-- Pattern generation flowchart -->
         <g class="path-flow happy-flow" data-path="happy">
           <!-- Initialize -->
@@ -1032,6 +1388,7 @@
           </g>
         </g>
       </svg>
+      </div><!-- end svg-wrapper -->
     </div>
 
     <div class="learning-grid">
@@ -1210,11 +1567,90 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentStep = 0;
   let animationSpeed = 1;
 
-  // Initialize tooltips
+  // Initialize tooltips - Desktop and Mobile
   const tip = document.getElementById('tooltip');
   let currentTooltipTimeout;
+  
+  // Mobile tooltip overlay elements
+  const mobileOverlay = document.getElementById('mobileTooltipOverlay');
+  const mobileContent = document.getElementById('mobileTooltipContent');
+  const mobileTitle = document.getElementById('mobileTooltipTitle');
+  const mobileBody = document.getElementById('mobileTooltipBody');
+  const mobileClose = document.getElementById('mobileTooltipClose');
+  
+  // Check if device is mobile/tablet
+  function isMobileDevice() {
+    return window.innerWidth <= 768 || 'ontouchstart' in window;
+  }
+  
+  // Get path style class based on path name
+  function getPathStyleClass(pathName) {
+    const pathLower = pathName.toLowerCase();
+    if (pathLower.includes('happy')) return 'happy-path-style';
+    if (pathLower.includes('ineffective')) return 'ineffective-path-style';
+    if (pathLower.includes('resolution')) return 'resolution-path-style';
+    return '';
+  }
+  
+  // Show mobile tooltip overlay (glossary-style bottom sheet)
+  function showMobileTooltip(stepId) {
+    const step = stepData[stepId];
+    if (!step || !mobileOverlay) return;
+    
+    // Set title
+    mobileTitle.textContent = step.title;
+    
+    // Build body content
+    mobileBody.innerHTML = `
+      <div class="tooltip-path ${step.path.toLowerCase().replace(' ', '-')}">${step.path}</div>
+      <div class="tooltip-description">${step.description}</div>
+      <div class="tooltip-code">${step.code}</div>
+      <div class="tooltip-complexity"><strong>💡 Analysis:</strong> ${step.complexity}</div>
+    `;
+    
+    // Apply path-specific styling
+    mobileContent.className = 'mobile-tooltip-content';
+    const pathClass = getPathStyleClass(step.path);
+    if (pathClass) {
+      mobileContent.classList.add(pathClass);
+    }
+    
+    // Show overlay
+    mobileOverlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+  
+  // Hide mobile tooltip overlay
+  function hideMobileTooltip() {
+    if (mobileOverlay) {
+      mobileOverlay.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+  }
+  
+  // Mobile close button handler
+  if (mobileClose) {
+    mobileClose.addEventListener('click', hideMobileTooltip);
+  }
+  
+  // Close on overlay background click
+  if (mobileOverlay) {
+    mobileOverlay.addEventListener('click', (e) => {
+      if (e.target === mobileOverlay) {
+        hideMobileTooltip();
+      }
+    });
+  }
+  
+  // Close on Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && mobileOverlay?.classList.contains('active')) {
+      hideMobileTooltip();
+    }
+  });
 
-  const showTip = (stepId, x, y, isMobile = false) => {
+  // Desktop tooltip functions
+  const showDesktopTip = (stepId, x, y) => {
     const step = stepData[stepId];
     if (!step) return;
     
@@ -1228,16 +1664,6 @@ document.addEventListener('DOMContentLoaded', () => {
       <div class="tooltip-complexity"><strong>💡 Analysis:</strong> ${step.complexity}</div>
     `;
     tip.style.display = 'block';
-    
-    if (window.innerWidth <= 768 || isMobile) {
-      tip.style.position = 'fixed';
-      tip.style.top = '10px';
-      tip.style.left = '10px';
-      tip.style.right = '10px';
-      tip.style.width = 'auto';
-      tip.style.maxWidth = 'none';
-      return;
-    }
     
     const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;
@@ -1265,7 +1691,7 @@ document.addEventListener('DOMContentLoaded', () => {
     tip.style.top = top + 'px';
   };
   
-  const hideTip = () => { 
+  const hideDesktopTip = () => { 
     clearTimeout(currentTooltipTimeout);
     currentTooltipTimeout = setTimeout(() => {
       tip.style.display = 'none';
@@ -1276,20 +1702,93 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.hotspot').forEach(h => {
     const stepId = h.getAttribute('data-step');
     if (stepId && stepData[stepId]) {
+      // Desktop: hover shows tooltip
       h.addEventListener('mouseenter', e => {
-        clearTimeout(currentTooltipTimeout);
-        showTip(stepId, e.clientX, e.clientY);
+        if (!isMobileDevice()) {
+          clearTimeout(currentTooltipTimeout);
+          showDesktopTip(stepId, e.clientX, e.clientY);
+        }
       });
-      h.addEventListener('mouseleave', hideTip);
+      h.addEventListener('mouseleave', () => {
+        if (!isMobileDevice()) {
+          hideDesktopTip();
+        }
+      });
+      
+      // Mobile/Touch: tap shows bottom sheet overlay
       h.addEventListener('click', e => {
         e.preventDefault();
-        showTip(stepId, e.clientX, e.clientY, window.innerWidth <= 768);
-        setTimeout(hideTip, 5000);
+        if (isMobileDevice()) {
+          showMobileTooltip(stepId);
+        }
+      });
+      
+      // Touch-specific handler for better mobile UX
+      h.addEventListener('touchend', e => {
+        if (isMobileDevice()) {
+          e.preventDefault();
+          showMobileTooltip(stepId);
+        }
       });
     }
   });
 
-  // Path switching logic
+  // ===== MOBILE SVG VIEWBOX CONFIGURATION =====
+  // ViewBox coordinates for each path to zoom in properly on mobile
+  const mobileViewBoxConfig = {
+    'conditional-diagram': {
+      original: '0 0 1000 700',
+      happy: '0 0 320 420',        // Zoom into happy path area
+      ineffective: '280 0 320 380', // Zoom into ineffective path area  
+      resolution: '520 0 360 420'   // Zoom into resolution path area
+    },
+    'nested-diagram': {
+      original: '0 0 800 600',
+      happy: '0 30 380 280',
+      ineffective: '340 30 280 280',
+      resolution: '40 260 280 180'
+    },
+    'control-diagram': {
+      original: '0 0 800 500',
+      happy: '0 30 340 260',
+      ineffective: '340 30 280 220',
+      resolution: '0 30 340 260'  // Fallback to happy area
+    },
+    'patterns-diagram': {
+      original: '0 0 900 600',
+      happy: '0 20 360 340',
+      ineffective: '0 20 360 340', // Same as happy (no ineffective in this)
+      resolution: '320 20 280 280'
+    }
+  };
+  
+  // Update SVG viewBox for mobile
+  function updateMobileViewBox(diagramId, path) {
+    if (!isMobileDevice()) return;
+    
+    const diagram = document.getElementById(diagramId);
+    const svg = diagram?.querySelector('svg');
+    if (!svg) return;
+    
+    const config = mobileViewBoxConfig[diagramId];
+    if (config && config[path]) {
+      svg.setAttribute('viewBox', config[path]);
+    }
+  }
+  
+  // Reset SVG viewBox to original
+  function resetViewBox(diagramId) {
+    const diagram = document.getElementById(diagramId);
+    const svg = diagram?.querySelector('svg');
+    if (!svg) return;
+    
+    const config = mobileViewBoxConfig[diagramId];
+    if (config) {
+      svg.setAttribute('viewBox', config.original);
+    }
+  }
+
+  // Path switching logic with auto-scroll and viewBox adjustment for mobile
   document.querySelectorAll('.path-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       // Update active button
@@ -1304,10 +1803,62 @@ document.addEventListener('DOMContentLoaded', () => {
         flow.style.display = flow.getAttribute('data-path') === currentPath ? 'block' : 'none';
       });
       
+      // Update flow diagram styling based on active path
+      document.querySelectorAll('.flow-diagram').forEach(diagram => {
+        diagram.setAttribute('data-active-path', currentPath);
+        
+        // Update viewBox for mobile zooming
+        if (isMobileDevice()) {
+          updateMobileViewBox(diagram.id, currentPath);
+        }
+      });
+      
       // Update metrics
       updateMetrics();
+      
+      // Auto-scroll to flowchart on mobile for immediate feedback
+      if (isMobileDevice()) {
+        const activeContent = document.querySelector('.scenario-content.active');
+        const flowDiagram = activeContent?.querySelector('.flow-diagram');
+        if (flowDiagram) {
+          setTimeout(() => {
+            flowDiagram.scrollIntoView({ 
+              behavior: 'smooth', 
+              block: 'start'
+            });
+          }, 100);
+        }
+      }
     });
   });
+  
+  // Initialize viewBox on page load for mobile
+  if (isMobileDevice()) {
+    document.querySelectorAll('.flow-diagram').forEach(diagram => {
+      updateMobileViewBox(diagram.id, 'happy');
+    });
+  }
+  
+  // Handle resize - update viewBox when switching between mobile/desktop
+  window.addEventListener('resize', () => {
+    const wasMobile = document.body.dataset.wasMobile === 'true';
+    const isMobile = isMobileDevice();
+    
+    if (isMobile && !wasMobile) {
+      // Switched to mobile
+      document.querySelectorAll('.flow-diagram').forEach(diagram => {
+        updateMobileViewBox(diagram.id, currentPath);
+      });
+    } else if (!isMobile && wasMobile) {
+      // Switched to desktop
+      document.querySelectorAll('.flow-diagram').forEach(diagram => {
+        resetViewBox(diagram.id);
+      });
+    }
+    
+    document.body.dataset.wasMobile = isMobile;
+  });
+  document.body.dataset.wasMobile = isMobileDevice();
 
   // Scenario tab switching
   document.querySelectorAll('.scenario-tab').forEach(tab => {
@@ -1725,6 +2276,24 @@ document.addEventListener('DOMContentLoaded', () => {
   updateMetrics();
   updateVariables();
   updateCodeExecution();
+  
+  // ===== HOP 2: Scroll hint for scenario tabs =====
+  const scenarioTabs = document.getElementById('scenarioTabs');
+  const tabsScrollHint = document.getElementById('tabsScrollHint');
+  
+  function updateScrollHint() {
+    if (scenarioTabs && tabsScrollHint) {
+      const isScrollable = scenarioTabs.scrollWidth > scenarioTabs.clientWidth;
+      const isAtEnd = scenarioTabs.scrollLeft + scenarioTabs.clientWidth >= scenarioTabs.scrollWidth - 10;
+      tabsScrollHint.style.display = (isScrollable && !isAtEnd) ? 'block' : 'none';
+    }
+  }
+  
+  if (scenarioTabs) {
+    scenarioTabs.addEventListener('scroll', updateScrollHint);
+    window.addEventListener('resize', updateScrollHint);
+    updateScrollHint();
+  }
   
   // Set up debug mode
   document.getElementById('debugBtn').addEventListener('click', () => {

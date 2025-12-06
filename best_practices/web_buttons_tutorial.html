@@ -34,6 +34,11 @@
         .site-header, .site-footer { background: var(--header-bg); color: var(--header-fg); padding: 14px 24px; flex-shrink: 0; }
         .site-header { display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         .logo { font-weight: 700; font-size: 1.15rem; color: #fff; text-decoration: none; }
+        .site-nav { display: flex; gap: 20px; align-items: center; }
+        .site-nav a { color: var(--header-fg); font-weight: 500; text-decoration: none; transition: color 0.2s; }
+        .site-nav a:hover { color: var(--accent); }
+        .hamburger { display: none; background: none; border: none; cursor: pointer; padding: 8px; flex-direction: column; gap: 5px; }
+        .hamburger span { display: block; width: 24px; height: 3px; background: #fff; border-radius: 2px; transition: 0.2s; }
         .site-footer { text-align: center; padding: 30px; }
         /* --- Main Wizard Container --- */
         .wizard-container {
@@ -83,35 +88,40 @@
         .panel-header { padding: 12px 16px; border-bottom: 1px solid var(--border); background: var(--muted); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
         .panel-title { font-weight: 600; font-size: 1.1rem; }
         .panel-body { padding: 16px; flex-grow: 1; overflow-y: auto; }
-        .nav-btns { display: flex; justify-content: space-between; margin-top: 1rem; }
-        .nav-btn { background: var(--accent); color: white; border: none; padding: 10px 16px; font-size: 1rem; font-weight: 600; border-radius: 8px; cursor: pointer; transition: background-color 0.2s; }
+        .nav-btns { display: flex; justify-content: space-between; margin-top: 1rem; gap: 12px; }
+        .nav-btn { background: var(--accent); color: white; border: none; padding: 12px 20px; font-size: 1rem; font-weight: 600; border-radius: 8px; cursor: pointer; transition: background-color 0.2s; min-height: 48px; min-width: 48px; }
         .nav-btn:hover { background: var(--accent-2); }
         .nav-btn.prev { background: #6c757d; }
         .nav-btn.prev:hover { background: #5a6268; }
         .nav-btn[disabled] { opacity: 0.5; cursor: not-allowed; }
-        .code-viewer { font-family: var(--font-code); font-size: 0.95rem; line-height: 1.6; background-color: var(--code-bg); color: var(--code-fg); padding: 16px; white-space: pre-wrap; margin: 0; flex-grow: 1; overflow: auto;}
+        .nav-btn:focus { outline: 2px solid var(--accent); outline-offset: 2px; }
+        .code-viewer { font-family: var(--font-code); font-size: 0.95rem; line-height: 1.6; background-color: var(--code-bg); color: var(--code-fg); padding: 16px; white-space: pre-wrap; word-wrap: break-word; margin: 0; flex-grow: 1; overflow-x: auto; -webkit-overflow-scrolling: touch; }
         .output-viewer { padding: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-grow: 1; }
         .output-viewer h2 { margin-bottom: 1rem; }
         
         /* --- Right Pane Styles --- */
-        .explanation-tabs { display: flex; border-bottom: 1px solid var(--border); flex-shrink: 0; flex-wrap: wrap; }
+        .explanation-tabs { display: flex; border-bottom: 1px solid var(--border); flex-shrink: 0; flex-wrap: wrap; gap: 0; }
         .explanation-tab { 
             background: none; 
             border: none; 
-            padding: 12px 16px; 
+            padding: 14px 16px; 
             font-size: 0.95rem; 
             font-weight: 600; 
             cursor: pointer; 
             border-bottom: 3px solid transparent; 
             transition: background-color 0.2s, color 0.2s, border-bottom 0.2s;
             flex-grow: 1;
+            min-height: 48px;
+            text-align: center;
         }
+        .explanation-tab:hover { background-color: var(--muted); }
         .explanation-tab.active { 
             color: var(--accent); 
             border-bottom-color: var(--accent); 
             background-color: white; 
             box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
         }
+        .explanation-tab:focus { outline: 2px solid var(--accent); outline-offset: -2px; }
         .explanation-content { 
             display: none; 
             padding: 16px; 
@@ -174,6 +184,12 @@
             position: relative;
             overflow: hidden;
             outline: none;
+            min-height: 48px;
+            text-align: center;
+        }
+        .btn-preview:focus {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
         }
         .primary-btn {
             background-color: var(--accent);
@@ -381,9 +397,17 @@
         }
          .form-control {
              border: 1px solid var(--border);
-             padding: 10px;
+             padding: 12px 14px;
              border-radius: 8px;
              width: 100%;
+             font-size: 1rem;
+             min-height: 48px;
+             transition: border-color 0.2s, box-shadow 0.2s;
+         }
+         .form-control:focus {
+             outline: none;
+             border-color: var(--accent);
+             box-shadow: 0 0 0 3px rgba(253, 126, 20, 0.15);
          }
 
          /* Modal Styles */
@@ -411,7 +435,8 @@
              border-radius: 12px;
              padding: 2rem;
              max-width: 400px;
-             width: 90%;
+             width: calc(100% - 32px);
+             margin: 16px;
              text-align: center;
              box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
              transform: scale(0.9);
@@ -438,14 +463,21 @@
              background-color: var(--accent);
              color: white;
              border: none;
-             padding: 0.75rem 1.5rem;
+             padding: 0.875rem 2rem;
              border-radius: 8px;
              font-weight: 600;
              cursor: pointer;
              transition: background-color 0.2s;
+             min-height: 48px;
+             min-width: 120px;
+             font-size: 1rem;
          }
          .modal-btn:hover {
              background-color: var(--accent-2);
+         }
+         .modal-btn:focus {
+             outline: 2px solid var(--accent);
+             outline-offset: 2px;
          }
 
          /* Advanced Animation Styles */
@@ -508,21 +540,234 @@
              left: 100%;
          }
 
-        /* Responsive Design */
+        /* ================= Mobile Navigation ================= */
+        @media (max-width: 768px) {
+            .hamburger { display: flex; }
+            .site-nav { 
+                display: none; 
+                position: absolute; 
+                top: 100%; 
+                left: 0; 
+                right: 0; 
+                background: var(--header-bg); 
+                flex-direction: column; 
+                padding: 16px 24px; 
+                gap: 16px; 
+                border-top: 1px solid rgba(255,255,255,0.1);
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            }
+            .site-nav.open { display: flex; }
+            .site-nav a { padding: 10px 0; font-size: 1.1rem; }
+        }
+
+        /* ================= Tablet Responsive ================= */
         @media (max-width: 1024px) {
             .tutorial-container { grid-template-columns: 1fr; }
             .left-column, .right-column { min-height: auto; }
             .wizard-container { height: auto; padding: 2rem 1rem; }
         }
+
+        /* ================= Mobile Progress Bar (Top) ================= */
+        .mobile-progress {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+            padding: 12px 16px;
+            background: var(--muted);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 52px;
+            z-index: 90;
+        }
+        .mobile-progress .prog-btn {
+            background: none;
+            border: none;
+            font-size: 1.4rem;
+            color: var(--accent);
+            cursor: pointer;
+            padding: 6px 10px;
+            min-width: 40px;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+        .mobile-progress .prog-btn:hover { background: var(--border); }
+        .mobile-progress .prog-btn:disabled { color: #ccc; cursor: not-allowed; }
+        .mobile-progress .prog-counter { font-weight: 600; font-size: 0.95rem; color: var(--text); }
+
+        /* ================= Mobile Sticky Bottom Nav ================= */
+        .mobile-bottom-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg);
+            border-top: 1px solid var(--border);
+            padding: 10px 16px;
+            z-index: 100;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+        }
+        .mobile-bottom-nav .bottom-nav-inner {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        .mobile-bottom-nav .bottom-btn {
+            flex: 1;
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            min-height: 44px;
+            transition: background 0.2s;
+        }
+        .mobile-bottom-nav .bottom-btn:hover { background: var(--accent-2); }
+        .mobile-bottom-nav .bottom-btn.prev { background: #6c757d; }
+        .mobile-bottom-nav .bottom-btn.prev:hover { background: #5a6268; }
+        .mobile-bottom-nav .bottom-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* ================= Mobile Accordion Sections ================= */
+        .mobile-section {
+            display: none;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            margin-bottom: 12px;
+            background: var(--bg);
+            overflow: hidden;
+        }
+        .mobile-section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 16px;
+            background: var(--muted);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            border: none;
+            width: 100%;
+            text-align: left;
+            transition: background 0.2s;
+        }
+        .mobile-section-header:hover { background: #e9ecef; }
+        .mobile-section-header .section-icon { font-size: 1.2rem; margin-right: 10px; }
+        .mobile-section-header .chevron { 
+            font-size: 1rem; 
+            transition: transform 0.2s;
+            color: #6c757d;
+        }
+        .mobile-section.expanded .mobile-section-header .chevron { transform: rotate(180deg); }
+        .mobile-section-body {
+            display: none;
+            padding: 16px;
+            border-top: 1px solid var(--border);
+        }
+        .mobile-section.expanded .mobile-section-body { display: block; }
+
+        /* ================= Mobile Responsive ================= */
         @media (max-width: 600px) {
-            .tutorial-container { padding: 12px; }
+            .site-header { padding: 10px 16px; }
             .wizard-panel { padding: 1rem; }
-            .output-viewer > div {
-                flex-direction: row !important;
-                flex-wrap: wrap;
-                justify-content: center;
+            .wizard-panel h1 { font-size: 1.4rem; }
+            .wizard-panel p { font-size: 0.95rem; }
+            .start-btn { padding: 14px; font-size: 1.1rem; min-height: 52px; }
+            
+            /* Hide desktop layout */
+            .tutorial-container { display: none !important; }
+            
+            /* Show mobile layout */
+            .mobile-tutorial-container { display: block !important; }
+            .mobile-progress { display: flex; }
+            .mobile-bottom-nav { display: block; }
+            .mobile-section { display: block; }
+            
+            /* Mobile container */
+            .mobile-tutorial-container {
+                padding: 12px;
+                padding-bottom: 80px; /* Space for sticky nav */
+            }
+            
+            /* Code viewer in mobile */
+            .mobile-section .code-viewer {
+                font-size: 0.8rem;
+                padding: 12px;
+                line-height: 1.5;
+                border-radius: 8px;
+                margin: 0;
+            }
+            
+            /* Output viewer in mobile */
+            .mobile-section .output-viewer {
+                padding: 16px;
+                background: var(--muted);
+                border-radius: 8px;
+            }
+            .mobile-section .output-viewer > div {
+                flex-direction: column !important;
+                align-items: center;
                 gap: 1rem;
             }
+            .mobile-section .btn-preview { 
+                min-height: 48px; 
+                width: 100%; 
+                max-width: 280px; 
+            }
+            
+            /* Explanation content in mobile */
+            .mobile-section .explanation-content {
+                display: block !important;
+                padding: 0;
+            }
+            .mobile-section .explanation-content h2 { 
+                font-size: 1.3rem; 
+                border-bottom-width: 4px;
+                margin-bottom: 0.8rem;
+            }
+            .mobile-section .explanation-content h3 { 
+                font-size: 1.1rem; 
+                margin-top: 1rem; 
+            }
+            .mobile-section .explanation-content p { 
+                font-size: 0.95rem; 
+                line-height: 1.7; 
+                margin-bottom: 1rem; 
+            }
+            .mobile-section .explanation-content .analogy { 
+                padding: 1rem; 
+                font-size: 0.95rem; 
+            }
+            .mobile-section .explanation-content ul, 
+            .mobile-section .explanation-content ol { 
+                padding-left: 1.2rem; 
+                margin-bottom: 1rem; 
+            }
+            .mobile-section .explanation-content ul li { 
+                margin-bottom: 0.4rem; 
+                font-size: 0.95rem; 
+            }
+            
+            /* Footer */
+            .site-footer { padding: 20px 16px; font-size: 0.9rem; margin-bottom: 60px; }
+        }
+
+        /* ================= Extra Small Screens ================= */
+        @media (max-width: 400px) {
+            .wizard-panel h1 { font-size: 1.2rem; }
+            .mobile-section-header { padding: 12px 14px; font-size: 0.95rem; }
+            .mobile-section .code-viewer { font-size: 0.75rem; }
+            .mobile-progress .prog-btn { font-size: 1.2rem; padding: 4px 8px; }
+            .mobile-progress .prog-counter { font-size: 0.85rem; }
         }
     </style>
 </head>
@@ -530,6 +775,13 @@
 
     <header class="site-header">
         <a href="#" class="logo">Web Buttons Explained</a>
+        <button class="hamburger" aria-label="Toggle menu" onclick="document.querySelector('.site-nav').classList.toggle('open')">
+            <span></span><span></span><span></span>
+        </button>
+        <nav class="site-nav">
+            <a href="#" onclick="document.querySelector('.site-nav').classList.remove('open'); currentStep=0; showScreen(document.getElementById('intro-screen'));">Home</a>
+            <a href="#" onclick="document.querySelector('.site-nav').classList.remove('open'); showScreen(document.getElementById('tutorial-screen')); renderStep();">Tutorial</a>
+        </nav>
     </header>
 
     <!-- Screen 1: Intro -->
@@ -575,6 +827,29 @@
             </div>
         </div>
     </main>
+
+    <!-- Mobile Tutorial Layout (hidden on desktop) -->
+    <div id="mobile-tutorial-screen" class="mobile-tutorial-container" style="display: none;">
+        <!-- Mobile Progress Bar -->
+        <div class="mobile-progress">
+            <button class="prog-btn" id="mob-prev-prog" disabled>⮜</button>
+            <span class="prog-counter"><span id="mob-current">1</span> of <span id="mob-total">12</span></span>
+            <button class="prog-btn" id="mob-next-prog">⮞</button>
+        </div>
+        
+        <!-- Mobile Accordion Sections -->
+        <div id="mobile-sections-container">
+            <!-- Dynamically populated -->
+        </div>
+    </div>
+
+    <!-- Mobile Bottom Sticky Nav -->
+    <div class="mobile-bottom-nav" id="mobile-bottom-nav">
+        <div class="bottom-nav-inner">
+            <button class="bottom-btn prev" id="mob-prev-btn" disabled>← Prev</button>
+            <button class="bottom-btn" id="mob-next-btn">Next →</button>
+        </div>
+    </div>
 
     <footer class="site-footer">
         <p>© 2025 A fun learning project. Let's make buttons simple for everyone!</p>
@@ -1641,16 +1916,39 @@ button.addEventListener('click', (e) => {
 
     const introScreen = document.getElementById('intro-screen');
     const tutorialScreen = document.getElementById('tutorial-screen');
+    const mobileTutorialScreen = document.getElementById('mobile-tutorial-screen');
+    const mobileBottomNav = document.getElementById('mobile-bottom-nav');
     const startBtn = document.getElementById('start-tutorial-btn');
     const prevBtn = document.getElementById('prev-btn');
     const nextBtn = document.getElementById('next-btn');
     const explanationPanelBody = document.getElementById('explanation-panel-body');
+    
+    // Mobile elements
+    const mobPrevProg = document.getElementById('mob-prev-prog');
+    const mobNextProg = document.getElementById('mob-next-prog');
+    const mobPrevBtn = document.getElementById('mob-prev-btn');
+    const mobNextBtn = document.getElementById('mob-next-btn');
+    const mobCurrent = document.getElementById('mob-current');
+    const mobTotal = document.getElementById('mob-total');
+    const mobileSectionsContainer = document.getElementById('mobile-sections-container');
+
+    function isMobile() {
+        return window.innerWidth <= 600;
+    }
 
     function showScreen(screen) {
         introScreen.style.display = 'none';
         tutorialScreen.style.display = 'none';
+        mobileTutorialScreen.style.display = 'none';
+        mobileBottomNav.style.display = 'none';
+        
         if (screen.id === 'tutorial-screen') {
-            screen.style.display = 'grid';
+            if (isMobile()) {
+                mobileTutorialScreen.style.display = 'block';
+                mobileBottomNav.style.display = 'block';
+            } else {
+                screen.style.display = 'grid';
+            }
         } else {
             screen.style.display = 'flex';
         }
@@ -1659,6 +1957,7 @@ button.addEventListener('click', (e) => {
     function renderStep() {
         const step = buttonTutorialData[currentStep];
         
+        // ============ DESKTOP RENDERING ============
         // Render explanation with tabs
         explanationPanelBody.innerHTML = `
             <div class="explanation-tabs">
@@ -1676,6 +1975,9 @@ button.addEventListener('click', (e) => {
         // Render code and output
         document.getElementById('code-viewer').textContent = step.code;
         document.getElementById('output-viewer').innerHTML = step.output;
+        
+        // ============ MOBILE RENDERING ============
+        renderMobileStep(step);
         
          // Handle button states
          prevBtn.disabled = currentStep === 0;
@@ -1875,6 +2177,198 @@ button.addEventListener('click', (e) => {
         }
     });
 
+    // ============ MOBILE RENDERING FUNCTION ============
+    function renderMobileStep(step) {
+        // Update progress counter
+        mobCurrent.textContent = currentStep + 1;
+        mobTotal.textContent = buttonTutorialData.length;
+        
+        // Update navigation button states
+        const isFirst = currentStep === 0;
+        const isLast = currentStep === buttonTutorialData.length - 1;
+        
+        mobPrevProg.disabled = isFirst;
+        mobNextProg.disabled = isLast;
+        mobPrevBtn.disabled = isFirst;
+        mobNextBtn.disabled = isLast;
+        
+        // Map tab names to section info
+        const sectionMap = {
+            'Concepts': { icon: '📘', name: 'Concepts' },
+            'What You Learned': { icon: '📘', name: 'What You Learned' },
+            'Best Practices': { icon: '✅', name: 'Best Practices' },
+            'Key Takeaways': { icon: '✅', name: 'Key Takeaways' },
+            'FAQs': { icon: '❓', name: 'FAQs' },
+            'Resources & Tools': { icon: '🛠️', name: 'Resources & Tools' }
+        };
+        
+        // Build mobile accordion sections
+        let sectionsHTML = '';
+        
+        // Section 1: Concepts (first tab - expanded by default)
+        const conceptsTab = step.explanation.tabs[0];
+        const conceptsInfo = sectionMap[conceptsTab.name] || { icon: '📘', name: conceptsTab.name };
+        sectionsHTML += `
+            <div class="mobile-section expanded" data-section="concepts">
+                <button class="mobile-section-header" onclick="toggleMobileSection(this)">
+                    <span><span class="section-icon">${conceptsInfo.icon}</span>${conceptsInfo.name}</span>
+                    <span class="chevron">▼</span>
+                </button>
+                <div class="mobile-section-body">
+                    <div class="explanation-content active">${conceptsTab.content}</div>
+                </div>
+            </div>
+        `;
+        
+        // Section 2: Playground
+        sectionsHTML += `
+            <div class="mobile-section" data-section="playground">
+                <button class="mobile-section-header" onclick="toggleMobileSection(this)">
+                    <span><span class="section-icon">🎮</span>Playground</span>
+                    <span class="chevron">▼</span>
+                </button>
+                <div class="mobile-section-body">
+                    <div class="output-viewer">${step.output}</div>
+                </div>
+            </div>
+        `;
+        
+        // Section 3: HTML & CSS Code
+        sectionsHTML += `
+            <div class="mobile-section" data-section="code">
+                <button class="mobile-section-header" onclick="toggleMobileSection(this)">
+                    <span><span class="section-icon">💻</span>HTML & CSS Code</span>
+                    <span class="chevron">▼</span>
+                </button>
+                <div class="mobile-section-body">
+                    <pre class="code-viewer">${escapeHtml(step.code)}</pre>
+                </div>
+            </div>
+        `;
+        
+        // Section 4: Best Practices (second tab if exists)
+        if (step.explanation.tabs.length > 1) {
+            const bpTab = step.explanation.tabs[1];
+            const bpInfo = sectionMap[bpTab.name] || { icon: '✅', name: bpTab.name };
+            sectionsHTML += `
+                <div class="mobile-section" data-section="best-practices">
+                    <button class="mobile-section-header" onclick="toggleMobileSection(this)">
+                        <span><span class="section-icon">${bpInfo.icon}</span>${bpInfo.name}</span>
+                        <span class="chevron">▼</span>
+                    </button>
+                    <div class="mobile-section-body">
+                        <div class="explanation-content active">${bpTab.content}</div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Section 5: FAQs (third tab if exists)
+        if (step.explanation.tabs.length > 2) {
+            const faqTab = step.explanation.tabs[2];
+            const faqInfo = sectionMap[faqTab.name] || { icon: '❓', name: faqTab.name };
+            sectionsHTML += `
+                <div class="mobile-section" data-section="faqs">
+                    <button class="mobile-section-header" onclick="toggleMobileSection(this)">
+                        <span><span class="section-icon">${faqInfo.icon}</span>${faqInfo.name}</span>
+                        <span class="chevron">▼</span>
+                    </button>
+                    <div class="mobile-section-body">
+                        <div class="explanation-content active">${faqTab.content}</div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        mobileSectionsContainer.innerHTML = sectionsHTML;
+        
+        // Re-attach interactive button handlers for mobile
+        setupMobileInteractivity();
+    }
+    
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+    
+    function toggleMobileSection(btn) {
+        const section = btn.closest('.mobile-section');
+        section.classList.toggle('expanded');
+    }
+    
+    function setupMobileInteractivity() {
+        // Ripple buttons in mobile
+        const rippleBtns = mobileSectionsContainer.querySelectorAll('.btn-ripple');
+        rippleBtns.forEach(btn => {
+            btn.onclick = (e) => {
+                const rect = e.target.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const ripple = document.createElement('span');
+                ripple.className = 'ripple';
+                ripple.style.left = `${x}px`;
+                ripple.style.top = `${y}px`;
+                btn.appendChild(ripple);
+                setTimeout(() => ripple.remove(), 600);
+            };
+        });
+        
+        // Shake buttons in mobile
+        const shakeBtns = mobileSectionsContainer.querySelectorAll('.shake-btn');
+        shakeBtns.forEach(btn => {
+            btn.onclick = () => {
+                btn.classList.add('shake-active');
+                setTimeout(() => btn.classList.remove('shake-active'), 500);
+            };
+        });
+        
+        // Like button in mobile
+        const likeBtn = mobileSectionsContainer.querySelector('#like-btn');
+        if (likeBtn) {
+            let liked = false;
+            let count = 0;
+            const likeCount = mobileSectionsContainer.querySelector('#like-count');
+            likeBtn.onclick = () => {
+                if (liked) {
+                    liked = false;
+                    count--;
+                    likeBtn.classList.remove('liked');
+                } else {
+                    liked = true;
+                    count++;
+                    likeBtn.classList.add('liked');
+                }
+                if (likeCount) likeCount.textContent = count;
+            };
+        }
+        
+        // Play button in mobile
+        const playBtn = mobileSectionsContainer.querySelector('#play-btn');
+        if (playBtn) {
+            let isPlaying = false;
+            playBtn.onclick = () => {
+                if (isPlaying) {
+                    playBtn.textContent = "Play";
+                    isPlaying = false;
+                } else {
+                    playBtn.textContent = "Pause";
+                    isPlaying = true;
+                }
+            };
+        }
+    }
+    
+    function navigateStep(direction) {
+        if (direction === 'next' && currentStep < buttonTutorialData.length - 1) {
+            currentStep++;
+        } else if (direction === 'prev' && currentStep > 0) {
+            currentStep--;
+        }
+        renderStep();
+        window.scrollTo(0, 0);
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
         showScreen(introScreen);
         
@@ -1884,19 +2378,23 @@ button.addEventListener('click', (e) => {
             renderStep();
         });
         
-        nextBtn.addEventListener('click', () => {
-            if (currentStep < buttonTutorialData.length - 1) {
-                currentStep++;
-                renderStep();
-                window.scrollTo(0, 0);
-            }
-        });
+        // Desktop navigation
+        nextBtn.addEventListener('click', () => navigateStep('next'));
+        prevBtn.addEventListener('click', () => navigateStep('prev'));
         
-        prevBtn.addEventListener('click', () => {
-            if (currentStep > 0) {
-                currentStep--;
+        // Mobile navigation (top progress)
+        mobPrevProg.addEventListener('click', () => navigateStep('prev'));
+        mobNextProg.addEventListener('click', () => navigateStep('next'));
+        
+        // Mobile navigation (bottom sticky)
+        mobPrevBtn.addEventListener('click', () => navigateStep('prev'));
+        mobNextBtn.addEventListener('click', () => navigateStep('next'));
+        
+        // Handle resize - switch between desktop/mobile
+        window.addEventListener('resize', () => {
+            if (tutorialScreen.style.display === 'grid' || mobileTutorialScreen.style.display === 'block') {
+                showScreen(tutorialScreen);
                 renderStep();
-                window.scrollTo(0, 0);
             }
         });
      });

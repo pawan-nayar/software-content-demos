@@ -20,11 +20,17 @@
         
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
+        html {
+            overflow-x: hidden;
+        }
+        
         body {
             font-family: 'Inter', system-ui, sans-serif;
             background: var(--bg);
             color: var(--text);
             line-height: 1.7;
+            overflow-x: hidden;
+            max-width: 100vw;
         }
         
         .container {
@@ -32,6 +38,11 @@
             margin: 0 auto;
             padding: 24px;
             background: #fff;
+            overflow-x: hidden;
+        }
+        
+        .container * {
+            max-width: 100%;
         }
         
         /* Header */
@@ -68,6 +79,46 @@
             color: #fff;
         }
         
+        /* Hamburger Menu */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            justify-content: space-around;
+            width: 28px;
+            height: 28px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            z-index: 101;
+        }
+        
+        .hamburger span {
+            width: 28px;
+            height: 3px;
+            background: var(--header-fg);
+            border-radius: 2px;
+            transition: all 0.3s ease;
+            transform-origin: center;
+        }
+        
+        .hamburger.open span:nth-child(1) {
+            transform: translateY(8px) rotate(45deg);
+        }
+        
+        .hamburger.open span:nth-child(2) {
+            opacity: 0;
+        }
+        
+        .hamburger.open span:nth-child(3) {
+            transform: translateY(-8px) rotate(-45deg);
+        }
+        
+        .site-nav {
+            display: flex;
+            gap: 14px;
+        }
+        
         /* Typography */
         h1 {
             font-size: clamp(2rem, 5vw, 2.8rem);
@@ -102,11 +153,14 @@
         p, ul, li {
             font-size: 1.1rem;
             max-width: 75ch;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
         }
         
         p {
             margin-bottom: 20px;
             word-wrap: break-word;
+            overflow-wrap: break-word;
             line-height: 1.9;
         }
         
@@ -125,6 +179,8 @@
             margin-bottom: 24px;
             font-size: 0.9rem;
             color: #6c757d;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
         }
         
         .breadcrumbs a {
@@ -166,6 +222,8 @@
             font-size: 0.85rem;
             margin: 16px 0;
             border-left: 4px solid var(--accent);
+            overflow-x: auto;
+            word-wrap: break-word;
         }
         
         .claude-trace .trace-header {
@@ -248,6 +306,8 @@
             padding: 16px;
             font-family: 'Roboto Mono', monospace;
             font-size: 0.85rem;
+            overflow-x: auto;
+            word-wrap: break-word;
         }
         
         .diff-line {
@@ -319,6 +379,8 @@
         .decision-consequence {
             font-size: 0.9rem;
             opacity: 0.8;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
         }
 
         /* Dimension Cards */
@@ -378,6 +440,8 @@
             font-size: 0.95rem;
             line-height: 1.6;
             color: var(--neutral);
+            word-wrap: break-word;
+            overflow-wrap: break-word;
         }
         
         .card-example {
@@ -404,6 +468,12 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
+            gap: 12px;
+        }
+        
+        .quiz-navigation span {
+            white-space: nowrap;
+            flex-shrink: 0;
         }
         
         .btn {
@@ -530,52 +600,40 @@
             color: #343a40;
         }
 
-        /* Glossary Styles */
+        /* Glossary Styles - CBSE Exact Copy */
         .glossary-cloud {
             display: flex;
             flex-wrap: wrap;
             gap: 12px;
             margin-top: 24px;
-            justify-content: flex-start;
-            align-items: flex-start;
+            justify-content: center;
         }
         
         .glossary-chip {
             position: relative;
-            display: inline-block;
-            padding: 12px 16px;
-            border-radius: 25px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            border-radius: 999px;
             background: #fff7ed;
             border: 1px solid #ffd8a8;
-            color: var(--accent);
+            color: #d9480f;
             font-weight: 600;
             cursor: pointer;
             box-shadow: 0 2px 6px rgba(253, 126, 20, 0.12);
-            transition: all 0.2s ease;
-            text-align: center;
-            white-space: nowrap;
-            font-size: 0.9rem;
-            line-height: 1.2;
-            z-index: 1;
-            overflow: visible;
-        }
-        
-        .glossary-chip::before,
-        .glossary-chip::after {
-            display: none;
+            max-width: 100%;
         }
         
         .glossary-chip:hover,
         .glossary-chip:focus {
             background: #ffecde;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(253, 126, 20, 0.2);
         }
         
         .chip-tip {
             position: fixed;
             z-index: 101;
-            min-width: 240px;
+            min-width: 0;
             max-width: min(92vw, 420px);
             background: var(--accent);
             color: #fff;
@@ -586,12 +644,19 @@
             visibility: hidden;
             transition: 0.15s;
             line-height: 1.45;
-            pointer-events: none;
         }
         
         .chip-tip.show {
             opacity: 1;
             visibility: visible;
+        }
+        
+        .chip-tip .arrow {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: var(--accent);
+            transform: rotate(45deg);
         }
         
         /* Comparative Output */
@@ -602,11 +667,20 @@
             margin: 24px 0;
         }
         
+        .output-comparison.toggle-mode {
+            grid-template-columns: 1fr;
+        }
+        
         .output-panel {
             background: var(--muted);
             border: 1px solid var(--border);
             border-radius: 8px;
             overflow: hidden;
+            display: none;
+        }
+        
+        .output-panel.active {
+            display: block;
         }
         
         .output-header {
@@ -622,6 +696,9 @@
             font-family: 'Roboto Mono', monospace;
             font-size: 0.85rem;
             min-height: 120px;
+            overflow-x: auto;
+            word-wrap: break-word;
+            white-space: pre-wrap;
         }
         
         /* Toggle Controls */
@@ -701,6 +778,8 @@
             padding: 20px;
             margin-top: 40px;
             font-family: 'Roboto Mono', monospace;
+            overflow-x: auto;
+            word-wrap: break-word;
         }
         
         .console-header {
@@ -738,8 +817,69 @@
         
         /* Mobile Responsiveness */
         @media (max-width: 768px) {
+            /* Header & Navigation */
+            .hamburger {
+                display: flex;
+            }
+            
+            .site-nav {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 280px;
+                height: 100vh;
+                background: var(--header-bg);
+                flex-direction: column;
+                padding: 80px 30px 30px;
+                gap: 24px;
+                transition: right 0.3s ease;
+                box-shadow: -2px 0 8px rgba(0,0,0,0.3);
+                z-index: 100;
+            }
+            
+            .site-nav.open {
+                right: 0;
+            }
+            
+            .site-nav a {
+                font-size: 1.1rem;
+                padding: 12px 0;
+                border-bottom: 1px solid rgba(255,255,255,0.1);
+            }
+            
+            /* Container & Spacing */
+            .container {
+                padding: 18px;
+            }
+            
+            h1 {
+                font-size: clamp(1.75rem, 5vw, 2.8rem);
+            }
+            
+            h2 {
+                font-size: clamp(1.4rem, 4vw, 2.2rem);
+                margin: 48px 0 20px;
+            }
+            
+            h3 {
+                font-size: clamp(1.1rem, 3vw, 1.6rem);
+                margin-top: 36px;
+                margin-bottom: 14px;
+            }
+            
+            p, ul, li {
+                font-size: 1rem;
+            }
+            
+            .intro {
+                font-size: 1.1rem;
+                padding: 20px;
+            }
+            
+            /* Grids & Cards */
             .output-comparison {
                 grid-template-columns: 1fr;
+                gap: 16px;
             }
             
             .dimension-cards {
@@ -755,42 +895,305 @@
                 font-size: 2.5rem;
             }
             
+            /* State Display */
             .state-display {
-                flex-wrap: wrap;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+            }
+            
+            .state-arrow {
+                transform: rotate(90deg);
+                align-self: center;
+            }
+            
+            .state-node {
+                width: 100%;
+                text-align: center;
+                padding: 12px;
+                font-size: 1rem;
+            }
+            
+            /* Decision Tree */
+            .decision-node {
+                padding: 14px;
+                margin: 10px 0;
+            }
+            
+            .decision-label {
+                font-size: 1rem;
+            }
+            
+            .decision-consequence {
+                font-size: 0.85rem;
+            }
+            
+            /* Buttons & Controls */
+            .btn {
+                padding: 12px 20px;
+                font-size: 0.95rem;
+                min-width: 48px;
+                min-height: 48px;
             }
             
             .toggle-controls {
                 flex-wrap: wrap;
+                gap: 10px;
             }
             
-            .glossary-cloud {
-                justify-content: center;
+            .toggle-btn {
+                padding: 10px 14px;
+                font-size: 0.85rem;
+                min-width: 48px;
+                min-height: 48px;
+            }
+            
+            /* Quiz */
+            .quiz-container {
+                padding: 1.5rem;
+            }
+            
+            .quiz-navigation {
                 gap: 8px;
             }
             
-            .glossary-chip {
-                font-size: 0.85rem;
+            .quiz-navigation .btn {
+                min-width: 48px;
                 padding: 10px 14px;
-                margin: 2px;
+            }
+            
+            .quiz-navigation span {
+                font-size: 0.85rem;
+            }
+            
+            .quiz-option label {
+                padding: 12px;
+                font-size: 0.95rem;
+            }
+            
+            /* Glossary */
+            .glossary-chip {
+                justify-content: center;
             }
             
             .chip-tip {
-                max-width: 90vw;
-                font-size: 0.9rem;
                 padding: 10px 12px;
+            }
+            
+            /* Code Blocks */
+            .claude-trace,
+            .diff-content,
+            .output-content,
+            .continuous-console {
+                font-size: 0.8rem;
+                padding: 14px;
+            }
+            
+            .card-example {
+                font-size: 0.8rem;
+                padding: 10px;
+            }
+            
+            /* Progress Tracker */
+            .progress-tracker {
+                flex-wrap: wrap;
+                gap: 6px;
+                padding: 14px;
+            }
+            
+            .progress-step {
+                width: 20px;
+                height: 20px;
+                font-size: 0.7rem;
+            }
+            
+            /* Accordion */
+            .accordion-header {
+                font-size: 1rem;
+                padding: 14px 16px;
+            }
+            
+            .accordion-content {
+                padding: 0 16px;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            /* Further reduce spacing */
+            .container {
+                padding: 16px;
+            }
+            
+            h1 {
+                font-size: 1.6rem;
+                margin-bottom: 6px;
+            }
+            
+            h2 {
+                font-size: 1.35rem;
+                margin: 40px 0 18px;
+                padding-bottom: 10px;
+            }
+            
+            h3 {
+                font-size: 1.15rem;
+                margin-top: 32px;
+                margin-bottom: 12px;
+            }
+            
+            .byline {
+                font-size: 1rem;
+            }
+            
+            .intro {
+                font-size: 1rem;
+                padding: 16px;
+            }
+            
+            .dimension-card {
+                padding: 16px;
+            }
+            
+            .card-emoji {
+                font-size: 2rem;
+            }
+            
+            .state-machine,
+            .decision-tree {
+                padding: 16px;
+            }
+            
+            .output-panel {
+                margin: 12px 0;
+            }
+            
+            .output-header {
+                padding: 10px 14px;
+                font-size: 0.85rem;
+            }
+            
+            .output-content {
+                padding: 14px;
+                font-size: 0.75rem;
+            }
+            
+            .quiz-option label {
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+            
+            .breadcrumbs {
+                font-size: 0.8rem;
+                margin-bottom: 20px;
+            }
+            
+            .article-meta {
+                font-size: 0.85rem;
+                flex-wrap: wrap;
+            }
+            
+            .author-emoji {
+                font-size: 28px;
             }
         }
         
         @media (max-width: 480px) {
-            .glossary-chip {
-                font-size: 0.8rem;
-                padding: 8px 12px;
+            /* Maximum compression for small phones */
+            .site-header {
+                padding: 12px 16px;
             }
             
-            .chip-tip {
-                max-width: 95vw;
+            .container {
+                padding: 12px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            h2 {
+                font-size: 1.25rem;
+                margin: 32px 0 16px;
+            }
+            
+            h3 {
+                font-size: 1.1rem;
+                margin-top: 28px;
+            }
+            
+            p, ul, li {
+                font-size: 0.95rem;
+            }
+            
+            .intro {
+                font-size: 0.95rem;
+                padding: 14px;
+            }
+            
+            .dimension-card {
+                padding: 14px;
+            }
+            
+            .card-heading {
+                font-size: 1.15rem;
+            }
+            
+            .card-byline {
+                font-size: 0.8rem;
+            }
+            
+            .card-details {
                 font-size: 0.85rem;
-                padding: 8px 10px;
+            }
+            
+            
+            .btn {
+                padding: 10px 16px;
+                font-size: 0.9rem;
+            }
+            
+            .toggle-btn {
+                padding: 8px 12px;
+                font-size: 0.8rem;
+            }
+            
+            .claude-trace,
+            .diff-content,
+            .output-content,
+            .continuous-console {
+                font-size: 0.75rem;
+                padding: 12px;
+            }
+            
+            .state-node {
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+            
+            .quiz-container {
+                padding: 1rem;
+            }
+            
+            .quiz-option label {
+                padding: 8px;
+                font-size: 0.85rem;
+            }
+            
+            .explanation {
+                font-size: 0.8rem;
+                padding: 8px;
+            }
+            
+            .accordion-header {
+                font-size: 0.95rem;
+                padding: 12px 14px;
+            }
+            
+            .progress-tracker span {
+                font-size: 0.8rem;
+                margin-top: 8px;
+                width: 100%;
+                text-align: center;
             }
         }
     </style>
@@ -798,7 +1201,12 @@
 <body>
     <header class="site-header">
         <a href="#" class="logo">Beyond Dictionary</a>
-        <nav><a href="#">What's New</a><a href="#">Learning</a><a href="#">Games & Quizzes</a><a href="#">Blog</a></nav>
+        <button class="hamburger" aria-label="Toggle navigation" aria-expanded="false">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <nav class="site-nav"><a href="#">What's New</a><a href="#">Learning</a><a href="#">Games & Quizzes</a><a href="#">Blog</a></nav>
     </header>
 
     <div class="container">
@@ -1301,10 +1709,10 @@ remote sync: available
                 <button class="toggle-btn" onclick="toggleOutput('claude')" id="toggle-claude">Claude Workflow</button>
             </div>
             
-            <div class="output-comparison">
-                <div class="output-panel">
+            <div class="output-comparison toggle-mode">
+                <div class="output-panel active" id="human-panel">
                     <div class="output-header">Traditional Human Workflow (45-90 minutes)</div>
-                    <div class="output-content" id="human-output">
+                    <div class="output-content">
 <strong>Step 1: Planning & Setup (10 min)</strong><br>
 $ git status<br>
 $ git checkout -b feature/contact-form<br>
@@ -1345,9 +1753,9 @@ $ git push origin feature/contact-form<br>
                     </div>
                 </div>
                 
-                <div class="output-panel">
+                <div class="output-panel" id="claude-panel">
                     <div class="output-header">Claude Code Workflow (2-5 minutes)</div>
-                    <div class="output-content" id="claude-output">
+                    <div class="output-content">
 <strong>Single Command:</strong><br>
 $ claude "add a professional contact form with validation to the website"<br><br>
 
@@ -1609,8 +2017,9 @@ $ claude "add a professional contact form with validation to the website"<br><br
             
             <div class="quiz-container" id="quiz-container-serious">
                 <div class="quiz-navigation">
-                    <span id="quiz-progress-serious">Question 1 of 8</span>
-                    <button class="btn" id="quiz-next-serious" disabled>Next Question</button>
+                    <button class="btn" id="quiz-prev-serious" disabled>⮜</button>
+                    <span id="quiz-progress-serious"><span id="quiz-current-serious">1</span> of <span id="quiz-total-serious">8</span></span>
+                    <button class="btn" id="quiz-next-serious" disabled>⮞</button>
                 </div>
                 <div id="quiz-content-serious"></div>
             </div>
@@ -1959,10 +2368,25 @@ $ claude "add a professional contact form with validation to the website"<br><br
         // Toggle output display
         function toggleOutput(mode) {
             // Update toggle buttons
-            document.querySelectorAll('.toggle-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            document.getElementById(`toggle-${mode}`).classList.add('active');
+            const humanBtn = document.getElementById('toggle-human');
+            const claudeBtn = document.getElementById('toggle-claude');
+            const humanPanel = document.getElementById('human-panel');
+            const claudePanel = document.getElementById('claude-panel');
+            
+            if (!humanBtn || !claudeBtn || !humanPanel || !claudePanel) return;
+            
+            humanBtn.classList.remove('active');
+            claudeBtn.classList.remove('active');
+            humanPanel.classList.remove('active');
+            claudePanel.classList.remove('active');
+            
+            if (mode === 'human') {
+                humanBtn.classList.add('active');
+                humanPanel.classList.add('active');
+            } else {
+                claudeBtn.classList.add('active');
+                claudePanel.classList.add('active');
+            }
         }
 
         // Explain state function
@@ -1984,14 +2408,27 @@ $ claude "add a professional contact form with validation to the website"<br><br
 
             let currentQuestion = 0;
             let selectedAnswer = null;
+            
+            const suffix = containerId.split('-')[2];
+            const prevBtn = container.querySelector(`#quiz-prev-${suffix}`);
+            const nextBtn = container.querySelector(`#quiz-next-${suffix}`);
+            const currentSpan = container.querySelector(`#quiz-current-${suffix}`);
+            const totalSpan = container.querySelector(`#quiz-total-${suffix}`);
+            const contentDiv = container.querySelector(`#quiz-content-${suffix}`);
+            
+            if (!prevBtn || !nextBtn || !currentSpan || !totalSpan || !contentDiv) return;
+            
+            totalSpan.textContent = quizData.length;
+
+            function updateButtons() {
+                prevBtn.disabled = currentQuestion === 0;
+                nextBtn.disabled = selectedAnswer === null;
+            }
 
             function showQuestion() {
                 const question = quizData[currentQuestion];
-                const progressSpan = container.querySelector(`#quiz-progress-${containerId.split('-')[2]}`);
-                const nextBtn = container.querySelector(`#quiz-next-${containerId.split('-')[2]}`);
-                const contentDiv = container.querySelector(`#quiz-content-${containerId.split('-')[2]}`);
-
-                progressSpan.textContent = `Question ${currentQuestion + 1} of ${quizData.length}`;
+                currentSpan.textContent = currentQuestion + 1;
+                selectedAnswer = null;
                 
                 contentDiv.innerHTML = `
                     <h3>${question.q}</h3>
@@ -2026,36 +2463,40 @@ $ claude "add a professional contact form with validation to the website"<br><br
                         // Check the radio button
                         option.querySelector('input').checked = true;
                         
-                        // Enable next button
-                        nextBtn.disabled = false;
+                        updateButtons();
                     });
                 });
+                
+                updateButtons();
             }
 
             function nextQuestion() {
                 if (currentQuestion < quizData.length - 1) {
                     currentQuestion++;
-                    selectedAnswer = null;
-                    const nextBtn = container.querySelector(`#quiz-next-${containerId.split('-')[2]}`);
-                    nextBtn.disabled = true;
                     showQuestion();
                 } else {
                     // Quiz complete
-                    const contentDiv = container.querySelector(`#quiz-content-${containerId.split('-')[2]}`);
                     contentDiv.innerHTML = `
                         <div style="text-align: center; padding: 2rem;">
                             <h3>Quiz Complete!</h3>
                             <p>You've completed the Claude Code mastery assessment.</p>
                         </div>
                     `;
-                    const nextBtn = container.querySelector(`#quiz-next-${containerId.split('-')[2]}`);
                     nextBtn.style.display = 'none';
+                    prevBtn.style.display = 'none';
+                }
+            }
+            
+            function prevQuestion() {
+                if (currentQuestion > 0) {
+                    currentQuestion--;
+                    showQuestion();
                 }
             }
 
             // Setup event listeners
-            const nextBtn = container.querySelector(`#quiz-next-${containerId.split('-')[2]}`);
             nextBtn.addEventListener('click', nextQuestion);
+            prevBtn.addEventListener('click', prevQuestion);
 
             // Show first question
             showQuestion();
@@ -2093,88 +2534,85 @@ $ claude "add a professional contact form with validation to the website"<br><br
             }
         }
 
-        // Glossary functionality
+        // Glossary functionality - CBSE EXACT COPY
         function setupGlossary(containerId, glossaryData) {
-            const container = document.getElementById(containerId);
-            if (!container) return;
+            const cloud = document.getElementById(containerId);
+            if (!cloud) return;
+            
+            cloud.innerHTML = glossaryData.map(kw => `<button class="glossary-chip" type="button"><span>${kw.term}</span></button>`).join('');
+            const tip = document.createElement('div');
+            tip.className = 'chip-tip';
+            tip.innerHTML = '<div class="arrow"></div><div class="tip-content"></div>';
+            document.body.appendChild(tip);
+            const tipContent = tip.querySelector('.tip-content');
+            const tipArrow = tip.querySelector('.arrow');
+            let openBtn = null;
+            
+            function clamp(n, min, max){ return Math.max(min, Math.min(n, max)); }
+            function positionTipFor(btn){
+                const rect = btn.getBoundingClientRect();
+                const vw = window.innerWidth;
+                const pad = 8;
+                tip.style.maxWidth = Math.min(vw - pad*2, 420) + 'px';
+                const tipRect = tip.getBoundingClientRect();
+                const preferTop = rect.top > (window.innerHeight - rect.bottom);
+                const top = preferTop ? rect.top - tipRect.height - 12 : rect.bottom + 12;
+                const left = clamp(rect.left + rect.width/2 - tipRect.width/2, pad, vw - tipRect.width - pad);
+                tip.style.top = Math.max(8, top) + 'px';
+                tip.style.left = left + 'px';
+                tipArrow.style.top = preferTop ? (tipRect.height - 6) + 'px' : '-6px';
+                tipArrow.style.left = clamp(rect.left + rect.width/2 - left - 6, 10, tipRect.width - 22) + 'px';
+            }
+            function openTip(btn, text){ tipContent.textContent = text; tip.classList.add('show'); positionTipFor(btn); openBtn = btn; }
+            function closeTip(){ tip.classList.remove('show'); openBtn = null; }
+            
+            cloud.querySelectorAll('.glossary-chip').forEach((btn,i)=>{
+                const def = glossaryData[i].def;
+                ['click','focus'].forEach(evt=>btn.addEventListener(evt,()=>{ openTip(btn, def); }));
+                btn.addEventListener('blur',()=>{ if(document.activeElement!==btn) closeTip(); });
+            });
+            window.addEventListener('resize',()=>{ if(openBtn) positionTipFor(openBtn); });
+            window.addEventListener('scroll',()=>{ if(openBtn) positionTipFor(openBtn); }, {passive:true});
+            document.addEventListener('click',(e)=>{ if(openBtn && !openBtn.contains(e.target) && !tip.contains(e.target)) closeTip(); });
+        }
 
-            container.innerHTML = glossaryData.map(item => `
-                <div class="glossary-chip" data-term="${item.term}" data-def="${item.def.replace(/"/g, '&quot;')}">
-                    ${item.term}
-                </div>
-            `).join('');
-
-            // Add tooltip functionality
-            let currentTip = null;
-
-            container.querySelectorAll('.glossary-chip').forEach(chip => {
-                // Handle both mouse and touch events for mobile
-                const showTooltip = (e) => {
-                    const rect = chip.getBoundingClientRect();
-                    const def = chip.dataset.def;
-                    
-                    // Remove existing tooltip
-                    if (currentTip) {
-                        currentTip.remove();
-                    }
-                    
-                    // Create new tooltip
-                    currentTip = document.createElement('div');
-                    currentTip.className = 'chip-tip show';
-                    currentTip.textContent = def;
-                    
-                    document.body.appendChild(currentTip);
-                    
-                    // Better positioning logic for mobile
-                    const tipRect = currentTip.getBoundingClientRect();
-                    const viewportWidth = window.innerWidth;
-                    const viewportHeight = window.innerHeight;
-                    
-                    let left = rect.left + (rect.width / 2) - (tipRect.width / 2);
-                    let top = rect.top - tipRect.height - 10;
-                    
-                    // Adjust for viewport boundaries
-                    if (left < 10) left = 10;
-                    if (left + tipRect.width > viewportWidth - 10) {
-                        left = viewportWidth - tipRect.width - 10;
-                    }
-                    
-                    // If tooltip would go above viewport, show below
-                    if (top < 10) {
-                        top = rect.bottom + 10;
-                    }
-                    
-                    currentTip.style.left = left + 'px';
-                    currentTip.style.top = top + 'px';
-                };
-
-                const hideTooltip = () => {
-                    if (currentTip) {
-                        currentTip.classList.remove('show');
-                        setTimeout(() => {
-                            if (currentTip) {
-                                currentTip.remove();
-                                currentTip = null;
-                            }
-                        }, 150);
-                    }
-                };
-
-                // Mouse events for desktop
-                chip.addEventListener('mouseenter', showTooltip);
-                chip.addEventListener('mouseleave', hideTooltip);
+        // Hamburger menu functionality
+        function setupHamburgerMenu() {
+            const hamburger = document.querySelector('.hamburger');
+            const siteNav = document.querySelector('.site-nav');
+            
+            if (!hamburger || !siteNav) return;
+            
+            hamburger.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const isOpen = hamburger.classList.contains('open');
                 
-                // Touch events for mobile
-                chip.addEventListener('touchstart', (e) => {
-                    e.preventDefault();
-                    showTooltip(e);
-                });
-                
-                // Hide tooltip when touching elsewhere
-                document.addEventListener('touchstart', (e) => {
-                    if (!chip.contains(e.target) && currentTip) {
-                        hideTooltip();
-                    }
+                if (isOpen) {
+                    hamburger.classList.remove('open');
+                    siteNav.classList.remove('open');
+                    hamburger.setAttribute('aria-expanded', 'false');
+                } else {
+                    hamburger.classList.add('open');
+                    siteNav.classList.add('open');
+                    hamburger.setAttribute('aria-expanded', 'true');
+                }
+            });
+            
+            // Close menu when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!hamburger.contains(e.target) && !siteNav.contains(e.target)) {
+                    hamburger.classList.remove('open');
+                    siteNav.classList.remove('open');
+                    hamburger.setAttribute('aria-expanded', 'false');
+                }
+            });
+            
+            // Close menu when clicking a nav link
+            siteNav.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', function() {
+                    hamburger.classList.remove('open');
+                    siteNav.classList.remove('open');
+                    hamburger.setAttribute('aria-expanded', 'false');
                 });
             });
         }
@@ -2182,6 +2620,9 @@ $ claude "add a professional contact form with validation to the website"<br><br
         // Initialize on load
         document.addEventListener('DOMContentLoaded', function() {
             updateStateDisplay();
+            
+            // Setup hamburger menu
+            setupHamburgerMenu();
             
             // Setup quiz, FAQ, and glossary
             setupQuiz('quiz-container-serious', quizDataSerious);

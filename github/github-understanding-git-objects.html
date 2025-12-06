@@ -21,70 +21,75 @@
             --font-code: 'Courier New', Courier, monospace;
         }
 
-        /* --- Base --- */
+        /* --- Base (CBSE Pattern) --- */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
-        body {
+        html, body {
             font-family: var(--font-main);
             background: var(--bg-page);
             color: var(--text-primary);
-            line-height: 1.5; /* Reduced line-height */
+            line-height: 1.7;
+            scroll-behavior: smooth;
+            overflow-x: hidden;
         }
         
-        /* --- Layout --- */
+        /* --- Layout (CBSE Pattern) --- */
         .container {
-            max-width: 800px; /* Reduced max-width */
+            max-width: 800px;
             margin: 0 auto;
-            padding: 1.5rem 1rem; /* Reduced padding */
+            padding: 24px;
         }
 
         h1 {
             text-align: center;
-            margin-bottom: 1.5rem; /* Reduced margin */
-            font-size: 1.5rem; /* Reduced font size */
+            margin-bottom: 1.5rem;
+            font-size: clamp(1.4rem, 5vw, 1.75rem);
+            line-height: 1.3;
         }
 
         .panel {
             background: var(--bg-surface);
-            border-radius: 8px; /* Slightly smaller radius */
-            padding: 1.25rem; /* Reduced padding */
-            margin-bottom: 1.25rem; /* Reduced margin */
+            border-radius: 8px;
+            padding: 1.25rem;
+            margin-bottom: 1.25rem;
             box-shadow: 0 1px 4px rgba(0,0,0,0.07);
         }
 
         .step-header {
             display: flex;
             align-items: center;
-            margin-bottom: 1rem; /* Reduced margin */
+            margin-bottom: 1rem;
+            gap: 0.75rem;
+            flex-wrap: wrap;
         }
 
         .step-number {
             background: var(--accent);
             color: white;
-            width: 32px; /* Smaller */
-            height: 32px; /* Smaller */
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            margin-right: 0.75rem; /* Reduced margin */
             flex-shrink: 0;
             font-size: 1rem;
         }
 
         .step-title {
-            font-size: 1.25rem; /* Reduced font size */
+            font-size: 1.25rem;
             font-weight: 600;
         }
         
         p {
             font-size: 0.95rem;
-            margin-bottom: 1rem;
+            margin-bottom: 16px;
+            word-wrap: break-word;
         }
         
         /* --- Visual Demo --- */
@@ -157,17 +162,21 @@
             background: var(--accent);
             color: white;
             border: none;
-            padding: 0.6rem 1.2rem; /* Reduced padding */
-            border-radius: 5px;
-            font-size: 0.9rem; /* Reduced font size */
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
             display: block;
             margin: 1rem auto 0;
-            transition: opacity 0.2s;
+            transition: opacity 0.2s, background-color 0.2s;
+            min-height: 48px;
         }
         .next-button:hover {
-            opacity: 0.85;
+            opacity: 0.9;
+        }
+        .next-button:active {
+            background: #c9400a;
         }
 
         .hidden {
@@ -181,11 +190,111 @@
             font-size: 0.85rem;
         }
 
+        /* ================= Mobile Responsive (CBSE Pattern) ================= */
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px 16px;
+            }
+            
+            h1 {
+                font-size: clamp(1.25rem, 6vw, 1.5rem);
+                margin-bottom: 1.25rem;
+            }
+            
+            .panel {
+                padding: 1rem;
+                margin-bottom: 1rem;
+            }
+            
+            .step-title {
+                font-size: 1.1rem;
+            }
+            
+            .step-number {
+                width: 28px;
+                height: 28px;
+                font-size: 0.9rem;
+            }
+            
+            p {
+                font-size: 0.9rem;
+            }
+            
+            .visual-demo {
+                padding: 0.75rem;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .git-object {
+                min-width: 160px;
+                padding: 0.6rem;
+            }
+            
+            .git-object-header {
+                font-size: 0.75rem;
+            }
+            
+            .git-object-content {
+                font-size: 0.8rem;
+                padding: 0.4rem;
+            }
+            
+            .sha-hash {
+                font-size: 0.7rem;
+                padding: 0.15rem 0.4rem;
+            }
+            
+            .arrow {
+                font-size: 1.2rem;
+            }
+            
+            .explanation {
+                padding: 0.6rem 0.8rem;
+                font-size: 0.85rem;
+            }
+            
+            .next-button {
+                width: 100%;
+                padding: 14px 16px;
+            }
+            
+            footer {
+                padding: 1rem;
+                font-size: 0.8rem;
+            }
+        }
+        
+        @media (max-width: 400px) {
+            .container {
+                padding: 16px 12px;
+            }
+            
+            .git-object {
+                min-width: 140px;
+            }
+            
+            .visual-demo {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .arrow {
+                transform: rotate(90deg);
+            }
+        }
+
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Understanding Git Objects</h1>
+        
+        <div class="intro-panel" style="background: linear-gradient(135deg, #fff7ed 0%, #fff 100%); border: 1px solid #ffd8a8; border-left: 4px solid var(--accent); border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 1.5rem;">
+            <p style="margin: 0; color: var(--text-primary);">
+                <strong>🔍 What you'll learn:</strong> Ever wondered what happens when you run <code style="background: rgba(0,0,0,0.08); padding: 2px 6px; border-radius: 4px;">git add</code> or <code style="background: rgba(0,0,0,0.08); padding: 2px 6px; border-radius: 4px;">git commit</code>? This step-by-step demo reveals the three building blocks of Git—<em>blobs</em>, <em>trees</em>, and <em>commits</em>—and how they connect to form your project's history.
+            </p>
+        </div>
 
         <!-- Step 1: What is a blob? -->
         <div class="panel" id="step1">

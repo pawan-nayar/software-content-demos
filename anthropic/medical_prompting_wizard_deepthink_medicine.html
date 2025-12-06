@@ -6,286 +6,407 @@
 <title>DeepThink • Medical Prompting Wizard</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  /* Color Palette for Medical/Clinical Theme */
+  /* ================= CBSE-Optimized Color Palette ================= */
   :root {
-    /* Core neutrals */
     --bg: #f8f9fa;
     --text: #212529;
     --muted: #ffffff;
     --border: #dee2e6;
-    /* Brand / accents */
     --accent: #0d6efd;
     --accent-2: #0b5ed7;
-    /* Header / footer */
     --header-bg: #2c3e50;
     --header-fg: #ecf0f1;
     --heading: #343a40;
-    /* Chips and Labels */
     --chip-bg: #e7f1ff;
     --chip-border: #b9d3ff;
     --chip-text: #0a58ca;
-    /* Semantic states */
     --ok: #198754; --ok-soft: #d1e7dd;
     --bad: #dc3545; --bad-soft: #f8d7da;
     --warn: #ffc107; --warn-soft: #fff3cd;
     --info: #0dcaf0; --info-soft: #cff4fc;
-    /* Inputs / focus */
-    --input-focus: #0d6efd;
   }
 
-  html,body{
-    margin:0;
+  /* ================= Base Reset (CBSE Pattern) ================= */
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;overflow-x:hidden}
+  body{
     background:var(--bg);
     color:var(--text);
-    font-family:'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    line-height:1.6;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    font-family:'Inter',system-ui,-apple-system,sans-serif;
+    line-height:1.5;
+    max-width:100vw;
+    -webkit-font-smoothing:antialiased;
+    display:flex;
+    flex-direction:column;
+    min-height:100vh;
   }
+  main.container{
+    flex:1;
+  }
+  
   .container{
-    max-width:880px;
+    max-width:1100px;
     margin:0 auto;
-    padding:24px;
+    padding:20px;
+    overflow-x:hidden;
   }
 
-  /* Header/Footer */
-  header, footer {
+  /* ================= Header (Compact) ================= */
+  header{
     background:var(--header-bg);
     color:var(--header-fg);
     text-align:center;
+    padding:16px;
   }
-  header .container, footer .container {
-    padding:24px;
-  }
-  h1 {
-    font-size:clamp(2rem, 5vw, 2.6rem);
-    margin:0 0 8px;
+  h1{
+    font-size:clamp(1.5rem,4vw,2rem);
+    margin:0 0 6px;
     color:var(--header-fg);
-    letter-spacing: -0.025em;
+    letter-spacing:-0.02em;
   }
-  
-  /* Intro chip */
-  .intro {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    padding: 12px 16px;
-    margin: 12px auto 0;
-    max-width: 700px;
-    font-weight: 500;
-  }
-
-  /* Hub Styles */
-  #role-hub {
-    text-align: center;
-    padding: 2rem;
-    background: var(--muted);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-  }
-  .role-selection-grid {
-    display: flex;
-    justify-content: center;
-    gap: 1.5rem;
-    margin-top: 1.5rem;
-    flex-wrap: wrap;
-  }
-  .role-card {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 1.5rem;
-    width: 200px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-  }
-  .role-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-    border-color: var(--accent);
-  }
-  .role-card h3 {
-    margin: 0.5rem 0 0 0;
-    color: var(--accent);
-  }
-   .role-card svg {
-    width: 48px;
-    height: 48px;
-    color: var(--accent);
+  .intro{
+    background:rgba(255,255,255,0.1);
+    border-radius:8px;
+    padding:8px 12px;
+    margin:8px auto 0;
+    max-width:600px;
+    font-size:0.85rem;
+    font-weight:500;
   }
 
-
-  /* Wizard Styles */
-  .wizard-container {
-    background: var(--muted);
-    border-radius: 16px;
-    border: 1px solid var(--border);
-    margin-bottom: 24px;
-    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -2px rgba(0,0,0,0.05);
-    display: none; /* Hidden by default */
+  /* ================= Footer (Fixed Bottom 7vh) ================= */
+  footer{
+    background:var(--header-bg);
+    color:var(--header-fg);
+    text-align:center;
+    height:7vh;
+    min-height:40px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:0.8rem;
+    margin-top:auto;
   }
 
-  .wizard-header {
-    padding: 1rem 1.5rem;
-    background: var(--chip-bg);
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  /* ================= Role Hub (Compact Grid) ================= */
+  #role-hub{
+    text-align:center;
+    padding:1.5rem;
+    background:var(--muted);
+    border:1px solid var(--border);
+    border-radius:12px;
+  }
+  #role-hub h2{
+    font-size:1.4rem;
+    margin:0 0 6px;
+    color:var(--heading);
+  }
+  #role-hub>p{
+    font-size:0.95rem;
+    color:#6c757d;
+    margin:0 0 0.5rem;
+  }
+  .role-selection-grid{
+    display:grid;
+    grid-template-columns:repeat(6,1fr);
+    gap:12px;
+    margin-top:1rem;
+  }
+  .role-card{
+    background:var(--bg);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:16px 10px;
+    cursor:pointer;
+    transition:all 0.2s ease;
+    text-align:center;
+  }
+  .role-card:hover,.role-card:focus{
+    transform:translateY(-3px);
+    box-shadow:0 6px 12px rgba(0,0,0,0.1);
+    border-color:var(--accent);
+  }
+  .role-card h3{
+    margin:8px 0 0;
+    font-size:0.85rem;
+    color:var(--accent);
+    font-weight:600;
+  }
+  .role-card svg{
+    width:36px;
+    height:36px;
+    color:var(--accent);
   }
 
-  .wizard-header h2 {
-    margin: 0;
-    font-size: 1.5rem;
-    color: var(--heading);
-    border: none;
-    padding: 0;
+  /* ================= Wizard (Compact) ================= */
+  .wizard-container{
+    background:var(--muted);
+    border-radius:12px;
+    border:1px solid var(--border);
+    margin-bottom:16px;
+    display:none;
+    overflow:hidden;
   }
-    
-  .wizard-header p {
-      margin-top: 4px;
-      color: var(--text);
+  .wizard-header{
+    padding:10px 14px;
+    background:var(--chip-bg);
+    border-bottom:1px solid var(--border);
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+  .wizard-header h2{
+    margin:0;
+    font-size:1.1rem;
+    color:var(--heading);
+    line-height:1.3;
+  }
+  .wizard-header p{
+    margin:2px 0 0;
+    font-size:0.8rem;
+    color:#6c757d;
+  }
+  .wizard-body{
+    padding:14px;
+    max-height:60vh;
+    overflow-y:auto;
+  }
+  .wizard-step{display:none}
+  .wizard-step.active{display:block;animation:fadeIn 0.3s}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+  /* Step Content (Compact) */
+  .step-progress{
+    font-size:0.7rem;
+    font-weight:700;
+    color:var(--accent);
+    margin-bottom:6px;
+    text-transform:uppercase;
+    letter-spacing:0.5px;
+  }
+  .step-question{
+    font-size:1rem;
+    font-weight:600;
+    color:var(--heading);
+    margin-bottom:6px;
+    line-height:1.4;
+  }
+  .step-education{
+    font-size:0.85rem;
+    color:#495057;
+    margin-bottom:10px;
+    border-left:3px solid var(--accent);
+    padding-left:10px;
+    line-height:1.5;
+  }
+  .prompt-example{
+    background:#2c3e50;
+    color:#ecf0f1;
+    border-radius:6px;
+    padding:10px;
+    margin-top:10px;
+    font-family:'Roboto Mono',monospace;
+    font-size:0.8rem;
+    white-space:pre-wrap;
+    word-wrap:break-word;
+    overflow-x:auto;
+  }
+  .prompt-example strong{color:#7ed321}
+  .model-feedback{
+    background:var(--ok-soft);
+    border:1px solid var(--ok);
+    color:var(--text);
+    border-radius:6px;
+    padding:10px;
+    margin-top:10px;
+    font-family:'Roboto Mono',monospace;
+    font-size:0.8rem;
+    white-space:pre-wrap;
+    word-wrap:break-word;
+  }
+  .step-commentary{
+    background:var(--bg);
+    border:1px solid var(--border);
+    border-left:3px solid var(--warn);
+    border-radius:6px;
+    padding:10px;
+    margin-top:12px;
+    font-size:0.8rem;
+  }
+  .step-commentary h4{
+    margin:0 0 4px;
+    font-size:0.85rem;
+    color:var(--heading);
+    font-weight:600;
   }
 
-  .wizard-body {
-    padding: 1.5rem;
+  /* Wizard Navigation */
+  .wizard-nav{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:10px 14px;
+    border-top:1px solid var(--border);
+    background:var(--bg);
+    gap:8px;
+  }
+  .wizard-nav .btn-back-roles{
+    display:none;
+  }
+  .wizard-header .btn{
+    flex-shrink:0;
   }
 
-  .wizard-step {
-    display: none;
-  }
-
-  .wizard-step.active {
-    display: block;
-    animation: fadeIn 0.5s;
-  }
-
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .step-progress {
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: var(--accent);
-    margin-bottom: 8px;
-    text-transform: uppercase;
-  }
-  
-  .step-question {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: var(--heading);
-    margin-bottom: 8px;
-  }
-
-  .step-education {
-    font-size: 0.95rem;
-    color: color-mix(in srgb, var(--text) 80%, transparent);
-    margin-bottom: 1rem;
-    border-left: 3px solid var(--accent);
-    padding-left: 12px;
-  }
-
-  .prompt-example {
-    background: #2c3e50;
-    color: #ecf0f1;
-    border-radius: 8px;
-    padding: 1rem;
-    margin-top: 1rem;
-    font-family: monospace;
-    font-size: 0.9rem;
-    white-space: pre-wrap;
-    word-wrap: break-word;
-  }
-  .prompt-example strong {
-      color: #7ed321;
-  }
-   .model-feedback {
-    background: var(--ok-soft);
-    border: 1px solid var(--ok);
-    color: var(--text);
-    border-radius: 8px;
-    padding: 1rem;
-    margin-top: 1rem;
-    font-family: monospace;
-    font-size: 0.9rem;
-    white-space: pre-wrap;
-    word-wrap: break-word;
-  }
-
-  .step-commentary {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-left: 3px solid var(--warn);
-    border-radius: 8px;
-    padding: 1rem;
-    margin-top: 1.5rem;
-    font-size: 0.9rem;
-  }
-  .step-commentary h4 {
-    margin: 0 0 0.5rem 0;
-    color: var(--heading);
-    font-weight: 600;
-  }
-
-  .wizard-nav {
-    display: flex;
-    justify-content: space-between;
-    padding: 1rem 1.5rem;
-    border-top: 1px solid var(--border);
-    background: var(--bg);
-  }
-
-  .btn {
+  /* ================= Buttons (Touch-Friendly) ================= */
+  .btn{
     background:var(--accent);
     color:#fff;
-    border:1px solid transparent;
-    border-radius:10px;
-    padding:10px 18px;
+    border:none;
+    border-radius:8px;
+    padding:10px 16px;
+    font-size:0.85rem;
     font-weight:600;
     cursor:pointer;
-    box-shadow:0 1px 2px rgba(0,0,0,.04);
-    transition: all .2s ease;
+    transition:all 0.2s ease;
+    min-width:48px;
+    min-height:44px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
   }
-  .btn:hover:not(:disabled) {
+  .btn:hover:not(:disabled){
     background:var(--accent-2);
-    transform:translateY(-2px);
-    box-shadow:0 4px 12px rgba(0,0,0,.1);
+    transform:translateY(-1px);
   }
-  .btn:disabled {
-    background: #adb5bd;
-    color: #495057;
+  .btn:disabled{
+    background:#adb5bd;
+    color:#6c757d;
     cursor:not-allowed;
-    transform: none;
-    box-shadow: none;
   }
-  .btn-secondary {
-    background: #e9ecef;
-    color: var(--text);
-    border-color: var(--border);
+  .btn-secondary{
+    background:#e9ecef;
+    color:var(--text);
+    border:1px solid var(--border);
   }
-  .btn-secondary:hover:not(:disabled) {
-    background: #ced4da;
+  .btn-secondary:hover:not(:disabled){
+    background:#ced4da;
+  }
+
+  /* ================= Mobile Responsiveness (CBSE Pattern) ================= */
+  @media(max-width:768px){
+    .container{padding:12px}
+    header{padding:12px}
+    h1{font-size:1.4rem}
+    .intro{font-size:0.8rem;padding:6px 10px}
+    
+    #role-hub{padding:12px}
+    #role-hub h2{font-size:1.1rem}
+    .role-selection-grid{
+      grid-template-columns:repeat(4,1fr);
+      gap:8px;
+    }
+    .role-card{padding:10px 6px}
+    .role-card svg{width:26px;height:26px}
+    .role-card h3{font-size:0.7rem}
+    
+    /* Wizard header - hide Back to Roles button */
+    .wizard-header{
+      padding:10px 12px;
+    }
+    .wizard-header h2{font-size:1rem}
+    .wizard-header .btn-header-back{
+      display:none;
+    }
+    
+    /* Wizard body */
+    .wizard-body{
+      padding:12px;
+      max-height:calc(100vh - 220px);
+    }
+    .step-question{font-size:0.95rem}
+    .step-education{font-size:0.8rem;padding-left:8px}
+    .prompt-example,.model-feedback,.step-commentary{
+      padding:8px;
+      font-size:0.75rem;
+    }
+    
+    /* Wizard nav - show Back to Roles */
+    .wizard-nav{
+      padding:8px 12px;
+      justify-content:center;
+      gap:6px;
+    }
+    .wizard-nav .btn-back-roles{
+      display:inline-flex;
+      flex:1;
+      max-width:none;
+    }
+    .wizard-nav .btn{
+      flex:1;
+      padding:8px 10px;
+      font-size:0.75rem;
+      min-height:42px;
+    }
+  }
+
+  @media(max-width:480px){
+    .container{padding:8px}
+    header{padding:10px}
+    h1{font-size:1.25rem}
+    .intro{font-size:0.75rem;padding:5px 8px}
+    
+    #role-hub{padding:8px}
+    #role-hub h2{font-size:1rem}
+    #role-hub>p{font-size:0.75rem;margin-bottom:4px}
+    .role-selection-grid{
+      grid-template-columns:repeat(3,1fr);
+      gap:6px;
+    }
+    .role-card{
+      padding:8px 4px;
+      border-radius:8px;
+    }
+    .role-card svg{width:22px;height:22px}
+    .role-card h3{font-size:0.6rem;margin-top:4px;line-height:1.2}
+    
+    .wizard-header{padding:8px 10px}
+    .wizard-header h2{font-size:0.9rem}
+    .wizard-header p{font-size:0.7rem}
+    .wizard-body{
+      padding:10px;
+      max-height:calc(100vh - 200px);
+    }
+    .step-progress{font-size:0.65rem}
+    .step-question{font-size:0.9rem}
+    .step-education{font-size:0.75rem}
+    .prompt-example,.model-feedback{font-size:0.7rem;padding:6px}
+    .step-commentary{font-size:0.75rem;padding:8px}
+    .step-commentary h4{font-size:0.8rem}
+    .wizard-nav{padding:6px 8px;gap:4px}
+    .wizard-nav .btn{
+      padding:6px 8px;
+      font-size:0.7rem;
+      min-height:38px;
+    }
+    footer{font-size:0.75rem;height:7vh;min-height:36px}
   }
 
 </style>
 </head>
 <body>
   <header>
-    <div class="container">
-      <h1>DeepThink — Prompting Wizard</h1>
-      <div class="intro">A training module for clinicians to master sequential prompting for complex case analysis using backend AI models.</div>
-    </div>
+    <h1>DeepThink — Prompting Wizard</h1>
+    <div class="intro">Master sequential prompting for complex case analysis using AI models.</div>
   </header>
 
   <main class="container">
     
     <!-- Hub Section -->
     <div id="role-hub">
-      <h2>Select Your Role</h2>
-      <p>Choose a specialty to begin your prompt training wizard.</p>
+      <h2>Select Your Specialty</h2>
+      <p>Tap to start training</p>
       <div class="role-selection-grid">
         <div class="role-card" onclick="showWizard('wizard-cardiology')">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" /></svg>
@@ -345,14 +466,13 @@
             <h2>Cardiology: New AFib Startup Kit</h2>
             <p>Guide for initiating safe, guideline-directed management for a patient with new Atrial Fibrillation.</p>
         </div>
-        <button class="btn btn-secondary" onclick="showRoleHub()">Back to Roles</button>
+        <button class="btn btn-secondary btn-header-back" onclick="showRoleHub()">Back to Roles</button>
       </div>
-      <div class="wizard-body">
-        <!-- Steps will be injected here by JS -->
-      </div>
+      <div class="wizard-body"></div>
       <div class="wizard-nav">
-        <button class="btn btn-secondary" onclick="WIZARDS.cardiology.prevStep()">Back</button>
-        <button class="btn" onclick="WIZARDS.cardiology.nextStep()">Next</button>
+        <button class="btn btn-secondary btn-back-roles" onclick="showRoleHub()">🏠</button>
+        <button class="btn btn-secondary" onclick="WIZARDS.cardiology.prevStep()">⮜</button>
+        <button class="btn" onclick="WIZARDS.cardiology.nextStep()">⮞</button>
       </div>
     </div>
 
@@ -363,14 +483,13 @@
             <h2>Oncology: Neutropenic Fever Protocol</h2>
             <p>Workflow for executing a safe and rapid response to a potential oncologic emergency.</p>
         </div>
-         <button class="btn btn-secondary" onclick="showRoleHub()">Back to Roles</button>
+        <button class="btn btn-secondary btn-header-back" onclick="showRoleHub()">Back to Roles</button>
       </div>
-      <div class="wizard-body">
-        <!-- Steps will be injected here by JS -->
-      </div>
+      <div class="wizard-body"></div>
       <div class="wizard-nav">
-        <button class="btn btn-secondary" onclick="WIZARDS.oncology.prevStep()">Back</button>
-        <button class="btn" onclick="WIZARDS.oncology.nextStep()">Next</button>
+        <button class="btn btn-secondary btn-back-roles" onclick="showRoleHub()">🏠</button>
+        <button class="btn btn-secondary" onclick="WIZARDS.oncology.prevStep()">⮜</button>
+        <button class="btn" onclick="WIZARDS.oncology.nextStep()">⮞</button>
       </div>
     </div>
 
@@ -381,14 +500,13 @@
               <h2>Internal Medicine: Polypharmacy Review</h2>
               <p>A systematic approach to de-risking a complex medication list for an elderly patient.</p>
           </div>
-           <button class="btn btn-secondary" onclick="showRoleHub()">Back to Roles</button>
+          <button class="btn btn-secondary btn-header-back" onclick="showRoleHub()">Back to Roles</button>
         </div>
-        <div class="wizard-body">
-          <!-- Steps will be injected here by JS -->
-        </div>
+        <div class="wizard-body"></div>
         <div class="wizard-nav">
-          <button class="btn btn-secondary" onclick="WIZARDS.medicine.prevStep()">Back</button>
-          <button class="btn" onclick="WIZARDS.medicine.nextStep()">Next</button>
+          <button class="btn btn-secondary btn-back-roles" onclick="showRoleHub()">🏠</button>
+          <button class="btn btn-secondary" onclick="WIZARDS.medicine.prevStep()">⮜</button>
+          <button class="btn" onclick="WIZARDS.medicine.nextStep()">⮞</button>
         </div>
       </div>
 
@@ -396,17 +514,16 @@
     <div class="wizard-container" id="wizard-emergency">
       <div class="wizard-header">
         <div>
-            <h2>Emergency Medicine: Trauma Triage Protocol</h2>
-            <p>Rapid assessment and prioritization workflow for multiple trauma patients in the ED.</p>
+            <h2>Emergency Medicine: Trauma Triage</h2>
+            <p>Rapid assessment and prioritization for multiple trauma patients.</p>
         </div>
-        <button class="btn btn-secondary" onclick="showRoleHub()">Back to Roles</button>
+        <button class="btn btn-secondary btn-header-back" onclick="showRoleHub()">Back to Roles</button>
       </div>
-      <div class="wizard-body">
-        <!-- Steps will be injected here by JS -->
-      </div>
+      <div class="wizard-body"></div>
       <div class="wizard-nav">
-        <button class="btn btn-secondary" onclick="WIZARDS.emergency.prevStep()">Back</button>
-        <button class="btn" onclick="WIZARDS.emergency.nextStep()">Next</button>
+        <button class="btn btn-secondary btn-back-roles" onclick="showRoleHub()">🏠</button>
+        <button class="btn btn-secondary" onclick="WIZARDS.emergency.prevStep()">⮜</button>
+        <button class="btn" onclick="WIZARDS.emergency.nextStep()">⮞</button>
       </div>
     </div>
 
@@ -415,16 +532,15 @@
       <div class="wizard-header">
         <div>
             <h2>Psychiatry: Suicide Risk Assessment</h2>
-            <p>Comprehensive evaluation protocol for assessing and managing suicide risk in psychiatric patients.</p>
+            <p>Evaluation protocol for assessing and managing suicide risk.</p>
         </div>
-        <button class="btn btn-secondary" onclick="showRoleHub()">Back to Roles</button>
+        <button class="btn btn-secondary btn-header-back" onclick="showRoleHub()">Back to Roles</button>
       </div>
-      <div class="wizard-body">
-        <!-- Steps will be injected here by JS -->
-      </div>
+      <div class="wizard-body"></div>
       <div class="wizard-nav">
-        <button class="btn btn-secondary" onclick="WIZARDS.psychiatry.prevStep()">Back</button>
-        <button class="btn" onclick="WIZARDS.psychiatry.nextStep()">Next</button>
+        <button class="btn btn-secondary btn-back-roles" onclick="showRoleHub()">🏠</button>
+        <button class="btn btn-secondary" onclick="WIZARDS.psychiatry.prevStep()">⮜</button>
+        <button class="btn" onclick="WIZARDS.psychiatry.nextStep()">⮞</button>
       </div>
     </div>
 
@@ -433,16 +549,15 @@
       <div class="wizard-header">
         <div>
             <h2>Pediatrics: Febrile Infant Protocol</h2>
-            <p>Evidence-based approach to evaluating and managing fever in infants under 3 months of age.</p>
+            <p>Evidence-based approach for fever in infants under 3 months.</p>
         </div>
-        <button class="btn btn-secondary" onclick="showRoleHub()">Back to Roles</button>
+        <button class="btn btn-secondary btn-header-back" onclick="showRoleHub()">Back to Roles</button>
       </div>
-      <div class="wizard-body">
-        <!-- Steps will be injected here by JS -->
-      </div>
+      <div class="wizard-body"></div>
       <div class="wizard-nav">
-        <button class="btn btn-secondary" onclick="WIZARDS.pediatrics.prevStep()">Back</button>
-        <button class="btn" onclick="WIZARDS.pediatrics.nextStep()">Next</button>
+        <button class="btn btn-secondary btn-back-roles" onclick="showRoleHub()">🏠</button>
+        <button class="btn btn-secondary" onclick="WIZARDS.pediatrics.prevStep()">⮜</button>
+        <button class="btn" onclick="WIZARDS.pediatrics.nextStep()">⮞</button>
       </div>
     </div>
 
@@ -451,16 +566,15 @@
       <div class="wizard-header">
         <div>
             <h2>Surgery: Preoperative Risk Assessment</h2>
-            <p>Comprehensive evaluation protocol for assessing surgical risk and optimizing patient outcomes.</p>
+            <p>Comprehensive evaluation for surgical risk optimization.</p>
         </div>
-        <button class="btn btn-secondary" onclick="showRoleHub()">Back to Roles</button>
+        <button class="btn btn-secondary btn-header-back" onclick="showRoleHub()">Back to Roles</button>
       </div>
-      <div class="wizard-body">
-        <!-- Steps will be injected here by JS -->
-      </div>
+      <div class="wizard-body"></div>
       <div class="wizard-nav">
-        <button class="btn btn-secondary" onclick="WIZARDS.surgery.prevStep()">Back</button>
-        <button class="btn" onclick="WIZARDS.surgery.nextStep()">Next</button>
+        <button class="btn btn-secondary btn-back-roles" onclick="showRoleHub()">🏠</button>
+        <button class="btn btn-secondary" onclick="WIZARDS.surgery.prevStep()">⮜</button>
+        <button class="btn" onclick="WIZARDS.surgery.nextStep()">⮞</button>
       </div>
     </div>
 
@@ -469,16 +583,15 @@
       <div class="wizard-header">
         <div>
             <h2>Neurology: Stroke Protocol</h2>
-            <p>Rapid assessment and treatment workflow for acute stroke patients using evidence-based protocols.</p>
+            <p>Rapid assessment and treatment for acute stroke patients.</p>
         </div>
-        <button class="btn btn-secondary" onclick="showRoleHub()">Back to Roles</button>
+        <button class="btn btn-secondary btn-header-back" onclick="showRoleHub()">Back to Roles</button>
       </div>
-      <div class="wizard-body">
-        <!-- Steps will be injected here by JS -->
-      </div>
+      <div class="wizard-body"></div>
       <div class="wizard-nav">
-        <button class="btn btn-secondary" onclick="WIZARDS.neurology.prevStep()">Back</button>
-        <button class="btn" onclick="WIZARDS.neurology.nextStep()">Next</button>
+        <button class="btn btn-secondary btn-back-roles" onclick="showRoleHub()">🏠</button>
+        <button class="btn btn-secondary" onclick="WIZARDS.neurology.prevStep()">⮜</button>
+        <button class="btn" onclick="WIZARDS.neurology.nextStep()">⮞</button>
       </div>
     </div>
 
@@ -487,16 +600,15 @@
       <div class="wizard-header">
         <div>
             <h2>Orthopedics: Fracture Management</h2>
-            <p>Systematic approach to evaluating and managing acute fractures with appropriate imaging and treatment protocols.</p>
+            <p>Systematic approach to acute fracture evaluation and treatment.</p>
         </div>
-        <button class="btn btn-secondary" onclick="showRoleHub()">Back to Roles</button>
+        <button class="btn btn-secondary btn-header-back" onclick="showRoleHub()">Back to Roles</button>
       </div>
-      <div class="wizard-body">
-        <!-- Steps will be injected here by JS -->
-      </div>
+      <div class="wizard-body"></div>
       <div class="wizard-nav">
-        <button class="btn btn-secondary" onclick="WIZARDS.orthopedics.prevStep()">Back</button>
-        <button class="btn" onclick="WIZARDS.orthopedics.nextStep()">Next</button>
+        <button class="btn btn-secondary btn-back-roles" onclick="showRoleHub()">🏠</button>
+        <button class="btn btn-secondary" onclick="WIZARDS.orthopedics.prevStep()">⮜</button>
+        <button class="btn" onclick="WIZARDS.orthopedics.nextStep()">⮞</button>
       </div>
     </div>
 
@@ -505,16 +617,15 @@
       <div class="wizard-header">
         <div>
             <h2>Anesthesiology: Preoperative Assessment</h2>
-            <p>Comprehensive evaluation protocol for assessing anesthetic risk and optimizing patient safety during surgery.</p>
+            <p>Evaluation for anesthetic risk and patient safety.</p>
         </div>
-        <button class="btn btn-secondary" onclick="showRoleHub()">Back to Roles</button>
+        <button class="btn btn-secondary btn-header-back" onclick="showRoleHub()">Back to Roles</button>
       </div>
-      <div class="wizard-body">
-        <!-- Steps will be injected here by JS -->
-      </div>
+      <div class="wizard-body"></div>
       <div class="wizard-nav">
-        <button class="btn btn-secondary" onclick="WIZARDS.anesthesiology.prevStep()">Back</button>
-        <button class="btn" onclick="WIZARDS.anesthesiology.nextStep()">Next</button>
+        <button class="btn btn-secondary btn-back-roles" onclick="showRoleHub()">🏠</button>
+        <button class="btn btn-secondary" onclick="WIZARDS.anesthesiology.prevStep()">⮜</button>
+        <button class="btn" onclick="WIZARDS.anesthesiology.nextStep()">⮞</button>
       </div>
     </div>
 
@@ -523,16 +634,15 @@
       <div class="wizard-header">
         <div>
             <h2>Radiology: Emergency Imaging Protocol</h2>
-            <p>Systematic approach to interpreting emergency imaging studies and communicating critical findings to clinical teams.</p>
+            <p>Interpreting emergency imaging and communicating findings.</p>
         </div>
-        <button class="btn btn-secondary" onclick="showRoleHub()">Back to Roles</button>
+        <button class="btn btn-secondary btn-header-back" onclick="showRoleHub()">Back to Roles</button>
       </div>
-      <div class="wizard-body">
-        <!-- Steps will be injected here by JS -->
-      </div>
+      <div class="wizard-body"></div>
       <div class="wizard-nav">
-        <button class="btn btn-secondary" onclick="WIZARDS.radiology.prevStep()">Back</button>
-        <button class="btn" onclick="WIZARDS.radiology.nextStep()">Next</button>
+        <button class="btn btn-secondary btn-back-roles" onclick="showRoleHub()">🏠</button>
+        <button class="btn btn-secondary" onclick="WIZARDS.radiology.prevStep()">⮜</button>
+        <button class="btn" onclick="WIZARDS.radiology.nextStep()">⮞</button>
       </div>
     </div>
 
@@ -541,24 +651,21 @@
       <div class="wizard-header">
         <div>
             <h2>Dermatology: Skin Cancer Screening</h2>
-            <p>Comprehensive evaluation protocol for assessing suspicious skin lesions and determining appropriate follow-up care.</p>
+            <p>Evaluation protocol for suspicious skin lesions.</p>
         </div>
-        <button class="btn btn-secondary" onclick="showRoleHub()">Back to Roles</button>
+        <button class="btn btn-secondary btn-header-back" onclick="showRoleHub()">Back to Roles</button>
       </div>
-      <div class="wizard-body">
-        <!-- Steps will be injected here by JS -->
-      </div>
+      <div class="wizard-body"></div>
       <div class="wizard-nav">
-        <button class="btn btn-secondary" onclick="WIZARDS.dermatology.prevStep()">Back</button>
-        <button class="btn" onclick="WIZARDS.dermatology.nextStep()">Next</button>
+        <button class="btn btn-secondary btn-back-roles" onclick="showRoleHub()">🏠</button>
+        <button class="btn btn-secondary" onclick="WIZARDS.dermatology.prevStep()">⮜</button>
+        <button class="btn" onclick="WIZARDS.dermatology.nextStep()">⮞</button>
       </div>
     </div>
 
   </main>
 
-  <footer>
-    <div class="container" style="padding:16px 24px">© DeepThink Player • Medical Edition</div>
-  </footer>
+  <footer>© DeepThink Player • Medical Edition</footer>
 
 <script>
 const WIZARD_DATA = {

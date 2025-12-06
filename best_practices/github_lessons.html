@@ -27,7 +27,31 @@
         .site-header,.site-footer{background:var(--header-bg);color:var(--header-fg);padding:14px 24px}
         .site-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;position:sticky;top:0;z-index:100}
         .logo{font-weight:700;font-size:1.15rem;color:#fff}
+        .site-nav{display:flex;gap:20px;align-items:center}
+        .site-nav a{color:var(--header-fg);font-weight:500;text-decoration:none}
+        .site-nav a:hover{color:var(--accent)}
+        .hamburger{display:none;background:none;border:none;cursor:pointer;padding:8px;flex-direction:column;gap:5px}
+        .hamburger span{display:block;width:24px;height:3px;background:#fff;border-radius:2px;transition:0.2s}
         .site-footer{text-align:center;margin-top:50px;padding:40px}
+
+        /* ================= Mobile Navigation ================= */
+        @media(max-width:768px){
+            .hamburger{display:flex}
+            .site-nav{display:none;position:absolute;top:100%;left:0;right:0;background:var(--header-bg);flex-direction:column;padding:16px 24px;gap:16px;border-top:1px solid #444}
+            .site-nav.open{display:flex}
+            .site-nav a{padding:8px 0;font-size:1.1rem}
+            .container{padding:16px}
+            .intro{padding:16px;font-size:1rem}
+            ul,ol{margin-left:16px}
+        }
+        @media(max-width:480px){
+            .container{padding:12px}
+            .site-header,.site-footer{padding:12px 16px}
+            h2{margin:32px 0 12px;font-size:1.3rem}
+            .best-practice-card,.what-not-to-do-card,.metaphor-card{padding:14px;margin:16px 0}
+            .accordion-header{padding:14px 16px;font-size:1rem}
+            .accordion-content{padding:14px}
+        }
 
         /* ================= Typography & Layout ================= */
         h1{font-size:clamp(2rem,5vw,2.6rem);text-align:left;margin-bottom:8px;color:#111827;line-height:1.2}
@@ -80,25 +104,77 @@
         .playground-terminal .our-change { color: #4dabf7; }
         .playground-terminal .their-change { color: #94d82d; }
 
-        /* --- Quiz & Glossary --- */
-        .quiz-container{padding:20px;border:2px solid var(--border);border-radius:12px;background:#fff}
+        /* --- Playground Mobile: Vertical Scroll --- */
+        @media(max-width:600px){
+            .playground-controls{flex-direction:column;align-items:stretch}
+            .playground-controls h4{text-align:center;margin-bottom:8px}
+            .playground-controls .btn{min-height:48px;font-size:1rem}
+            .playground-terminal{font-size:0.8rem;padding:14px;overflow-x:auto}
+        }
+
+        /* --- Quiz Styles (CBSE Pattern) --- */
+        .quiz-container{padding:24px;border:2px solid var(--border);border-radius:12px;background:#fff}
         .quiz-navigation{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border)}
+        .quiz-navigation .btn{min-width:48px;min-height:48px;padding:12px 16px;font-size:1.1rem}
+        .question-counter{font-weight:600;color:var(--text);font-size:1rem}
+        .quiz-body{display:none}
+        .quiz-body.active{display:block}
+        .quiz-body p{font-size:1.05rem;margin-bottom:16px;line-height:1.6}
+        .quiz-options{display:grid;gap:12px}
+        .quiz-option{transition:transform 0.15s ease}
+        .quiz-option:hover{transform:translateX(4px)}
+        .quiz-option label{display:flex;align-items:center;gap:12px;padding:16px;border:2px solid var(--border);border-radius:8px;cursor:pointer;background:#f8f9fa;transition:all 0.2s ease;min-height:56px}
+        .quiz-option label:hover{border-color:var(--accent);background:#fef7f0}
+        .quiz-option input[type="radio"]{flex-shrink:0;width:20px;height:20px;accent-color:var(--accent)}
+        .quiz-option .explanation{display:none;margin-top:12px;padding:16px;border-radius:8px;border-left:4px solid #a0aec0;font-size:0.95rem;line-height:1.5}
         .quiz-option.selected.correct label{background:var(--ok-soft);border-color:var(--ok)}
         .quiz-option.selected.wrong label{background:var(--bad-soft);border-color:var(--bad)}
-        .quiz-option .explanation{display:none;margin-top:10px;padding:15px;border-radius:6px;border-left-width:4px;border-left-style:solid;}
-        .quiz-option.correct .explanation{border-left-color:var(--ok);background:var(--ok-soft)}
-        .quiz-option.wrong .explanation{border-left-color:var(--bad);background:var(--bad-soft)}
-        .quiz-option label{display:flex;align-items:center;gap:12px;padding:14px;border:2px solid var(--border);border-radius:8px;cursor:pointer;background:#f8f9fa}
+        .quiz-option.correct .explanation{border-left-color:var(--ok);background:#f0fff4}
+        .quiz-option.wrong .explanation{border-left-color:var(--bad);background:#fff5f5}
+        
+        /* Quiz Mobile */
+        @media(max-width:600px){
+            .quiz-container{padding:16px}
+            .quiz-navigation{padding-bottom:16px;margin-bottom:16px}
+            .quiz-navigation .btn{min-width:44px;min-height:44px;padding:10px 14px}
+            .question-counter{font-size:0.9rem}
+            .quiz-body p{font-size:1rem}
+            .quiz-option label{padding:14px;min-height:52px}
+            .quiz-option .explanation{padding:14px}
+        }
         .glossary-cloud{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px;justify-content:center}
-        .glossary-chip{position:relative;display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:999px;background:#fff7ed;border:1px solid #ffd8a8;color:#d9480f;font-weight:600;cursor:pointer;box-shadow:0 2px 6px rgba(253,126,20,.12)}
-        .chip-tip{position:fixed;z-index:101;min-width:240px;max-width:min(92vw,420px);background:var(--accent);color:#fff;padding:16px 18px;border-radius:12px;box-shadow:0 12px 28px rgba(253,126,20,.35);opacity:0;visibility:hidden;transition:.15s;line-height:1.45;text-align:left}
+        .glossary-chip{position:relative;display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:999px;background:#fff7ed;border:1px solid #ffd8a8;color:#d9480f;font-weight:600;cursor:pointer;box-shadow:0 2px 6px rgba(253,126,20,.12);min-height:44px;transition:transform 0.15s,box-shadow 0.15s}
+        .glossary-chip:hover,.glossary-chip:focus{transform:translateY(-2px);box-shadow:0 4px 12px rgba(253,126,20,.25)}
+        .chip-tip{position:fixed;z-index:1000;min-width:240px;max-width:min(92vw,420px);background:var(--accent);color:#fff;padding:16px 18px;border-radius:12px;box-shadow:0 12px 28px rgba(253,126,20,.35);opacity:0;visibility:hidden;transition:.15s;line-height:1.45;text-align:left;font-size:0.95rem;font-weight:400}
         .chip-tip.show{opacity:1;visibility:visible}
-        .chip-tip .arrow{position:absolute;width:12px;height:12px;background:var(--accent);transform:rotate(45deg);bottom:-6px;left:50%;margin-left:-6px}
+        .chip-tip .arrow{position:absolute;width:12px;height:12px;background:var(--accent);transform:rotate(45deg)}
+        .chip-tip .arrow.bottom{bottom:-6px;left:50%;margin-left:-6px}
+        .chip-tip .arrow.top{top:-6px;left:50%;margin-left:-6px}
+        
+        /* --- Glossary Mobile CBSE Style --- */
+        @media(max-width:600px){
+            .glossary-cloud{gap:8px}
+            .glossary-chip{padding:8px 12px;font-size:0.9rem;min-height:44px}
+            .chip-tip{position:fixed;left:8px;right:8px;width:auto;max-width:none;padding:14px 16px;font-size:0.9rem}
+            .chip-tip .arrow{display:block}
+        }
 
     </style>
 </head>
 <body>
-    <header class="site-header"><a href="#" class="logo">Developer Playbook</a></header>
+    <header class="site-header">
+        <a href="#" class="logo">Developer Playbook</a>
+        <button class="hamburger" aria-label="Toggle menu" onclick="document.querySelector('.site-nav').classList.toggle('open')">
+            <span></span><span></span><span></span>
+        </button>
+        <nav class="site-nav">
+            <a href="#mistake1">Commits</a>
+            <a href="#mistake3">Conflicts</a>
+            <a href="#quiz-main">Quiz</a>
+            <a href="#faq">FAQ</a>
+            <a href="#glossary">Glossary</a>
+        </nav>
+    </header>
     <div class="container">
         <h1>🟢 GitHub Mini-Playbook: 10 Mistakes I Won't Repeat</h1>
         <p class="byline">A guide from one developer to another on navigating version control without the headaches.</p>
@@ -271,14 +347,14 @@ Let’s dive into my personal playbook of the top 10 mistakes I’ve made and th
             <div class="metaphor-card"><p>“Borrow your friend’s ruler instead of carving one from wood.”</p></div>
         </section>
         
-        <!-- Quiz Section -->
+        <!-- Quiz Section (CBSE Pattern) -->
         <section id="quiz-main">
-            <h2>Test Your Git Instincts: 10 MCQs</h2>
+            <h2><span class="section-icon">📝</span>Test Your Git Instincts: 10 MCQs</h2>
             <div class="quiz-container">
                 <div class="quiz-navigation">
-                    <button class="btn" id="quizPrevBtn" disabled>⮜ Prev</button>
-                    <span id="quiz-counter">1 of 10</span>
-                    <button class="btn" id="quizNextBtn">Next ⮞</button>
+                    <button class="btn" id="quizPrevBtn" disabled aria-label="Previous question">⮜</button>
+                    <span class="question-counter"><span id="quiz-current">1</span> of <span id="quiz-total">10</span></span>
+                    <button class="btn" id="quizNextBtn" aria-label="Next question">⮞</button>
                 </div>
                 <div id="quiz-body-container"></div>
             </div>
@@ -302,6 +378,12 @@ Let’s dive into my personal playbook of the top 10 mistakes I’ve made and th
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Close mobile nav when clicking a link
+        document.querySelectorAll('.site-nav a').forEach(link => {
+            link.addEventListener('click', () => {
+                document.querySelector('.site-nav').classList.remove('open');
+            });
+        });
         // --- DATA ---
         const quizQuestions = [
             { q: "You've fixed a typo and added a new feature. What's the best action?", a: 1, options: ["One big commit: 'updated code'", "Two separate commits: 'docs: fix typo' and 'feat: add login button'", "Commit only the feature, forget the typo"] },
@@ -441,44 +523,73 @@ Let’s dive into my personal playbook of the top 10 mistakes I’ve made and th
             const container = document.getElementById('quiz-body-container');
             const nextBtn = document.getElementById('quizNextBtn');
             const prevBtn = document.getElementById('quizPrevBtn');
-            const counter = document.getElementById('quiz-counter');
+            const currentSpan = document.getElementById('quiz-current');
+            const totalSpan = document.getElementById('quiz-total');
+            if (!container || !nextBtn || !prevBtn) return;
+            
             let currentQ = 0;
+            totalSpan.textContent = quizQuestions.length;
 
             const renderQuestion = () => {
                 const q = quizQuestions[currentQ];
                 let optionsHTML = q.options.map((opt, i) => `
-                    <div class="quiz-option" data-index="${i}">
-                        <label><input type="radio" name="q${currentQ}" value="${i}"> <span>${opt}</span></label>
+                    <div class="quiz-option" data-option-index="${i}">
+                        <label>
+                            <input type="radio" name="q${currentQ}" value="${i}">
+                            <span>${opt}</span>
+                        </label>
                         <div class="explanation"></div>
                     </div>`).join('');
-                container.innerHTML = `<p><strong>Q${currentQ + 1}:</strong> ${q.q}</p><div class="quiz-options">${optionsHTML}</div>`;
-                counter.textContent = `${currentQ + 1} of ${quizQuestions.length}`;
+                container.innerHTML = `<div class="quiz-body active"><p><strong>Q${currentQ + 1}:</strong> ${q.q}</p><div class="quiz-options">${optionsHTML}</div></div>`;
+                currentSpan.textContent = currentQ + 1;
                 prevBtn.disabled = currentQ === 0;
                 nextBtn.disabled = currentQ === quizQuestions.length - 1;
+                
+                // Attach listeners to new radio buttons
+                container.querySelectorAll('.quiz-option input').forEach(radio => {
+                    radio.addEventListener('change', handleOptionSelect);
+                });
             };
 
-            container.addEventListener('change', e => {
-                if (e.target.type === 'radio') {
-                    const selectedIndex = parseInt(e.target.value);
-                    const q = quizQuestions[currentQ];
-                    const options = container.querySelectorAll('.quiz-option');
-                    options.forEach(opt => {
-                        opt.classList.remove('selected', 'correct', 'wrong');
-                        opt.querySelector('.explanation').style.display = 'none';
-                    });
+            function handleOptionSelect(e) {
+                const selectedIndex = parseInt(e.target.value);
+                const q = quizQuestions[currentQ];
+                const quizBody = e.target.closest('.quiz-body');
+                
+                // Clear previous selections
+                quizBody.querySelectorAll('.quiz-option').forEach(opt => {
+                    opt.classList.remove('selected', 'correct', 'wrong');
+                    opt.querySelector('.explanation').style.display = 'none';
+                });
 
-                    const selectedOpt = e.target.closest('.quiz-option');
-                    selectedOpt.classList.add('selected');
-                    selectedOpt.classList.toggle('correct', selectedIndex === q.a);
-                    selectedOpt.classList.toggle('wrong', selectedIndex !== q.a);
-                    const explanationEl = selectedOpt.querySelector('.explanation');
-                    explanationEl.textContent = selectedIndex === q.a ? '✅ Correct!' : '❌ Incorrect.';
-                    explanationEl.style.display = 'block';
+                const selectedOpt = e.target.closest('.quiz-option');
+                selectedOpt.classList.add('selected');
+                selectedOpt.querySelector('.explanation').style.display = 'block';
+                
+                if (selectedIndex === q.a) {
+                    selectedOpt.classList.add('correct');
+                    selectedOpt.querySelector('.explanation').textContent = '✅ Correct! Well done.';
+                } else {
+                    selectedOpt.classList.add('wrong');
+                    selectedOpt.querySelector('.explanation').textContent = '❌ Not quite. Try to think about best practices.';
+                    // Highlight the correct answer
+                    quizBody.querySelector(`.quiz-option[data-option-index="${q.a}"]`).classList.add('correct');
+                }
+            }
+
+            nextBtn.addEventListener('click', () => { 
+                if (currentQ < quizQuestions.length - 1) { 
+                    currentQ++; 
+                    renderQuestion(); 
                 }
             });
-
-            nextBtn.addEventListener('click', () => { if (currentQ < quizQuestions.length - 1) { currentQ++; renderQuestion(); }});
-            prevBtn.addEventListener('click', () => { if (currentQ > 0) { currentQ--; renderQuestion(); }});
+            prevBtn.addEventListener('click', () => { 
+                if (currentQ > 0) { 
+                    currentQ--; 
+                    renderQuestion(); 
+                }
+            });
+            
             renderQuestion();
         }
 
@@ -500,26 +611,112 @@ Let’s dive into my personal playbook of the top 10 mistakes I’ve made and th
             tip.classList.remove('show');
             tipContent.textContent = '';
             
+            let activeChip = null;
+            
             cloud.querySelectorAll('.glossary-chip').forEach((btn, i) => {
+                // Desktop: hover
                 btn.addEventListener('mouseenter', (e) => {
-                    tipContent.textContent = glossaryTerms[i].def;
-                    tip.classList.add('show');
-                    positionTipFor(e.target, tip);
+                    if (window.innerWidth > 600) {
+                        tipContent.textContent = glossaryTerms[i].def;
+                        tip.classList.add('show');
+                        positionTipFor(e.target, tip);
+                    }
                 });
                 btn.addEventListener('mouseleave', () => {
-                    tip.classList.remove('show');
-                    tipContent.textContent = '';
+                    if (window.innerWidth > 600) {
+                        tip.classList.remove('show');
+                        tipContent.textContent = '';
+                    }
+                });
+                
+                // Mobile: tap to toggle
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (window.innerWidth <= 600) {
+                        if (activeChip === btn) {
+                            tip.classList.remove('show');
+                            activeChip = null;
+                        } else {
+                            tipContent.textContent = glossaryTerms[i].def;
+                            tip.classList.add('show');
+                            activeChip = btn;
+                            // Position close to the tapped chip
+                            positionTipFor(btn, tip);
+                        }
+                    }
                 });
             });
+            
+            // Tap outside to close on mobile
+            document.addEventListener('click', () => {
+                if (window.innerWidth <= 600 && activeChip) {
+                    tip.classList.remove('show');
+                    activeChip = null;
+                }
+            });
+            
+            // Close tooltip on scroll (prevents orphaned tooltips)
+            let scrollTimeout;
+            window.addEventListener('scroll', () => {
+                if (activeChip) {
+                    clearTimeout(scrollTimeout);
+                    scrollTimeout = setTimeout(() => {
+                        tip.classList.remove('show');
+                        activeChip = null;
+                    }, 100);
+                }
+            }, { passive: true });
         }
         
         function positionTipFor(btn, tip) {
             const rect = btn.getBoundingClientRect();
-            tip.style.left = `${rect.left + rect.width / 2 - tip.offsetWidth / 2}px`;
-            tip.style.top = `${rect.top - tip.offsetHeight - 10}px`;
-            if (rect.top - tip.offsetHeight < 10) {
-                 tip.style.top = `${rect.bottom + 10}px`;
+            const arrow = tip.querySelector('.arrow');
+            const isMobile = window.innerWidth <= 600;
+            const viewportHeight = window.innerHeight;
+            const tipHeight = tip.offsetHeight;
+            const margin = 12;
+            
+            // Horizontal positioning
+            if (isMobile) {
+                // On mobile, tooltip is full-width (CSS handles left/right)
+                tip.style.left = '';
+                tip.style.right = '';
+            } else {
+                // Desktop: center on chip
+                let left = rect.left + rect.width / 2 - tip.offsetWidth / 2;
+                left = Math.max(10, Math.min(left, window.innerWidth - tip.offsetWidth - 10));
+                tip.style.left = `${left}px`;
             }
+            
+            // Vertical positioning - CLOSE TO THE CHIP
+            const spaceAbove = rect.top;
+            const spaceBelow = viewportHeight - rect.bottom;
+            
+            if (spaceAbove > tipHeight + margin && spaceAbove >= spaceBelow) {
+                // Position ABOVE the chip
+                tip.style.top = `${rect.top - tipHeight - margin}px`;
+                arrow.className = 'arrow bottom';
+            } else {
+                // Position BELOW the chip
+                let topPos = rect.bottom + margin;
+                // Ensure it doesn't go off-screen
+                if (topPos + tipHeight > viewportHeight - 10) {
+                    topPos = viewportHeight - tipHeight - 10;
+                }
+                tip.style.top = `${topPos}px`;
+                arrow.className = 'arrow top';
+            }
+            
+            // Arrow points to chip center
+            const chipCenter = rect.left + rect.width / 2;
+            if (isMobile) {
+                // On mobile, arrow relative to viewport
+                arrow.style.left = `${chipCenter - 6}px`;
+            } else {
+                const arrowLeft = chipCenter - parseFloat(tip.style.left) - 6;
+                arrow.style.left = `${arrowLeft}px`;
+            }
+            arrow.style.marginLeft = '0';
         }
 
         function setupFAQs() {

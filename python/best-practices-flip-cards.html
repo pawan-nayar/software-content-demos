@@ -2,34 +2,554 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>⚡ 25 Best Practices for CS Students</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
-    body { background-color: #f3f4f6; font-family: 'Inter', sans-serif; }
-    .flip-card { perspective: 1000px; width: 100%; max-width: 420px; height: 520px; }
-    .flip-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; }
+    
+    /* === Base Styles === */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+    html, body { 
+      overflow-x: hidden; 
+      scroll-behavior: smooth;
+      margin: 0;
+      padding: 0;
+    }
+    body { 
+      background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ed 100%);
+      font-family: 'Inter', sans-serif; 
+      min-height: 100vh;
+      width: 100%;
+      max-width: 100vw;
+    }
+    
+    /* === Intro Screen === */
+    .intro-screen {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      max-height: 100vh;
+      padding: 1rem;
+      overflow: hidden;
+    }
+    .intro-panel {
+      background: white;
+      border-radius: 1rem;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+      padding: 1.5rem 1.75rem;
+      max-width: 440px;
+      width: 100%;
+      text-align: center;
+      max-height: calc(100vh - 2rem);
+      overflow-y: auto;
+    }
+    .intro-icon-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 0.5rem;
+      font-size: 1.5rem;
+    }
+    .intro-icon-row .arrow {
+      font-size: 0.85rem;
+      color: #f97316;
+    }
+    .intro-panel h1 {
+      font-size: clamp(1.4rem, 5vw, 1.6rem);
+      font-weight: 700;
+      background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.15rem;
+    }
+    .intro-subtitle {
+      font-size: 0.9rem;
+      color: #6b7280;
+      margin-bottom: 0.75rem;
+    }
+    .intro-features {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 0.75rem;
+    }
+    .intro-feature {
+      background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+      border-radius: 8px;
+      padding: 10px 6px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .intro-feature .icon {
+      font-size: 1.2rem;
+    }
+    .intro-feature span:last-child {
+      font-size: 0.7rem;
+      color: #374151;
+      line-height: 1.2;
+    }
+    .intro-instructions {
+      background: #f9fafb;
+      border-radius: 8px;
+      padding: 0.75rem;
+      margin-bottom: 0.75rem;
+      text-align: left;
+    }
+    .intro-instructions h3 {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 6px;
+    }
+    .intro-instructions ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .intro-instructions li {
+      font-size: 0.8rem;
+      color: #6b7280;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .intro-instructions li::before {
+      content: '•';
+      color: #f97316;
+      font-weight: bold;
+    }
+    .start-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+      color: white;
+      border: none;
+      padding: 0.875rem;
+      font-size: 1.05rem;
+      font-weight: 700;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 48px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .start-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(249, 115, 22, 0.4);
+    }
+    .start-btn:active {
+      transform: scale(0.98);
+    }
+    .intro-hint {
+      font-size: 0.75rem;
+      color: #9ca3af;
+      margin-top: 0.6rem;
+    }
+    
+    /* === Card Screen === */
+    .card-screen {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 1rem;
+      flex-direction: column;
+      gap: 12px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .card-screen.active {
+      display: flex;
+    }
+    
+    /* === Flip Card === */
+    .flip-card { 
+      perspective: 1000px; 
+      width: 100%; 
+      max-width: 420px; 
+      height: 540px;
+    }
+    .flip-inner { 
+      position: relative; 
+      width: 100%; 
+      height: 100%; 
+      transition: transform 0.6s; 
+      transform-style: preserve-3d; 
+    }
     .flipped .flip-inner { transform: rotateY(180deg); }
-    .flip-front, .flip-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 1rem; box-shadow: 0 8px 20px rgba(0,0,0,0.12); background: white; padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; }
+    .flip-front, .flip-back { 
+      position: absolute; 
+      width: 100%; 
+      height: 100%; 
+      backface-visibility: hidden; 
+      border-radius: 1rem; 
+      box-shadow: 0 8px 25px rgba(0,0,0,0.12); 
+      background: white; 
+      padding: 1.25rem; 
+      display: flex; 
+      flex-direction: column; 
+      justify-content: space-between; 
+      overflow: hidden; 
+    }
     .flip-back { transform: rotateY(180deg); }
-    pre { background: #1e1e1e; color: #d4d4d4; padding: 0.6rem; border-radius: 0.5rem; font-size: 0.8rem; margin-top: 0.5rem; margin-bottom: 0.5rem; white-space: pre-wrap; word-wrap: break-word; }
-    .pill-btn { border-radius: 9999px; padding: 0.5rem 1rem; font-size: 0.85rem; font-weight: 600; transition: all 0.25s ease; background-color: #f97316; color: #fff; border: none; cursor: pointer; }
-    .pill-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(0,0,0,0.15); }
+    
+    /* === Code Block === */
+    pre { 
+      background: #1e1e1e; 
+      color: #d4d4d4; 
+      padding: 0.75rem; 
+      border-radius: 0.5rem; 
+      font-size: clamp(0.7rem, 2.5vw, 0.8rem); 
+      margin-top: 0.5rem; 
+      margin-bottom: 0.5rem; 
+      white-space: pre-wrap; 
+      word-wrap: break-word; 
+      line-height: 1.5;
+    }
+    
+    /* === Buttons === */
+    .pill-btn { 
+      border-radius: 9999px; 
+      padding: 0.6rem 1.1rem; 
+      font-size: 0.9rem; 
+      font-weight: 600; 
+      transition: all 0.25s ease; 
+      background-color: #f97316; 
+      color: #fff; 
+      border: none; 
+      cursor: pointer; 
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .pill-btn:hover { 
+      transform: translateY(-2px); 
+      box-shadow: 0 6px 14px rgba(0,0,0,0.15); 
+    }
     .pill-btn:active { transform: scale(0.97); }
-    .label { font-size: 0.75rem; font-weight: 600; color: #6b7280; text-transform: uppercase; margin-top: 0.75rem; margin-bottom: 0.25rem; }
-    .header-ribbon { font-size: 0.7rem; font-weight: 700; color: white; background-color: #f97316; padding: 0.25rem 0.6rem; border-radius: 0.4rem; display: inline-block; }
+    
+    /* === Quiz Option Buttons === */
+    .option {
+      min-height: 48px;
+      padding: 12px 16px;
+      text-align: left;
+      display: flex;
+      align-items: center;
+    }
+    
+    /* === Labels & Ribbons === */
+    .label { 
+      font-size: 0.75rem; 
+      font-weight: 600; 
+      color: #6b7280; 
+      text-transform: uppercase; 
+      margin-top: 0.75rem; 
+      margin-bottom: 0.25rem; 
+    }
+    .header-ribbon { 
+      font-size: 0.7rem; 
+      font-weight: 700; 
+      color: white; 
+      background-color: #f97316; 
+      padding: 0.25rem 0.6rem; 
+      border-radius: 0.4rem; 
+      display: inline-block; 
+    }
+    
+    /* === Card Title === */
+    .card-title {
+      font-size: clamp(1.1rem, 4vw, 1.25rem);
+      font-weight: 700;
+      text-align: center;
+      margin-top: 0.75rem;
+    }
+    
+    /* === Navigation Bar === */
+    .nav-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-top: auto;
+      padding-top: 0.75rem;
+      flex-shrink: 0;
+    }
+    
+    /* === Home Button === */
+    .home-btn {
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 50%;
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      font-size: 1.2rem;
+      z-index: 100;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .home-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    
+    /* === Swipe Hint (Mobile) === */
+    .swipe-hint {
+      display: none;
+      text-align: center;
+      font-size: 0.75rem;
+      color: #9ca3af;
+      margin: 0;
+      padding: 8px 0;
+      width: 100%;
+    }
+    
+    /* ============================================
+       MOBILE RESPONSIVE STYLES
+       ============================================ */
+    @media (max-width: 480px) {
+      body {
+        font-size: 15px;
+      }
+      
+      /* Intro panel mobile */
+      .intro-screen {
+        max-height: none;
+        overflow: auto;
+      }
+      .intro-panel {
+        padding: 1.5rem 1.25rem;
+        border-radius: 0.875rem;
+        max-height: none;
+      }
+      .intro-icon-row {
+        font-size: 1.5rem;
+        gap: 6px;
+        margin-bottom: 0.75rem;
+      }
+      .intro-features {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        margin-bottom: 1rem;
+      }
+      .intro-feature {
+        padding: 12px 8px;
+        gap: 6px;
+      }
+      .intro-feature .icon {
+        font-size: 1.3rem;
+      }
+      .intro-feature span:last-child {
+        font-size: 0.8rem;
+      }
+      .intro-instructions {
+        padding: 0.875rem;
+        margin-bottom: 1rem;
+      }
+      .intro-instructions li {
+        font-size: 0.8rem;
+        margin-bottom: 6px;
+      }
+      .intro-subtitle {
+        margin-bottom: 1rem;
+      }
+      
+      /* Card screen - full width mobile layout */
+      .card-screen {
+        padding: 56px 12px 12px 12px;
+        justify-content: center;
+        gap: 8px;
+        background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ed 100%);
+      }
+      
+      /* Card dimensions - responsive height */
+      .flip-card {
+        width: 100%;
+        max-width: 100%;
+        height: calc(100vh - 120px);
+        max-height: 540px;
+        min-height: 420px;
+      }
+      .flip-front, .flip-back {
+        padding: 1rem;
+      }
+      
+      /* Navigation buttons - icon only on mobile */
+      .nav-bar {
+        gap: 6px;
+      }
+      .pill-btn {
+        padding: 0.5rem 0.9rem;
+        font-size: 0.85rem;
+        min-height: 48px;
+      }
+      .btn-text {
+        display: none;
+      }
+      .btn-icon {
+        font-size: 1.1rem;
+      }
+      
+      /* Quiz options - larger touch targets */
+      .option {
+        min-height: 52px;
+        padding: 14px 16px;
+        font-size: 0.9rem;
+      }
+      
+      /* Show swipe hint on mobile */
+      .swipe-hint {
+        display: block;
+        flex-shrink: 0;
+      }
+      
+      /* Disable hover transforms on mobile */
+      .pill-btn:hover {
+        transform: none;
+        box-shadow: none;
+      }
+      .pill-btn:active {
+        background-color: #ea580c;
+        transform: scale(0.97);
+      }
+      
+      /* Home button smaller on mobile */
+      .home-btn {
+        top: 12px;
+        left: 12px;
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+      }
+    }
+    
+    @media (max-width: 380px) {
+      .card-screen {
+        padding: 52px 8px 8px 8px;
+      }
+      .flip-card {
+        height: calc(100vh - 100px);
+        min-height: 400px;
+      }
+      .flip-front, .flip-back {
+        padding: 0.875rem;
+      }
+      .card-title {
+        font-size: 1rem;
+        margin-top: 0.5rem;
+      }
+      .label {
+        margin-top: 0.5rem;
+        font-size: 0.7rem;
+      }
+      pre {
+        padding: 0.5rem;
+        font-size: 0.7rem;
+      }
+      .intro-panel {
+        padding: 1.25rem 1rem;
+      }
+    }
+    
+    /* Chart container height - responsive */
+    .chart-container {
+      height: 120px;
+    }
+    @media (max-width: 480px) {
+      .chart-container {
+        height: 100px;
+      }
+    }
   </style>
 </head>
-<body class="flex items-center justify-center min-h-screen p-4">
+<body>
 
-<div class="flip-card" id="card">
-  <div class="flip-inner">
-    <!-- Front -->
-    <div class="flip-front" id="frontContent"></div>
-    <!-- Back -->
-    <div class="flip-back" id="backContent"></div>
+<!-- Intro Screen -->
+<div id="intro-screen" class="intro-screen">
+  <div class="intro-panel">
+    <div class="intro-icon-row">
+      <span>📝</span>
+      <span class="arrow">→</span>
+      <span>🧪</span>
+      <span class="arrow">→</span>
+      <span>🔒</span>
+      <span class="arrow">→</span>
+      <span>💻</span>
+    </div>
+    <h1>25 Best Practices</h1>
+    <p class="intro-subtitle">Essential habits for CS students</p>
+    
+    <div class="intro-features">
+      <div class="intro-feature">
+        <span class="icon">🎴</span>
+        <span>25 flip cards</span>
+      </div>
+      <div class="intro-feature">
+        <span class="icon">📊</span>
+        <span>Impact charts</span>
+      </div>
+      <div class="intro-feature">
+        <span class="icon">🎯</span>
+        <span>Quiz per card</span>
+      </div>
+      <div class="intro-feature">
+        <span class="icon">⏱️</span>
+        <span>~10 minutes</span>
+      </div>
+    </div>
+    
+    <div class="intro-instructions">
+      <h3>How to use</h3>
+      <ul>
+        <li>Read the practice & example on front</li>
+        <li>Tap <strong>🔄 Flip</strong> for quiz & chart</li>
+        <li>Use <strong>⮜ ⮞</strong> to navigate cards</li>
+        <li>On mobile: swipe left/right to browse</li>
+      </ul>
+    </div>
+    
+    <button id="start-btn" class="start-btn">
+      <span>Start Learning</span>
+      <span>→</span>
+    </button>
+    
+    <p class="intro-hint">💡 Each card has a "Why", example code, and quiz!</p>
   </div>
+</div>
+
+<!-- Card Screen -->
+<div id="card-screen" class="card-screen">
+  <button id="home-btn" class="home-btn" title="Back to intro">🏠</button>
+  
+  <div class="flip-card" id="card">
+    <div class="flip-inner">
+      <!-- Front -->
+      <div class="flip-front" id="frontContent"></div>
+      <!-- Back -->
+      <div class="flip-back" id="backContent"></div>
+    </div>
+  </div>
+  
+  <p class="swipe-hint">👆 Swipe left/right to navigate</p>
 </div>
 
 <script>
@@ -50,7 +570,7 @@ const practices = [
     feelsLike: "Like having airbags in your car for when things go wrong.",
     examples: ["❌ crashApp();", "✅ try { doTask(); } catch(e) { logError(e); }"],
     chart: { type: "doughnut", labels: ["Crashes", "Recoveries"], values: [80, 20] },
-    quiz: { question: "What’s a good error handling approach?", options: ["Let it crash", "Use try/catch with recovery", "Ignore the error", "Hide it silently"], answer: "Use try/catch with recovery", explanation: "A `try/catch` block allows you to gracefully handle errors, log them, and prevent the entire application from crashing, ensuring a better user experience." }
+    quiz: { question: "What's a good error handling approach?", options: ["Let it crash", "Use try/catch with recovery", "Ignore the error", "Hide it silently"], answer: "Use try/catch with recovery", explanation: "A `try/catch` block allows you to gracefully handle errors, log them, and prevent the entire application from crashing, ensuring a better user experience." }
   },
   {
     practice: "Write Unit Tests",
@@ -265,13 +785,17 @@ const practices = [
 let currentIndex = 0;
 let chartInstance = null;
 
+const introScreen = document.getElementById("intro-screen");
+const cardScreen = document.getElementById("card-screen");
 const frontDiv = document.getElementById("frontContent");
 const backDiv = document.getElementById("backContent");
 const card = document.getElementById("card");
+const startBtn = document.getElementById("start-btn");
+const homeBtn = document.getElementById("home-btn");
 
 // Function to shuffle an array (Fisher-Yates shuffle)
 function shuffleArray(array) {
-    let shuffled = array.slice(); // Create a copy to avoid modifying the original
+    let shuffled = array.slice();
     for (let i = shuffled.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
@@ -279,10 +803,21 @@ function shuffleArray(array) {
     return shuffled;
 }
 
+function showIntro() {
+    introScreen.style.display = 'flex';
+    cardScreen.classList.remove('active');
+}
+
+function showCards() {
+    introScreen.style.display = 'none';
+    cardScreen.classList.add('active');
+    renderCard(currentIndex);
+}
+
 function renderCard(index) {
   const p = practices[index];
 
-  // Clear previous content to prevent issues
+  // Clear previous content
   frontDiv.innerHTML = '';
   backDiv.innerHTML = '';
 
@@ -290,34 +825,34 @@ function renderCard(index) {
   frontDiv.innerHTML = `
     <div class='flex-grow overflow-y-auto'>
       <div class='flex justify-between items-center'>
-        <span class='header-ribbon'>⚡ Best Practice ${index + 1}/${practices.length}</span>
+        <span class='header-ribbon'>⚡ ${index + 1}/${practices.length}</span>
       </div>
-      <h3 class='text-center text-xl font-bold mt-3'>${p.emoji} ${p.practice}</h3>
-      <p class='mt-4 text-gray-700 text-sm'><span class='font-semibold'>💡 Why:</span> ${p.why}</p>
+      <h3 class='card-title'>${p.emoji} ${p.practice}</h3>
+      <p class='mt-3 text-gray-700 text-sm'><span class='font-semibold'>💡 Why:</span> ${p.why}</p>
       <p class='mt-2 italic text-gray-600 text-sm'><span class='font-semibold'>🌙 Feels like:</span> ${p.feelsLike}</p>
 
       <div class='label'>🖥️ Example Code</div>
       <pre>${p.examples.join("\n")}</pre>
     </div>
-    <div class='flex justify-between items-center mt-4 flex-shrink-0'>
-      <button onclick="prev()" class='pill-btn'>⏮ Prev</button>
-      <button onclick="flipCard()" class='pill-btn'>🔄 Flip</button>
-      <button onclick="next()" class='pill-btn'>Next ⏭</button>
+    <div class='nav-bar'>
+      <button onclick="prev()" class='pill-btn'><span class="btn-icon">⮜</span><span class="btn-text"> Prev</span></button>
+      <button onclick="flipCard()" class='pill-btn'>🔄<span class="btn-text"> Flip</span></button>
+      <button onclick="next()" class='pill-btn'><span class="btn-text">Next </span><span class="btn-icon">⮞</span></button>
     </div>
   `;
 
   const shuffledOptions = shuffleArray(p.quiz.options);
 
-  // Back with chart + quiz only
+  // Back with chart + quiz
   backDiv.innerHTML = `
     <div class='flex-grow overflow-y-auto'>
       <div class='flex justify-between items-center'>
-        <span class='header-ribbon'>⚡ Best Practice ${index + 1}/${practices.length}</span>
+        <span class='header-ribbon'>⚡ ${index + 1}/${practices.length}</span>
       </div>
-      <h3 class='text-center text-xl font-bold mt-3'>${p.emoji} ${p.practice}</h3>
+      <h3 class='card-title'>${p.emoji} ${p.practice}</h3>
 
       <div class='label'>📊 Impact</div>
-      <div class='h-32'><canvas id='chartCanvas'></canvas></div>
+      <div class='chart-container'><canvas id='chartCanvas'></canvas></div>
 
       <div class='label'>🎯 Quick Check</div>
       <p class='mt-1 text-gray-700 text-sm'>${p.quiz.question}</p>
@@ -326,19 +861,20 @@ function renderCard(index) {
       </div>
       <div id="explanation" class="hidden mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-800"></div>
     </div>
-    <div class='flex justify-between items-center mt-4 flex-shrink-0'>
-        <button onclick="prev()" class='pill-btn'>⏮ Prev</button>
-        <button onclick="flipCard()" class='pill-btn'>🔄 Flip</button>
-        <button onclick="next()" class='pill-btn'>Next ⏭</button>
+    <div class='nav-bar'>
+      <button onclick="prev()" class='pill-btn'><span class="btn-icon">⮜</span><span class="btn-text"> Prev</span></button>
+      <button onclick="flipCard()" class='pill-btn'>🔄<span class="btn-text"> Flip</span></button>
+      <button onclick="next()" class='pill-btn'><span class="btn-text">Next </span><span class="btn-icon">⮞</span></button>
     </div>
   `;
-    // Timeout to allow the DOM to update before rendering the chart
-    setTimeout(() => renderChart(p.chart), 0);
+  
+  // Render chart after DOM update
+  setTimeout(() => renderChart(p.chart), 0);
 }
 
 function renderChart(chartData) {
   const ctx = document.getElementById("chartCanvas");
-    if (!ctx) return;
+  if (!ctx) return;
   if (chartInstance) chartInstance.destroy();
   chartInstance = new Chart(ctx, {
     type: chartData.type,
@@ -376,12 +912,10 @@ function flipCard() { card.classList.toggle("flipped"); }
 function checkAnswer(button, selected) {
   const p = practices[currentIndex];
   document.querySelectorAll(".option").forEach(btn => {
-    // Reveal correct answer in green
     if (btn.textContent === p.quiz.answer) {
       btn.classList.remove("bg-gray-100", "hover:bg-gray-200");
       btn.classList.add("bg-green-400", "text-white");
     } 
-    // If wrong answer was selected, show it in red
     else if (btn.textContent === selected) {
       btn.classList.remove("bg-gray-100", "hover:bg-gray-200");
       btn.classList.add("bg-red-400", "text-white");
@@ -389,7 +923,6 @@ function checkAnswer(button, selected) {
     btn.disabled = true;
   });
 
-  // Show the explanation
   const explanationDiv = document.getElementById('explanation');
   if(explanationDiv) {
       explanationDiv.innerHTML = p.quiz.explanation;
@@ -404,6 +937,7 @@ function prev() {
         flipCard();
     }
 }
+
 function next() { 
     currentIndex = (currentIndex + 1) % practices.length; 
     renderCard(currentIndex); 
@@ -412,10 +946,40 @@ function next() {
     }
 }
 
-// Initial render
-renderCard(currentIndex);
+// Event Listeners
+startBtn.addEventListener('click', showCards);
+homeBtn.addEventListener('click', showIntro);
+
+// Swipe gesture support for mobile
+let touchStartX = 0;
+let touchEndX = 0;
+const SWIPE_THRESHOLD = 50;
+
+card.addEventListener('touchstart', (e) => {
+    touchStartX = e.changedTouches[0].screenX;
+}, { passive: true });
+
+card.addEventListener('touchend', (e) => {
+    touchEndX = e.changedTouches[0].screenX;
+    handleSwipe();
+}, { passive: true });
+
+function handleSwipe() {
+    const diff = touchEndX - touchStartX;
+    if (Math.abs(diff) > SWIPE_THRESHOLD) {
+        if (diff > 0) {
+            // Swipe right = previous
+            prev();
+        } else {
+            // Swipe left = next
+            next();
+        }
+    }
+}
+
+// Initial state - show intro
+showIntro();
 </script>
 
 </body>
 </html>
-

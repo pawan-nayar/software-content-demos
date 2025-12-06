@@ -19,7 +19,7 @@
      --myth-color: #6c757d; --myth-soft: #e9ecef;
    }
    *{box-sizing:border-box;margin:0;padding:0}
-   html,body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;}
+   html,body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;overflow-x:hidden}
    .container{max-width:800px;margin:auto;padding:24px;background:#fff}
    a{color:var(--accent);text-decoration:none}
    a:hover{text-decoration:underline}
@@ -28,9 +28,24 @@
    .site-header,.site-footer{background:var(--header-bg);color:var(--header-fg);padding:14px 24px}
    .site-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;position:sticky;top:0;z-index:100}
    .logo{font-weight:700;font-size:1.15rem;color:#fff}
-   .site-header nav{display:flex;gap:14px} .site-header nav a{color:#ced4da} .site-header nav a:hover{color:#fff}
+   .site-nav{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+   .site-nav a{color:#ced4da}
+   .site-nav a:hover{color:#fff}
+   .hamburger{display:none;background:none;border:1px solid rgba(255,255,255,0.4);color:#fff;border-radius:8px;padding:8px 10px;font-size:1rem;cursor:pointer;line-height:1;transition:background 0.2s}
+   .hamburger:hover,.hamburger[aria-expanded="true"]{background:rgba(255,255,255,0.15)}
    .site-footer{text-align:center;margin-top:50px;padding:40px}
    .breadcrumbs{margin-bottom:24px;font-size:0.9rem;color:#6c757d} .breadcrumbs a{color:var(--accent)}
+
+   /* Mobile header & menu: collapse nav into hamburger */
+   @media (max-width: 768px) {
+     .site-header{flex-wrap:nowrap}
+     .logo{flex:0 0 auto}
+     .hamburger{display:inline-flex;align-items:center;justify-content:center;margin-left:auto}
+     .site-nav{display:none;position:absolute;top:100%;right:16px;flex-direction:column;gap:0;background:var(--header-bg);padding:8px 0;border-radius:8px;box-shadow:0 10px 25px rgba(0,0,0,0.35);min-width:200px}
+     .site-nav.open{display:flex}
+     .site-nav a{display:block;padding:10px 18px;color:#f8f9fa;white-space:nowrap}
+     .site-nav a + a{border-top:1px solid rgba(255,255,255,0.15)}
+   }
 
    /* ================= Typography & Layout ================= */
    h1{font-size:clamp(2rem,5vw,2.6rem);text-align:left;margin-bottom:8px;color:var(--text);line-height:1.2}
@@ -46,6 +61,7 @@
    .intro{font-size:1.1rem;line-height:1.8;background:var(--muted);padding:20px;border-radius:12px;border-left:4px solid var(--accent);margin:24px 0}
    .img-frame{position:relative;width:100%;overflow:hidden;border-radius:12px;margin:16px 0 24px;box-shadow:0 4px 15px rgba(0,0,0,0.1); text-align: center; background: #f8f9fa; padding: 20px;}
    .img-frame svg{max-width:100%;height:auto;border-radius:8px;}
+   .mobile-flowchart{display:none;} /* Hidden on desktop */
    .img-tooltip{position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,0.8);color:#fff;padding:6px 10px;border-radius:4px;font-size:0.8rem;opacity:0;visibility:hidden;transition:all 0.3s ease;pointer-events:none;z-index:10}
    .img-frame:hover .img-tooltip{opacity:1;visibility:visible}
    .btn{background:var(--accent);color:#fff;border:none;padding:10px 14px;border-radius:10px;font-weight:700;cursor:pointer; transition: background-color 0.2s ease;}
@@ -136,25 +152,440 @@
    .progress-line{flex:1;height:2px;background:var(--border)}
    .progress-line.completed{background:var(--ok)}
 
-   /* Responsive adjustments */
+   /* ============================================
+      HOP 1: MOBILE CODE TOOLTIP OVERLAY
+      ============================================ */
+   .mobile-code-tooltip {
+     display: none;
+     position: fixed;
+     top: 0; left: 0; right: 0; bottom: 0;
+     background: rgba(0,0,0,0.7);
+     z-index: 9999;
+     backdrop-filter: blur(4px);
+     -webkit-backdrop-filter: blur(4px);
+   }
+   .mobile-code-tooltip.active {
+     display: flex;
+     align-items: flex-end;
+     justify-content: center;
+     animation: overlayFadeIn 0.2s ease-out;
+   }
+   @keyframes overlayFadeIn {
+     from { opacity: 0; }
+     to { opacity: 1; }
+   }
+   .mobile-code-tooltip-content {
+     background: #1a1a2e;
+     border-radius: 20px 20px 0 0;
+     width: 100%;
+     max-height: 60vh;
+     overflow-y: auto;
+     box-shadow: 0 -4px 30px rgba(0,0,0,0.4);
+     animation: slideUp 0.25s ease-out;
+   }
+   @keyframes slideUp {
+     from { transform: translateY(100%); opacity: 0; }
+     to { transform: translateY(0); opacity: 1; }
+   }
+   .mobile-code-tooltip-header {
+     display: flex;
+     align-items: center;
+     justify-content: space-between;
+     padding: 16px 20px;
+     background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+     border-radius: 20px 20px 0 0;
+     position: sticky;
+     top: 0;
+   }
+   .mobile-code-tooltip-header h4 {
+     margin: 0;
+     font-size: 1.1rem;
+     font-weight: 700;
+     color: #fff;
+   }
+   .mobile-code-tooltip-close {
+     background: rgba(255,255,255,0.2);
+     border: none;
+     color: #fff;
+     font-size: 1.5rem;
+     width: 40px;
+     height: 40px;
+     border-radius: 50%;
+     cursor: pointer;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     -webkit-tap-highlight-color: transparent;
+   }
+   .mobile-code-tooltip-body {
+     padding: 20px;
+     color: #e0e0e0;
+   }
+   .mobile-code-tooltip-body .tooltip-definition {
+     font-size: 1.05rem;
+     line-height: 1.6;
+     margin-bottom: 16px;
+   }
+   .mobile-code-tooltip-body .tooltip-syntax {
+     background: rgba(255,255,255,0.1);
+     padding: 12px;
+     border-radius: 8px;
+     font-family: 'Courier New', monospace;
+     font-size: 0.95rem;
+     margin-bottom: 16px;
+     color: #ffd43b;
+   }
+   .mobile-code-tooltip-body .tooltip-design {
+     background: rgba(253,126,20,0.15);
+     border-left: 3px solid var(--accent);
+     padding: 12px 14px;
+     border-radius: 0 8px 8px 0;
+     font-size: 0.95rem;
+     line-height: 1.5;
+   }
+   .mobile-code-tooltip-body .tooltip-design::before {
+     content: '💡 ';
+   }
+
+   /* ============================================
+      HOP 2: SVG DIAGRAM MOBILE OPTIMIZATION
+      ============================================ */
+   .svg-scroll-wrapper {
+     position: relative;
+   }
+   .svg-scroll-hint {
+     display: none;
+     text-align: center;
+     padding: 8px;
+     font-size: 0.9rem;
+     color: var(--accent-2);
+     font-weight: 500;
+   }
+
+   /* ============================================
+      HOP 4: MOBILE GLOSSARY TOOLTIPS
+      ============================================ */
+   .mobile-glossary-tooltip {
+     display: none;
+     position: fixed;
+     bottom: 0;
+     left: 0;
+     right: 0;
+     background: var(--accent);
+     color: #fff;
+     padding: 16px 20px;
+     border-radius: 16px 16px 0 0;
+     box-shadow: 0 -4px 20px rgba(0,0,0,0.3);
+     z-index: 9998;
+     animation: slideUp 0.2s ease-out;
+   }
+   .mobile-glossary-tooltip.active {
+     display: block;
+   }
+   .mobile-glossary-tooltip-close {
+     position: absolute;
+     top: 12px;
+     right: 12px;
+     background: rgba(255,255,255,0.2);
+     border: none;
+     color: #fff;
+     width: 32px;
+     height: 32px;
+     border-radius: 50%;
+     font-size: 1.2rem;
+     cursor: pointer;
+   }
+   .mobile-glossary-tooltip h5 {
+     margin: 0 0 8px;
+     font-size: 1.1rem;
+   }
+   .mobile-glossary-tooltip p {
+     margin: 0;
+     font-size: 0.95rem;
+     line-height: 1.5;
+     padding-right: 30px;
+   }
+
+   /* ============================================
+      RESPONSIVE: 768px and below
+      ============================================ */
    @media (max-width: 768px) {
+     /* Scenario header */
      .scenario-header {
        flex-direction: column;
        align-items: flex-start;
        gap: 12px;
      }
-     .site-header {
+     
+     /* Container - readable without horizontal scroll */
+     .container {
+       padding: 16px;
+       overflow-x: hidden;
+     }
+     
+     /* SVG diagram - scale down instead of force scroll */
+     .img-frame {
+       padding: 12px;
+       margin: 12px 0 20px;
+     }
+     .svg-scroll-wrapper svg {
+       width: 100%;
+       min-width: auto;
+       height: auto;
+     }
+     .svg-scroll-hint {
+       display: none;
+     }
+     
+     /* Hide SVG on mobile, show vertical flowchart */
+     .svg-scroll-wrapper {
+       display: none;
+     }
+     .mobile-flowchart {
+       display: flex !important;
        flex-direction: column;
-       gap: 12px;
+       align-items: center;
+       gap: 0;
+       padding: 16px 12px;
+     }
+     .mobile-flow-step {
+       background: #fff;
+       border: 2px solid var(--accent);
+       border-radius: 12px;
+       padding: 14px 18px;
+       width: 100%;
+       max-width: 280px;
+       text-align: center;
+       position: relative;
+     }
+     .mobile-flow-step h4 {
+       color: var(--accent);
+       font-size: 1rem;
+       margin: 0 0 4px;
+       font-weight: 700;
+     }
+     .mobile-flow-step p {
+       color: #495057;
+       font-size: 0.9rem;
+       margin: 0;
+       line-height: 1.3;
+     }
+     .mobile-flow-arrow {
+       font-size: 1.5rem;
+       color: var(--accent);
+       line-height: 1;
+       padding: 6px 0;
+     }
+     .mobile-flow-loop {
+       display: flex;
+       align-items: center;
+       gap: 8px;
+       margin-top: 12px;
+       padding: 10px 16px;
+       background: linear-gradient(135deg, #fff7ed, #fff);
+       border-radius: 20px;
+       border: 1px dashed var(--accent);
+     }
+     .mobile-flow-loop span {
+       font-size: 0.85rem;
+       color: #6c757d;
+       font-style: italic;
+     }
+     
+     /* Progress tracker - hide long text */
+     .progress-tracker {
+       padding: 12px;
+       gap: 6px;
+       flex-wrap: nowrap;
+       overflow-x: auto;
+     }
+     .progress-tracker > span {
+       display: none;
+     }
+     .progress-step {
+       width: 28px;
+       height: 28px;
+       font-size: 0.85rem;
+       flex-shrink: 0;
+     }
+     
+     /* Quiz navigation - single row */
+     .quiz-navigation {
+       gap: 8px;
+       padding: 12px;
+       flex-wrap: nowrap;
+     }
+     .quiz-navigation .btn {
+       min-height: 48px;
+       padding: 12px 14px;
+       font-size: 1rem;
+     }
+     .question-counter {
+       font-size: 0.9rem;
+       white-space: nowrap;
+     }
+     
+     /* Quiz options - larger touch targets */
+     .quiz-option label {
+       min-height: 52px;
+       padding: 16px;
+       gap: 14px;
+       font-size: 1rem;
+       border-radius: 10px;
+       -webkit-tap-highlight-color: transparent;
+     }
+     .quiz-option label:active {
+       transform: scale(0.98);
+       background: #e9ecef;
+     }
+     .quiz-option input[type="radio"] {
+       width: 22px;
+       height: 22px;
+       flex-shrink: 0;
+     }
+     
+     /* Accordion - larger touch targets */
+     .accordion-header {
+       min-height: 56px;
+       padding: 16px;
+       font-size: 1rem;
+       -webkit-tap-highlight-color: transparent;
+     }
+     .accordion-header:active {
+       background: #e0e0e0;
+     }
+     .accordion-content {
+       padding: 16px;
+     }
+     
+     /* Glossary chips - larger */
+     .glossary-chip {
+       min-height: 44px;
+       padding: 12px 16px;
+       font-size: 0.95rem;
+       -webkit-tap-highlight-color: transparent;
+     }
+     .glossary-chip:active {
+       transform: scale(0.96);
+     }
+     
+     /* Code blocks - readable wrapping */
+     .code-block {
+       padding: 1em;
+       font-size: 0.8rem;
+       white-space: pre-wrap;
+       word-break: break-word;
+       overflow-x: auto;
+     }
+     
+     /* Code hover terms - larger for touch */
+     .code-hover-term {
+       padding: 4px 6px;
+       border-radius: 4px;
+       -webkit-tap-highlight-color: transparent;
+     }
+     
+     /* Tables - horizontal scroll */
+     .table-scroll {
+       -webkit-overflow-scrolling: touch;
+     }
+     
+     /* Exam tips grid */
+     .tips-grid {
+       grid-template-columns: 1fr;
+     }
+     .tip-item {
+       padding: 12px;
+     }
+     
+     /* Cards */
+     .best-practice-card,
+     .what-not-to-do-card,
+     .myth-card {
+       padding: 14px;
+       margin: 12px 0;
+     }
+     
+     /* Thinking process */
+     .thinking-process {
+       padding: 16px;
+     }
+     
+     /* Scenario container */
+     .scenario-container {
+       padding: 16px;
+       margin-bottom: 24px;
+     }
+     
+     /* Footer */
+     .site-footer {
+       padding: 24px 16px;
+     }
+
+     /* Hide desktop tooltip */
+     #code-tooltip {
+       display: none !important;
+     }
+     .chip-tip {
+       display: none !important;
+     }
+   }
+
+   /* ============================================
+      RESPONSIVE: 480px and below
+      ============================================ */
+   @media (max-width: 480px) {
+     h1 {
+       font-size: 1.6rem;
+     }
+     h2 {
+       font-size: 1.3rem;
+       margin: 32px 0 12px;
+     }
+     .byline {
+       font-size: 0.95rem;
+     }
+     .intro {
+       padding: 14px;
+       font-size: 1rem;
+     }
+     .article-meta {
+       flex-direction: column;
+       align-items: flex-start;
+       gap: 8px;
+     }
+     .breadcrumbs {
+       font-size: 0.8rem;
+     }
+     
+     /* Exam tips on very small */
+     .exam-tips-card {
+       padding: 16px;
+     }
+     .exam-tips-card h3 {
+       font-size: 1.2rem;
+     }
+     .exam-tips-card::before {
+       font-size: 2.5rem;
+       right: 10px;
+       top: 10px;
+     }
+     
+     /* Quiz nav compact */
+     .quiz-navigation .btn {
+       padding: 10px 12px;
+       font-size: 0.9rem;
      }
    }
  </style>
+</head>
 </head>
 <body>
 
  <header class="site-header">
      <a href="#" class="logo">Beyond Dictionary</a>
-     <nav><a href="#">What's New</a><a href="#">Learning</a><a href="#">Games & Quizzes</a><a href="#">Blog</a></nav>
+     <button class="hamburger" id="hamburger-btn" aria-expanded="false" aria-controls="primary-nav">☰</button>
+     <nav id="primary-nav" class="site-nav"><a href="#">What's New</a><a href="#">Learning</a><a href="#">Games & Quizzes</a><a href="#">Blog</a></nav>
  </header>
 
  <div class="container">
@@ -167,7 +598,9 @@
    <p class="intro">Programming isn't just about memorizing syntax—it's about developing a systematic way of thinking that breaks down complex problems into manageable pieces. This comprehensive guide takes you through 19 carefully crafted scenarios that demonstrate the complete thought process behind writing Python code. You'll learn to <strong>ask the right questions</strong>, <strong>deconstruct problems systematically</strong>, <strong>plan before coding</strong>, and <strong>improve iteratively</strong>. By the end, you'll think like a programmer, not just write like one.</p>
    
    <div class="img-frame">
-       <svg viewBox="0 0 600 300" xmlns="http://www.w3.org/2000/svg">
+       <p class="svg-scroll-hint">👆 Tap boxes for details</p>
+       <div class="svg-scroll-wrapper">
+       <svg viewBox="0 0 700 280" xmlns="http://www.w3.org/2000/svg">
            <title>The Programming Thinking Process</title>
            <defs>
                <marker id="arrowhead" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
@@ -175,57 +608,96 @@
                </marker>
            </defs>
            <style>
-               .process-box{fill:#fff;stroke:var(--accent);stroke-width:2;rx:8}
-               .process-text{font-family:Inter;font-size:14px;text-anchor:middle;fill:var(--text)}
+               .process-box{fill:#fff;stroke:var(--accent);stroke-width:2;rx:10}
+               .process-text{font-family:Inter,system-ui,sans-serif;font-size:11px;text-anchor:middle;fill:#495057}
                .process-arrow{stroke:var(--accent);stroke-width:2;marker-end:url(#arrowhead)}
-               .process-title{font-weight:600;font-size:16px}
+               .process-title{font-weight:700;font-size:13px;fill:#212529}
            </style>
            
            <!-- Ask -->
-           <rect x="50" y="50" width="80" height="60" class="process-box"/>
-           <text x="90" y="75" class="process-text process-title">ASK</text>
-           <text x="90" y="90" class="process-text">What exactly</text>
-           <text x="90" y="105" class="process-text">do I need?</text>
+           <rect x="20" y="40" width="100" height="70" class="process-box"/>
+           <text x="70" y="65" class="process-text process-title">ASK</text>
+           <text x="70" y="82" class="process-text">What exactly</text>
+           <text x="70" y="96" class="process-text">do I need?</text>
            
            <!-- Deconstruct -->
-           <line x1="130" y1="80" x2="160" y2="80" class="process-arrow"/>
-           <rect x="170" y="50" width="80" height="60" class="process-box"/>
-           <text x="210" y="75" class="process-text process-title">DECONSTRUCT</text>
-           <text x="210" y="90" class="process-text">Break into</text>
-           <text x="210" y="105" class="process-text">small steps</text>
+           <line x1="120" y1="75" x2="145" y2="75" class="process-arrow"/>
+           <rect x="155" y="40" width="120" height="70" class="process-box"/>
+           <text x="215" y="65" class="process-text process-title">DECONSTRUCT</text>
+           <text x="215" y="82" class="process-text">Break into</text>
+           <text x="215" y="96" class="process-text">small steps</text>
            
            <!-- Plan -->
-           <line x1="250" y1="80" x2="280" y2="80" class="process-arrow"/>
-           <rect x="290" y="50" width="80" height="60" class="process-box"/>
-           <text x="330" y="75" class="process-text process-title">PLAN</text>
-           <text x="330" y="90" class="process-text">Choose tools</text>
-           <text x="330" y="105" class="process-text">& approach</text>
+           <line x1="275" y1="75" x2="300" y2="75" class="process-arrow"/>
+           <rect x="310" y="40" width="100" height="70" class="process-box"/>
+           <text x="360" y="65" class="process-text process-title">PLAN</text>
+           <text x="360" y="82" class="process-text">Choose tools</text>
+           <text x="360" y="96" class="process-text">& approach</text>
            
            <!-- Code -->
-           <line x1="370" y1="80" x2="400" y2="80" class="process-arrow"/>
-           <rect x="410" y="50" width="80" height="60" class="process-box"/>
-           <text x="450" y="75" class="process-text process-title">CODE</text>
-           <text x="450" y="90" class="process-text">Implement</text>
-           <text x="450" y="105" class="process-text">solution</text>
+           <line x1="410" y1="75" x2="435" y2="75" class="process-arrow"/>
+           <rect x="445" y="40" width="100" height="70" class="process-box"/>
+           <text x="495" y="65" class="process-text process-title">CODE</text>
+           <text x="495" y="82" class="process-text">Implement</text>
+           <text x="495" y="96" class="process-text">solution</text>
            
            <!-- Test -->
-           <line x1="450" y1="110" x2="450" y2="140" class="process-arrow"/>
-           <rect x="410" y="150" width="80" height="60" class="process-box"/>
-           <text x="450" y="175" class="process-text process-title">TEST</text>
-           <text x="450" y="190" class="process-text">Verify &</text>
-           <text x="450" y="205" class="process-text">debug</text>
+           <line x1="495" y1="110" x2="495" y2="135" class="process-arrow"/>
+           <rect x="445" y="145" width="100" height="70" class="process-box"/>
+           <text x="495" y="170" class="process-text process-title">TEST</text>
+           <text x="495" y="187" class="process-text">Verify &</text>
+           <text x="495" y="201" class="process-text">debug</text>
            
            <!-- Improve -->
-           <line x1="410" y1="180" x2="380" y2="180" class="process-arrow"/>
-           <rect x="290" y="150" width="80" height="60" class="process-box"/>
-           <text x="330" y="175" class="process-text process-title">IMPROVE</text>
-           <text x="330" y="190" class="process-text">Optimize &</text>
-           <text x="330" y="205" class="process-text">refactor</text>
+           <line x1="445" y1="180" x2="420" y2="180" class="process-arrow"/>
+           <rect x="310" y="145" width="100" height="70" class="process-box"/>
+           <text x="360" y="170" class="process-text process-title">IMPROVE</text>
+           <text x="360" y="187" class="process-text">Optimize &</text>
+           <text x="360" y="201" class="process-text">refactor</text>
            
            <!-- Feedback loop -->
-           <path d="M 290 180 Q 210 240 450 240 Q 500 240 490 210" fill="none" stroke="var(--accent)" stroke-width="1" stroke-dasharray="4,4" marker-end="url(#arrowhead)"/>
-           <text x="370" y="255" class="process-text" style="font-size:12px;fill:#6c757d">Continuous Learning Loop</text>
+           <path d="M 310 180 Q 220 240 495 240 Q 560 240 545 215" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#arrowhead)"/>
+           <text x="400" y="258" class="process-text" style="font-size:11px;fill:#6c757d;font-style:italic">Continuous Learning Loop</text>
        </svg>
+       </div><!-- end svg-scroll-wrapper -->
+       
+       <!-- Mobile Vertical Flowchart (hidden on desktop, shown on mobile) -->
+       <div class="mobile-flowchart">
+         <div class="mobile-flow-step">
+           <h4>1️⃣ ASK</h4>
+           <p>What exactly do I need to solve?</p>
+         </div>
+         <div class="mobile-flow-arrow">↓</div>
+         <div class="mobile-flow-step">
+           <h4>2️⃣ DECONSTRUCT</h4>
+           <p>Break problem into small steps</p>
+         </div>
+         <div class="mobile-flow-arrow">↓</div>
+         <div class="mobile-flow-step">
+           <h4>3️⃣ PLAN</h4>
+           <p>Choose tools & approach</p>
+         </div>
+         <div class="mobile-flow-arrow">↓</div>
+         <div class="mobile-flow-step">
+           <h4>4️⃣ CODE</h4>
+           <p>Implement the solution</p>
+         </div>
+         <div class="mobile-flow-arrow">↓</div>
+         <div class="mobile-flow-step">
+           <h4>5️⃣ TEST</h4>
+           <p>Verify & debug</p>
+         </div>
+         <div class="mobile-flow-arrow">↓</div>
+         <div class="mobile-flow-step">
+           <h4>6️⃣ IMPROVE</h4>
+           <p>Optimize & refactor</p>
+         </div>
+         <div class="mobile-flow-loop">
+           <span>🔄</span>
+           <span>Continuous Learning Loop</span>
+         </div>
+       </div>
+       
        <div class="img-tooltip">The complete programming mindset</div>
    </div>
 
@@ -1181,87 +1653,129 @@ ValueError: invalid literal for int() with base 10: 'twenty'</div>
    <p class="footer-copy">© 2025 Beyond Dictionary. All Rights Reserved.</p>
  </footer>
 
+ <!-- HOP 1: Mobile Code Tooltip Overlay -->
+ <div class="mobile-code-tooltip" id="mobileCodeTooltip">
+   <div class="mobile-code-tooltip-content">
+     <div class="mobile-code-tooltip-header">
+       <h4 id="mobileCodeTooltipTitle">Code Term</h4>
+       <button class="mobile-code-tooltip-close" id="mobileCodeTooltipClose" aria-label="Close">&times;</button>
+     </div>
+     <div class="mobile-code-tooltip-body">
+       <div class="tooltip-definition" id="mobileCodeTooltipDef"></div>
+       <div class="tooltip-syntax" id="mobileCodeTooltipSyntax"></div>
+       <div class="tooltip-design" id="mobileCodeTooltipDesign"></div>
+     </div>
+   </div>
+ </div>
+
+ <!-- HOP 4: Mobile Glossary Tooltip -->
+ <div class="mobile-glossary-tooltip" id="mobileGlossaryTooltip">
+   <button class="mobile-glossary-tooltip-close" id="mobileGlossaryClose">&times;</button>
+   <h5 id="mobileGlossaryTerm"></h5>
+   <p id="mobileGlossaryDef"></p>
+ </div>
+
  <script>
    document.addEventListener('DOMContentLoaded', function() {
-     // Quiz questions data
+     
+     // ========== HAMBURGER NAVIGATION TOGGLE ==========
+     (function(){
+       const menuBtn = document.getElementById('hamburger-btn');
+       const primaryNav = document.getElementById('primary-nav');
+       if(!menuBtn || !primaryNav) return;
+       menuBtn.addEventListener('click', ()=>{
+         const open = !primaryNav.classList.contains('open');
+         primaryNav.classList.toggle('open', open);
+         menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+       });
+       // Close menu when clicking outside
+       document.addEventListener('click', (e) => {
+         if (!menuBtn.contains(e.target) && !primaryNav.contains(e.target)) {
+           primaryNav.classList.remove('open');
+           menuBtn.setAttribute('aria-expanded', 'false');
+         }
+       });
+     })();
+
+     // Quiz questions data - Each explanation is 30-50 words for learning value
      const quizQuestions = [
        { q: "What should you ALWAYS do before writing code?", correct: 2, options: [
-         { text: "Start typing immediately", explanation: "Incorrect. Planning prevents problems and saves time." },
-         { text: "Look up syntax online", explanation: "While helpful, understanding the problem comes first." },
-         { text: "Understand the problem completely", explanation: "✅ Correct! Always ask 'What exactly do I need to accomplish?' before coding." },
-         { text: "Choose the programming language", explanation: "The problem understanding should drive language choice, not vice versa." }
+         { text: "Start typing immediately", explanation: "Jumping into code without planning leads to bugs, rewrites, and wasted time. Professional developers spend 30-50% of their time understanding requirements before writing a single line. This discipline separates beginners from experts." },
+         { text: "Look up syntax online", explanation: "Syntax lookup is useful but premature if you don't understand the problem. First clarify WHAT you're building, then HOW to build it. Knowing Python's syntax won't help if you're solving the wrong problem entirely." },
+         { text: "Understand the problem completely", explanation: "✅ Correct! The ASK phase is critical. Ask: What are the inputs? What output is expected? What edge cases exist? This prevents the costly mistake of building a perfect solution to the wrong problem." },
+         { text: "Choose the programming language", explanation: "Language choice should follow problem understanding, not precede it. Once you know the problem's requirements (speed, platform, libraries needed), the right language becomes clearer. Rushing this decision limits your options." }
        ]},
        { q: "When getting user input, what's the most important consideration?", correct: 1, options: [
-         { text: "Make the prompt message friendly", explanation: "Nice but not the most important for functionality." },
-         { text: "Validate and handle errors", explanation: "✅ Correct! Users will enter unexpected data. Always use try-except for input()." },
-         { text: "Use descriptive variable names", explanation: "Good practice but validation prevents crashes." },
-         { text: "Format the output nicely", explanation: "This comes after ensuring the program works correctly." }
+         { text: "Make the prompt message friendly", explanation: "User-friendly prompts improve experience but won't prevent crashes. A beautifully worded prompt asking for age still crashes if the user types 'twenty-five' instead of 25. Validation must come first." },
+         { text: "Validate and handle errors", explanation: "✅ Correct! Users WILL enter unexpected data: letters when you expect numbers, empty strings, special characters. Using try-except blocks catches these errors gracefully, preventing crashes and improving user experience." },
+         { text: "Use descriptive variable names", explanation: "Descriptive names like 'user_age' instead of 'x' improve code readability and maintenance. However, even perfectly named variables can't prevent crashes from invalid input. Validation protects your program from unpredictable user behavior." },
+         { text: "Format the output nicely", explanation: "Well-formatted output matters for user experience, but only after your program works reliably. A beautiful output message means nothing if the program crashed three lines earlier due to unvalidated input." }
        ]},
        { q: "In the age classifier example, why do we check negative ages separately?", correct: 3, options: [
-         { text: "To show off advanced programming", explanation: "No, every check should have a practical purpose." },
-         { text: "Because Python requires it", explanation: "Python doesn't require this - it's a design choice." },
-         { text: "To make the code longer", explanation: "Good code is concise while being complete." },
-         { text: "To handle invalid data before categorization", explanation: "✅ Correct! Validate data before processing it logically." }
+         { text: "To show off advanced programming", explanation: "Code complexity should serve functionality, not ego. Every conditional check should have a practical purpose. Adding unnecessary checks makes code harder to read, maintain, and debug without providing any benefit." },
+         { text: "Because Python requires it", explanation: "Python is flexible—it doesn't require specific validation patterns. This is a design choice reflecting good programming practice. The language lets you write dangerous code; wisdom prevents you from doing so." },
+         { text: "To make the code longer", explanation: "Longer code isn't better code. Concise, clear code that handles all cases is the goal. However, brevity shouldn't sacrifice correctness. Each line should serve a purpose—validation is that purpose here." },
+         { text: "To handle invalid data before categorization", explanation: "✅ Correct! Validate-then-process is a fundamental programming pattern. Checking for impossible values (negative ages) before categorization prevents logical errors. Clean data in means reliable results out—garbage in, garbage out." }
        ]},
        { q: "What's the benefit of using elif instead of multiple if statements?", correct: 0, options: [
-         { text: "More efficient - stops checking once a condition is true", explanation: "✅ Correct! elif creates mutually exclusive conditions." },
-         { text: "Looks more professional", explanation: "Style matters, but efficiency is the main benefit." },
-         { text: "Required by Python syntax", explanation: "You can use multiple ifs, but elif is better design." },
-         { text: "Easier to type", explanation: "Efficiency of execution matters more than typing convenience." }
+         { text: "More efficient - stops checking once a condition is true", explanation: "✅ Correct! elif creates mutually exclusive branches. Once Python finds a true condition, it skips remaining checks. Multiple if statements check ALL conditions regardless, wasting CPU cycles on impossible cases." },
+         { text: "Looks more professional", explanation: "While elif does look cleaner, aesthetics aren't the main benefit. The real advantage is logical correctness and efficiency. Code that clearly expresses mutually exclusive conditions is also easier to debug and modify." },
+         { text: "Required by Python syntax", explanation: "Python allows multiple if statements—it's valid syntax. However, when conditions are mutually exclusive (like age categories), elif expresses this relationship clearly. The syntax choice communicates your logical intent to other developers." },
+         { text: "Easier to type", explanation: "Typing convenience shouldn't drive code design decisions. elif is actually more characters than if. The benefit is runtime efficiency and logical clarity—Python stops evaluating conditions once one matches." }
        ]},
        { q: "Why use float() instead of int() for the grade calculator?", correct: 2, options: [
-         { text: "float() is faster than int()", explanation: "Performance difference is negligible here." },
-         { text: "Grades are always decimals", explanation: "Not necessarily, but we want to allow decimal grades." },
-         { text: "To allow decimal scores like 85.5", explanation: "✅ Correct! Real-world data often includes decimals." },
-         { text: "int() doesn't work with input()", explanation: "int() works fine with input(), but float() is more flexible." }
+         { text: "float() is faster than int()", explanation: "Performance difference between float() and int() is negligible—both complete in microseconds. Choose based on data requirements, not speed. In most applications, clarity and correctness matter far more than micro-optimizations." },
+         { text: "Grades are always decimals", explanation: "Grades can be whole numbers (90) or decimals (89.5). The point is flexibility—float() handles both cases, while int() truncates decimals. Choosing float() means accepting 90 AND 89.5, not assuming all grades have decimals." },
+         { text: "To allow decimal scores like 85.5", explanation: "✅ Correct! Real-world academic data includes decimal scores from weighted averages, extra credit, and curve adjustments. Using float() accommodates this reality. int() would truncate 89.7 to 89, potentially changing a student's letter grade unfairly." },
+         { text: "int() doesn't work with input()", explanation: "int() works perfectly with input()—int(input('Enter number: ')) is valid Python. The issue is that int() truncates decimals (89.7 becomes 89) while float() preserves them. Choose based on your data's precision requirements." }
        ]},
        { q: "In the password checker, what does any() do?", correct: 1, options: [
-         { text: "Checks if all characters meet the condition", explanation: "That would be all(), not any()." },
-         { text: "Returns True if at least one character meets the condition", explanation: "✅ Correct! any() stops at the first True value it finds." },
-         { text: "Counts how many characters meet the condition", explanation: "That would require sum() with a generator expression." },
-         { text: "Converts characters to uppercase", explanation: "any() doesn't modify data, it just checks conditions." }
+         { text: "Checks if all characters meet the condition", explanation: "That's all(), not any(). all() returns True only when EVERY element is True. For passwords, all(c.isupper() for c in password) would require ALL characters to be uppercase—not what we want." },
+         { text: "Returns True if at least one character meets the condition", explanation: "✅ Correct! any() is a short-circuit function: it returns True immediately upon finding the first True value, stopping iteration early. This is efficient for checking 'does at least one exist?' questions in passwords." },
+         { text: "Counts how many characters meet the condition", explanation: "Counting requires sum() with a generator: sum(1 for c in password if c.isupper()). any() only answers yes/no questions. If you need the count of uppercase letters, any() won't give you that information." },
+         { text: "Converts characters to uppercase", explanation: "any() is a boolean function—it returns True or False, never modifying data. For conversion, use .upper() method: 'hello'.upper() returns 'HELLO'. These are fundamentally different operations with different purposes." }
        ]},
        { q: "What's the main advantage of using functions in your code?", correct: 3, options: [
-         { text: "Makes the file smaller", explanation: "File size is rarely a concern in modern programming." },
-         { text: "Impresses other programmers", explanation: "Code should solve problems effectively, not impress." },
-         { text: "Required for complex programs", explanation: "You can write complex programs without functions, but it's not recommended." },
-         { text: "Reusability and organization", explanation: "✅ Correct! Functions let you reuse code and break problems into smaller pieces." }
+         { text: "Makes the file smaller", explanation: "File size is irrelevant in modern computing. A 100KB Python file runs identically to a 10KB one. Functions may actually increase file size slightly due to def statements. The benefits are organizational and logical, not physical." },
+         { text: "Impresses other programmers", explanation: "Code should solve problems efficiently, not impress audiences. However, well-structured functions DO make code easier for teams to understand and maintain. The impression comes from clarity, not complexity." },
+         { text: "Required for complex programs", explanation: "You CAN write complex programs without functions—early BASIC programs proved this. However, such code becomes unmaintainable spaghetti. Functions aren't technically required; they're practically essential for human comprehension of complex logic." },
+         { text: "Reusability and organization", explanation: "✅ Correct! Functions embody the DRY principle (Don't Repeat Yourself). Write validation logic once, call it everywhere. They also break complex problems into named, testable pieces, making code easier to understand, debug, and modify." }
        ]},
        { q: "Why store boolean flags (has_upper, has_lower) in the password checker?", correct: 2, options: [
-         { text: "To use more memory", explanation: "Good code is efficient, not wasteful." },
-         { text: "Because Python requires it", explanation: "You could check conditions directly, but this is cleaner." },
-         { text: "Makes the final condition more readable", explanation: "✅ Correct! 'if has_upper and has_lower' reads like English." },
-         { text: "To slow down the program", explanation: "This actually makes the program more efficient and readable." }
+         { text: "To use more memory", explanation: "Boolean variables use minimal memory (typically 1 byte). The goal isn't memory usage—it's code clarity. Named booleans document your intent: 'has_upper = True' tells future readers exactly what you're tracking." },
+         { text: "Because Python requires it", explanation: "You could write: if any(c.isupper() for c in pw) and any(c.islower() for c in pw)—Python allows this. But flags separate detection from decision-making, making each step clearer and easier to debug independently." },
+         { text: "Makes the final condition more readable", explanation: "✅ Correct! Compare 'if has_upper and has_lower and has_digit' versus nested any() calls. The flag version reads like English, making code intent obvious. Self-documenting code reduces bugs and maintenance effort." },
+         { text: "To slow down the program", explanation: "Actually, flags can improve performance by avoiding redundant checks. Once has_upper is True, you don't need to keep checking. The primary benefit is readability, but efficiency can also improve with early termination." }
        ]},
        { q: "What's the biggest risk of infinite loops?", correct: 1, options: [
-         { text: "They produce wrong answers", explanation: "They don't produce any answers because they never finish." },
-         { text: "They freeze your program and waste resources", explanation: "✅ Correct! Infinite loops consume CPU and memory indefinitely." },
-         { text: "They're hard to type", explanation: "The typing difficulty isn't the main concern." },
-         { text: "Python doesn't allow them", explanation: "Python will happily run infinite loops until you stop them." }
+         { text: "They produce wrong answers", explanation: "Infinite loops produce NO answers—they never complete. Your program hangs indefinitely, appearing frozen. This is worse than a wrong answer because at least wrong answers let you know something finished and needs debugging." },
+         { text: "They freeze your program and waste resources", explanation: "✅ Correct! Infinite loops consume CPU cycles endlessly, potentially crashing your system or server. In web applications, they can make services unavailable. Always ensure your loop's exit condition is reachable under all circumstances." },
+         { text: "They're hard to type", explanation: "Infinite loops are actually easy to type accidentally: 'while True:' without a break, or forgetting to increment a counter. The difficulty isn't typing—it's recognizing and preventing conditions where termination becomes impossible." },
+         { text: "Python doesn't allow them", explanation: "Python happily executes infinite loops until interrupted (Ctrl+C) or the system runs out of resources. The language doesn't protect you from this logical error. Preventing infinite loops is the programmer's responsibility." }
        ]},
        { q: "When should you use a while loop instead of a for loop?", correct: 0, options: [
-         { text: "When you don't know how many iterations you need", explanation: "✅ Correct! Use while for condition-based loops, for for count-based loops." },
-         { text: "When you want to look professional", explanation: "Choose the right tool for the problem, not for appearance." },
-         { text: "For loops are always better", explanation: "Each loop type has its appropriate use cases." },
-         { text: "While loops are faster", explanation: "Performance difference is negligible - clarity matters more." }
+         { text: "When you don't know how many iterations you need", explanation: "✅ Correct! While loops are condition-based: 'keep going until X happens.' For loops are count-based: 'do this N times.' User input validation ('keep asking until valid') perfectly suits while loops because you can't predict attempts needed." },
+         { text: "When you want to look professional", explanation: "Loop choice should reflect problem structure, not aesthetics. Using while when for is clearer (or vice versa) actually looks unprofessional. Choose the construct that most naturally expresses your logic to other developers." },
+         { text: "For loops are always better", explanation: "Each loop type has ideal use cases. For loops excel at iterating collections or counting. While loops excel at condition-based repetition. Claiming one is 'always better' ignores the nuanced tool selection that defines good programming." },
+         { text: "While loops are faster", explanation: "Performance difference between for and while is negligible in Python. Both compile to similar bytecode. Choose based on semantic fit: which loop type more clearly expresses your logical intent? Clarity trumps micro-optimization." }
        ]},
        { q: "What's the purpose of the break statement in loops?", correct: 3, options: [
-         { text: "To pause the loop temporarily", explanation: "break completely exits the loop, it doesn't pause." },
-         { text: "To skip the current iteration", explanation: "That's what continue does, not break." },
-         { text: "To make the loop run faster", explanation: "break controls flow, not performance directly." },
-         { text: "To exit the loop immediately", explanation: "✅ Correct! break is used for early termination when a condition is met." }
+         { text: "To pause the loop temporarily", explanation: "Python has no 'pause' statement for loops. break exits permanently. If you need to pause, you'd use time.sleep() for delays or restructure your logic. Once break executes, that loop iteration is finished forever." },
+         { text: "To skip the current iteration", explanation: "That's continue, not break. continue skips remaining code in the current iteration but continues looping. break exits the entire loop immediately. These serve opposite purposes: continue says 'skip this one,' break says 'stop everything.'" },
+         { text: "To make the loop run faster", explanation: "break does enable early termination, which can improve performance (stop searching once found). However, its primary purpose is flow control—exiting when a condition is met. Performance gain is a side effect, not the main purpose." },
+         { text: "To exit the loop immediately", explanation: "✅ Correct! break provides early termination when continuing is unnecessary. Found what you're searching for? Break. User entered 'quit'? Break. It's essential for implementing 'stop when condition is met' logic efficiently." }
        ]},
        { q: "Why is input validation so crucial in programming?", correct: 2, options: [
-         { text: "To make the code look professional", explanation: "Validation is functional, not just cosmetic." },
-         { text: "Because teachers require it", explanation: "Real-world users enter unexpected data constantly." },
-         { text: "Users will enter unexpected data that can crash your program", explanation: "✅ Correct! Defensive programming prevents crashes and security issues." },
-         { text: "To make the program slower", explanation: "Good validation actually improves reliability and user experience." }
+         { text: "To make the code look professional", explanation: "Validation is functional, not cosmetic. Professional-looking code that crashes on unexpected input isn't professional at all. Real professionalism means anticipating user behavior and handling edge cases gracefully." },
+         { text: "Because teachers require it", explanation: "Teachers require it because real-world applications demand it. A banking app that crashes when someone types letters in the amount field would lose customers and trust. Academic requirements reflect industry necessities." },
+         { text: "Users will enter unexpected data that can crash your program", explanation: "✅ Correct! Never trust user input. Users will enter letters for numbers, negative values where positives are expected, and empty strings where data is required. Defensive programming assumes the worst and handles it gracefully." },
+         { text: "To make the program slower", explanation: "Well-implemented validation adds negligible overhead—milliseconds at most. The 'cost' is far outweighed by preventing crashes, security vulnerabilities, and data corruption. Robust programs are more valuable than marginally faster fragile ones." }
        ]},
        { q: "What's the main benefit of using descriptive variable names?", correct: 1, options: [
-         { text: "Makes the program run faster", explanation: "Variable names don't affect runtime performance." },
-         { text: "Makes code easier to understand and maintain", explanation: "✅ Correct! Code is read far more often than it's written." },
-         { text: "Prevents all bugs", explanation: "Good naming helps prevent bugs but doesn't eliminate them entirely." },
-         { text: "Required by Python syntax", explanation: "Python allows short names, but descriptive names are better practice." }
+         { text: "Makes the program run faster", explanation: "Variable names don't affect runtime—Python doesn't care if you use 'x' or 'user_input_temperature_celsius'. The interpreter treats them identically. Benefits are purely human: readability, maintainability, and reduced cognitive load when debugging." },
+         { text: "Makes code easier to understand and maintain", explanation: "✅ Correct! Code is read 10x more often than written. 'total_price = unit_price * quantity' is instantly clear; 'tp = up * q' requires mental translation. Six months later, you'll thank yourself for descriptive names." },
+         { text: "Prevents all bugs", explanation: "Descriptive names reduce bugs by making logic clearer, but they can't prevent all errors. 'user_age = user_age + 1' is clear but still wrong if you meant to subtract. Good naming is one tool among many for code quality." },
+         { text: "Required by Python syntax", explanation: "Python accepts any valid identifier: 'x', 'a1', 'thing'. Single-letter variables are syntactically fine. The Python community's style guide (PEP 8) recommends descriptive names, but the language doesn't enforce this." }
        ]},
        { q: "When should you use try-except blocks?", correct: 0, options: [
          { text: "Whenever you expect an operation might fail", explanation: "✅ Correct! Use try-except for operations that might raise exceptions." },
@@ -1626,76 +2140,181 @@ ValueError: invalid literal for int() with base 10: 'twenty'</div>
          openBtn = null; 
        }
        
-       cloud.querySelectorAll('.glossary-chip').forEach((btn, i) => {
-         const def = keywords[i].def;
-         btn.addEventListener('mouseenter', () => { openTip(btn, def); });
-         btn.addEventListener('mouseleave', () => { closeTip(); });
-         btn.addEventListener('focus', () => { openTip(btn, def); });
-         btn.addEventListener('blur', () => { closeTip(); });
-       });
-       
-       window.addEventListener('resize', () => { if (openBtn) positionTipFor(openBtn); });
-       window.addEventListener('scroll', () => { if (openBtn) positionTipFor(openBtn); }, { passive: true });
-     }
+      cloud.querySelectorAll('.glossary-chip').forEach((btn, i) => {
+        const term = keywords[i].term;
+        const def = keywords[i].def;
+        
+        // Desktop: hover
+        btn.addEventListener('mouseenter', () => { 
+          if (!isMobile()) openTip(btn, def); 
+        });
+        btn.addEventListener('mouseleave', () => { 
+          if (!isMobile()) closeTip(); 
+        });
+        btn.addEventListener('focus', () => { 
+          if (!isMobile()) openTip(btn, def); 
+        });
+        btn.addEventListener('blur', () => { 
+          if (!isMobile()) closeTip(); 
+        });
+        
+        // Mobile: tap to show bottom tooltip
+        btn.addEventListener('click', (e) => {
+          if (isMobile()) {
+            e.preventDefault();
+            showMobileGlossaryTooltip(term, def);
+          }
+        });
+      });
+      
+      window.addEventListener('resize', () => { if (openBtn) positionTipFor(openBtn); });
+      window.addEventListener('scroll', () => { if (openBtn) positionTipFor(openBtn); }, { passive: true });
+    }
 
-     // Hover glossary for code terms
-     function setupHoverGlossary() {
-       const codeHoverTerms = document.querySelectorAll('.code-hover-term');
-       
-       codeHoverTerms.forEach(term => {
-         const termKey = term.getAttribute('data-term');
-         const termData = hoverTerms[termKey];
-         
-         if (termData) {
-           term.addEventListener('mouseenter', (e) => {
-             showCodeTooltip(e, termData);
-           });
-           
-           term.addEventListener('mouseleave', hideCodeTooltip);
-         }
-       });
-     }
+    // Mobile detection
+    function isMobile() {
+      return window.innerWidth <= 768 || 'ontouchstart' in window;
+    }
 
-     function showCodeTooltip(e, termData) {
-       let tooltip = document.getElementById('code-tooltip');
-       if (!tooltip) {
-         tooltip = document.createElement('div');
-         tooltip.id = 'code-tooltip';
-         tooltip.style.cssText = `
-           position: fixed;
-           background: var(--accent);
-           color: white;
-           padding: 12px;
-           border-radius: 8px;
-           font-size: 0.9rem;
-           max-width: 300px;
-           z-index: 1000;
-           box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-           display: none;
-         `;
-         document.body.appendChild(tooltip);
-       }
-       
-       tooltip.innerHTML = `
-         <div style="font-weight: 600; margin-bottom: 6px;">${termData.term}</div>
-         <div style="margin-bottom: 8px;">${termData.definition}</div>
-         <div style="font-family: monospace; background: rgba(255,255,255,0.2); padding: 4px; border-radius: 4px; margin-bottom: 6px;">
-           ${termData.syntax}
-         </div>
-         <div style="font-style: italic; opacity: 0.9;">💡 ${termData.design}</div>
-       `;
-       
-       tooltip.style.display = 'block';
-       tooltip.style.left = e.pageX + 15 + 'px';
-       tooltip.style.top = e.pageY - 10 + 'px';
-     }
+    // HOP 1: Mobile Code Tooltip System
+    const mobileCodeTooltip = document.getElementById('mobileCodeTooltip');
+    const mobileCodeTooltipTitle = document.getElementById('mobileCodeTooltipTitle');
+    const mobileCodeTooltipDef = document.getElementById('mobileCodeTooltipDef');
+    const mobileCodeTooltipSyntax = document.getElementById('mobileCodeTooltipSyntax');
+    const mobileCodeTooltipDesign = document.getElementById('mobileCodeTooltipDesign');
+    const mobileCodeTooltipClose = document.getElementById('mobileCodeTooltipClose');
 
-     function hideCodeTooltip() {
-       const tooltip = document.getElementById('code-tooltip');
-       if (tooltip) {
-         tooltip.style.display = 'none';
-       }
-     }
+    function showMobileCodeTooltip(termData) {
+      mobileCodeTooltipTitle.textContent = termData.term;
+      mobileCodeTooltipDef.textContent = termData.definition;
+      mobileCodeTooltipSyntax.textContent = termData.syntax;
+      mobileCodeTooltipDesign.textContent = termData.design;
+      mobileCodeTooltip.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function hideMobileCodeTooltip() {
+      mobileCodeTooltip.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    if (mobileCodeTooltipClose) {
+      mobileCodeTooltipClose.addEventListener('click', hideMobileCodeTooltip);
+    }
+    if (mobileCodeTooltip) {
+      mobileCodeTooltip.addEventListener('click', (e) => {
+        if (e.target === mobileCodeTooltip) hideMobileCodeTooltip();
+      });
+    }
+
+    // HOP 4: Mobile Glossary Tooltip
+    const mobileGlossaryTooltip = document.getElementById('mobileGlossaryTooltip');
+    const mobileGlossaryTerm = document.getElementById('mobileGlossaryTerm');
+    const mobileGlossaryDef = document.getElementById('mobileGlossaryDef');
+    const mobileGlossaryClose = document.getElementById('mobileGlossaryClose');
+
+    function showMobileGlossaryTooltip(term, definition) {
+      mobileGlossaryTerm.textContent = term;
+      mobileGlossaryDef.textContent = definition;
+      mobileGlossaryTooltip.classList.add('active');
+    }
+
+    function hideMobileGlossaryTooltip() {
+      mobileGlossaryTooltip.classList.remove('active');
+    }
+
+    if (mobileGlossaryClose) {
+      mobileGlossaryClose.addEventListener('click', hideMobileGlossaryTooltip);
+    }
+
+    // Close on outside tap
+    document.addEventListener('click', (e) => {
+      if (mobileGlossaryTooltip && mobileGlossaryTooltip.classList.contains('active')) {
+        if (!mobileGlossaryTooltip.contains(e.target) && !e.target.classList.contains('glossary-chip')) {
+          hideMobileGlossaryTooltip();
+        }
+      }
+    });
+
+    // Escape key closes tooltips
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        hideMobileCodeTooltip();
+        hideMobileGlossaryTooltip();
+      }
+    });
+
+    // Hover glossary for code terms - with mobile support
+    function setupHoverGlossary() {
+      const codeHoverTerms = document.querySelectorAll('.code-hover-term');
+      
+      codeHoverTerms.forEach(term => {
+        const termKey = term.getAttribute('data-term');
+        const termData = hoverTerms[termKey];
+        
+        if (termData) {
+          // Desktop: hover
+          term.addEventListener('mouseenter', (e) => {
+            if (!isMobile()) showCodeTooltip(e, termData);
+          });
+          term.addEventListener('mouseleave', () => {
+            if (!isMobile()) hideCodeTooltip();
+          });
+          
+          // Mobile: tap
+          term.addEventListener('click', (e) => {
+            if (isMobile()) {
+              e.preventDefault();
+              e.stopPropagation();
+              showMobileCodeTooltip(termData);
+            }
+          });
+        }
+      });
+    }
+
+    function showCodeTooltip(e, termData) {
+      if (isMobile()) return;
+      
+      let tooltip = document.getElementById('code-tooltip');
+      if (!tooltip) {
+        tooltip = document.createElement('div');
+        tooltip.id = 'code-tooltip';
+        tooltip.style.cssText = `
+          position: fixed;
+          background: var(--accent);
+          color: white;
+          padding: 12px;
+          border-radius: 8px;
+          font-size: 0.9rem;
+          max-width: 300px;
+          z-index: 1000;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+          display: none;
+        `;
+        document.body.appendChild(tooltip);
+      }
+      
+      tooltip.innerHTML = `
+        <div style="font-weight: 600; margin-bottom: 6px;">${termData.term}</div>
+        <div style="margin-bottom: 8px;">${termData.definition}</div>
+        <div style="font-family: monospace; background: rgba(255,255,255,0.2); padding: 4px; border-radius: 4px; margin-bottom: 6px;">
+          ${termData.syntax}
+        </div>
+        <div style="font-style: italic; opacity: 0.9;">💡 ${termData.design}</div>
+      `;
+      
+      tooltip.style.display = 'block';
+      tooltip.style.left = e.pageX + 15 + 'px';
+      tooltip.style.top = e.pageY - 10 + 'px';
+    }
+
+    function hideCodeTooltip() {
+      const tooltip = document.getElementById('code-tooltip');
+      if (tooltip) {
+        tooltip.style.display = 'none';
+      }
+    }
 
      // Practice exercises setup
      function setupPracticeExercises() {

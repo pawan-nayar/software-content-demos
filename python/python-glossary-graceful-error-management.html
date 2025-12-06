@@ -6,6 +6,7 @@
   <title>Python Error Detection Trainer - 44 Examples</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; }
+    html, body { overflow-x: hidden; }
     body {
       margin: 0;
       padding: 2vh 2vw;
@@ -144,21 +145,37 @@
     .code-line {
       display: block;
       position: relative;
-      padding: clamp(0.1rem, 0.5vh, 0.2rem) clamp(0.3rem, 1vw, 0.5rem);
-      margin: clamp(0.02rem, 0.2vh, 0.05rem) 0;
+      padding: clamp(0.3rem, 1vh, 0.5rem) clamp(0.5rem, 1.5vw, 0.75rem);
+      margin: 2px 0;
       border-radius: 4px;
       cursor: pointer;
       transition: all 0.2s ease;
+      min-height: 32px;
     }
-    .code-line:hover {
-      background: rgba(255, 255, 255, 0.05);
+    .code-line:hover, .code-line.active {
+      background: rgba(255, 255, 255, 0.1);
     }
     .code-line.error-line {
       background: rgba(220, 38, 38, 0.2);
       border-left: 3px solid #dc2626;
     }
-    .code-line.error-line:hover {
-      background: rgba(220, 38, 38, 0.3);
+    .code-line.error-line:hover, .code-line.error-line.active {
+      background: rgba(220, 38, 38, 0.35);
+    }
+    
+    /* Mobile touch hint */
+    .tap-hint {
+      display: none;
+      text-align: center;
+      font-size: 0.75rem;
+      color: #6c757d;
+      padding: 6px;
+      background: rgba(0,0,0,0.03);
+      border-radius: 4px;
+      margin-bottom: 8px;
+    }
+    @media (pointer: coarse) {
+      .tap-hint { display: block; }
     }
     
     /* Tooltip */
@@ -228,30 +245,61 @@
     .controls {
       margin-top: clamp(0.5vh, 1.5vh, 1vh);
       display: flex;
-      gap: clamp(0.3rem, 1vw, 0.5rem);
+      gap: 8px;
       justify-content: center;
+      align-items: center;
+      width: 100%;
+      max-width: min(90vw, 700px);
     }
     select, button {
-      padding: clamp(0.3rem, 1vw, 0.5rem) clamp(0.6rem, 1.5vw, 0.8rem);
-      font-size: clamp(0.7rem, 1.8vw, 0.85rem);
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
       border: 1px solid #ccc;
       border-radius: 0.5rem;
       background-color: #fff;
       cursor: pointer;
       transition: all 0.2s ease-in-out;
+      min-height: 48px;
+    }
+    #prev-btn, #next-btn {
+      min-width: 56px;
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+    #progress-indicator {
+      flex: 1;
+      text-align: center;
+      font-size: 0.9rem;
     }
     button:hover, select:hover {
       border-color: #999;
       background-color: #f9f9f9;
     }
+    button:active {
+      transform: scale(0.97);
+    }
     .flip-button {
       width: 100%;
       background: #fff0dc;
       font-weight: 600;
-      font-size: clamp(0.85rem, 2.5vw, 1rem);
-      padding: clamp(0.5rem, 2vw, 0.75rem);
+      font-size: clamp(0.9rem, 2.5vw, 1rem);
+      padding: 0.75rem 1rem;
+      min-height: 56px;
+      border: 2px solid #ffd8a8;
     }
     .flip-button:hover { background: #ffe0c4; }
+    
+    /* Swipe hint */
+    .swipe-hint {
+      display: none;
+      text-align: center;
+      font-size: 0.75rem;
+      color: #6c757d;
+      margin-top: 4px;
+    }
+    @media (pointer: coarse) {
+      .swipe-hint { display: block; }
+    }
     
     /* Responsive adjustments */
     @media (max-height: 600px) {
@@ -260,10 +308,68 @@
       .card-content { padding: clamp(0.75rem, 2vw, 1rem); }
     }
     
-    @media (max-width: 480px) {
-      body { padding: 1vh 1vw; }
-      .card-container { height: 80vh; }
-      .controls { flex-direction: column; align-items: center; }
+    @media (max-width: 600px) {
+      body { padding: 1vh 2vw; gap: 1vh; }
+      .card-container { height: 72vh; }
+      
+      .controls { 
+        flex-direction: row; 
+        flex-wrap: nowrap;
+        padding: 0 4px;
+      }
+      #prev-btn, #next-btn {
+        min-width: 52px;
+        padding: 0.5rem;
+      }
+      #progress-indicator {
+        font-size: 0.8rem;
+        min-width: 0;
+      }
+      
+      .code-line {
+        padding: 0.5rem 0.75rem;
+        min-height: 40px;
+        font-size: 0.8rem;
+      }
+    }
+    
+    @media (max-width: 380px) {
+      .card-content { padding: 0.75rem; }
+      .flip-button { font-size: 0.85rem; min-height: 52px; }
+      #prev-btn, #next-btn { min-width: 48px; }
+    }
+    
+    /* Mobile tooltip - fixed at top */
+    @media (pointer: coarse) {
+      .tooltip {
+        position: fixed !important;
+        top: 8px !important;
+        left: 8px !important;
+        right: 8px !important;
+        max-width: none !important;
+        width: auto !important;
+        transform: none !important;
+        border-radius: 8px;
+        text-align: center;
+      }
+      .tooltip::before { display: none; }
+      .tooltip.show {
+        transform: none !important;
+      }
+    }
+    
+    /* Card swipe visual feedback */
+    .card.swiping-left {
+      transform: translateX(-20px) rotate(-2deg);
+    }
+    .card.swiping-right {
+      transform: translateX(20px) rotate(2deg);
+    }
+    .card.flipped.swiping-left {
+      transform: rotateY(180deg) translateX(-20px) rotate(-2deg);
+    }
+    .card.flipped.swiping-right {
+      transform: rotateY(180deg) translateX(20px) rotate(2deg);
     }
   </style>
 </head>
@@ -299,6 +405,7 @@
             <p class="error-type">Hover over each line to understand what it does</p>
           </div>
           <div class="card-body">
+            <div class="tap-hint">👆 Tap any line to see what it does</div>
             <div class="code-container">
               <div class="code-header">Python Code</div>
               <pre class="code-block" id="code-block"></pre>
@@ -319,12 +426,13 @@
   </div>
 
   <div class="controls">
-    <button id="prev-btn">Previous</button>
+    <button id="prev-btn" aria-label="Previous error">←</button>
     <select id="progress-indicator">
       <option>Error 1 of 44</option>
     </select>
-    <button id="next-btn">Next</button>
+    <button id="next-btn" aria-label="Next error">→</button>
   </div>
+  <div class="swipe-hint">← Swipe card to navigate →</div>
 
   <footer style="margin-top: clamp(0.5vh, 1vh, 0.75vh); text-align: center; font-size: 0.85rem; color: #6c757d; line-height: 1.3;">
     Created with ❤️ for budding programmers by <strong style="color: #1a1a1a;">Beyond Dictionary</strong>
@@ -1198,8 +1306,12 @@
           lineElement.dataset.purpose = line.purpose;
           lineElement.dataset.isError = line.isError;
           
+          // Mouse events for desktop
           lineElement.addEventListener('mouseenter', showTooltip);
           lineElement.addEventListener('mouseleave', hideTooltip);
+          
+          // Touch events for mobile
+          lineElement.addEventListener('touchstart', handleCodeTap, { passive: true });
           
           codeBlock.appendChild(lineElement);
           if (index < example.code.length - 1) {
@@ -1207,40 +1319,76 @@
           }
         });
       };
-
-      function showTooltip(event) {
-        const line = event.target;
+      
+      // Track active code line for mobile
+      let activeCodeLine = null;
+      let tooltipTimeout = null;
+      
+      function handleCodeTap(event) {
+        const line = event.target.closest('.code-line');
+        if (!line) return;
+        
+        // Clear previous active state
+        if (activeCodeLine && activeCodeLine !== line) {
+          activeCodeLine.classList.remove('active');
+        }
+        
+        // Toggle active state
+        if (activeCodeLine === line) {
+          line.classList.remove('active');
+          hideTooltip();
+          activeCodeLine = null;
+        } else {
+          line.classList.add('active');
+          activeCodeLine = line;
+          showTooltipForLine(line);
+          
+          // Auto-hide after 4 seconds
+          clearTimeout(tooltipTimeout);
+          tooltipTimeout = setTimeout(() => {
+            hideTooltip();
+            if (activeCodeLine) {
+              activeCodeLine.classList.remove('active');
+              activeCodeLine = null;
+            }
+          }, 4000);
+        }
+      }
+      
+      function showTooltipForLine(line) {
         const purpose = line.dataset.purpose;
         const isError = line.dataset.isError === 'true';
         
         tooltip.textContent = purpose;
         tooltip.className = `tooltip ${isError ? 'error' : 'good'}`;
         
-        const rect = line.getBoundingClientRect();
+        const isTouchDevice = window.matchMedia('(pointer: coarse)').matches;
         
-        // Smart positioning for responsive design
-        let left = rect.left;
-        let top = rect.top - tooltip.offsetHeight - 10;
-        
-        // Adjust horizontal position if tooltip goes off-screen
-        if (left + tooltip.offsetWidth > window.innerWidth) {
-          left = window.innerWidth - tooltip.offsetWidth - 10;
+        if (isTouchDevice) {
+          // Mobile: fixed position at top (handled by CSS)
+          tooltip.style.left = '';
+          tooltip.style.top = '';
+        } else {
+          // Desktop: position near line
+          const rect = line.getBoundingClientRect();
+          let left = rect.left;
+          let top = rect.top - tooltip.offsetHeight - 10;
+          
+          if (left + tooltip.offsetWidth > window.innerWidth) {
+            left = window.innerWidth - tooltip.offsetWidth - 10;
+          }
+          if (left < 10) left = 10;
+          if (top < 10) top = rect.bottom + 10;
+          
+          tooltip.style.left = left + 'px';
+          tooltip.style.top = top + 'px';
         }
-        if (left < 10) {
-          left = 10;
-        }
         
-        // Adjust vertical position if tooltip goes off-screen
-        if (top < 10) {
-          top = rect.bottom + 10;
-        }
-        
-        tooltip.style.left = left + 'px';
-        tooltip.style.top = top + 'px';
-        
-        setTimeout(() => {
-          tooltip.classList.add('show');
-        }, 50);
+        setTimeout(() => tooltip.classList.add('show'), 50);
+      }
+
+      function showTooltip(event) {
+        showTooltipForLine(event.target);
       }
 
       function hideTooltip() {
@@ -1260,25 +1408,99 @@
         cardElement.classList.toggle('flipped');
       };
 
+      // Navigation functions
+      const goNext = () => {
+        currentIndex = (currentIndex + 1) % errorExamples.length;
+        showCard(currentIndex);
+      };
+      
+      const goPrev = () => {
+        currentIndex = (currentIndex - 1 + errorExamples.length) % errorExamples.length;
+        showCard(currentIndex);
+      };
+
       // Event Listeners
       document.getElementById('flip-btn-front').addEventListener('click', flipCard);
       document.getElementById('flip-btn-back').addEventListener('click', flipCard);
-      document.getElementById('next-btn').addEventListener('click', () => {
-        currentIndex = (currentIndex + 1) % errorExamples.length;
-        showCard(currentIndex);
-      });
-      document.getElementById('prev-btn').addEventListener('click', () => {
-        currentIndex = (currentIndex - 1 + errorExamples.length) % errorExamples.length;
-        showCard(currentIndex);
-      });
+      document.getElementById('next-btn').addEventListener('click', goNext);
+      document.getElementById('prev-btn').addEventListener('click', goPrev);
+      
       document.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowLeft') document.getElementById('prev-btn').click();
-        if (e.key === 'ArrowRight') document.getElementById('next-btn').click();
+        if (e.key === 'ArrowLeft') goPrev();
+        if (e.key === 'ArrowRight') goNext();
         if (e.key === ' ' || e.key === 'Enter') {
           e.preventDefault();
           flipCard();
         }
       });
+      
+      // ===== SWIPE GESTURE NAVIGATION =====
+      let touchStartX = 0;
+      let touchStartY = 0;
+      let touchEndX = 0;
+      let touchEndY = 0;
+      const minSwipeDistance = 50;
+      
+      const cardContainer = document.querySelector('.card-container');
+      
+      cardContainer.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+        touchStartY = e.changedTouches[0].screenY;
+      }, { passive: true });
+      
+      cardContainer.addEventListener('touchmove', (e) => {
+        const currentX = e.changedTouches[0].screenX;
+        const currentY = e.changedTouches[0].screenY;
+        const diffX = currentX - touchStartX;
+        const diffY = Math.abs(currentY - touchStartY);
+        
+        // Only show swipe feedback if horizontal movement is dominant
+        if (Math.abs(diffX) > 20 && diffY < 50) {
+          cardElement.classList.remove('swiping-left', 'swiping-right');
+          if (diffX < -20) {
+            cardElement.classList.add('swiping-left');
+          } else if (diffX > 20) {
+            cardElement.classList.add('swiping-right');
+          }
+        }
+      }, { passive: true });
+      
+      cardContainer.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        touchEndY = e.changedTouches[0].screenY;
+        
+        // Remove visual feedback
+        cardElement.classList.remove('swiping-left', 'swiping-right');
+        
+        handleSwipe();
+      }, { passive: true });
+      
+      function handleSwipe() {
+        const diffX = touchEndX - touchStartX;
+        const diffY = Math.abs(touchEndY - touchStartY);
+        
+        // Only trigger swipe if horizontal movement is dominant
+        if (Math.abs(diffX) > minSwipeDistance && diffY < 100) {
+          if (diffX < 0) {
+            // Swipe left → next
+            goNext();
+          } else {
+            // Swipe right → previous
+            goPrev();
+          }
+        }
+      }
+      
+      // Hide tooltip when tapping outside code block
+      document.addEventListener('touchstart', (e) => {
+        if (!e.target.closest('.code-block') && !e.target.closest('.tooltip')) {
+          hideTooltip();
+          if (activeCodeLine) {
+            activeCodeLine.classList.remove('active');
+            activeCodeLine = null;
+          }
+        }
+      }, { passive: true });
       
       // Initial Load
       showCard(currentIndex);

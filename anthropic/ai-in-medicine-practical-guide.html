@@ -9,15 +9,79 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* --- General Styles --- */
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f8fafc;
+        /* --- CSS Variables --- */
+        :root {
+            --text: #374151;
+            --text-dark: #111827;
+            --bg: #fff;
+            --bg-light: #f8fafc;
+            --muted: #f8f9fa;
+            --border: #e5e7eb;
+            --accent: #3b82f6;
+            --accent-dark: #2563eb;
+            --gray-dark: #1f2937;
+            --gray-medium: #6c757d;
+            --gray-light: #9ca3af;
         }
-        .prose-custom { color: #374151; }
-        .prose-custom h1, .prose-custom h2, .prose-custom h3 { color: #111827; }
+        
+        /* --- Base Styles --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { 
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-light);
+            line-height: 1.7;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+        body { 
+            font-size: clamp(0.95rem, 2vw, 1rem);
+        }
+        
+        /* --- Container --- */
+        .container {
+            max-width: 1080px;
+            margin: auto;
+            padding: 24px;
+        }
+        
+        /* Remove top padding from main container since we have sticky header */
+        .container.mx-auto.px-4 {
+            padding-top: 2rem !important;
+        }
+        
+        /* --- Typography --- */
+        h1 {
+            font-size: clamp(2rem, 5vw, 2.5rem);
+            line-height: 1.2;
+            color: var(--text-dark);
+        }
+        h2 {
+            font-size: clamp(1.5rem, 4vw, 2rem);
+            color: var(--text-dark);
+        }
+        h3 {
+            font-size: clamp(1.2rem, 3vw, 1.5rem);
+            color: var(--text-dark);
+        }
+        h4 {
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
+            color: var(--text-dark);
+        }
+        p {
+            line-height: 1.75;
+            margin-bottom: 1rem;
+        }
+        
+        /* --- Prose Custom --- */
+        .prose-custom { color: var(--text); }
+        .prose-custom h1, .prose-custom h2, .prose-custom h3 { color: var(--text-dark); }
         .prose-custom p, .prose-custom li { line-height: 1.75; }
         .prose-custom ul { list-style-position: outside; padding-left: 1.5rem; }
+        
+        /* --- Scroll offset for sticky header --- */
+        section[id] {
+            scroll-margin-top: 80px;
+        }
 
         /* --- Brain SVG Hotspot Styles --- */
         .svg-hotspot {
@@ -35,16 +99,16 @@
         
         /* --- General Tooltip Style (Base for both SVGs) --- */
         .tooltip {
-            position: fixed; /* Use fixed for positioning relative to viewport */
+            position: fixed;
             display: none;
             padding: 12px 16px;
-            background-color: #1f2937;
+            background-color: var(--gray-dark);
             color: white;
             border-radius: 8px;
-            font-size: 14px;
+            font-size: clamp(0.85rem, 2vw, 0.95rem);
             line-height: 1.5;
             pointer-events: none;
-            max-width: 280px;
+            max-width: min(92vw, 280px);
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
             z-index: 100;
             opacity: 0;
@@ -58,21 +122,46 @@
             font-weight: 600;
             margin-bottom: 4px;
             color: #60a5fa;
+            font-size: clamp(0.9rem, 2.5vw, 1rem);
         }
         .tooltip-section-title {
             font-weight: 500;
-            color: #9ca3af;
+            color: var(--gray-light);
             margin-top: 0.75rem;
             margin-bottom: 0.25rem;
-            font-size: 12px;
+            font-size: clamp(0.75rem, 2vw, 0.85rem);
         }
         .tooltip ul { list-style-position: inside; padding-left: 0; margin: 0; }
 
         /* --- Before/After Slider Styles --- */
         .comparison-slider { position: relative; width: 100%; overflow: hidden; border-radius: 0.5rem; }
         .comparison-slider .comparison-item { position: absolute; top: 0; left: 0; height: 100%; overflow: hidden; width: 50%; }
-        .comparison-slider .handle { position: absolute; top: 0; left: 50%; width: 4px; height: 100%; background-color: rgba(255, 255, 255, 0.9); cursor: ew-resize; transform: translateX(-50%); z-index: 40; display: flex; align-items: center; justify-content: center; }
-        .comparison-slider .handle-icon { width: 40px; height: 40px; background-color: rgba(255, 255, 255, 0.95); border: 2px solid #e5e7eb; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1); }
+        .comparison-slider .handle { 
+            position: absolute; 
+            top: 0; 
+            left: 50%; 
+            width: 4px; 
+            height: 100%; 
+            background-color: rgba(255, 255, 255, 0.9); 
+            cursor: ew-resize; 
+            transform: translateX(-50%); 
+            z-index: 40; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            touch-action: none;
+        }
+        .comparison-slider .handle-icon { 
+            width: 48px; 
+            height: 48px; 
+            background-color: rgba(255, 255, 255, 0.95); 
+            border: 2px solid #e5e7eb; 
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        }
    
         /* --- Interactive Workbench SVG Styles --- */
         .interactive-svg-container { background-color: #282828; border-radius: 12px; padding: 1rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -2px rgba(0,0,0,.1); }
@@ -82,9 +171,307 @@
         .workbench-svg .sidebar-text:hover { fill: #ffffff; }
         .workbench-svg .sidebar-active-text { fill: #ffffff; font-weight: 500; }
         .workbench-svg .run-button:hover rect { filter: brightness(1.1); }
+        
+        /* ================= Header / Navigation ================= */
+        .site-header {
+            background: var(--gray-dark);
+            color: #f8f9fa;
+            padding: 14px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .logo {
+            font-weight: 700;
+            font-size: 1.15rem;
+            color: #fff;
+            text-decoration: none;
+        }
+        
+        .site-nav {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .site-nav a {
+            color: #ced4da;
+            text-decoration: none;
+            padding: 6px 10px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+        
+        .site-nav a:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .hamburger {
+            display: none;
+            background: none;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            color: #fff;
+            border-radius: 8px;
+            padding: 8px 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            line-height: 1;
+            transition: background 0.2s;
+            min-width: 44px;
+            min-height: 44px;
+        }
+        
+        .hamburger:hover,
+        .hamburger[aria-expanded="true"] {
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        /* ================= FAQ & Accordion Touch Targets ================= */
+        .bg-white.rounded-lg button[onclick^="toggleFAQ"] {
+            min-height: 44px;
+            font-size: clamp(0.95rem, 2.5vw, 1rem);
+        }
+        
+        .bg-white.rounded-lg button[onclick^="toggleFAQ"] span[id^="faq-icon"] {
+            font-size: 1.5rem;
+            min-width: 24px;
+            flex-shrink: 0;
+        }
+        
+        /* ================= MOBILE RESPONSIVE STYLES ================= */
+        
+        /* --- Tablet & Small Desktop (768px) --- */
+        @media (max-width: 768px) {
+            /* Header mobile layout */
+            .site-header {
+                flex-wrap: nowrap;
+                padding: 14px 20px;
+            }
+            
+            .logo {
+                flex: 0 0 auto;
+            }
+            
+            .hamburger {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                margin-left: auto;
+            }
+            
+            .site-nav {
+                display: none;
+                position: absolute;
+                top: 100%;
+                right: 16px;
+                flex-direction: column;
+                gap: 0;
+                background: var(--gray-dark);
+                padding: 8px 0;
+                border-radius: 8px;
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+                min-width: 200px;
+            }
+            
+            .site-nav.open {
+                display: flex;
+            }
+            
+            .site-nav a {
+                display: block;
+                padding: 10px 18px;
+                color: #f8f9fa;
+                white-space: nowrap;
+            }
+            
+            .site-nav a + a {
+                border-top: 1px solid rgba(255, 255, 255, 0.15);
+            }
+            
+            .container {
+                padding: 20px;
+            }
+            
+            /* Stack chat interface on mobile */
+            .flex.h-96 {
+                flex-direction: column !important;
+                height: auto !important;
+            }
+            
+            .flex.h-96 > div {
+                width: 100% !important;
+                border-right: none !important;
+                border-bottom: 1px solid var(--border);
+            }
+            
+            .flex.h-96 > div:last-child {
+                border-bottom: none;
+            }
+            
+            /* Comparison slider height adjustment */
+            #slider-container {
+                height: 380px !important;
+            }
+            
+            /* Brain SVG container */
+            .mt-6.bg-white {
+                padding: 1rem;
+            }
+        }
+        
+        /* --- Mobile (600px) --- */
+        @media (max-width: 600px) {
+            .container {
+                padding: 16px;
+            }
+            
+            h1 {
+                font-size: clamp(1.8rem, 6vw, 2.2rem);
+            }
+            
+            /* Table of Contents - Stack cards */
+            .grid.md\\:grid-cols-3 {
+                grid-template-columns: 1fr !important;
+                gap: 1rem !important;
+            }
+            
+            /* Glossary - Stack cards */
+            .grid.md\\:grid-cols-2 {
+                grid-template-columns: 1fr !important;
+                gap: 1rem !important;
+            }
+            
+            /* FAQ buttons - Ensure touch targets */
+            .accordion button,
+            button[onclick^="toggleFAQ"] {
+                min-height: 48px;
+                padding: 14px 18px;
+                font-size: clamp(0.95rem, 2.5vw, 1rem);
+            }
+            
+            /* FAQ content text - Better readability */
+            .bg-white.rounded-lg .px-6.pb-4 {
+                font-size: clamp(0.9rem, 2.5vw, 1rem);
+                line-height: 1.7;
+            }
+            
+            /* Copy button - Touch friendly */
+            #copy-button {
+                min-height: 44px;
+                padding: 12px 18px;
+                font-size: clamp(0.9rem, 2.5vw, 1rem);
+            }
+            
+            /* Comparison slider height for smaller screens */
+            #slider-container {
+                height: 320px !important;
+            }
+            
+            /* Chat interface spacing */
+            .flex.h-96 .p-4 {
+                padding: 1rem !important;
+            }
+        }
+        
+        /* --- Small Mobile (480px) --- */
+        @media (max-width: 480px) {
+            .container {
+                padding: 14px;
+            }
+            
+            /* Reduce vertical wasteland - header spacing */
+            header.text-center {
+                margin-bottom: 2rem !important;
+            }
+            
+            /* Section spacing */
+            section.mb-16 {
+                margin-bottom: 2.5rem !important;
+            }
+            
+            section.mb-12 {
+                margin-bottom: 2rem !important;
+            }
+            
+            /* Comparison slider - More compact */
+            #slider-container {
+                height: 280px !important;
+            }
+            
+            /* Brain SVG - More compact */
+            #brain-svg {
+                max-width: 200px;
+            }
+            
+            /* Cards - More compact padding */
+            .bg-white.p-6 {
+                padding: 1rem !important;
+            }
+            
+            /* Interactive elements spacing */
+            .p-6.h-full {
+                padding: 0.875rem !important;
+            }
+            
+            /* TOC cards - Better spacing on small screens */
+            .grid.md\\:grid-cols-3 > div {
+                padding: 1rem !important;
+            }
+            
+            /* Reduce excessive top padding on page */
+            .py-8, .md\\:py-16 {
+                padding-top: 1.5rem !important;
+                padding-bottom: 1.5rem !important;
+            }
+        }
+        
+        /* ================= Additional Mobile Optimizations ================= */
+        
+        /* Ensure all cards have proper display on mobile */
+        @media (max-width: 768px) {
+            .bg-white.p-6.rounded-lg {
+                min-height: auto;
+                display: flex;
+                flex-direction: column;
+            }
+            
+            /* Ensure text remains readable in cards */
+            .bg-white.p-6.rounded-lg p {
+                font-size: clamp(0.9rem, 2.5vw, 1rem);
+                line-height: 1.65;
+            }
+            
+            .bg-white.p-6.rounded-lg h3 {
+                font-size: clamp(1.1rem, 3vw, 1.3rem);
+                margin-bottom: 0.75rem;
+            }
+        }
     </style>
 </head>
 <body class="text-gray-700">
+
+    <!-- Site Header -->
+    <header class="site-header">
+        <a href="#" class="logo">Beyond Dictionary</a>
+        <button class="hamburger" id="hamburger-btn" aria-expanded="false" aria-label="Toggle navigation">
+            ☰
+        </button>
+        <nav class="site-nav" id="site-nav">
+            <a href="#part1">Case Study</a>
+            <a href="#part2">LLM Technology</a>
+            <a href="#part3">Claude in Practice</a>
+            <a href="#glossary">Glossary</a>
+            <a href="#faq">FAQ</a>
+        </nav>
+    </header>
 
     <!-- Tooltip for Brain SVG -->
     <div id="brain-tooltip" class="tooltip"></div>
@@ -119,14 +506,14 @@
             </section>
 
             <!-- Section 1: The Case -->
-            <section class="mb-16 prose-custom">
+            <section id="part1" class="mb-16 prose-custom">
                 <h2 class="text-3xl font-bold mb-4 border-b pb-2">Part 1: The Case Presentation</h2>
                 <p class="intro mb-6">We begin with a realistic clinical scenario: a 68-year-old patient presenting with cognitive decline. This case demonstrates how AI can help clinicians process complex patient information more efficiently. We'll explore the brain regions involved and see how technology can transform raw clinical notes into structured, actionable summaries.</p>
                 <p>A 68-year-old male presents with a 3-month history of progressive word-finding difficulties and intermittent confusion. His family reports recent episodes of getting lost in familiar places and difficulty managing his finances. His past medical history is significant for hypertension and hyperlipidemia, both well-controlled on medication. He has no history of stroke or traumatic brain injury.</p>
-                <div class="mt-6 bg-white rounded-lg shadow-md border border-gray-200 flex justify-center items-center py-4">
+                <div class="mt-6 bg-white rounded-lg shadow-md border border-gray-200 flex justify-center items-center py-6" style="min-height: 200px;">
                     <svg 
                       id="brain-svg" 
-                      class="w-64 h-auto" 
+                      style="max-width: min(280px, 90vw); height: auto;" 
                       viewBox="20 35 135 120" 
                       xmlns="http://www.w3.org/2000/svg"
                     >
@@ -139,12 +526,15 @@
                       </g>
                     </svg>
                   </div>
-                  <p class="text-center text-sm text-gray-500 mt-2">Hover over regions for details.</p>
+                  <p class="text-center text-sm text-gray-500 mt-2" style="font-size: clamp(0.85rem, 2vw, 0.95rem);">
+                    <span class="hidden md:inline">Hover over regions for details.</span>
+                    <span class="inline md:hidden">Tap regions to see details.</span>
+                  </p>
                   
             </section>
 
             <!-- Section 2: Leveraging LLM Technology -->
-            <section class="mb-16 prose-custom">
+            <section id="part2" class="mb-16 prose-custom">
                 <h2 class="text-3xl font-bold mb-4 border-b pb-2">Part 2: How LLM Technology Can Assist</h2>
                 <p class="intro mb-6">Large Language Models (LLMs) are powerful tools that can parse, summarize, and structure vast amounts of text. In a clinical setting, this can significantly reduce administrative burden and highlight key information from lengthy patient notes. An LLM can take a narrative HPI (History of Present Illness) and structure it into a concise, organized summary, making it easier for consulting physicians to quickly grasp the case.</p>
                 <div id="slider-container" class="comparison-slider mt-6 bg-white border" style="height: 450px;">
@@ -174,7 +564,7 @@
             </section>
 
             <!-- Section 3: How a Clinician Uses Claude in Practice -->
-            <section class="prose-custom">
+            <section id="part3" class="prose-custom">
                 <h2 class="text-3xl font-bold mb-4 border-b pb-2">Part 3: How a Clinician Uses Claude in Practice</h2>
                 <p class="intro mb-6">So, how do we get from the raw note to the structured summary? This is done using Claude's chat interface, which works just like having a conversation with a knowledgeable colleague. The interface below shows exactly how a doctor would interact with Claude to transform their notes.</p>
                 
@@ -188,9 +578,9 @@
                         </div>
                     </div>
                     
-                    <div class="flex h-96">
+                    <div class="flex h-96" style="min-height: 24rem;">
                         <!-- Left Side: Doctor's Input -->
-                        <div class="w-1/2 border-r border-gray-200 bg-blue-50">
+                        <div class="w-1/2 border-r border-gray-200 bg-blue-50" style="min-height: 200px;">
                             <div class="p-4 h-full flex flex-col">
                                 <div class="flex items-center mb-3">
                                     <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-semibold">Dr</div>
@@ -207,7 +597,7 @@
                         </div>
                         
                         <!-- Right Side: Claude's Response -->
-                        <div class="w-1/2 bg-green-50">
+                        <div class="w-1/2 bg-green-50" style="min-height: 200px;">
                             <div class="p-4 h-full flex flex-col">
                                 <div class="flex items-center mb-3">
                                     <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-sm font-semibold">C</div>
@@ -239,7 +629,7 @@
                             <div class="flex items-center space-x-4">
                                 <span class="text-sm text-gray-600">Ready to copy to EMR</span>
                             </div>
-                            <button class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors" id="copy-button">
+                            <button class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors" id="copy-button" style="min-height: 44px; font-size: clamp(0.9rem, 2.5vw, 1rem);">
                                 📋 Copy to EMR
                             </button>
                         </div>
@@ -268,7 +658,7 @@
             </section>
             <br>
             <!-- Glossary Section -->
-            <section class="mb-16 prose-custom">
+            <section id="glossary" class="mb-16 prose-custom">
                 <h2 class="text-3xl font-bold mb-6 border-b pb-2">📚 Glossary: HealthTech & Generative AI Terms</h2>
                 <p class="intro mb-6">Understanding these key terms will help you navigate the intersection of healthcare technology and artificial intelligence with confidence.</p>
                 
@@ -326,16 +716,16 @@
             </section>
 
             <!-- FAQ Section -->
-            <section class="mb-16 prose-custom">
+            <section id="faq" class="mb-16 prose-custom">
                 <h2 class="text-3xl font-bold mb-6 border-b pb-2">❓ Frequently Asked Questions</h2>
                 <p class="intro mb-6">Common questions about using AI in clinical practice, answered in practical terms.</p>
                 
                 <div class="space-y-4" id="faq-accordion">
                     <div class="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
-                        <button class="w-full px-6 py-4 text-left font-semibold text-gray-800 hover:bg-gray-50 focus:outline-none focus:bg-gray-50 transition-colors" onclick="toggleFAQ(1)">
+                        <button class="w-full px-6 py-4 text-left font-semibold text-gray-800 hover:bg-gray-50 focus:outline-none focus:bg-gray-50 transition-colors" onclick="toggleFAQ(1)" style="min-height: 44px; font-size: clamp(0.95rem, 2.5vw, 1rem);">
                             <div class="flex justify-between items-center">
                                 <span>How do I know if an AI-generated note is accurate?</span>
-                                <span class="text-gray-500 transform transition-transform" id="faq-icon-1">+</span>
+                                <span class="text-gray-500 transform transition-transform" id="faq-icon-1" style="font-size: 1.5rem; min-width: 24px;">+</span>
                             </div>
                         </button>
                         <div class="hidden px-6 pb-4 text-gray-600" id="faq-content-1">
@@ -490,6 +880,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     brainHotspots.forEach(hotspot => {
+        // Mouse events for desktop
         hotspot.addEventListener('mouseenter', (e) => {
             const content = brainTooltipContent[hotspot.id];
             if (content) {
@@ -506,6 +897,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 updateTooltipPosition(e, brainTooltip);
             }
         });
+        
+        // Touch events for mobile
+        hotspot.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            const content = brainTooltipContent[hotspot.id];
+            if (content) {
+                brainTooltip.innerHTML = `<div class="tooltip-title">${content.title}</div><p>${content.text}</p>`;
+                brainTooltip.classList.add('visible');
+                const touch = e.touches[0];
+                updateTooltipPosition({ clientX: touch.clientX, clientY: touch.clientY }, brainTooltip);
+            }
+        }, { passive: false });
+        
+        hotspot.addEventListener('touchend', () => {
+            setTimeout(() => {
+                brainTooltip.classList.remove('visible');
+            }, 2000); // Keep visible for 2 seconds on mobile
+        });
     });
     
     // --- Chat Interface Tooltip Logic ---
@@ -518,6 +927,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     chatInterfaceElements.forEach(el => {
+        // Mouse events for desktop
         el.addEventListener('mouseenter', (e) => {
             const content = chatTooltipsContent[el.id];
             if (content) {
@@ -534,6 +944,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 updateTooltipPosition(e, workbenchTooltip);
             }
         });
+        
+        // Touch events for mobile (except for the copy button which should just copy)
+        if (el.id !== 'copy-button') {
+            el.addEventListener('touchstart', (e) => {
+                const content = chatTooltipsContent[el.id];
+                if (content) {
+                    workbenchTooltip.innerHTML = `<div class="tooltip-title">${content.title}</div><div class="tooltip-section-title">What it is</div><p>${content.whatItIs}</p><div class="tooltip-section-title">How it helps</div><p>${content.impact}</p>`;
+                    workbenchTooltip.classList.add('visible');
+                    const touch = e.touches[0];
+                    updateTooltipPosition({ clientX: touch.clientX, clientY: touch.clientY }, workbenchTooltip);
+                    
+                    setTimeout(() => {
+                        workbenchTooltip.classList.remove('visible');
+                    }, 2500);
+                }
+            }, { passive: true });
+        }
     });
 
     // --- Copy Button Functionality ---
@@ -597,6 +1024,34 @@ Assessment: Cognitive decline concerning for possible dementia. Recommend furthe
         document.addEventListener('touchmove', onDrag);
     }
 });
+
+// Hamburger Menu Functionality
+const hamburgerBtn = document.getElementById('hamburger-btn');
+const siteNav = document.getElementById('site-nav');
+
+if (hamburgerBtn && siteNav) {
+    hamburgerBtn.addEventListener('click', () => {
+        const isExpanded = hamburgerBtn.getAttribute('aria-expanded') === 'true';
+        hamburgerBtn.setAttribute('aria-expanded', !isExpanded);
+        siteNav.classList.toggle('open');
+    });
+    
+    // Close menu when clicking a nav link
+    siteNav.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+            hamburgerBtn.setAttribute('aria-expanded', 'false');
+            siteNav.classList.remove('open');
+        });
+    });
+    
+    // Close menu when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!hamburgerBtn.contains(e.target) && !siteNav.contains(e.target)) {
+            hamburgerBtn.setAttribute('aria-expanded', 'false');
+            siteNav.classList.remove('open');
+        }
+    });
+}
 
 // FAQ Accordion Functionality
 function toggleFAQ(faqNumber) {

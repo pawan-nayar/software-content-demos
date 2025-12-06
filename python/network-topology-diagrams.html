@@ -19,7 +19,7 @@
       --device:#4dabf7; --connection:#6b7280; --hub:#16a34a; --server:#8b5cf6;
     }
     *{box-sizing:border-box;margin:0;padding:0}
-    html,body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.6; font-size: 15px;}
+    html,body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.6; font-size: 15px; overflow-x: hidden;}
     .container{max-width:800px;margin:auto;padding:16px;background:#fff}
     a{color:var(--accent);text-decoration:none}
     a:hover{text-decoration:underline}
@@ -29,9 +29,47 @@
     .site-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;position:sticky;top:0;z-index:60}
     .logo{font-weight:700;font-size:1.1rem;color:#fff}
     .site-header nav{display:flex;gap:12px; font-size: 0.9rem;}
-    .site-header nav a{color:#ced4da}
+    .site-header nav a{color:#ced4da; min-height: 44px; display: flex; align-items: center;}
     .site-header nav a:hover{color:#fff}
     .site-footer{text-align:center;margin-top:40px;padding:30px}
+    
+    /* Hamburger Menu */
+    .hamburger-btn {
+      display: none;
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 8px;
+      min-width: 48px;
+      min-height: 48px;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    @media (max-width: 600px) {
+      .hamburger-btn { display: flex; }
+      .site-header nav {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: var(--header-bg);
+        flex-direction: column;
+        padding: 0.5rem 1rem 1rem;
+        gap: 0;
+        border-top: 1px solid rgba(255,255,255,0.1);
+      }
+      .site-header nav.open { display: flex; }
+      .site-header nav a {
+        padding: 0.75rem 0;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        min-height: 48px;
+      }
+      .site-header nav a:last-child { border-bottom: none; }
+    }
     .breadcrumbs{margin-bottom:16px;font-size:0.85rem;color:#6c757d}
     .breadcrumbs a{color:var(--accent)}
 
@@ -49,7 +87,7 @@
     .img-frame img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover}
     .img-tooltip{position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,0.8);color:#fff;padding:6px 10px;border-radius:4px;font-size:0.8rem;opacity:0;visibility:hidden;transition:all 0.3s ease;pointer-events:none;z-index:10}
     .img-frame:hover .img-tooltip{opacity:1;visibility:visible}
-    .btn{background:var(--accent);color:#fff;border:none;padding:8px 12px;border-radius:6px;font-weight:600;cursor:pointer; transition: background-color 0.2s ease; font-size:0.9rem;}
+    .btn{background:var(--accent);color:#fff;border:none;padding:8px 12px;border-radius:6px;font-weight:600;cursor:pointer; transition: background-color 0.2s ease; font-size:0.9rem; min-height:48px; min-width:48px; display:inline-flex; align-items:center; justify-content:center;}
     .btn:hover { background-color: var(--accent-2); }
     .btn:disabled { background-color: #ced4da; cursor: not-allowed; }
     
@@ -58,12 +96,21 @@
 
     /* --- Network Topology SVG Styles --- */
     .topology-container{display:flex;flex-direction:column;gap:16px;margin:24px 0}
-    .topology-selector{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:20px}
-    .topology-btn{background:var(--muted);border:2px solid var(--border);padding:10px 16px;border-radius:8px;cursor:pointer;font-weight:600;transition:all 0.3s ease;color:var(--text)}
+    .topology-selector{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:20px}
+    .topology-btn{background:var(--muted);border:2px solid var(--border);padding:10px 16px;border-radius:8px;cursor:pointer;font-weight:600;transition:all 0.3s ease;color:var(--text); min-height:48px; font-size:0.9rem;}
     .topology-btn:hover{border-color:var(--accent);background:#fff7ed}
     .topology-btn.active{background:var(--accent);color:#fff;border-color:var(--accent-2)}
     .topology-display{background:#fff;border:1px solid var(--border);border-radius:12px;padding:20px;min-height:400px;position:relative}
     .topology-svg{width:100%;height:380px;display:block;margin:auto}
+    
+    @media (max-width: 600px) {
+      .topology-selector { gap: 6px; }
+      .topology-btn { padding: 8px 12px; font-size: 0.8rem; flex: 1 1 auto; min-width: 80px; text-align: center; }
+      .topology-display { padding: 12px; min-height: 320px; }
+      .topology-svg { height: 280px; }
+      .topology-info { padding: 10px; font-size: 0.9rem; }
+      .topology-info h4 { font-size: 1rem; }
+    }
     .hotspot{cursor:pointer;outline:none}
     .hotspot:focus .halo,.hotspot:hover .halo{stroke:var(--accent);stroke-width:2;fill:transparent}
     .halo{stroke:transparent;stroke-width:2;fill:transparent}
@@ -101,43 +148,108 @@
 
     /* === Quiz Styles === */
     .quiz-container{padding:20px;border:2px solid var(--border);border-radius:12px;background:#fff}
-    .quiz-navigation{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border)}
+    .quiz-navigation{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border); gap: 1rem;}
     .quiz-body{display:none;}
     .quiz-body.active{display:block}
     .quiz-options{display:grid; gap:12px;}
-    .quiz-option label{display:flex; align-items:center; gap:12px; padding:14px;border:2px solid var(--border);border-radius:8px;cursor:pointer;background:#f8f9fa}
-    .quiz-option input[type="radio"]{flex-shrink:0;}
+    .quiz-option label{display:flex; align-items:center; gap:12px; padding:14px;border:2px solid var(--border);border-radius:8px;cursor:pointer;background:#f8f9fa; min-height:56px;}
+    .quiz-option input[type="radio"]{flex-shrink:0; width:20px; height:20px;}
     .quiz-option .explanation{display:none;margin-top:10px;padding:15px;border-radius:6px;border-left:4px solid #a0aec0}
     .quiz-option.selected.correct label{background:var(--ok-soft);border-color:var(--ok)}
     .quiz-option.selected.wrong label{background:var(--bad-soft);border-color:var(--bad)}
     .quiz-option.correct .explanation{border-left-color:var(--ok);background:#f0fff4}
     .quiz-option.wrong .explanation{border-left-color:var(--bad);background:#fff5f5}
+    .question-counter { white-space: nowrap; font-weight: 600; }
+    
+    @media (max-width: 600px) {
+      .quiz-container { padding: 12px; }
+      .quiz-navigation { padding-bottom: 12px; margin-bottom: 12px; }
+      .quiz-option label { padding: 12px; font-size: 0.9rem; }
+      .quiz-option .explanation { padding: 12px; font-size: 0.9rem; }
+    }
 
     /* === FAQ Styles === */
     .accordion{display:grid;gap:8px}
-    .accordion-header{width:100%;text-align:left;background:var(--muted);border:1px solid var(--border);padding:16px 20px;border-radius:8px;cursor:pointer;font-size:1.1rem;font-weight:bold;display:flex;align-items:center}
+    .accordion-header{width:100%;text-align:left;background:var(--muted);border:1px solid var(--border);padding:16px 20px;border-radius:8px;cursor:pointer;font-size:1rem;font-weight:bold;display:flex;align-items:center; min-height:56px;}
     .accordion-header .accordion-title { margin-right: auto; padding-right: 1rem; }
-    .accordion-header::after{content:'+';color:#6c757d}
+    .accordion-header::after{content:'+';color:#6c757d; font-size: 1.25rem;}
     .accordion-header[aria-expanded="true"]{background:#e9ecef;border-bottom-left-radius:0;border-bottom-right-radius:0}
     .accordion-header[aria-expanded="true"]::after{content:'−'}
     .accordion-content{padding:20px;display:none;border:1px solid var(--border);border-top:none;border-radius:0 0 8px 8px}
+    
+    @media (max-width: 600px) {
+      .accordion-header { padding: 12px 16px; font-size: 0.9rem; }
+      .accordion-content { padding: 12px 16px; font-size: 0.9rem; }
+    }
 
     /* === Glossary Styles === */
-    .glossary-cloud{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px;justify-content:center}
-    .glossary-chip{position:relative;display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:999px;background:#fff7ed;border:1px solid #ffd8a8;color:#d9480f;font-weight:600;cursor:help;box-shadow:0 2px 6px rgba(253,126,20,.12);transition:all 0.2s ease}
+    .glossary-cloud{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px;justify-content:center}
+    .glossary-chip{position:relative;display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:999px;background:#fff7ed;border:1px solid #ffd8a8;color:#d9480f;font-weight:600;cursor:help;box-shadow:0 2px 6px rgba(253,126,20,.12);transition:all 0.2s ease; min-height:48px; font-size:0.9rem;}
     .glossary-chip:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(253,126,20,.2)}
     .glossary-chip:focus{outline:3px solid rgba(253,126,20,.35)}
     .chip-tip{position:fixed;z-index:80;min-width:240px;max-width:min(92vw,420px);background:var(--accent);color:#fff;padding:12px 14px;border-radius:12px;box-shadow:0 12px 28px rgba(253,126,20,.35);opacity:0;visibility:hidden;transition:.15s;line-height:1.45}
     .chip-tip.show{opacity:1;visibility:visible}
     .chip-tip .arrow{position:absolute;width:12px;height:12px;background:var(--accent);transform:rotate(45deg)}
     .glossary-hint{text-align:center;margin-top:12px;padding:8px;background:var(--muted);border-radius:6px;font-size:0.9rem;color:#6c757d;border-top:2px solid var(--accent)}
+    
+    @media (max-width: 600px) {
+      .glossary-cloud { gap: 8px; }
+      .glossary-chip { padding: 8px 12px; font-size: 0.8rem; }
+    }
+    
+    /* === Mobile Table → Cards === */
+    .comparison-table { display: block; }
+    .mobile-comparison-cards { display: none; }
+    
+    @media (max-width: 600px) {
+      .comparison-table { display: none !important; }
+      .mobile-comparison-cards { display: grid; gap: 12px; }
+      .topology-card {
+        background: var(--muted);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 14px;
+        border-left: 4px solid var(--accent);
+      }
+      .topology-card h4 {
+        margin: 0 0 8px 0;
+        font-size: 1rem;
+        color: var(--text);
+      }
+      .topology-card .stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px 12px;
+        font-size: 0.85rem;
+      }
+      .topology-card .stat-item {
+        display: flex;
+        justify-content: space-between;
+      }
+      .topology-card .stat-label { color: #6c757d; }
+      .topology-card .stat-value { font-weight: 600; color: var(--text); }
+    }
+    
+    /* === General Mobile Polish === */
+    @media (max-width: 600px) {
+      .container { padding: 12px; }
+      h1 { font-size: 1.5rem; }
+      h2 { font-size: 1.25rem; margin-top: 24px; }
+      h3 { font-size: 1.1rem; }
+      .intro { padding: 12px; font-size: 0.9rem; }
+      .byline { font-size: 0.95rem; }
+      .breadcrumbs { font-size: 0.8rem; margin-bottom: 12px; }
+      .img-frame { margin: 12px 0; }
+      .interactive-box { padding: 12px; }
+    }
   </style>
 </head>
 <body>
 
   <header class="site-header">
       <a href="#" class="logo">Beyond Dictionary</a>
-      <nav><a href="#">What's New</a><a href="#">Learning</a><a href="#">Games & Quizzes</a><a href="#">Blog</a></nav>
+      <button class="hamburger-btn" id="hamburgerBtn" aria-label="Toggle menu">☰</button>
+      <nav id="mainNav"><a href="#">What's New</a><a href="#">Learning</a><a href="#">Games & Quizzes</a><a href="#">Blog</a></nav>
   </header>
 
   <div class="container">
@@ -192,7 +304,8 @@
         
         <h3>Key Characteristics Comparison</h3>
         <div class="interactive-box">
-            <table style="width:100%;border-collapse:collapse;font-size:0.9rem">
+            <!-- Desktop Table -->
+            <table class="comparison-table" style="width:100%;border-collapse:collapse;font-size:0.9rem">
                 <thead>
                     <tr style="background:var(--header-bg);color:#fff">
                         <th style="padding:12px;border:1px solid var(--border);text-align:left">Topology</th>
@@ -240,6 +353,55 @@
                     </tr>
                 </tbody>
             </table>
+            
+            <!-- Mobile Cards -->
+            <div class="mobile-comparison-cards">
+                <div class="topology-card">
+                    <h4>⭐ Star Topology</h4>
+                    <div class="stats">
+                        <div class="stat-item"><span class="stat-label">Cost</span><span class="stat-value">Medium</span></div>
+                        <div class="stat-item"><span class="stat-label">Reliability</span><span class="stat-value">High</span></div>
+                        <div class="stat-item"><span class="stat-label">Performance</span><span class="stat-value">Good</span></div>
+                        <div class="stat-item"><span class="stat-label">Scalability</span><span class="stat-value">Excellent</span></div>
+                    </div>
+                </div>
+                <div class="topology-card">
+                    <h4>🚌 Bus Topology</h4>
+                    <div class="stats">
+                        <div class="stat-item"><span class="stat-label">Cost</span><span class="stat-value">Low</span></div>
+                        <div class="stat-item"><span class="stat-label">Reliability</span><span class="stat-value">Low</span></div>
+                        <div class="stat-item"><span class="stat-label">Performance</span><span class="stat-value">Poor</span></div>
+                        <div class="stat-item"><span class="stat-label">Scalability</span><span class="stat-value">Limited</span></div>
+                    </div>
+                </div>
+                <div class="topology-card">
+                    <h4>💍 Ring Topology</h4>
+                    <div class="stats">
+                        <div class="stat-item"><span class="stat-label">Cost</span><span class="stat-value">Medium</span></div>
+                        <div class="stat-item"><span class="stat-label">Reliability</span><span class="stat-value">Medium</span></div>
+                        <div class="stat-item"><span class="stat-label">Performance</span><span class="stat-value">Good</span></div>
+                        <div class="stat-item"><span class="stat-label">Scalability</span><span class="stat-value">Good</span></div>
+                    </div>
+                </div>
+                <div class="topology-card">
+                    <h4>🕸️ Mesh Topology</h4>
+                    <div class="stats">
+                        <div class="stat-item"><span class="stat-label">Cost</span><span class="stat-value">High</span></div>
+                        <div class="stat-item"><span class="stat-label">Reliability</span><span class="stat-value">Excellent</span></div>
+                        <div class="stat-item"><span class="stat-label">Performance</span><span class="stat-value">Excellent</span></div>
+                        <div class="stat-item"><span class="stat-label">Scalability</span><span class="stat-value">Complex</span></div>
+                    </div>
+                </div>
+                <div class="topology-card">
+                    <h4>🔄 Hybrid Topology</h4>
+                    <div class="stats">
+                        <div class="stat-item"><span class="stat-label">Cost</span><span class="stat-value">Variable</span></div>
+                        <div class="stat-item"><span class="stat-label">Reliability</span><span class="stat-value">High</span></div>
+                        <div class="stat-item"><span class="stat-label">Performance</span><span class="stat-value">Excellent</span></div>
+                        <div class="stat-item"><span class="stat-label">Scalability</span><span class="stat-value">Excellent</span></div>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -391,52 +553,52 @@
 
       const quizQuestions = [
         { q: "In which topology do all devices connect through a central hub or switch?", correct: 0, options: [
-          { text: "Star Topology", explanation: "✅ Correct! Star topology has all devices connected to a central hub or switch, making it the most common modern network design." },
-          { text: "Bus Topology", explanation: "Incorrect. Bus topology uses a single central cable that all devices share." },
-          { text: "Ring Topology", explanation: "Incorrect. Ring topology connects devices in a circular chain." },
-          { text: "Mesh Topology", explanation: "Incorrect. Mesh topology has devices connected to multiple other devices." }
+          { text: "Star Topology", explanation: "✅ Correct! In star topology, every device connects directly to a central hub or switch. This centralized design makes it easy to add new devices, troubleshoot problems, and isolate failures—which is why it's the most widely used topology in modern Ethernet networks." },
+          { text: "Bus Topology", explanation: "❌ Incorrect. Bus topology uses a single shared backbone cable that all devices tap into. There's no central hub—devices connect along the length of this main cable, and data travels in both directions to reach its destination." },
+          { text: "Ring Topology", explanation: "❌ Incorrect. Ring topology connects devices in a closed circular loop where each device links to exactly two neighbors. Data travels around the ring sequentially, passing through each device until it reaches its destination." },
+          { text: "Mesh Topology", explanation: "❌ Incorrect. Mesh topology creates multiple direct connections between devices rather than using a central hub. Each device can connect to many others, providing redundant paths but requiring significantly more cabling than star topology." }
         ]},
         { q: "What is the main disadvantage of bus topology?", correct: 2, options: [
-          { text: "High cost", explanation: "Incorrect. Bus topology is actually low cost due to minimal cable requirements." },
-          { text: "Complex installation", explanation: "Incorrect. Bus topology is relatively simple to install." },
-          { text: "Single point of failure in the backbone cable", explanation: "✅ Correct! If the main backbone cable breaks, the entire network goes down." },
-          { text: "Limited to only two devices", explanation: "Incorrect. Bus topology can support multiple devices on the same backbone." }
+          { text: "High cost", explanation: "❌ Incorrect. Bus topology is actually one of the least expensive options because it uses minimal cable—just one backbone that all devices share. The cost-effectiveness was a major reason for its popularity in early networks." },
+          { text: "Complex installation", explanation: "❌ Incorrect. Bus topology is remarkably simple to install. You run a single cable and connect devices along its length using T-connectors. No complex wiring or central equipment configuration is needed." },
+          { text: "Single point of failure in the backbone cable", explanation: "✅ Correct! The backbone cable is a critical vulnerability in bus topology. If this main cable breaks or gets damaged at any point, the entire network fails because all devices depend on this single shared communication path." },
+          { text: "Limited to only two devices", explanation: "❌ Incorrect. Bus topology can support multiple devices—typically dozens of computers connected along the backbone cable. The limitation isn't device count but rather performance degradation as more devices share the same cable bandwidth." }
         ]},
         { q: "Which topology provides the highest fault tolerance?", correct: 3, options: [
-          { text: "Star Topology", explanation: "Incorrect. While star has good fault tolerance, it still has a single point of failure at the hub." },
-          { text: "Bus Topology", explanation: "Incorrect. Bus topology has poor fault tolerance due to shared backbone." },
-          { text: "Ring Topology", explanation: "Incorrect. Ring topology fails if any single connection breaks." },
-          { text: "Mesh Topology", explanation: "✅ Correct! Mesh topology provides multiple paths between devices, offering the highest fault tolerance." }
+          { text: "Star Topology", explanation: "❌ Incorrect. While star topology isolates individual device failures well, the central hub remains a single point of failure. If the hub or switch fails, every connected device loses network access simultaneously." },
+          { text: "Bus Topology", explanation: "❌ Incorrect. Bus topology has poor fault tolerance because all devices share one backbone cable. A single break in this cable disrupts the entire network, and identifying the fault location can be time-consuming." },
+          { text: "Ring Topology", explanation: "❌ Incorrect. Standard ring topology is vulnerable because data must pass through every device sequentially. If any single device or connection fails, the ring breaks and network communication stops completely." },
+          { text: "Mesh Topology", explanation: "✅ Correct! Mesh topology provides exceptional fault tolerance through redundant connections. Multiple paths exist between devices, so if one link fails, data automatically routes through alternative paths. This makes mesh ideal for critical systems requiring maximum uptime." }
         ]},
         { q: "In ring topology, how does data travel?", correct: 1, options: [
-          { text: "In both directions simultaneously", explanation: "Incorrect. Standard ring topology uses unidirectional data flow." },
-          { text: "In one direction around the ring", explanation: "✅ Correct! Data travels in one direction around the ring, typically using token-based access." },
-          { text: "Randomly to any device", explanation: "Incorrect. Ring topology has a specific sequential path." },
-          { text: "Only between adjacent devices", explanation: "Incorrect. Data can travel to any device by passing through the ring." }
+          { text: "In both directions simultaneously", explanation: "❌ Incorrect. Standard ring topology uses unidirectional data flow—data travels only clockwise or counterclockwise, not both. Dual-ring configurations exist but are specialized implementations, not the standard ring topology design." },
+          { text: "In one direction around the ring", explanation: "✅ Correct! Data in ring topology travels in a single direction, passing through each device sequentially until reaching its destination. Token-passing protocols control access, ensuring orderly transmission and preventing collisions that plague bus networks." },
+          { text: "Randomly to any device", explanation: "❌ Incorrect. Ring topology follows a strict sequential path—data cannot jump randomly between devices. Each packet travels through every intermediate device in order, which provides predictable timing but adds latency for distant destinations." },
+          { text: "Only between adjacent devices", explanation: "❌ Incorrect. While data physically passes between adjacent devices, it can travel to any device on the ring. Packets continue around the ring, device by device, until the destination address is matched and the data is received." }
         ]},
         { q: "What is a hybrid topology?", correct: 2, options: [
-          { text: "A topology that uses only wireless connections", explanation: "Incorrect. Hybrid refers to combining different topology types, not connection methods." },
-          { text: "A topology that changes dynamically", explanation: "Incorrect. Hybrid topology refers to static combinations of different topologies." },
-          { text: "A combination of two or more different topology types", explanation: "✅ Correct! Hybrid topology combines different topologies like star-bus or star-ring to leverage advantages of each." },
-          { text: "A topology used only in large corporations", explanation: "Incorrect. Hybrid topologies can be used in networks of any size." }
+          { text: "A topology that uses only wireless connections", explanation: "❌ Incorrect. Hybrid topology refers to combining different network layout types, not connection methods. Wireless is a transmission medium, not a topology. Hybrid networks typically combine structures like star-bus or star-ring configurations." },
+          { text: "A topology that changes dynamically", explanation: "❌ Incorrect. Hybrid topology describes a static combination of different topology types designed during network planning. Dynamic topology changes relate to routing protocols or software-defined networking, which are separate concepts." },
+          { text: "A combination of two or more different topology types", explanation: "✅ Correct! Hybrid topology strategically combines multiple topology types to leverage each one's strengths. For example, departments might use star topology internally while connecting to each other via a ring backbone, balancing cost, performance, and reliability." },
+          { text: "A topology used only in large corporations", explanation: "❌ Incorrect. While large enterprises commonly use hybrid topologies, they're scalable to any size. Even small businesses might combine a star network with a point-to-point WAN connection, creating a simple but effective hybrid design." }
         ]},
         { q: "Which topology is most commonly used in modern home and office networks?", correct: 0, options: [
-          { text: "Star Topology", explanation: "✅ Correct! Star topology with switches/hubs is the standard for modern Ethernet networks." },
-          { text: "Bus Topology", explanation: "Incorrect. Bus topology was common in older networks but is rarely used today." },
-          { text: "Ring Topology", explanation: "Incorrect. Ring topology is mainly used in specialized applications like FDDI." },
-          { text: "Mesh Topology", explanation: "Incorrect. Full mesh is too expensive for typical home/office use." }
+          { text: "Star Topology", explanation: "✅ Correct! Star topology dominates modern networking because switches at the center provide dedicated bandwidth per device, easy troubleshooting, and simple expansion. Wi-Fi networks also follow this pattern with the access point acting as the central hub." },
+          { text: "Bus Topology", explanation: "❌ Incorrect. Bus topology was popular in early Ethernet using coaxial cable but is now obsolete for new installations. Its shared bandwidth, collision issues, and single point of failure made it unsuitable as network demands grew." },
+          { text: "Ring Topology", explanation: "❌ Incorrect. Ring topology sees limited modern use, primarily in specialized industrial systems or legacy Token Ring and FDDI networks. Its sequential data flow and single-point-of-failure issues make star more practical for most applications." },
+          { text: "Mesh Topology", explanation: "❌ Incorrect. Full mesh topology is rarely used in typical home or office networks due to high cabling costs and complexity. However, partial mesh configurations appear in enterprise backbones and internet infrastructure where redundancy justifies the expense." }
         ]},
         { q: "What happens in a star topology if the central hub fails?", correct: 3, options: [
-          { text: "Only one device stops working", explanation: "Incorrect. Hub failure affects all connected devices." },
-          { text: "The network automatically switches to bus topology", explanation: "Incorrect. Star topology cannot automatically change to another topology." },
-          { text: "Only half the devices stop working", explanation: "Incorrect. All devices lose connectivity when the central hub fails." },
-          { text: "The entire network stops functioning", explanation: "✅ Correct! The central hub is a single point of failure - if it fails, all devices lose network connectivity." }
+          { text: "Only one device stops working", explanation: "❌ Incorrect. A hub failure impacts far more than one device. Since every device connects through the central hub, all network communication ceases when it fails—not just one isolated computer's connection." },
+          { text: "The network automatically switches to bus topology", explanation: "❌ Incorrect. Networks cannot automatically change their physical topology. Star topology's cabling connects each device only to the hub, so there's no alternative path. Automatic failover requires redundant switches, not topology changes." },
+          { text: "Only half the devices stop working", explanation: "❌ Incorrect. Hub failure affects all connected devices equally, not a portion. Every device loses network connectivity because the hub is the single mandatory pathway for all communication between any devices on that network segment." },
+          { text: "The entire network stops functioning", explanation: "✅ Correct! The central hub is star topology's critical weakness. All traffic must flow through it, so hub failure means complete network outage. This is why enterprises use redundant switches and failover mechanisms to maintain uptime." }
         ]},
         { q: "Which topology uses the least amount of cable?", correct: 1, options: [
-          { text: "Star Topology", explanation: "Incorrect. Star requires individual cables from each device to the central hub." },
-          { text: "Bus Topology", explanation: "✅ Correct! Bus topology uses minimal cable as all devices share a single backbone cable." },
-          { text: "Ring Topology", explanation: "Incorrect. Ring requires cables between each adjacent pair of devices." },
-          { text: "Mesh Topology", explanation: "Incorrect. Mesh topology requires the most cables due to multiple connections per device." }
+          { text: "Star Topology", explanation: "❌ Incorrect. Star topology requires individual cables from every device to the central hub, which adds up quickly. A 20-device network needs 20 separate cable runs, making star one of the more cable-intensive topologies." },
+          { text: "Bus Topology", explanation: "✅ Correct! Bus topology minimizes cable usage by connecting all devices to a single shared backbone. Devices tap into this main cable using short drop cables and T-connectors, making it the most cable-efficient topology design." },
+          { text: "Ring Topology", explanation: "❌ Incorrect. Ring topology requires cables connecting each device to its two neighbors, forming a complete loop. While more efficient than star for some layouts, it still uses more cable than bus topology's single backbone approach." },
+          { text: "Mesh Topology", explanation: "❌ Incorrect. Mesh topology uses the most cable of all because devices connect to multiple other devices. A full mesh of just 10 devices requires 45 separate connections, making cabling costs and complexity extremely high." }
         ]}
       ];
 
@@ -875,6 +1037,23 @@
         window.addEventListener('resize',()=>{ if(openBtn) positionTipFor(openBtn); });
         window.addEventListener('scroll',()=>{ if(openBtn) positionTipFor(openBtn); }, {passive:true});
         document.addEventListener('click',(e)=>{ if(openBtn && !openBtn.contains(e.target) && !tip.contains(e.target)) closeTip(); });
+      }
+
+      // --- HAMBURGER MENU ---
+      const hamburgerBtn = document.getElementById('hamburgerBtn');
+      const mainNav = document.getElementById('mainNav');
+      if (hamburgerBtn && mainNav) {
+        hamburgerBtn.addEventListener('click', () => {
+          mainNav.classList.toggle('open');
+          hamburgerBtn.textContent = mainNav.classList.contains('open') ? '✕' : '☰';
+        });
+        // Close menu when clicking a link
+        mainNav.querySelectorAll('a').forEach(link => {
+          link.addEventListener('click', () => {
+            mainNav.classList.remove('open');
+            hamburgerBtn.textContent = '☰';
+          });
+        });
       }
 
       // --- RUN ---

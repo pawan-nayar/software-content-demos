@@ -8,29 +8,65 @@ Month: Sep 2025
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Software Content Demos | Interactive Experiences</title>
+    <title>Software Content Demos | Interactive Learning Experiences</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f8fafc;
-            color: #1e293b;
+            background: #fafafa;
+            color: #18181b;
+            -webkit-tap-highlight-color: transparent;
         }
+        
+        /* Clean dark hero with subtle warmth */
         .hero-gradient {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            background: linear-gradient(135deg, #18181b 0%, #27272a 100%);
+            position: relative;
+            overflow: hidden;
         }
+        .hero-gradient::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(251, 191, 36, 0.06) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        
+        /* Card interactions */
         .card-link {
             display: block;
             text-decoration: none;
             color: inherit;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            -webkit-tap-highlight-color: transparent;
         }
         .card-link:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px -6px rgba(0, 0, 0, 0.1);
+        }
+        .card-link:active {
+            transform: scale(0.98);
+        }
+        
+        /* Emoji hover */
+        .card-link:hover .card-emoji {
+            transform: scale(1.1);
+            transition: transform 0.2s ease;
+        }
+        
+        /* Philosophy cards */
+        .philosophy-card {
+            transition: all 0.25s ease;
+        }
+        .philosophy-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px -4px rgba(0, 0, 0, 0.08);
         }
     </style>
 </head>
@@ -38,190 +74,235 @@ Month: Sep 2025
 
     <!-- Header / Hero Section -->
     <header class="hero-gradient text-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10 text-center">
-            <h1 class="text-2xl md:text-3xl font-bold tracking-tight">📄 Software Content Demos</h1>
-            <p class="mt-3 max-w-3xl mx-auto text-sm text-slate-300">A living repository of interactive, standalone HTML experiences showcasing the future of software documentation—deep, interactive, and role-based.</p>
+        <div class="max-w-5xl mx-auto px-5 sm:px-6 py-10 md:py-14 text-center relative z-10">
+            <h1 class="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight leading-tight">
+                Software Content Demos
+            </h1>
+            <p class="mt-4 max-w-xl mx-auto text-sm md:text-base text-zinc-300 leading-relaxed">
+                The future of documentation is <strong class="text-white">interactive</strong>, <strong class="text-white">deep</strong>, and <strong class="text-white">role-based</strong>.
+            </p>
+            
+            <!-- Quick stats -->
+            <div class="flex justify-center gap-8 md:gap-12 mt-6 text-sm">
+                <div class="text-center">
+                    <div class="text-xl md:text-2xl font-bold text-white">7</div>
+                    <div class="text-zinc-400 text-xs">Categories</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-xl md:text-2xl font-bold text-white">50+</div>
+                    <div class="text-zinc-400 text-xs">Demos</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-xl md:text-2xl font-bold text-white">∞</div>
+                    <div class="text-zinc-400 text-xs">Learning</div>
+                </div>
+            </div>
         </div>
     </header>
 
     <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10">
+    <main class="max-w-5xl mx-auto px-5 sm:px-6 py-10">
 
         <!-- Featured Evolution Section -->
-        <section id="featured-evolution" class="mb-12">
-            <div class="bg-gradient-to-r from-orange-50 to-amber-50 rounded-xl p-6 border border-orange-200">
-                <div class="flex items-start space-x-4">
-                    <div class="flex-shrink-0">
-                        <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
-                            <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                            </svg>
+        <section id="featured-evolution" class="mb-10">
+            <a href="./anthropic/index.html" class="card-link block bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-200 rounded-2xl overflow-hidden hover:border-amber-400 hover:shadow-xl">
+                <div class="p-5 md:p-6">
+                    <div class="flex flex-col md:flex-row md:items-center gap-4">
+                        <div class="flex-shrink-0 w-14 h-14 md:w-16 md:h-16 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl flex items-center justify-center shadow-lg">
+                            <span class="card-emoji text-2xl md:text-3xl">🚀</span>
                         </div>
-                    </div>
-                    <div class="flex-grow">
-                        <h3 class="text-lg font-semibold text-slate-900 mb-2">🚀 Latest Evolution: The Claude Ecosystem</h3>
-                        <p class="text-sm text-slate-700 mb-3">Our Anthropic section has evolved into a complete curriculum for AI-augmented mastery, featuring dual-track learning paths for domain experts and developers.</p>
-                        <div class="flex flex-wrap gap-2">
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">Dual-Track Learning</span>
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">Professional Domains</span>
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">Meta-Reasoning</span>
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">Real-World Applications</span>
+                        <div class="flex-grow">
+                            <div class="flex flex-wrap items-center gap-2 mb-2">
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-amber-500 text-white">✨ FEATURED</span>
+                            </div>
+                            <h3 class="text-base md:text-lg font-bold text-zinc-900 mb-1">The Claude Ecosystem</h3>
+                            <p class="text-zinc-600 text-sm">Complete AI-augmented mastery curriculum—from foundational literacy to advanced meta-reasoning.</p>
+                        </div>
+                        <div class="hidden md:flex flex-shrink-0 items-center justify-center w-12 h-12 bg-amber-500 rounded-full text-white shadow-lg">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg>
                         </div>
                     </div>
                 </div>
-            </div>
+                <div class="px-5 md:px-6 py-3 bg-amber-100/50 border-t border-amber-200 flex items-center justify-between">
+                    <span class="text-sm font-bold text-amber-700">Explore the Ecosystem →</span>
+                    <span class="text-xs text-amber-600">Most Popular</span>
+                </div>
+            </a>
         </section>
 
         <!-- Demo Categories Section -->
-        <section id="demo-categories">
-            <h2 class="text-xl font-bold pb-2 mb-5 text-slate-900">Browse by Category</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <section id="demo-categories" class="mb-12">
+            <div class="flex items-center gap-3 mb-5">
+                <div class="w-10 h-10 bg-gradient-to-br from-zinc-100 to-zinc-200 rounded-xl flex items-center justify-center shadow-sm">
+                    <span class="text-lg">📚</span>
+                </div>
+                <div>
+                    <h2 class="text-lg md:text-xl font-bold text-zinc-800">Browse by Category</h2>
+                    <p class="text-sm text-zinc-500">Each category is a world of interactive learning</p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 
                 <!-- GitHub -->
-                <article class="h-full">
-                    <a href="./github/index.html" class="card-link bg-white rounded-xl shadow-lg overflow-hidden h-full flex flex-col">
-                        <div class="p-3 flex-grow">
-                            <div class="flex items-center space-x-3 mb-2">
-                                <div class="flex-shrink-0 w-9 h-9 bg-orange-100 rounded-lg flex items-center justify-center">
-                                    <svg class="w-5 h-5 text-orange-600" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg>
-                                </div>
-                                <h3 class="text-base font-semibold text-slate-900">GitHub</h3>
+                <a href="./github/index.html" class="card-link bg-white border border-zinc-200 rounded-xl overflow-hidden hover:border-zinc-400">
+                    <div class="p-4">
+                        <div class="flex items-start gap-3">
+                            <div class="flex-shrink-0 w-10 h-10 bg-zinc-800 rounded-lg flex items-center justify-center">
+                                <span class="card-emoji text-lg">🐙</span>
                             </div>
-                            <p class="text-sm text-slate-600">Interactive micro-lessons for common confusion scenarios (Pull vs Fetch) and core workflows, taught with empathy.</p>
-                        </div>
-                        <div class="px-4 py-2 bg-gray-50 border-t"><span class="text-sm font-medium text-orange-600">Explore Demos →</span></div>
-                    </a>
-                </article>
-
-                <!-- Anthropic (Claude) -->
-                <article class="h-full">
-                    <a href="./anthropic/index.html" class="card-link bg-white rounded-xl shadow-lg overflow-hidden h-full flex flex-col">
-                        <div class="p-3 flex-grow">
-                             <div class="flex items-center space-x-3 mb-2">
-                                <div class="flex-shrink-0 w-9 h-9 bg-orange-100 rounded-lg flex items-center justify-center">
-                                    <svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
-                                </div>
-                                <h3 class="text-base font-semibold text-slate-900">Anthropic (Claude)</h3>
+                            <div>
+                                <h3 class="font-semibold text-zinc-900 text-sm mb-1">GitHub</h3>
+                                <p class="text-xs text-zinc-500 leading-relaxed">Pull vs Fetch confusion and core workflows—taught with empathy.</p>
                             </div>
-                            <p class="text-sm text-slate-600">A complete curriculum for AI-augmented mastery—from foundational literacy to advanced meta-reasoning, designed for both domain experts and developers.</p>
                         </div>
-                        <div class="px-4 py-2 bg-gray-50 border-t"><span class="text-sm font-medium text-orange-600">Explore Demos →</span></div>
-                    </a>
-                </article>
+                    </div>
+                    <div class="px-4 py-2 bg-zinc-50 border-t border-zinc-100 flex items-center justify-between">
+                        <span class="text-xs font-medium text-zinc-600">Explore →</span>
+                        <span class="text-xs text-zinc-400">Version Control</span>
+                    </div>
+                </a>
 
                 <!-- Python -->
-                <article class="h-full">
-                     <a href="./python/index.html" class="card-link bg-white rounded-xl shadow-lg overflow-hidden h-full flex flex-col">
-                        <div class="p-3 flex-grow">
-                           <div class="flex items-center space-x-3 mb-2">
-                                <div class="flex-shrink-0 w-9 h-9 bg-orange-100 rounded-lg flex items-center justify-center">
-                                    <svg class="w-5 h-5 text-orange-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0L7.86 6.83c-.46.12-.9.32-1.29.57l-3.23-.9c-1.5-.44-2.88.93-2.44 2.43l.9 3.23c-.24.39-.44.83-.57 1.29l-3.68.64c-1.56.27-1.56 2.4 0 2.68l3.68.64c.13.46.32.9.57 1.29l-.9 3.23c-.44 1.5.93 2.88 2.44 2.43l3.23-.9c.39.24.83.44 1.29.57l.64 3.68c.27 1.56 2.4 1.56 2.68 0l.64-3.68c.46-.13.9-.32 1.29-.57l3.23.9c1.5.44 2.88-.93 2.44-2.43l-.9-3.23c.24-.39.44-.83.57-1.29l3.68-.64c-1.56-.27-1.56-2.4 0-2.68l-3.68-.64c-.13-.46-.32-.9-.57-1.29l.9-3.23c.44-1.5-.93-2.88-2.44-2.43l-3.23.9c-.39-.24-.83-.44-1.29-.57l-.64-3.68zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"></path></svg>
-                                </div>
-                                <h3 class="text-base font-semibold text-slate-900">Python</h3>
+                <a href="./python/index.html" class="card-link bg-white border border-zinc-200 rounded-xl overflow-hidden hover:border-zinc-400">
+                    <div class="p-4">
+                        <div class="flex items-start gap-3">
+                            <div class="flex-shrink-0 w-10 h-10 bg-zinc-800 rounded-lg flex items-center justify-center">
+                                <span class="card-emoji text-lg">🐍</span>
                             </div>
-                            <p class="text-sm text-slate-600">Playful and practical demos that bridge the gap between theory and application, making Python concepts tangible.</p>
+                            <div>
+                                <h3 class="font-semibold text-zinc-900 text-sm mb-1">Python</h3>
+                                <p class="text-xs text-zinc-500 leading-relaxed">Playful demos bridging theory and application.</p>
+                            </div>
                         </div>
-                        <div class="px-4 py-2 bg-gray-50 border-t"><span class="text-sm font-medium text-orange-600">Explore Demos →</span></div>
-                    </a>
-                </article>
+                    </div>
+                    <div class="px-4 py-2 bg-zinc-50 border-t border-zinc-100 flex items-center justify-between">
+                        <span class="text-xs font-medium text-zinc-600">Explore →</span>
+                        <span class="text-xs text-zinc-400">Programming</span>
+                    </div>
+                </a>
 
                 <!-- AI Art -->
-                <article class="h-full">
-                     <a href="./ai_art/index.html" class="card-link bg-white rounded-xl shadow-lg overflow-hidden h-full flex flex-col">
-                        <div class="p-3 flex-grow">
-                           <div class="flex items-center space-x-3 mb-2">
-                                <div class="flex-shrink-0 w-9 h-9 bg-orange-100 rounded-lg flex items-center justify-center">
-                                     <svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path></svg>
-                                </div>
-                                <h3 class="text-base font-semibold text-slate-900">AI Art</h3>
+                <a href="./ai_art/index.html" class="card-link bg-white border border-zinc-200 rounded-xl overflow-hidden hover:border-zinc-400">
+                    <div class="p-4">
+                        <div class="flex items-start gap-3">
+                            <div class="flex-shrink-0 w-10 h-10 bg-zinc-800 rounded-lg flex items-center justify-center">
+                                <span class="card-emoji text-lg">🎨</span>
                             </div>
-                            <p class="text-sm text-slate-600">A creative hub of 14 demos merging AI, pedagogy, and interactivity, covering everything from prompting to character design.</p>
+                            <div>
+                                <h3 class="font-semibold text-zinc-900 text-sm mb-1">AI Art</h3>
+                                <p class="text-xs text-zinc-500 leading-relaxed">14 demos from prompting mastery to character design.</p>
+                            </div>
                         </div>
-                        <div class="px-4 py-2 bg-gray-50 border-t"><span class="text-sm font-medium text-orange-600">Explore Demos →</span></div>
-                    </a>
-                </article>
+                    </div>
+                    <div class="px-4 py-2 bg-zinc-50 border-t border-zinc-100 flex items-center justify-between">
+                        <span class="text-xs font-medium text-zinc-600">Explore →</span>
+                        <span class="text-xs text-zinc-400">Creative AI</span>
+                    </div>
+                </a>
 
                 <!-- Salesforce -->
-                <article class="h-full">
-                    <a href="./salesforce/index.html" class="card-link bg-white rounded-xl shadow-lg overflow-hidden h-full flex flex-col">
-                        <div class="p-3 flex-grow">
-                             <div class="flex items-center space-x-3 mb-2">
-                                <div class="flex-shrink-0 w-9 h-9 bg-orange-100 rounded-lg flex items-center justify-center">
-                                    <svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path></svg>
-                                </div>
-                                <h3 class="text-base font-semibold text-slate-900">Salesforce</h3>
+                <a href="./salesforce/index.html" class="card-link bg-white border border-zinc-200 rounded-xl overflow-hidden hover:border-zinc-400">
+                    <div class="p-4">
+                        <div class="flex items-start gap-3">
+                            <div class="flex-shrink-0 w-10 h-10 bg-zinc-800 rounded-lg flex items-center justify-center">
+                                <span class="card-emoji text-lg">☁️</span>
                             </div>
-                            <p class="text-sm text-slate-600">Role-based demos for the entire team, from Service Cloud basics to hands-on API simulations for enterprise success.</p>
+                            <div>
+                                <h3 class="font-semibold text-zinc-900 text-sm mb-1">Salesforce</h3>
+                                <p class="text-xs text-zinc-500 leading-relaxed">Role-based demos for Service Cloud and API simulations.</p>
+                            </div>
                         </div>
-                         <div class="px-4 py-2 bg-gray-50 border-t"><span class="text-sm font-medium text-orange-600">Explore Demos →</span></div>
-                    </a>
-                </article>
+                    </div>
+                    <div class="px-4 py-2 bg-zinc-50 border-t border-zinc-100 flex items-center justify-between">
+                        <span class="text-xs font-medium text-zinc-600">Explore →</span>
+                        <span class="text-xs text-zinc-400">Enterprise</span>
+                    </div>
+                </a>
 
-                <!-- Adobe Acrobat -->
-                <article class="h-full">
-                     <a href="./adobe/acrobat-merge-pdf-files-index.html" class="card-link bg-white rounded-xl shadow-lg overflow-hidden h-full flex flex-col">
-                        <div class="p-3 flex-grow">
-                           <div class="flex items-center space-x-3 mb-2">
-                                <div class="flex-shrink-0 w-9 h-9 bg-orange-100 rounded-lg flex items-center justify-center">
-                                    <svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                                </div>
-                                <h3 class="text-base font-semibold text-slate-900">Adobe (Acrobat)</h3>
+                <!-- Adobe -->
+                <a href="./adobe/acrobat-merge-pdf-files-index.html" class="card-link bg-white border border-zinc-200 rounded-xl overflow-hidden hover:border-zinc-400">
+                    <div class="p-4">
+                        <div class="flex items-start gap-3">
+                            <div class="flex-shrink-0 w-10 h-10 bg-zinc-800 rounded-lg flex items-center justify-center">
+                                <span class="card-emoji text-lg">📄</span>
                             </div>
-                            <p class="text-sm text-slate-600">A masterclass that turns flat documentation into interactive, step-by-step micro-demos for core PDF workflows.</p>
+                            <div>
+                                <h3 class="font-semibold text-zinc-900 text-sm mb-1">Adobe Acrobat</h3>
+                                <p class="text-xs text-zinc-500 leading-relaxed">Interactive step-by-step micro-demos for PDF workflows.</p>
+                            </div>
                         </div>
-                        <div class="px-4 py-2 bg-gray-50 border-t"><span class="text-sm font-medium text-orange-600">Explore Demos →</span></div>
-                    </a>
-                </article>
+                    </div>
+                    <div class="px-4 py-2 bg-zinc-50 border-t border-zinc-100 flex items-center justify-between">
+                        <span class="text-xs font-medium text-zinc-600">Explore →</span>
+                        <span class="text-xs text-zinc-400">Productivity</span>
+                    </div>
+                </a>
 
                 <!-- Best Practices -->
-                 <article class="h-full">
-                    <a href="./best_practices/index.html" class="card-link bg-white rounded-xl shadow-lg overflow-hidden h-full flex flex-col">
-                        <div class="p-3 flex-grow">
-                             <div class="flex items-center space-x-3 mb-2">
-                                <div class="flex-shrink-0 w-9 h-9 bg-orange-100 rounded-lg flex items-center justify-center">
-                                    <svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                </div>
-                                <h3 class="text-base font-semibold text-slate-900">Best Practices</h3>
+                <a href="./best_practices/index.html" class="card-link bg-white border border-zinc-200 rounded-xl overflow-hidden hover:border-zinc-400">
+                    <div class="p-4">
+                        <div class="flex items-start gap-3">
+                            <div class="flex-shrink-0 w-10 h-10 bg-zinc-800 rounded-lg flex items-center justify-center">
+                                <span class="card-emoji text-lg">✅</span>
                             </div>
-                            <p class="text-sm text-slate-600">An auxiliary reference shelf capturing the design patterns and pedagogical craft that power effective interactive content.</p>
+                            <div>
+                                <h3 class="font-semibold text-zinc-900 text-sm mb-1">Best Practices</h3>
+                                <p class="text-xs text-zinc-500 leading-relaxed">Design patterns powering effective interactive content.</p>
+                            </div>
                         </div>
-                        <div class="px-4 py-2 bg-gray-50 border-t"><span class="text-sm font-medium text-orange-600">Explore Demos →</span></div>
-                    </a>
-                </article>
+                    </div>
+                    <div class="px-4 py-2 bg-zinc-50 border-t border-zinc-100 flex items-center justify-between">
+                        <span class="text-xs font-medium text-zinc-600">Explore →</span>
+                        <span class="text-xs text-zinc-400">Meta</span>
+                    </div>
+                </a>
             </div>
         </section>
 
         <!-- Pedagogical Philosophy Section -->
-        <section id="pedagogical-philosophy" class="mt-16">
-            <div class="bg-white rounded-xl shadow-lg p-8 border border-slate-200">
-                <h2 class="text-2xl font-bold text-slate-900 mb-6">🎓 Our Pedagogical Philosophy</h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="text-center">
-                        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
-                            </svg>
-                        </div>
-                        <h3 class="text-lg font-semibold text-slate-900 mb-2">Welcoming Tone</h3>
-                        <p class="text-sm text-slate-600">Designed for domain experts who may not code, creating psychological safety for top professionals to learn technical skills without feeling like beginners.</p>
+        <section id="pedagogical-philosophy" class="mb-10">
+            <div class="flex items-center gap-3 mb-5">
+                <div class="w-10 h-10 bg-gradient-to-br from-zinc-100 to-zinc-200 rounded-xl flex items-center justify-center shadow-sm">
+                    <span class="text-lg">🎓</span>
+                </div>
+                <h2 class="text-lg md:text-xl font-bold text-zinc-800">Our Pedagogical Philosophy</h2>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div class="philosophy-card bg-white border border-zinc-200 rounded-xl p-5">
+                    <div class="w-11 h-11 bg-gradient-to-br from-zinc-100 to-zinc-200 rounded-xl flex items-center justify-center mb-3 shadow-sm">
+                        <span class="text-xl">🤝</span>
                     </div>
-                    <div class="text-center">
-                        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
-                            </svg>
-                        </div>
-                        <h3 class="text-lg font-semibold text-slate-900 mb-2">Incremental Depth</h3>
-                        <p class="text-sm text-slate-600">For technical learners, structured ascent from tactical execution to architectural thinking, building on existing skills rather than starting over.</p>
+                    <h3 class="text-sm font-bold text-zinc-900 mb-2">Welcoming Tone</h3>
+                    <p class="text-xs text-zinc-500 leading-relaxed">Designed for domain experts who may not code—creating psychological safety to learn technical skills.</p>
+                </div>
+                
+                <div class="philosophy-card bg-white border border-zinc-200 rounded-xl p-5">
+                    <div class="w-11 h-11 bg-gradient-to-br from-zinc-100 to-zinc-200 rounded-xl flex items-center justify-center mb-3 shadow-sm">
+                        <span class="text-xl">📈</span>
                     </div>
-                    <div class="text-center">
-                        <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                        </div>
-                        <h3 class="text-lg font-semibold text-slate-900 mb-2">Professional Optimization</h3>
-                        <p class="text-sm text-slate-600">Applied modules for Finance and Medicine are meticulously optimized to speak the language, respect ethics, and mirror real-world workflows.</p>
+                    <h3 class="text-sm font-bold text-zinc-900 mb-2">Incremental Depth</h3>
+                    <p class="text-xs text-zinc-500 leading-relaxed">Structured ascent from tactical execution to architectural thinking.</p>
+                </div>
+                
+                <div class="philosophy-card bg-white border border-zinc-200 rounded-xl p-5">
+                    <div class="w-11 h-11 bg-gradient-to-br from-zinc-100 to-zinc-200 rounded-xl flex items-center justify-center mb-3 shadow-sm">
+                        <span class="text-xl">⚕️</span>
+                    </div>
+                    <h3 class="text-sm font-bold text-zinc-900 mb-2">Professional Optimization</h3>
+                    <p class="text-xs text-zinc-500 leading-relaxed">Applied modules for Finance and Medicine that mirror real-world workflows.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tip Card -->
+        <section class="mb-8">
+            <div class="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-4">
+                <div class="flex items-start gap-3">
+                    <span class="text-xl">💡</span>
+                    <div>
+                        <p class="text-sm text-zinc-700"><strong class="text-zinc-900">Where to start?</strong> Check out The Claude Ecosystem for AI-powered learning, or dive into Python for hands-on demos.</p>
                     </div>
                 </div>
             </div>
@@ -230,14 +311,13 @@ Month: Sep 2025
     </main>
 
     <!-- Footer -->
-    <footer class="bg-slate-800 text-slate-400">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 text-center text-sm">
-            <p class="font-semibold text-white">Copyright Notice / Usage Policy</p>
-            <p class="mt-2 max-w-2xl mx-auto text-xs">This repository is for viewing and inspiration purposes only. You are not permitted to fork, copy, duplicate, download, reproduce, or redistribute any part of this repository.</p>
-            <p class="mt-4 text-xs">&copy; All rights are reserved by the author.</p>
+    <footer class="bg-zinc-800 text-zinc-400">
+        <div class="max-w-5xl mx-auto px-5 sm:px-6 py-8 text-center">
+            <p class="font-medium text-zinc-300 text-sm">Copyright Notice</p>
+            <p class="mt-2 max-w-xl mx-auto text-xs text-zinc-500">This repository is for viewing and inspiration purposes only.</p>
+            <p class="mt-2 text-xs text-zinc-500">© All rights reserved by the author.</p>
         </div>
     </footer>
 
 </body>
 </html>
-

@@ -146,6 +146,476 @@
     .glossary-card.active {
       background: #fef7f0;
     }
+    
+    /* ============================================
+       HOP 1: MOBILE SVG TOOLTIP OVERLAY
+       ============================================ */
+    .mobile-svg-tooltip {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 9999;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+    .mobile-svg-tooltip.active {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 16px;
+      animation: overlayFadeIn 0.2s ease-out;
+    }
+    @keyframes overlayFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .mobile-svg-tooltip-content {
+      background: #fff;
+      border-radius: 20px 20px 12px 12px;
+      width: 100%;
+      max-width: calc(100% - 32px);
+      max-height: 50vh;
+      overflow-y: auto;
+      box-shadow: 0 -4px 30px rgba(0,0,0,0.3);
+      animation: slideUp 0.25s ease-out;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(100%); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .mobile-svg-tooltip-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+      border-radius: 20px 20px 0 0;
+      position: sticky;
+      top: 0;
+    }
+    .mobile-svg-tooltip-header h4 {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #fff;
+    }
+    .mobile-svg-tooltip-close {
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: #fff;
+      font-size: 1.5rem;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .mobile-svg-tooltip-body {
+      padding: 20px;
+      font-size: 1.05rem;
+      line-height: 1.7;
+      color: var(--text);
+    }
+    .mobile-svg-tooltip-body .data-type-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    .mobile-svg-tooltip-body .data-type-badge.int { background: var(--int); color: #fff; }
+    .mobile-svg-tooltip-body .data-type-badge.float { background: var(--float); color: #fff; }
+    .mobile-svg-tooltip-body .data-type-badge.string { background: var(--string); color: #333; }
+    .mobile-svg-tooltip-body .data-type-badge.bool { background: var(--bool); color: #fff; }
+    .mobile-svg-tooltip-body .data-type-badge.char { background: var(--char); color: #fff; }
+    .mobile-svg-tooltip-body .data-type-badge.memory { background: #dee2e6; color: #333; }
+
+    /* ============================================
+       HOP 2: SVG MOBILE OPTIMIZATION
+       ============================================ */
+    .svg-scroll-wrapper {
+      position: relative;
+    }
+    .svg-scroll-hint {
+      display: none;
+      text-align: center;
+      padding: 10px;
+      font-size: 0.9rem;
+      color: var(--accent-2);
+      font-weight: 500;
+    }
+    
+    @media (max-width: 768px) {
+      /* Hide desktop tooltip on mobile */
+      .tooltip {
+        display: none !important;
+      }
+      
+      /* SVG horizontal scroll */
+      .svg-scroll-wrapper {
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+        margin: 0 -18px;
+        padding: 0 18px 10px;
+        scrollbar-width: thin;
+      }
+      .svg-scroll-wrapper::after {
+        content: '';
+        position: absolute;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        width: 40px;
+        background: linear-gradient(to left, rgba(255,251,250,0.95), transparent);
+        pointer-events: none;
+      }
+      .svg-scroll-wrapper svg {
+        min-width: 700px;
+        max-height: 400px;
+      }
+      .svg-scroll-hint {
+        display: block;
+      }
+      
+      /* Larger touch targets for hotspots */
+      .hotspot rect:first-of-type {
+        stroke: transparent;
+        stroke-width: 10;
+      }
+      
+      .diagram-wrap {
+        padding: 12px;
+      }
+      .svg-note {
+        display: none;
+      }
+    }
+
+    /* ============================================
+       HOP 3: ENHANCED TOUCH TARGETS
+       ============================================ */
+    @media (max-width: 768px) {
+      /* Quiz labels - larger touch targets */
+      .quiz label {
+        min-height: 52px;
+        padding: 16px;
+        display: flex;
+        align-items: center;
+        font-size: 1rem;
+        margin: 10px 0;
+        border-radius: 10px;
+        -webkit-tap-highlight-color: transparent;
+        transition: transform 0.1s, background 0.2s;
+      }
+      .quiz label:active {
+        transform: scale(0.98);
+        background: #e9ecef;
+      }
+      .quiz input[type="radio"] {
+        width: 22px;
+        height: 22px;
+        margin-right: 14px;
+        flex-shrink: 0;
+      }
+      
+      /* Navigation buttons - larger */
+      .nav-btn {
+        min-height: 48px;
+        min-width: 100px;
+        padding: 14px 16px;
+        font-size: 15px;
+        border-radius: 8px;
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
+      }
+      .nav-btn:active {
+        transform: scale(0.96);
+      }
+      
+      /* Glossary cards - larger touch targets */
+      .glossary-card {
+        min-height: 56px;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .glossary-card:active {
+        transform: scale(0.98);
+      }
+      .glossary-term {
+        font-size: 1.05rem;
+      }
+      .glossary-definition {
+        font-size: 0.95rem;
+        padding: 12px;
+        margin-top: 12px;
+      }
+    }
+
+    /* ============================================
+       HOP 4: RESPONSIVE QUIZ & GLOSSARY LAYOUT
+       ============================================ */
+    @media (max-width: 600px) {
+      /* Quiz navigation - ALWAYS one row, compact buttons */
+      .quiz-navigation {
+        flex-direction: row;
+        gap: 8px;
+        padding: 12px;
+        flex-wrap: nowrap;
+      }
+      .quiz-navigation .nav-btn {
+        min-width: auto;
+        padding: 10px 12px;
+        font-size: 13px;
+        flex: 0 0 auto;
+      }
+      .question-counter {
+        font-size: 0.85rem;
+        white-space: nowrap;
+        flex: 1;
+        text-align: center;
+      }
+      
+      /* Quiz container */
+      .interactive-quiz-section {
+        padding: 16px;
+        margin: 24px 0;
+      }
+      .quiz {
+        padding: 16px;
+      }
+      .quiz p.question-text {
+        font-size: 1.05rem;
+        line-height: 1.6;
+      }
+      .explanation {
+        padding: 14px;
+        font-size: 0.95rem;
+      }
+      
+      /* Glossary - single column */
+      .glossary-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+      .glossary-section {
+        padding: 16px;
+        margin: 24px 0;
+      }
+      
+      /* Header adjustments */
+      .site-header {
+        padding: 12px 14px;
+      }
+      .site-header nav {
+        gap: 10px;
+        font-size: 0.9rem;
+      }
+      .logo {
+        font-size: 1rem;
+      }
+      
+      /* Intro adjustments */
+      .intro-box {
+        padding: 16px;
+        font-size: 1rem;
+      }
+      .intro-box p {
+        line-height: 1.6;
+      }
+      
+      /* Footer */
+      .site-footer {
+        padding: 24px 16px;
+      }
+    }
+    
+    @media (max-width: 400px) {
+      .quiz-navigation .nav-btn {
+        padding: 10px 12px;
+        font-size: 12px;
+      }
+      .question-counter {
+        font-size: 0.75rem;
+      }
+      h1 {
+        font-size: 1.5rem;
+      }
+      .lead {
+        font-size: 0.95rem;
+      }
+    }
+    
+    /* ============================================
+       QUIZ COMPLETION CELEBRATION OVERLAY
+       ============================================ */
+    .quiz-completion-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.85);
+      z-index: 10000;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    .quiz-completion-overlay.active {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: overlayFadeIn 0.3s ease-out;
+    }
+    .quiz-completion-card {
+      background: linear-gradient(145deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      border-radius: 24px;
+      padding: 40px 32px;
+      max-width: 420px;
+      width: calc(100% - 32px);
+      text-align: center;
+      box-shadow: 0 25px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.1);
+      animation: cardPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative;
+      overflow: hidden;
+    }
+    .quiz-completion-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at 30% 30%, rgba(253,126,20,0.15) 0%, transparent 50%);
+      pointer-events: none;
+    }
+    @keyframes cardPop {
+      0% { transform: scale(0.8) translateY(20px); opacity: 0; }
+      100% { transform: scale(1) translateY(0); opacity: 1; }
+    }
+    .completion-emoji {
+      font-size: 4rem;
+      margin-bottom: 16px;
+      display: block;
+      animation: emojiPulse 1s ease-in-out infinite alternate;
+    }
+    @keyframes emojiPulse {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.1); }
+    }
+    .completion-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 8px;
+      line-height: 1.2;
+    }
+    .completion-score {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,255,255,0.1);
+      padding: 8px 20px;
+      border-radius: 30px;
+      margin: 12px 0 20px;
+      font-size: 1.1rem;
+      color: #fff;
+      font-weight: 600;
+    }
+    .completion-score .score-num {
+      color: var(--accent);
+      font-size: 1.4rem;
+    }
+    .completion-message {
+      color: rgba(255,255,255,0.85);
+      font-size: 1.05rem;
+      line-height: 1.7;
+      margin-bottom: 24px;
+    }
+    .completion-message strong {
+      color: var(--accent);
+    }
+    .completion-insight {
+      background: rgba(255,255,255,0.08);
+      border-left: 3px solid var(--accent);
+      padding: 14px 16px;
+      border-radius: 0 10px 10px 0;
+      text-align: left;
+      margin-bottom: 24px;
+    }
+    .completion-insight-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent);
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+    .completion-insight-text {
+      color: rgba(255,255,255,0.9);
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+    .completion-cta {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+      color: #fff;
+      border: none;
+      padding: 16px 32px;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: transform 0.2s, box-shadow 0.2s;
+      width: 100%;
+    }
+    .completion-cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(253,126,20,0.4);
+    }
+    .completion-cta:active {
+      transform: scale(0.98);
+    }
+    
+    /* Confetti container */
+    .confetti-container {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      pointer-events: none;
+      z-index: 10001;
+      overflow: hidden;
+    }
+    .confetti {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      animation: confettiFall 3s ease-out forwards;
+    }
+    @keyframes confettiFall {
+      0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+    }
+    
+    @media (max-width: 480px) {
+      .quiz-completion-card {
+        padding: 32px 20px;
+      }
+      .completion-emoji {
+        font-size: 3rem;
+      }
+      .completion-title {
+        font-size: 1.5rem;
+      }
+      .completion-message {
+        font-size: 0.95rem;
+      }
+    }
   </style>
 </head>
 <body>
@@ -179,6 +649,8 @@
 
   <!-- Smart SVG -->
   <section class="diagram-wrap" aria-label="Variable Memory Blocks Diagram">
+    <p class="svg-scroll-hint">👆 Tap any block for details • Scroll → to see more</p>
+    <div class="svg-scroll-wrapper">
     <svg viewBox="0 0 900 520" role="img" aria-labelledby="title desc">
       <title id="title">Variable memory allocation visualization</title>
       <desc id="desc">Hover over memory blocks to see variable declarations and data types.</desc>
@@ -346,6 +818,7 @@
         <text x="595" y="497" class="address-label">string (variable)</text>
       </g>
     </svg>
+    </div><!-- end svg-scroll-wrapper -->
     <p class="svg-note">Tip: hover or focus any highlighted area for details about memory allocation and data types.</p>
   </section>
 
@@ -354,9 +827,9 @@
     <h2>Checkpoint Quiz: Variables & Data Types</h2>
     <div class="quiz-container" id="quiz-container-1">
       <div class="quiz-navigation">
-        <button class="nav-btn" id="prevBtn_1" onclick="changeQuestion(1, -1)">← Previous</button>
-        <span class="question-counter">Question <span id="currentQ_1">1</span> of 10</span>
-        <button class="nav-btn" id="nextBtn_1" onclick="changeQuestion(1, 1)">Next →</button>
+        <button class="nav-btn" id="prevBtn_1" onclick="changeQuestion(1, -1)">⮜ Prev</button>
+        <span class="question-counter"><span id="currentQ_1">1</span> of 10</span>
+        <button class="nav-btn" id="nextBtn_1" onclick="changeQuestion(1, 1)">Next ⮞</button>
       </div>
 
       <div class="quiz" id="q_1_1" data-correct="2">
@@ -462,13 +935,121 @@
 
 <footer class="site-footer"><small>© 2025 Beyond Dictionary</small></footer>
 
+<!-- Desktop tooltip (hidden on mobile) -->
 <div id="tooltip" class="tooltip" role="status" aria-live="polite"></div>
+
+<!-- Quiz Completion Celebration Overlay -->
+<div class="quiz-completion-overlay" id="quizCompletionOverlay">
+  <div class="quiz-completion-card">
+    <span class="completion-emoji" id="completionEmoji">🧠</span>
+    <h3 class="completion-title" id="completionTitle">Quiz Complete!</h3>
+    <div class="completion-score">
+      You scored <span class="score-num" id="completionScoreNum">0</span>/10
+    </div>
+    <p class="completion-message" id="completionMessage">
+      <!-- Dynamic message inserted here -->
+    </p>
+    <div class="completion-insight" id="completionInsight">
+      <div class="completion-insight-label">💡 Memory Insight</div>
+      <p class="completion-insight-text" id="completionInsightText">
+        <!-- Dynamic insight inserted here -->
+      </p>
+    </div>
+    <button class="completion-cta" id="completionCta">Continue Exploring →</button>
+  </div>
+</div>
+<div class="confetti-container" id="confettiContainer"></div>
+
+<!-- HOP 1: Mobile SVG Tooltip Overlay -->
+<div class="mobile-svg-tooltip" id="mobileSvgTooltip">
+  <div class="mobile-svg-tooltip-content">
+    <div class="mobile-svg-tooltip-header">
+      <h4 id="mobileTooltipTitle">Memory Block</h4>
+      <button class="mobile-svg-tooltip-close" id="mobileTooltipClose" aria-label="Close">&times;</button>
+    </div>
+    <div class="mobile-svg-tooltip-body" id="mobileTooltipBody">
+      <!-- Content populated by JavaScript -->
+    </div>
+  </div>
+</div>
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  /* ==== SVG Tooltip Logic ==== */
+  /* ==== Mobile Detection ==== */
+  function isMobile() {
+    return window.innerWidth <= 768 || 'ontouchstart' in window;
+  }
+  
+  /* ==== Mobile SVG Tooltip ==== */
+  const mobileTooltip = document.getElementById('mobileSvgTooltip');
+  const mobileTooltipTitle = document.getElementById('mobileTooltipTitle');
+  const mobileTooltipBody = document.getElementById('mobileTooltipBody');
+  const mobileTooltipClose = document.getElementById('mobileTooltipClose');
+  
+  // Data type info for enhanced mobile tooltips
+  const hotspotData = {
+    'score': { type: 'int', title: 'Integer Variable', badge: 'int' },
+    'pi': { type: 'float', title: 'Float Variable', badge: 'float' },
+    'name': { type: 'string', title: 'String Variable', badge: 'string' },
+    'isActive': { type: 'bool', title: 'Boolean Variable', badge: 'bool' },
+    'grade': { type: 'char', title: 'Character Variable', badge: 'char' },
+    'numbers': { type: 'int', title: 'Integer Array', badge: 'int' },
+    'ptr': { type: 'memory', title: 'Pointer Variable', badge: 'memory' },
+    'STACK': { type: 'memory', title: 'Stack Memory', badge: 'memory' },
+    'HEAP': { type: 'memory', title: 'Heap Memory', badge: 'memory' }
+  };
+  
+  function getHotspotInfo(tipText) {
+    for (const [key, value] of Object.entries(hotspotData)) {
+      if (tipText.toLowerCase().includes(key.toLowerCase())) {
+        return value;
+      }
+    }
+    return { type: 'memory', title: 'Memory Block', badge: 'memory' };
+  }
+  
+  function showMobileTooltip(tipText) {
+    const info = getHotspotInfo(tipText);
+    mobileTooltipTitle.textContent = info.title;
+    mobileTooltipBody.innerHTML = `
+      <span class="data-type-badge ${info.badge}">${info.badge.toUpperCase()}</span>
+      <p>${tipText}</p>
+    `;
+    mobileTooltip.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+  
+  function hideMobileTooltip() {
+    mobileTooltip.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+  
+  // Close button
+  if (mobileTooltipClose) {
+    mobileTooltipClose.addEventListener('click', hideMobileTooltip);
+  }
+  
+  // Close on backdrop click
+  if (mobileTooltip) {
+    mobileTooltip.addEventListener('click', (e) => {
+      if (e.target === mobileTooltip) {
+        hideMobileTooltip();
+      }
+    });
+  }
+  
+  // Close on Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && mobileTooltip.classList.contains('active')) {
+      hideMobileTooltip();
+    }
+  });
+
+  /* ==== Desktop SVG Tooltip Logic ==== */
   const tip = document.getElementById('tooltip');
   const showTip = (text, x, y) => {
+    if (isMobile()) return; // Don't show on mobile
+    
     tip.textContent = text;
     tip.style.display = 'block';
     
@@ -478,19 +1059,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const viewportHeight = window.innerHeight;
     
     let left = x + 20;
-    let top = y - 60; // Position above the cursor
+    let top = y - 60;
     
-    // If tooltip would go off right edge, position to left of cursor
     if (left + 260 > viewportWidth) {
       left = x - 280;
     }
     
-    // If tooltip would go off top edge, position below cursor
     if (top < 0) {
       top = y + 20;
     }
     
-    // If still off bottom edge, position at top of viewport
     if (top + 100 > viewportHeight) {
       top = 10;
     }
@@ -501,75 +1079,91 @@ document.addEventListener('DOMContentLoaded', () => {
   const hideTip = () => { tip.style.display = 'none'; };
 
   document.querySelectorAll('.hotspot').forEach(h => {
-    let text = h.getAttribute('data-tip');
-    h.addEventListener('pointerenter', e => showTip(text, e.clientX, e.clientY));
-    h.addEventListener('pointermove', e => showTip(text, e.clientX, e.clientY));
+    const text = h.getAttribute('data-tip');
+    
+    // Desktop: hover events
+    h.addEventListener('pointerenter', e => {
+      if (!isMobile()) showTip(text, e.clientX, e.clientY);
+    });
+    h.addEventListener('pointermove', e => {
+      if (!isMobile()) showTip(text, e.clientX, e.clientY);
+    });
     h.addEventListener('pointerleave', hideTip);
-    h.addEventListener('focus', e => showTip(text, (window.innerWidth/2), e.target.getBoundingClientRect().top + 20));
+    h.addEventListener('focus', e => {
+      if (!isMobile()) showTip(text, (window.innerWidth/2), e.target.getBoundingClientRect().top + 20);
+    });
     h.addEventListener('blur', hideTip);
+    
+    // Mobile: tap to show bottom sheet
+    h.addEventListener('click', (e) => {
+      if (isMobile()) {
+        e.preventDefault();
+        showMobileTooltip(text);
+      }
+    });
   });
 
-  /* ==== Quiz Feedback ==== */
+  /* ==== Quiz Feedback (30-50 words each, no prefix - added by handleAnswer) ==== */
   const quizFeedback = {
     '1_1': { correct: 2, feedback: [
-      "Incorrect. 1 byte is typically used for characters, not integers.",
-      "Correct! Most modern systems use 4 bytes (32 bits) for integer variables.",
-      "Incorrect. 8 bytes is typically used for long integers or pointers on 64-bit systems.",
-      "Incorrect. 2 bytes was common in older 16-bit systems but not modern ones."
+      "Characters use 1 byte, not integers. In most modern systems, integers need 4 bytes (32 bits) to store values up to ±2 billion. This larger size enables mathematical operations on whole numbers efficiently.",
+      "Modern 32-bit and 64-bit systems allocate 4 bytes for integers, allowing values from -2,147,483,648 to 2,147,483,647. This standardization ensures consistent behavior across different platforms and programming languages.",
+      "8 bytes is for 'long' integers or pointers on 64-bit systems, not standard integers. The 4-byte integer remains the default because it balances memory efficiency with a useful range for most calculations.",
+      "2-byte integers existed in older 16-bit systems (range: -32,768 to 32,767). Modern computing evolved to 4 bytes because applications needed larger number ranges for addresses, graphics, and complex calculations."
     ]},
     '1_2': { correct: 1, feedback: [
-      "Correct! The char data type is designed for storing single characters.",
-      "Incorrect. Int is for whole numbers, not single characters.",
-      "Incorrect. String is for multiple characters, not just one.",
-      "Incorrect. Float is for decimal numbers, not characters."
+      "The char type stores exactly one character using 1 byte. It's perfect for single letters, digits, or symbols. Using char for 'A' is memory-efficient—a string would waste bytes storing just one character.",
+      "Integers store whole numbers like 95 or -42, not text characters. While 'A' has an ASCII value (65), storing it as int wastes 3 bytes and loses the semantic meaning of 'character'.",
+      "Strings are sequences of multiple characters like \"Hello\". For a single letter grade, string is overkill—it adds null terminator overhead and uses more memory than the simple 1-byte char type.",
+      "Floats store decimal numbers like 3.14159. They use IEEE 754 floating-point format, which is completely different from how characters are encoded. Use char for letters, float for decimals."
     ]},
     '1_3': { correct: 3, feedback: [
-      "Incorrect. Stack is actually faster and often smaller than heap.",
-      "Incorrect. Stack memory is automatically managed, not heap.",
-      "Correct! Stack provides fast access with automatic cleanup, while heap allows dynamic allocation.",
-      "Incorrect. There are significant differences in speed, management, and usage."
+      "Actually, stack is faster! It uses simple pointer arithmetic (just move the stack pointer). Stack is limited in size but offers O(1) allocation. Heap is larger but slower due to complex memory management.",
+      "It's the opposite—stack memory is automatically managed. When a function ends, its stack frame is instantly deallocated. Heap requires explicit freeing (in C) or garbage collection (in Java/Python).",
+      "Stack offers lightning-fast LIFO allocation with automatic cleanup when functions return. Heap provides flexibility for dynamic sizing and objects that outlive their creating function, but requires careful management.",
+      "They're fundamentally different! Stack: fast, automatic, limited size, for local variables. Heap: slower, manual/GC managed, larger, for dynamic objects. Understanding this distinction prevents memory leaks and crashes."
     ]},
     '1_4': { correct: 2, feedback: [
-      "Incorrect. Boolean variables cannot store arbitrary integers.",
-      "Correct! Boolean variables can only store true or false values.",
-      "Incorrect. Decimal numbers require float or double data types.",
-      "Incorrect. Text strings require string or character array data types."
+      "Booleans are strictly binary—true or false, 1 or 0. While stored as integers internally (usually 1 byte), they represent logical states, not numeric values. This constraint enables logical operations like AND, OR, NOT.",
+      "Boolean algebra underlies all computing—every if-statement, loop condition, and logical operation uses booleans. Named after mathematician George Boole, this type forms the foundation of digital logic and decision-making in code.",
+      "Decimal numbers require float or double types, which use IEEE 754 format to represent fractions. Booleans have no decimal component—they're the simplest possible data type with just two states.",
+      "Text requires char or string types. Booleans answer yes/no questions in code: Is the user logged in? Is the file open? They're the building blocks of program flow control and conditional logic."
     ]},
     '1_5': { correct: 4, feedback: [
-      "Incorrect. Pointers store addresses, not the actual data values.",
-      "Incorrect. Variable names are handled by the compiler, not stored by pointers.",
-      "Incorrect. Data types are compile-time information, not stored by pointers.",
-      "Correct! Pointers store memory addresses that point to other variables."
+      "Pointers don't store data—they store where data lives. Think of a pointer as a street address, not the house itself. Dereferencing a pointer (*ptr) retrieves the actual value at that memory location.",
+      "Variable names exist only in source code for human readability. After compilation, the CPU works with memory addresses, not names. Pointers store these addresses, enabling indirect access to data locations.",
+      "Data types are compile-time metadata that tell the compiler how to interpret bytes. Pointers store addresses (usually 4 or 8 bytes). The pointer's type tells how to interpret data at that address.",
+      "Pointers hold memory addresses (like 0x7fff5fbff8ac), enabling powerful techniques: dynamic memory allocation, efficient array traversal, function callbacks, and building complex data structures like linked lists and trees."
     ]},
     '1_6': { correct: 1, feedback: [
-      "Correct! Arrays are stored in contiguous memory locations for efficient access.",
-      "Incorrect. Random storage would make array indexing very inefficient.",
-      "Incorrect. Arrays can be stored in either stack or heap memory.",
-      "Incorrect. Arrays can be allocated in heap memory as well as stack."
+      "Contiguous storage is what makes arrays fast! Element at index i is at: base_address + (i × element_size). This arithmetic works only because elements are adjacent. It's O(1) access—instant lookup regardless of array size.",
+      "Random storage would break array indexing. How would arr[5] work if elements were scattered? The formula base + offset only works with contiguous memory. Linked lists use random storage but sacrifice fast indexing.",
+      "Arrays can live in either memory region. Local arrays (inside functions) go on stack. Dynamically allocated arrays (malloc/new) go on heap. Both maintain contiguous storage—the location differs, not the layout.",
+      "Same as above—arrays work identically in stack or heap. The key property is contiguous allocation, not which memory region. Heap arrays persist beyond function calls; stack arrays are automatically freed."
     ]},
     '1_7': { correct: 3, feedback: [
-      "Incorrect. Int cannot store decimal values like 3.14159.",
-      "Incorrect. Char is for single characters, not decimal numbers.",
-      "Correct! Float or double data types are designed for decimal numbers.",
-      "Incorrect. Bool only stores true/false values, not decimal numbers."
+      "Integers truncate decimals—storing 3.14159 in an int gives you just 3. You'd lose the fractional part entirely. For any value with a decimal point, you need float or double to preserve precision.",
+      "Char stores single characters like 'A' or '7', not numeric values with decimals. While '3' is a valid char, it's the character three (ASCII 51), not the number 3.0 you could do math with.",
+      "Float (32-bit) and double (64-bit) use IEEE 754 format to represent decimals. Float gives ~7 significant digits; double gives ~15. For π, double is preferred since float loses precision after 3.141592.",
+      "Bool stores only true/false. There's no way to represent 3.14159 as a boolean. Every data type has a purpose: bool for logic, int for counting, float/double for measurements and calculations."
     ]},
     '1_8': { correct: 2, feedback: [
-      "Incorrect. Strings contain multiple characters, not just one.",
-      "Correct! Strings are implemented as arrays of characters in most languages.",
-      "Incorrect. Strings are not integer values, they're character sequences.",
-      "Incorrect. Strings are not related to boolean operations."
+      "A single character is 'A'—that's char type. Strings like \"Hello\" are sequences containing multiple characters. The fundamental difference: char holds one character; string holds a collection of them.",
+      "Under the hood, \"Alice\" is stored as ['A','l','i','c','e','\\0']—an array of characters ending with null terminator. This array structure enables string operations like length(), substring(), and concatenation.",
+      "Strings contain text, not numbers. While you can have \"123\" as a string, it's stored as characters ['1','2','3'], not the integer 123. Converting between them requires parsing (parseInt, atoi).",
+      "Strings and booleans are unrelated types. Strings hold text sequences; booleans hold true/false. Some languages allow string-to-boolean conversion (\"true\" → true), but they're fundamentally different concepts."
     ]},
     '1_9': { correct: 4, feedback: [
-      "Incorrect. Memory alignment is about physical memory layout, not alphabetical order.",
-      "Incorrect. Different data types can still use different amounts of memory.",
-      "Incorrect. Memory alignment is about address boundaries, not linear organization.",
-      "Correct! Memory alignment places data at addresses that are multiples of certain values for efficiency."
+      "Memory alignment has nothing to do with alphabetical ordering. It's about physical memory addresses. CPUs access aligned data faster—a 4-byte int at address 1000 loads in one cycle; at 1001, it might take two.",
+      "Alignment doesn't change data type sizes. An int is still 4 bytes whether aligned or not. Alignment affects where data is placed in memory, adding padding bytes between fields to hit optimal boundaries.",
+      "\"Straight line\" describes sequential addresses, not alignment. Alignment means placing 4-byte data at addresses divisible by 4, 8-byte data at addresses divisible by 8. This matches CPU word boundaries.",
+      "CPUs fetch memory in chunks (words). When data crosses word boundaries, it requires multiple memory accesses. Alignment ensures each piece of data sits within a single word, maximizing read/write speed."
     ]},
     '1_10': { correct: 1, feedback: [
-      "Correct! Local variables are automatically cleaned up when the function scope ends.",
-      "Incorrect. Memory would quickly run out if variables were never cleaned up.",
-      "Incorrect. Local variables are not moved to heap memory.",
-      "Incorrect. Local variables do not become global when functions end."
+      "When a function returns, its stack frame is 'popped'—the stack pointer moves back, instantly deallocating all local variables. This automatic cleanup is why stack memory is so efficient and leak-proof.",
+      "If variables persisted forever, programs would quickly exhaust memory. Stack's automatic cleanup is essential. Each function call pushes a new frame; each return pops it. This LIFO pattern manages memory elegantly.",
+      "Local variables stay on stack—they're never 'moved' to heap. If you need data to outlive a function, you must explicitly allocate on heap (malloc/new) and return a pointer. Stack data dies with the function.",
+      "Scope rules don't work that way. Local variables are invisible outside their function by design. Global variables are declared at file level with different syntax. Function-end doesn't change variable scope."
     ]}
   };
 
@@ -579,7 +1173,12 @@ document.addEventListener('DOMContentLoaded', () => {
   containers.forEach((container, i) => {
     const quizId = i + 1;
     const quizzes = container.querySelectorAll('.quiz');
-    quizStates[quizId] = { current: 1, total: quizzes.length, answered: new Array(quizzes.length).fill(false) };
+    quizStates[quizId] = { 
+      current: 1, 
+      total: quizzes.length, 
+      answered: new Array(quizzes.length).fill(false),
+      correctCount: 0  // Track correct answers
+    };
     quizzes.forEach((quiz, j) => {
       const questionIndex = j + 1;
       quiz.querySelectorAll('input[type="radio"]').forEach(radio => {
@@ -605,12 +1204,138 @@ document.addEventListener('DOMContentLoaded', () => {
       chosenLabel.classList.add('correct');
       exp.classList.add('correct');
       exp.innerHTML = `<strong>Correct!</strong> ${text}`;
+      quizStates[quizId].correctCount++; // Track correct answer
     }else{
       chosenLabel.classList.add('incorrect');
       const correctLabel = quiz.querySelector(`input[value="${correct}"]`).parentElement;
       correctLabel.classList.add('correct');
       exp.classList.add('incorrect');
       exp.innerHTML = `<strong>Incorrect.</strong> ${text}`;
+    }
+    
+    // Check if all questions are answered
+    checkQuizCompletion(quizId);
+  }
+  
+  /* ==== Quiz Completion Celebration ==== */
+  function checkQuizCompletion(quizId) {
+    const state = quizStates[quizId];
+    const allAnswered = state.answered.every(a => a === true);
+    
+    if (allAnswered) {
+      setTimeout(() => showQuizCompletion(quizId), 800); // Slight delay for UX
+    }
+  }
+  
+  function showQuizCompletion(quizId) {
+    const state = quizStates[quizId];
+    const score = state.correctCount;
+    const total = state.total;
+    const percentage = (score / total) * 100;
+    
+    // Get DOM elements
+    const overlay = document.getElementById('quizCompletionOverlay');
+    const emoji = document.getElementById('completionEmoji');
+    const title = document.getElementById('completionTitle');
+    const scoreNum = document.getElementById('completionScoreNum');
+    const message = document.getElementById('completionMessage');
+    const insightText = document.getElementById('completionInsightText');
+    const cta = document.getElementById('completionCta');
+    
+    // Set score
+    scoreNum.textContent = score;
+    
+    // Context-aware messages based on performance
+    const completionData = getCompletionData(score, percentage);
+    
+    emoji.textContent = completionData.emoji;
+    title.textContent = completionData.title;
+    message.innerHTML = completionData.message;
+    insightText.textContent = completionData.insight;
+    cta.textContent = completionData.cta;
+    
+    // Show overlay
+    overlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    
+    // Trigger confetti for good scores
+    if (percentage >= 70) {
+      createConfetti(percentage >= 90 ? 60 : 30);
+    }
+    
+    // Close handlers
+    cta.onclick = () => {
+      overlay.classList.remove('active');
+      document.body.style.overflow = '';
+      // Scroll to glossary for further learning
+      document.querySelector('.glossary-section').scrollIntoView({ behavior: 'smooth' });
+    };
+  }
+  
+  function getCompletionData(score, percentage) {
+    if (percentage === 100) {
+      return {
+        emoji: '🏆',
+        title: 'Memory Master!',
+        message: `<strong>Perfect score!</strong> You've demonstrated complete mastery of variables and data types. Just like a perfectly aligned memory block, every answer was in its right place. You truly understand how computers think about data.`,
+        insight: `Fun fact: Your brain just allocated new neural pathways for memory concepts—and unlike heap memory, this knowledge will stay with you automatically!`,
+        cta: 'Explore the Glossary →'
+      };
+    } else if (percentage >= 90) {
+      return {
+        emoji: '🧠',
+        title: 'Outstanding!',
+        message: `<strong>Brilliant work!</strong> You're thinking like a computer scientist now. You understand the fundamental building blocks that power every program ever written. The difference between stack and heap? Child's play for you.`,
+        insight: `Like a well-optimized program, you efficiently stored this knowledge in long-term memory. Keep building on this foundation—pointers and data structures await!`,
+        cta: 'Deepen Your Knowledge →'
+      };
+    } else if (percentage >= 70) {
+      return {
+        emoji: '✨',
+        title: 'Great Progress!',
+        message: `<strong>You're getting it!</strong> ${score} out of 10 shows solid understanding. Like a variable being initialized, you've set a strong foundation. The concepts you missed? They're just waiting to be allocated to your memory.`,
+        insight: `Every expert was once a beginner. The fact that you're learning how memory works puts you ahead of most programmers who never peek under the hood!`,
+        cta: 'Review in Glossary →'
+      };
+    } else if (percentage >= 50) {
+      return {
+        emoji: '💪',
+        title: 'Keep Going!',
+        message: `<strong>You're on the right track!</strong> Memory concepts can feel abstract at first—but you've already grasped ${score} key ideas. Think of the ones you missed as uninitialized variables, ready to be filled with the right values.`,
+        insight: `Here's a secret: understanding memory is what separates good programmers from great ones. Every time you revisit these concepts, they become clearer. The glossary below has the answers you're looking for.`,
+        cta: 'Learn from Glossary →'
+      };
+    } else {
+      return {
+        emoji: '🌱',
+        title: 'Seeds Planted!',
+        message: `<strong>Every expert starts somewhere.</strong> You've just begun your journey into understanding how computers store data. Like declaring a variable for the first time, this is your starting point—not your destination.`,
+        insight: `Memory concepts are genuinely tricky—even experienced developers revisit them. Scroll down to the glossary and tap on the terms. Each definition is a mini-lesson that will make these concepts click.`,
+        cta: 'Start with Glossary →'
+      };
+    }
+  }
+  
+  function createConfetti(count) {
+    const container = document.getElementById('confettiContainer');
+    const colors = ['#fd7e14', '#ffd43b', '#51cf66', '#4dabf7', '#845ef7', '#ff6b6b'];
+    
+    for (let i = 0; i < count; i++) {
+      setTimeout(() => {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+        confetti.style.left = Math.random() * 100 + 'vw';
+        confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.width = (Math.random() * 8 + 6) + 'px';
+        confetti.style.height = confetti.style.width;
+        confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+        confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+        confetti.style.animationDelay = (Math.random() * 0.5) + 's';
+        container.appendChild(confetti);
+        
+        // Clean up after animation
+        setTimeout(() => confetti.remove(), 4000);
+      }, i * 50);
     }
   }
 

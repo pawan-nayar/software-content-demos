@@ -35,54 +35,56 @@
         --code-bg: #2d2d2d;
       }
       *{box-sizing:border-box;margin:0;padding:0}
-      html,body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.8; scroll-behavior: smooth;}
+      html,body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;scroll-behavior:smooth;overflow-x:hidden}
       
-      .container{max-width:900px;margin:auto;padding:24px;background:#fff}
+      .container{max-width:1080px;margin:auto;padding:24px;background:#fff}
       
-      /* CORRECTED: Reduced Title Sizes & Colors */
-      h1, h2, h3, h4 { color: var(--header-bg); font-weight: 700; line-height: 1.3; }
-      h1{font-size:clamp(1.8rem, 4vw, 2.4rem); margin-bottom: 4px;}
-      .byline{font-size:clamp(1rem, 3vw, 1.2rem); margin-bottom: 24px; font-style: italic; color: #495057;}
-      h2{font-size:clamp(1.5rem,4vw,2rem); margin: 60px 0 24px; border-bottom: 2px solid var(--border); padding-bottom: 12px; font-weight: 600;}
-      h3{font-size:clamp(1.2rem,3vw,1.5rem); margin: 40px 0 16px; font-weight: 700;}
-      h4 {color: var(--text); font-weight: 600; font-size: 1.1rem;}
-      p{margin-bottom: 20px;}
+      h1{font-size:clamp(2rem,5vw,2.6rem);margin-bottom:8px;color:var(--text);line-height:1.2}
+      .byline{font-size:clamp(1rem,3vw,1.2rem);margin-bottom:24px;font-style:italic;color:#4a5568}
+      h2{font-size:clamp(1.5rem,4vw,2rem);color:var(--text);margin:48px 0 16px;border-bottom:2px solid var(--border);padding-bottom:8px}
+      h3{font-size:clamp(1.2rem,3vw,1.5rem);color:var(--text);margin-top:32px;margin-bottom:12px}
+      h4{font-size:clamp(1rem,2.5vw,1.2rem);font-weight:bold;color:var(--accent-2);margin-bottom:10px}
+      p{margin-bottom:16px;word-wrap:break-word}
       strong { font-weight: 600; }
       code { background: var(--muted); border: 1px solid var(--border); padding: 2px 6px; border-radius: 4px; font-family: 'Roboto Mono', monospace; font-size: 0.9em; color: var(--accent-2); font-weight: 600; }
       pre { background: var(--code-bg); color: #e2e8f0; padding: 1rem; border-radius: 8px; overflow-x: auto; font-family: 'Roboto Mono', monospace; }
       pre code { background: transparent; border: none; padding: 0; font-size: 1em; }
 
       .site-header,.site-footer{background:var(--header-bg);color:var(--header-fg);padding:14px 24px}
-      .site-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;position:sticky;top:0;z-index:100; box-shadow: 0 2px 10px rgba(0,0,0,0.1);}
-      .logo{font-weight:700;font-size:1.15rem;color:#fff; text-decoration: none;}
-      .logo:hover{color:var(--accent);}
-      .site-footer{text-align:center;margin-top:50px;padding:30px; font-size: 0.9rem;}
-      
-      /* Module Navigation */
-      .module-nav { background: #2d2d2d; border-bottom: 2px solid var(--accent); padding: 12px 24px; position: sticky; top: 56px; z-index: 99; transition: all 0.3s ease; }
-      .module-nav.minimized { padding: 6px 24px; top: 0; }
-      .module-nav.minimized .module-link { padding: 6px 10px; font-size: 0.75rem; }
-      .module-nav-inner { display: flex; gap: 8px; overflow-x: auto; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; scrollbar-width: thin; scrollbar-color: var(--accent) #3a3a3a; }
-      .module-nav-inner::-webkit-scrollbar { height: 4px; }
-      .module-nav-inner::-webkit-scrollbar-track { background: #3a3a3a; }
-      .module-nav-inner::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
-      .module-link { display: flex; align-items: center; gap: 6px; padding: 8px 14px; background: #3a3a3a; color: #e2e8f0; text-decoration: none; border-radius: 6px; font-size: 0.85rem; font-weight: 500; transition: all 0.2s; white-space: nowrap; flex-shrink: 0; }
-      .module-link:hover { background: var(--accent); color: white; }
-      .module-link.active { background: var(--accent); color: white; font-weight: 600; }
-      .module-link.completed::before { content: '✓'; display: inline-block; width: 16px; height: 16px; background: var(--ok); color: white; border-radius: 50%; text-align: center; line-height: 16px; font-size: 11px; margin-right: 2px; }
-      .module-link .module-num { opacity: 0.7; }
-      .nav-controls { display: none; }
+      .site-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;position:sticky;top:0;z-index:200;box-shadow:0 2px 10px rgba(0,0,0,0.1)}
+      .logo{font-weight:700;font-size:1.15rem;color:#fff;text-decoration:none}
+      .logo:hover{color:var(--accent);text-decoration:none}
+      .site-nav{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+      .site-nav a{color:#ced4da;text-decoration:none}
+      .site-nav a:hover{color:#fff;text-decoration:none}
+      .hamburger{display:none;background:none;border:1px solid rgba(255,255,255,0.4);color:#fff;border-radius:8px;padding:8px 10px;font-size:1rem;cursor:pointer;line-height:1;transition:background 0.2s;min-width:48px;min-height:48px}
+      .hamburger:hover,.hamburger[aria-expanded="true"]{background:rgba(255,255,255,0.15)}
+      .site-footer{text-align:center;margin-top:50px;padding:40px;font-size:0.9rem}
       
       @media (max-width: 768px) {
-        .module-nav { top: 52px; padding: 8px 12px; position: relative; }
-        .module-nav-wrapper { position: relative; }
-        .module-nav-inner { gap: 12px; padding: 0 40px; scroll-snap-type: x mandatory; }
-        .module-link { scroll-snap-align: center; padding: 10px 16px; font-size: 0.9rem; min-width: 140px; justify-content: center; }
-        .nav-controls { display: flex; position: absolute; top: 50%; transform: translateY(-50%); width: 100%; justify-content: space-between; pointer-events: none; z-index: 1; }
-        .nav-btn { pointer-events: all; background: var(--accent); color: white; border: none; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
-        .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-        .nav-btn-prev { margin-left: 4px; }
-        .nav-btn-next { margin-right: 4px; }
+        .site-header{flex-wrap:nowrap;padding:12px 16px}
+        .logo{flex:0 0 auto;font-size:1.05rem}
+        .hamburger{display:inline-flex;align-items:center;justify-content:center;margin-left:auto}
+        .site-nav{display:none;position:absolute;top:100%;right:16px;flex-direction:column;gap:0;background:var(--header-bg);padding:8px 0;border-radius:8px;box-shadow:0 10px 25px rgba(0,0,0,0.35);min-width:200px}
+        .site-nav.open{display:flex}
+        .site-nav a{display:block;padding:10px 18px;color:#f8f9fa;white-space:nowrap}
+        .site-nav a + a{border-top:1px solid rgba(255,255,255,0.15)}
+      }
+      
+      /* Module Navigation */
+      .module-nav{background:#2d2d2d;border-bottom:2px solid var(--accent);padding:12px 24px;position:sticky;top:56px;z-index:99}
+      .module-nav-inner{display:flex;gap:8px;flex-wrap:wrap}
+      .module-link{display:flex;align-items:center;gap:6px;padding:8px 14px;background:#3a3a3a;color:#e2e8f0;text-decoration:none;border-radius:6px;font-size:0.85rem;font-weight:500;transition:all 0.2s;white-space:nowrap}
+      .module-link:hover{background:var(--accent);color:white;text-decoration:none}
+      .module-link.active{background:var(--accent);color:white;font-weight:600}
+      .module-link.completed::before{content:'✓';display:inline-block;width:16px;height:16px;background:var(--ok);color:white;border-radius:50%;text-align:center;line-height:16px;font-size:11px;margin-right:2px}
+      .module-link .module-num{opacity:0.7}
+      
+      @media (max-width: 768px) {
+        .module-nav{top:52px;padding:10px 12px}
+        .module-nav-inner{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+        .module-link{padding:10px 8px;font-size:0.8rem;min-height:48px;justify-content:center;text-align:center;flex-direction:column;gap:2px}
+        .module-link .module-num{font-size:0.75rem}
       }
       
       .module-section { margin-bottom: 60px; }
@@ -144,18 +146,20 @@
       .svg-diagram .label-doc { fill: var(--accent-2); }
       .svg-diagram .connector { stroke: #adb5bd; stroke-width: 2; }
       
-      /* --- CORRECTED: Flip Card Styles --- */
-      .flip-card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
-      .flip-card { background-color: transparent; min-height: 240px; perspective: 1000px; cursor: pointer; }
-      .flip-card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; }
-      .flip-card.flipped .flip-card-inner { transform: rotateY(180deg); }
-      .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; border-radius: 12px; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; padding: 28px; text-align: left; }
-      .flip-card-front { background-color: var(--accent-soft); border: 2px solid var(--accent); align-items: center; text-align: center; }
-      .flip-card-front h4 { color: var(--header-bg); margin: 0; font-size: 1.2rem; line-height: 1.4; }
-      .flip-card-back { background-color: var(--header-bg); color: white; transform: rotateY(180deg); overflow: auto; line-height: 1.7; }
-      .flip-card-back p { font-size: 0.95rem; margin-bottom: 12px; }
-      .flip-card-back code { color: var(--accent); background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); padding: 3px 6px; }
-      .flip-card-back footer { font-style: italic; opacity: 0.85; font-size: 0.9rem; margin-top: 8px; }
+      /* --- Flip Card Styles --- */
+      .flip-card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:20px}
+      .flip-card{background-color:transparent;min-height:260px;perspective:1000px;cursor:pointer}
+      .flip-card-inner{position:relative;width:100%;height:100%;transition:transform 0.6s;transform-style:preserve-3d}
+      .flip-card.flipped .flip-card-inner{transform:rotateY(180deg)}
+      .flip-card-front,.flip-card-back{position:absolute;width:100%;height:100%;-webkit-backface-visibility:hidden;backface-visibility:hidden;border-radius:16px;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:32px;text-align:center}
+      .flip-card-front{background:rgba(255,247,237,0.9);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:2px solid var(--accent);box-shadow:0 8px 32px rgba(253,126,20,0.15)}
+      .flip-card-front .card-emoji{font-size:2.5rem;margin-bottom:16px;display:block}
+      .flip-card-front h4{color:var(--header-bg);margin:0 0 12px 0;font-size:1.2rem;line-height:1.4}
+      .flip-card-front .flip-hint{font-size:0.85rem;color:var(--accent-2);font-weight:600;margin-top:8px;opacity:0.8}
+      .flip-card-back{background:var(--header-bg);color:white;transform:rotateY(180deg);overflow:auto;line-height:1.7;align-items:flex-start;text-align:left}
+      .flip-card-back p{font-size:0.95rem;margin-bottom:12px}
+      .flip-card-back code{color:var(--accent);background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);padding:3px 6px}
+      .flip-card-back footer{font-style:italic;opacity:0.85;font-size:0.9rem;margin-top:8px}
       
       /* --- Horizontal Quiz Styles --- */
       .quiz-container{padding:20px;border:2px solid var(--border);border-radius:12px;background:var(--muted);}
@@ -177,16 +181,20 @@
 
  <header class="site-header">
      <a href="claude_code_for_financial_consultants_index.html" class="logo">Claude for Consultants</a>
-     <span style="font-size:0.9rem;opacity:0.8;">Module 1 of 6</span>
+     <button class="hamburger" aria-label="Toggle navigation" aria-expanded="false" onclick="toggleNav()">☰</button>
+     <nav class="site-nav" id="siteNav">
+       <a href="#context">Context</a>
+       <a href="#core-content">Core Content</a>
+       <a href="#hands-on">Hands-On</a>
+       <a href="#tips">Tips</a>
+       <a href="#faq">FAQ</a>
+       <a href="#glossary">Glossary</a>
+       <a href="#quiz">Quiz</a>
+     </nav>
  </header>
 
  <nav class="module-nav" role="navigation" aria-label="Course modules">
-     <div class="module-nav-wrapper">
-         <div class="nav-controls">
-             <button class="nav-btn nav-btn-prev" id="navPrev" aria-label="Previous modules">‹</button>
-             <button class="nav-btn nav-btn-next" id="navNext" aria-label="Next modules">›</button>
-         </div>
-         <div class="module-nav-inner" id="moduleNavInner">
+     <div class="module-nav-inner" id="moduleNavInner">
              <a href="claude_code_for_financial_consultants_part_0.html" class="module-link" data-module="0">
                  <span class="module-num">M0</span> Introduction
              </a>
@@ -205,20 +213,14 @@
              <a href="claude_code_for_financial_consultants_part_5.html" class="module-link" data-module="5">
                  <span class="module-num">M5</span> AI-Native
              </a>
-         </div>
      </div>
  </nav>
 
  <div class="container">
    
-    <h1>MODULE 1: Workspace Orientation</h1>
-   <p class="byline">Building confidence and mental models before installation</p>
-
-    <!-- 1. CONTEXT -->
-    <section class="module-section">
-        <h2><span class="icon-prefix">📍</span>Welcome: Your Orientation (No Installation Yet)</h2>
-        <div class="context-box">
-            <h3>You work in spreadsheets, presentations, and client reports. You might be thinking:</h3>
+    <h1>Module 1: Orientation</h1>
+  <div class="context-box">
+    <h3>You work in spreadsheets, presentations, and client reports. You might be thinking:</h3>
             <ul>
                 <li>"Why would I ever need to 'code'?"</li>
                 <li>"I don't even know what a 'Terminal' is, and it looks intimidating."</li>
@@ -235,11 +237,10 @@
                     <li><strong>Terminal</strong> (or Command Line) = A text window where you type short commands. It looks scary but you'll use only 2-3 commands. <em>You'll use it in Module 2.</em></li>
                 </ul>
             </div>
-        </div>
-    </section>
+  </div>
 
-    <!-- 2. CORE CONTENT PART 1 -->
-    <section class="module-section">
+    <!-- 1. CONTEXT -->
+    <section id="context" class="module-section">
         <h2><span class="icon-prefix">🛠️</span>What You'll Build in This Series</h2>
         <p>These aren't abstract coding exercises. These are <strong>four</strong> projects you'll build across <strong>Modules 2-3</strong> as a financial consultant—real tools to automate work, save time, and create client-ready deliverables.</p>
         
@@ -438,7 +439,7 @@
     </section>
 
     <!-- 3. HANDS-ON PRACTICE (Step-by-step) -->
-    <section class="module-section">
+    <section id="hands-on" class="module-section">
         <h2><span class="icon-prefix">👟</span>Preview: How It Works in VS Code</h2>
         <p>This is a <strong>preview</strong> of next module's workflow so your mental model is clear. No action needed yet.</p>
         <div class="svg-diagram-container">
@@ -495,12 +496,16 @@
     </section>
     
     <!-- 4. KEY TIPS (Flip Cards) -->
-    <section class="module-section">
+    <section id="tips" class="module-section">
         <h2><span class="icon-prefix">💡</span>3 Key Orientation Tips</h2>
         <div class="flip-card-grid" id="tipsFlipGrid">
             <div class="flip-card" tabindex="0">
                 <div class="flip-card-inner">
-                    <div class="flip-card-front"><h4>Can I break my computer?</h4></div>
+                    <div class="flip-card-front">
+                        <span class="card-emoji">🛡️</span>
+                        <h4>Can I break my computer?</h4>
+                        <p class="flip-hint">Tap to flip →</p>
+                    </div>
                     <div class="flip-card-back">
                         <p>No. Claude Code never changes a file without your explicit approval. Every edit shows a "diff" (before/after preview). You click <strong>Approve</strong> or <strong>Reject</strong>. Think of it like Track Changes in Word—you're always in control.</p>
                         <footer>— It's a safe space to explore.</footer>
@@ -509,7 +514,11 @@
             </div>
             <div class="flip-card" tabindex="0">
                 <div class="flip-card-inner">
-                    <div class="flip-card-front"><h4>Do I need to know programming?</h4></div>
+                    <div class="flip-card-front">
+                        <span class="card-emoji">💬</span>
+                        <h4>Do I need to know programming?</h4>
+                        <p class="flip-hint">Tap to flip →</p>
+                    </div>
                     <div class="flip-card-back">
                         <p>No. You'll write prompts in plain English like you're briefing an analyst: "Create a calculator with sliders for investment, rate, and years." Claude generates the code. You review it visually (no reading code required) and approve.</p>
                         <footer>— Plain language is your interface.</footer>
@@ -518,7 +527,11 @@
             </div>
              <div class="flip-card" tabindex="0">
                 <div class="flip-card-inner">
-                    <div class="flip-card-front"><h4>What if I get stuck?</h4></div>
+                    <div class="flip-card-front">
+                        <span class="card-emoji">🆘</span>
+                        <h4>What if I get stuck?</h4>
+                        <p class="flip-hint">Tap to flip →</p>
+                    </div>
                     <div class="flip-card-back">
                         <p>Module 2 has step-by-step screenshots. Module 3 has video walkthroughs. Each FAQ section addresses common errors. If something doesn't work, the error message usually tells you exactly what to fix—and Claude can help explain it.</p>
                         <footer>— You won't be alone.</footer>
@@ -555,13 +568,13 @@
     </section>
 
     <!-- 6. COMMON QUESTIONS (FAQ) -->
-    <section class="module-section">
+    <section id="faq" class="module-section">
         <h2><span class="icon-prefix">❓</span>Common Questions</h2>
         <div class="accordion" id="faq-accordion"></div>
     </section>
     
     <!-- 7. MC QUESTIONS (Horizontal Carousel) -->
-    <section class="module-section">
+    <section id="quiz" class="module-section">
         <h2><span class="icon-prefix">✅</span>Knowledge Check</h2>
         <div class="quiz-container">
             <div class="quiz-navigation">
@@ -593,6 +606,24 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
+    // --- Hamburger Toggle ---
+    window.toggleNav = function() {
+        const nav = document.getElementById('siteNav');
+        const hamburger = document.querySelector('.hamburger');
+        const isOpen = nav.classList.toggle('open');
+        hamburger.setAttribute('aria-expanded', isOpen);
+    };
+    
+    // Close menu when clicking a nav link
+    document.querySelectorAll('.site-nav a').forEach(link => {
+        link.addEventListener('click', () => {
+            const nav = document.getElementById('siteNav');
+            const hamburger = document.querySelector('.hamburger');
+            nav.classList.remove('open');
+            hamburger.setAttribute('aria-expanded', 'false');
+        });
+    });
+    
     // --- Module Navigation with Completion Tracking ---
     const currentModule = 1;
     
@@ -620,64 +651,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     
-    // Minimize header on scroll
-    const moduleNav = document.querySelector('.module-nav');
-    let lastScrollTop = 0;
-    let ticking = false;
-    
-    window.addEventListener('scroll', () => {
-        if (!ticking) {
-            window.requestAnimationFrame(() => {
-                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-                
-                if (scrollTop > 200) {
-                    moduleNav.classList.add('minimized');
-                } else {
-                    moduleNav.classList.remove('minimized');
-                }
-                
-                lastScrollTop = scrollTop;
-                ticking = false;
-            });
-            ticking = true;
-        }
-    });
-    
-    // Mobile carousel navigation
-    const navInner = document.getElementById('moduleNavInner');
-    const navPrev = document.getElementById('navPrev');
-    const navNext = document.getElementById('navNext');
-    
-    if (navInner && navPrev && navNext) {
-        // Scroll to active module on load (mobile)
-        const activeLink = navInner.querySelector('.module-link.active');
-        if (activeLink && window.innerWidth <= 768) {
-            activeLink.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-        }
-        
-        // Prev/Next button handlers
-        navPrev.addEventListener('click', () => {
-            navInner.scrollBy({ left: -160, behavior: 'smooth' });
-        });
-        
-        navNext.addEventListener('click', () => {
-            navInner.scrollBy({ left: 160, behavior: 'smooth' });
-        });
-        
-        // Update button states on scroll
-        function updateNavButtons() {
-            const scrollLeft = navInner.scrollLeft;
-            const scrollWidth = navInner.scrollWidth;
-            const clientWidth = navInner.clientWidth;
-            
-            navPrev.disabled = scrollLeft <= 0;
-            navNext.disabled = scrollLeft + clientWidth >= scrollWidth - 5;
-        }
-        
-        navInner.addEventListener('scroll', updateNavButtons);
-        window.addEventListener('resize', updateNavButtons);
-        updateNavButtons();
-    }
     
     // --- Rest of Module 1 JavaScript ---
     // --- Data ---

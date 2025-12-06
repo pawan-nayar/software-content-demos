@@ -35,16 +35,16 @@
         --code-bg: #2d2d2d;
       }
       *{box-sizing:border-box;margin:0;padding:0}
-      html,body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.8; scroll-behavior: smooth;}
+      html,body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;scroll-behavior:smooth;overflow-x:hidden}
       
-      .container{max-width:900px;margin:auto;padding:24px;background:#fff}
+      .container{max-width:1080px;margin:auto;padding:24px;background:#fff}
       
       h1, h2, h3, h4 { color: var(--header-bg); font-weight: 700; line-height: 1.3; }
-      h1{font-size:clamp(1.8rem, 4vw, 2.4rem); margin-bottom: 4px;}
+      h1{font-size:clamp(2rem,5vw,2.6rem);margin-bottom:8px;line-height:1.2}
       .byline{font-size:clamp(1rem, 3vw, 1.2rem); margin-bottom: 24px; font-style: italic; color: #495057;}
-      h2{font-size:clamp(1.5rem,4vw,2rem); margin: 80px 0 32px; border-bottom: 2px solid var(--border); padding-bottom: 12px; font-weight: 600;}
-      h3{font-size:clamp(1.2rem,3vw,1.5rem); margin: 40px 0 20px; font-weight: 700;}
-      h4 {color: var(--text); font-weight: 600; font-size: 1.1rem;}
+      h2{font-size:clamp(1.5rem,4vw,2rem);margin:48px 0 16px;border-bottom:2px solid var(--border);padding-bottom:8px}
+      h3{font-size:clamp(1.2rem,3vw,1.5rem);margin-top:32px;margin-bottom:12px}
+      h4{font-size:clamp(1rem,2.5vw,1.2rem);font-weight:bold;color:var(--accent-2);margin-bottom:10px}
       p{margin-bottom: 24px;}
       strong { font-weight: 600; }
       code { background: var(--muted); border: 1px solid var(--border); padding: 2px 6px; border-radius: 4px; font-family: 'Roboto Mono', monospace; font-size: 0.9em; }
@@ -52,36 +52,40 @@
       pre code { background: transparent; border: none; padding: 0; font-size: 1em; }
 
       .site-header,.site-footer{background:var(--header-bg);color:var(--header-fg);padding:14px 24px}
-      .site-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;position:sticky;top:0;z-index:100; box-shadow: 0 2px 10px rgba(0,0,0,0.1);}
-      .logo{font-weight:700;font-size:1.15rem;color:#fff; text-decoration: none;}
-      .logo:hover{color:var(--accent);}
-      .site-footer{text-align:center;margin-top:50px;padding:30px; font-size: 0.9rem;}
-      
-      /* Module Navigation */
-      .module-nav { background: #2d2d2d; border-bottom: 2px solid var(--accent); padding: 12px 24px; position: sticky; top: 56px; z-index: 99; transition: all 0.3s ease; }
-      .module-nav.minimized { padding: 6px 24px; top: 0; }
-      .module-nav.minimized .module-link { padding: 6px 10px; font-size: 0.75rem; }
-      .module-nav-inner { display: flex; gap: 8px; overflow-x: auto; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; scrollbar-width: thin; scrollbar-color: var(--accent) #3a3a3a; }
-      .module-nav-inner::-webkit-scrollbar { height: 4px; }
-      .module-nav-inner::-webkit-scrollbar-track { background: #3a3a3a; }
-      .module-nav-inner::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
-      .module-link { display: flex; align-items: center; gap: 6px; padding: 8px 14px; background: #3a3a3a; color: #e2e8f0; text-decoration: none; border-radius: 6px; font-size: 0.85rem; font-weight: 500; transition: all 0.2s; white-space: nowrap; flex-shrink: 0; }
-      .module-link:hover { background: var(--accent); color: white; }
-      .module-link.active { background: var(--accent); color: white; font-weight: 600; }
-      .module-link.completed::before { content: '✓'; display: inline-block; width: 16px; height: 16px; background: var(--ok); color: white; border-radius: 50%; text-align: center; line-height: 16px; font-size: 11px; margin-right: 2px; }
-      .module-link .module-num { opacity: 0.7; }
-      .nav-controls { display: none; }
+      .site-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;position:sticky;top:0;z-index:200;box-shadow:0 2px 10px rgba(0,0,0,0.1)}
+      .logo{font-weight:700;font-size:1.15rem;color:#fff;text-decoration:none}
+      .logo:hover{color:var(--accent);text-decoration:none}
+      .site-nav{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+      .site-nav a{color:#ced4da;text-decoration:none}
+      .site-nav a:hover{color:#fff;text-decoration:none}
+      .hamburger{display:none;background:none;border:1px solid rgba(255,255,255,0.4);color:#fff;border-radius:8px;padding:8px 10px;font-size:1rem;cursor:pointer;line-height:1;transition:background 0.2s;min-width:48px;min-height:48px}
+      .hamburger:hover,.hamburger[aria-expanded="true"]{background:rgba(255,255,255,0.15)}
+      .site-footer{text-align:center;margin-top:50px;padding:40px;font-size:0.9rem}
       
       @media (max-width: 768px) {
-        .module-nav { top: 52px; padding: 8px 12px; position: relative; }
-        .module-nav-wrapper { position: relative; }
-        .module-nav-inner { gap: 12px; padding: 0 40px; scroll-snap-type: x mandatory; }
-        .module-link { scroll-snap-align: center; padding: 10px 16px; font-size: 0.9rem; min-width: 140px; justify-content: center; }
-        .nav-controls { display: flex; position: absolute; top: 50%; transform: translateY(-50%); width: 100%; justify-content: space-between; pointer-events: none; z-index: 1; }
-        .nav-btn { pointer-events: all; background: var(--accent); color: white; border: none; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
-        .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-        .nav-btn-prev { margin-left: 4px; }
-        .nav-btn-next { margin-right: 4px; }
+        .site-header{flex-wrap:nowrap;padding:12px 16px}
+        .logo{flex:0 0 auto;font-size:1.05rem}
+        .hamburger{display:inline-flex;align-items:center;justify-content:center;margin-left:auto}
+        .site-nav{display:none;position:absolute;top:100%;right:16px;flex-direction:column;gap:0;background:var(--header-bg);padding:8px 0;border-radius:8px;box-shadow:0 10px 25px rgba(0,0,0,0.35);min-width:200px}
+        .site-nav.open{display:flex}
+        .site-nav a{display:block;padding:10px 18px;color:#f8f9fa;white-space:nowrap}
+        .site-nav a + a{border-top:1px solid rgba(255,255,255,0.15)}
+      }
+      
+      /* Module Navigation */
+      .module-nav{background:#2d2d2d;border-bottom:2px solid var(--accent);padding:12px 24px;position:sticky;top:56px;z-index:99}
+      .module-nav-inner{display:flex;gap:8px;flex-wrap:wrap}
+      .module-link{display:flex;align-items:center;gap:6px;padding:8px 14px;background:#3a3a3a;color:#e2e8f0;text-decoration:none;border-radius:6px;font-size:0.85rem;font-weight:500;transition:all 0.2s;white-space:nowrap}
+      .module-link:hover{background:var(--accent);color:white;text-decoration:none}
+      .module-link.active{background:var(--accent);color:white;font-weight:600}
+      .module-link.completed::before{content:'✓';display:inline-block;width:16px;height:16px;background:var(--ok);color:white;border-radius:50%;text-align:center;line-height:16px;font-size:11px;margin-right:2px}
+      .module-link .module-num{opacity:0.7}
+      
+      @media (max-width: 768px) {
+        .module-nav{top:52px;padding:10px 12px}
+        .module-nav-inner{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+        .module-link{padding:10px 8px;font-size:0.8rem;min-height:48px;justify-content:center;text-align:center;flex-direction:column;gap:2px}
+        .module-link .module-num{font-size:0.75rem}
       }
       
       .module-section { margin-bottom: 80px; }
@@ -106,17 +110,63 @@
       .way-explanation.active { display: block; }
       .way-explanation strong { color: var(--accent-2); }
 
-      .drag-drop-game { background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 12px; padding: 32px 24px; margin-top: 24px; border: 1px solid var(--border); }
-      .drag-drop-game h4 { color: var(--accent-2); margin-bottom: 12px; }
-      .drop-zones { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 24px; }
-      .drop-zone { border: 3px dashed var(--border); border-radius: 16px; padding: 24px 16px; min-height: 140px; text-align: center; transition: all 0.3s ease; background: #fff; }
-      .drop-zone h4 { margin: 0 0 4px; font-size: 1.05rem; color: var(--header-bg); }
-      .drop-zone.over { border-color: var(--accent); background: var(--accent-soft); transform: scale(1.05); box-shadow: 0 8px 20px rgba(253,126,20,0.2); }
-      .drag-items { display: flex; gap: 16px; margin-top: 32px; justify-content: center; flex-wrap: wrap; }
-      .drag-item { background: #fff; border: 2px solid var(--accent); border-radius: 10px; padding: 12px 20px; cursor: grab; font-weight: 600; font-size: 1rem; transition: all 0.2s; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-      .drag-item:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-      .drag-item:active { cursor: grabbing; transform: scale(1.05); box-shadow: 0 6px 20px rgba(0,0,0,0.2); }
-      .drag-item.dropped { cursor: default; background: var(--ok-soft); border-color: var(--ok); box-shadow: none; }
+      .drag-drop-game{background:linear-gradient(135deg,#f8f9fa 0%,#e9ecef 100%);border-radius:12px;padding:24px 16px;margin-top:24px;border:1px solid var(--border)}
+      .drag-drop-game h4{color:var(--accent-2);margin-bottom:8px;font-size:1.1rem}
+      .drag-drop-game > p{font-size:0.9rem;margin-bottom:16px}
+      .drop-zones{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-top:20px}
+      .drop-zone{border:3px dashed var(--border);border-radius:12px;padding:16px 12px;min-height:120px;text-align:center;transition:all 0.3s ease;background:#fff}
+      .drop-zone h4{margin:0 0 4px;font-size:0.95rem;color:var(--header-bg);font-weight:600}
+      .drop-zone p{font-size:0.8rem;margin:0;color:#6c757d}
+      .drop-zone > div:first-child{font-size:2rem;margin-bottom:6px}
+      .drop-zone.over{border-color:var(--accent);background:var(--accent-soft);transform:scale(1.02);box-shadow:0 8px 20px rgba(253,126,20,0.2)}
+      .drag-items{display:flex;gap:12px;margin-top:24px;justify-content:center;flex-wrap:wrap}
+      .drag-item{background:#fff;border:2px solid var(--accent);border-radius:8px;padding:10px 16px;cursor:grab;font-weight:600;font-size:0.9rem;transition:all 0.2s;box-shadow:0 2px 8px rgba(0,0,0,0.1)}
+      .drag-item:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,0.15)}
+      .drag-item:active{cursor:grabbing;transform:scale(1.05);box-shadow:0 6px 20px rgba(0,0,0,0.2)}
+      .drag-item.dropped{cursor:default;background:var(--ok-soft);border-color:var(--ok);box-shadow:none}
+      
+      /* Installation Steps */
+      .install-step{background:#fff;border-left:4px solid var(--accent);padding:20px;margin:24px 0;border-radius:8px}
+      .install-step h4{color:var(--accent-2);margin:0 0 12px 0;font-size:1.2rem}
+      .install-step p{margin-bottom:12px}
+      .install-step pre{background:#2d3748;color:#f8f9fa;padding:14px;border-radius:6px;overflow-x:auto;margin:12px 0}
+      .install-step code{font-weight:600}
+      .platform-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin:16px 0}
+      .platform-box{background:var(--muted);padding:16px;border-radius:8px}
+      .platform-box strong{display:block;margin-bottom:8px}
+      .platform-box ol{margin:0;padding-left:20px;line-height:1.7}
+      .success-box{background:var(--ok-soft);border-left:4px solid var(--ok);padding:12px;margin:12px 0;border-radius:6px}
+      .warning-box{background:#fff3cd;border-left:4px solid #ffc107;padding:12px;margin:12px 0;border-radius:6px}
+      .info-box{background:#e7f3ff;border-left:4px solid var(--info);padding:12px;margin:12px 0;border-radius:6px}
+      
+      @media (max-width: 768px) {
+        .drag-drop-game{padding:20px 12px}
+        .drag-drop-game h4{font-size:1rem;text-align:center}
+        .drag-drop-game > p{font-size:0.85rem;text-align:center}
+        .drop-zones{grid-template-columns:repeat(2,1fr);gap:10px;margin-top:16px}
+        .drop-zone{padding:12px 8px;min-height:100px;border-radius:10px}
+        .drop-zone > div:first-child{font-size:1.8rem;margin-bottom:4px}
+        .drop-zone h4{font-size:0.85rem;line-height:1.3}
+        .drop-zone p{font-size:0.7rem}
+        .drag-items{gap:8px;margin-top:16px;flex-direction:column}
+        .drag-item{font-size:0.85rem;padding:12px 14px;text-align:center;width:100%}
+        .install-step{padding:16px;margin:16px 0}
+        .install-step h4{font-size:1.05rem}
+        .install-step pre{font-size:0.85rem;padding:10px;margin:10px 0}
+        .install-step ol,.install-step ul{font-size:0.9rem;line-height:1.6;padding-left:18px}
+        .install-step li{margin-bottom:8px}
+        .install-step code{font-size:0.85rem;padding:2px 4px;word-break:break-all}
+        .install-step > div[style*="grid"]{display:block!important}
+        .install-step > div[style*="grid"] > div{margin-bottom:12px}
+        .install-step > div[style*="background"]{padding:12px!important;margin:12px 0!important;font-size:0.9rem}
+        .install-step > div[style*="background"] h4{font-size:1rem!important;margin-bottom:8px!important}
+        .install-step > div[style*="background"] p{font-size:0.85rem!important;line-height:1.5!important}
+        .install-step > div[style*="background"] pre{font-size:0.8rem!important;padding:8px!important}
+        .install-step > div[style*="background"] > div{padding:10px!important;margin:10px 0!important}
+        .platform-grid{grid-template-columns:1fr;gap:12px}
+        .platform-box{padding:12px}
+        .platform-box ol{font-size:0.9rem;line-height:1.6}
+      }
 
       .animated-flow { border: 1px solid var(--border); border-radius: 12px; padding: 24px; }
       .flow-step { display: none; opacity: 0; transition: opacity 0.5s ease-in-out; }
@@ -178,21 +228,68 @@
       .quiz-option .explanation{display:none;margin-top:8px;padding:12px;border-radius:6px;border-left:4px solid var(--accent); background: var(--accent-soft)}
       .quiz-option.selected.correct label{background:var(--ok-soft);border-color:var(--ok)}
       .quiz-option.selected.wrong  label{background:var(--bad-soft);border-color:var(--bad)}
+      
+      @media (max-width: 768px) { 
+        body { font-size: 0.95rem; }
+        .container { padding: 18px 16px; }
+        h1 { font-size: 1.75rem; margin-bottom: 10px; }
+        h2 { font-size: 1.4rem; margin: 32px 0 12px; padding-bottom: 6px; }
+        h3 { font-size: 1.2rem; margin: 24px 0 10px; }
+        h4 { font-size: 1rem; }
+        p { margin-bottom: 16px; }
+        
+        /* Code blocks - ensure wrapping on mobile */
+        pre { padding: 12px; font-size: 0.85rem; overflow-x: auto; word-wrap: break-word; white-space: pre-wrap; }
+        code { font-size: 0.85rem; word-break: break-all; }
+        
+        .context-box { padding: 18px; margin: 24px 0; }
+        .key-tips-grid { grid-template-columns: 1fr; gap: 16px; }
+        .tip-card { padding: 16px; }
+        .accordion-header { padding: 14px 16px; font-size: 1rem; }
+        .accordion-content { padding: 18px; }
+        .quiz-container { padding: 16px; }
+        .quiz-navigation { margin-bottom: 16px; padding-bottom: 16px; }
+        .quiz-navigation .btn { min-width: 48px; min-height: 48px; font-size: 1.1rem; }
+        .quiz-option label { padding: 12px; font-size: 0.95rem; }
+        .bridge-box { padding: 24px 18px; margin-top: 32px; }
+        .bridge-box a { padding: 14px 24px; min-height: 48px; display: inline-flex; align-items: center; justify-content: center; }
+        
+        /* Installation steps - mobile friendly */
+        .install-step { padding: 16px; margin-bottom: 20px; }
+        .install-step h4 { font-size: 1.1rem; margin-bottom: 12px; }
+        .install-step ol, .install-step ul { padding-left: 20px; }
+        .install-step li { margin-bottom: 10px; line-height: 1.6; }
+        
+        /* Callout boxes */
+        .success-box, .warning-box, .info-box { padding: 14px; margin: 16px 0; }
+        .success-box p, .warning-box p, .info-box p { margin-bottom: 8px; font-size: 0.9rem; }
+        .success-box p:last-child, .warning-box p:last-child, .info-box p:last-child { margin-bottom: 0; }
+        
+        /* Platform grid */
+        .platform-grid { grid-template-columns: 1fr; gap: 12px; }
+        
+        /* Lingo cards */
+        .lingo-grid { grid-template-columns: 1fr; gap: 12px; }
+        .lingo-card { padding: 14px; }
+        .lingo-card h4 { font-size: 1rem; margin-bottom: 8px; }
+        .lingo-card p { font-size: 0.9rem; margin-bottom: 8px; }
+      }
     </style>
 </head>
 <body>
 
  <header class="site-header">
      <a href="claude_code_for_financial_consultants_index.html" class="logo">Claude for Consultants</a>
-     <span style="font-size:0.9rem;opacity:0.8;">Module 2 of 6</span>
+     <button class="hamburger" aria-label="Toggle navigation" aria-expanded="false" onclick="toggleNav()">☰</button>
+     <nav class="site-nav" id="siteNav">
+       <a href="#context">Context</a>
+       <a href="#costs">Costs</a>
+       <a href="#commands">Commands</a>
+       <a href="#installation-quiz">Quiz</a>
+     </nav>
  </header>
 
  <nav class="module-nav" role="navigation" aria-label="Course modules">
-     <div class="module-nav-wrapper">
-         <div class="nav-controls">
-             <button class="nav-btn nav-btn-prev" id="navPrev" aria-label="Previous modules">‹</button>
-             <button class="nav-btn nav-btn-next" id="navNext" aria-label="Next modules">›</button>
-         </div>
          <div class="module-nav-inner" id="moduleNavInner">
              <a href="claude_code_for_financial_consultants_part_0.html" class="module-link" data-module="0">
                  <span class="module-num">M0</span> Introduction
@@ -212,14 +309,12 @@
              <a href="claude_code_for_financial_consultants_part_5.html" class="module-link" data-module="5">
                  <span class="module-num">M5</span> AI-Native
              </a>
-         </div>
      </div>
  </nav>
 
  <div class="container">
    
-    <h1>MODULE 2: Setup & Installation</h1>
-    <p class="byline">Getting Claude Code Running on Your Computer</p>
+    <h1>Module 2: Installation</h1>
 
     <!-- MENTAL MODEL -->
     <section class="module-section">
@@ -443,17 +538,11 @@
             <h3>How access works</h3>
             <p><strong>Perfect for small teams:</strong> Claude Code runs locally on your computer and connects securely to the Claude API. Whether you're a solo consultant or a 5-person team with a $20/month budget, you get the same powerful capabilities as enterprise teams.</p>
             
-            <div style="background: var(--ok-soft); border-left: 4px solid var(--ok); padding: 16px; margin: 16px 0; border-radius: 8px;">
-                <h4 style="color: var(--ok); margin: 0 0 8px 0;">💰 Budget-Friendly for Small Teams</h4>
-                <p style="margin: 0; font-size: 0.95rem;">No enterprise licensing required. You pay only for what you use through token-based pricing. A typical small team might spend $10-30/month on actual AI usage, making it accessible even for bootstrapped consultancies.</p>
-            </div>
+            <p><strong>💰 Budget-Friendly:</strong> No enterprise licensing required. You pay only for what you use through token-based pricing. A typical small team might spend $10-30/month on actual AI usage, making it accessible even for bootstrapped consultancies.</p>
             
-            <p><strong>No hidden costs:</strong> Editing sessions inside your IDE are not billed per token directly. You only pay for the AI processing when you actually use it. Organizations can provision access through individual seats or workspace licenses, but even individual consultants can get started immediately with a personal Anthropic account.</p>
+            <p><strong>No hidden costs:</strong> Editing sessions inside your IDE are not billed per token directly. You only pay for the AI processing when you actually use it.</p>
             
-            <div style="background: var(--accent-soft); border-left: 4px solid var(--accent); padding: 16px; margin: 16px 0; border-radius: 8px;">
-                <h4 style="color: var(--accent-2); margin: 0 0 8px 0;">🚀 Same Power, Any Team Size</h4>
-                <p style="margin: 0; font-size: 0.95rem;">Whether you're a solo financial consultant or part of a 50-person firm, you get access to the same Claude AI capabilities. The difference is only in how you manage access and billing, not in the features available to you.</p>
-            </div>
+            <p><strong>🚀 Same Power, Any Team Size:</strong> Whether you're a solo financial consultant or part of a 50-person firm, you get access to the same Claude AI capabilities. The difference is only in how you manage access and billing, not in the features available to you.</p>
         </div>
         <div class="grid-2">
             <div class="soft-card">
@@ -506,14 +595,8 @@
         <div class="grid-2" style="margin-top:16px">
             <div class="soft-card">
                 <h3>Before → After (Preview)</h3>
-<pre style="background:#fff;border:1px solid var(--border);color:#212529"><code>
-// Before
-&lt;h1&gt;Hello&lt;/h1&gt;
-
-// After
-&lt;h1&gt;Hello&lt;/h1&gt;
-<span style="background:#d1e7dd; display:block">+ &lt;button id="cta"&gt;Click Me&lt;/button&gt;</span>
-</code></pre>
+                <p><strong>Before:</strong> <code>&lt;h1&gt;Hello&lt;/h1&gt;</code></p>
+                <p><strong>After:</strong> <code>&lt;h1&gt;Hello&lt;/h1&gt;</code> + new button added</p>
             </div>
             <div class="soft-card">
                 <h3>Bad vs Good Prompt</h3>
@@ -540,30 +623,28 @@
     <!-- PART 1.5: Quick Setup & Installation (at a glance) -->
     <section class="module-section">
         <h2><span class="icon-prefix">⚙️</span>Setup & Installation — Quick Start</h2>
-        <div style="background: var(--muted); border-radius: 12px; padding: 32px; margin: 24px 0;">
-            <h3 style="color: var(--accent-2); margin-top: 0;">🎯 Get Claude Code Running — Step by Step (First Time? No Problem!)</h3>
             
-            <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 16px; margin: 16px 0; border-radius: 8px;">
-                <p style="margin: 0;"><strong>⏱️ Time needed:</strong> 10-15 minutes | <strong>📚 Experience required:</strong> None — we'll guide you through every click!</p>
+        <div class="warning-box">
+            <p style="margin:0"><strong>⏱️ Time needed:</strong> 10-15 minutes | <strong>📚 Experience required:</strong> None — we'll guide you through every click!</p>
             </div>
 
-            <div style="background: white; border-radius: 12px; padding: 24px; margin: 24px 0; border: 2px solid var(--accent);">
-                <h4 style="color: var(--accent-2); margin-top: 0;">Step 1: Find and Open Your Terminal</h4>
+        <div class="install-step">
+            <h4>Step 1: Find and Open Your Terminal</h4>
                 <p><strong>What is a Terminal?</strong> Think of it as a text-based way to talk to your computer. Instead of clicking icons, you type commands. Don't worry — we'll tell you exactly what to type!</p>
                 
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-top: 16px;">
-                    <div style="background: var(--muted); padding: 16px; border-radius: 8px;">
-                        <p style="margin: 0 0 12px 0;"><strong>🍎 On Mac:</strong></p>
-                        <ol style="margin: 0; padding-left: 20px; line-height: 1.8;">
+            <div class="platform-grid">
+                <div class="platform-box">
+                    <strong>🍎 On Mac:</strong>
+                    <ol>
                             <li>Click the <strong>magnifying glass</strong> icon (top-right corner)</li>
                             <li>Type: <strong>Terminal</strong></li>
                             <li>Press <strong>Enter</strong></li>
                             <li>A black or white window opens — that's your Terminal!</li>
                         </ol>
                     </div>
-                    <div style="background: var(--muted); padding: 16px; border-radius: 8px;">
-                        <p style="margin: 0 0 12px 0;"><strong>🪟 On Windows:</strong></p>
-                        <ol style="margin: 0; padding-left: 20px; line-height: 1.8;">
+                <div class="platform-box">
+                    <strong>🪟 On Windows:</strong>
+                    <ol>
                             <li>Click the <strong>Start menu</strong> (Windows icon, bottom-left)</li>
                             <li>Type: <strong>PowerShell</strong></li>
                             <li>Click <strong>Windows PowerShell</strong> (blue icon)</li>
@@ -572,342 +653,140 @@
                     </div>
                 </div>
                 
-                <div style="background: var(--ok-soft); border-left: 4px solid var(--ok); padding: 12px; margin-top: 16px; border-radius: 8px;">
-                    <p style="margin: 0; font-size: 0.95rem;"><strong>✅ You'll know it worked when:</strong> You see a window with text and a blinking cursor waiting for you to type.</p>
+            <div class="success-box">
+                <p style="margin:0"><strong>✅ You'll know it worked when:</strong> You see a window with text and a blinking cursor waiting for you to type.</p>
                 </div>
             </div>
 
-            <div style="background: white; border-radius: 12px; padding: 24px; margin: 24px 0; border: 2px solid var(--accent);">
-                <h4 style="color: var(--accent-2); margin-top: 0;">Step 2: Check If You Have Node.js (Required Foundation)</h4>
+        <div class="install-step">
+            <h4>Step 2: Check If You Have Node.js (Required Foundation)</h4>
                 <p><strong>What is Node.js?</strong> It's free software that helps run modern programs like Claude Code. Think of it as the engine that makes Claude Code work. <strong>You need this first.</strong></p>
                 
-                <p style="margin-top: 16px;"><strong>📝 Copy this command to check if you already have it:</strong></p>
-                <pre style="background: #2d3748; padding: 16px; border-radius: 8px; border: 2px solid var(--accent); font-size: 1.1rem; overflow-x: auto;"><code style="color: #f8f9fa; font-weight: 600;">node --version</code></pre>
-                
-                <p style="margin-top: 16px;"><strong>Paste it in your Terminal/PowerShell and press Enter.</strong></p>
-                
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px;">
-                    <div style="background: var(--ok-soft); border: 2px solid var(--ok); padding: 16px; border-radius: 8px;">
-                        <p style="margin: 0 0 8px 0; font-weight: 600; color: var(--ok);">✅ If you see something like:</p>
-                        <pre style="background: #d1e7dd; padding: 12px; border-radius: 6px; margin: 8px 0; font-size: 0.95rem;"><code style="color: #0f5132;">v18.17.0, or a similar number</code></pre>
-                        <p style="margin: 8px 0 0 0; font-size: 0.9rem;"><strong>Great! You have Node.js.</strong> Skip to Step 3 below.</p>
-                    </div>
-                    <div style="background: #fff3cd; border: 2px solid #ffc107; padding: 16px; border-radius: 8px;">
-                        <p style="margin: 0 0 8px 0; font-weight: 600; color: #856404;">⚠️ If you see:</p>
-                        <pre style="background: #fff8e1; padding: 12px; border-radius: 6px; margin: 8px 0; font-size: 0.9rem;"><code style="color: #856404;">command not found</code></pre>
-                        <p style="margin: 8px 0 0 0; font-size: 0.9rem;"><strong>You need to install Node.js first.</strong> Follow the instructions below.</p>
-                    </div>
-                </div>
-                
-                <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 20px; margin-top: 24px; border-radius: 8px;">
-                    <h4 style="color: #856404; margin: 0 0 12px 0;">📦 Installing Node.js (One-Time Setup)</h4>
-                    <ol style="margin: 0; padding-left: 20px; line-height: 2;">
-                        <li>Visit <a href="https://nodejs.org/en" target="_blank" style="color: var(--accent); font-weight: 600;">nodejs.org</a> in your web browser</li>
-                        <li>You'll see a large green button that says <strong>"Get Node.js®"</strong> — click it</li>
-                        <li>The installer file will download automatically to your Downloads folder (takes 30-60 seconds)</li>
-                        <li><strong>Find the downloaded file</strong> in your Downloads folder (it's called something like "node-v22-x64.msi" on Windows or "node-v22.pkg" on Mac)</li>
-                        <li><strong>Double-click the installer file</strong> to open it</li>
-                        <li>Follow the installation wizard — keep clicking <strong>"Next"</strong> until you see <strong>"Install"</strong>, then click it</li>
-                        <li>If Windows asks "Do you want to allow this app to make changes?" click <strong>"Yes"</strong></li>
-                        <li><strong>Wait 2-3 minutes</strong> for installation to complete — you'll see a progress bar</li>
-                        <li>When you see "Completed" or "Installation successful", click <strong>"Finish"</strong></li>
-                        <li><strong>Close and reopen your Terminal/PowerShell completely</strong> (this is important so your computer recognizes Node.js):
-                            <ul style="margin-top: 8px; margin-bottom: 8px;">
-                                <li style="margin-bottom: 8px;">Close the window (click the X)</li>
-                                <li style="margin-bottom: 8px;"><strong>🍎 On Mac:</strong> Click the <strong>magnifying glass</strong> icon → Type <strong>Terminal</strong> → Press <strong>Enter</strong></li>
-                                <li style="margin-bottom: 0;"><strong>🪟 On Windows:</strong> Click the <strong>Start menu</strong> → Type <strong>PowerShell</strong> → Click <strong>Windows PowerShell</strong></li>
-                            </ul>
-                        </li>
-                        <li>Run <code style="background: #f8f9fa; padding: 2px 6px; border-radius: 4px; color: var(--accent);">node --version</code> again to confirm it worked — you should now see something like <code style="background: #d1e7dd; padding: 2px 6px; border-radius: 4px; color: #0f5132;">v22.20.0</code></li>
-                    </ol>
-                    
-                    <div style="background: white; border: 1px solid #ffc107; padding: 12px; margin-top: 16px; border-radius: 6px;">
-                        <p style="margin: 0; font-size: 0.9rem;"><strong>💡 Which version?</strong> The green button automatically gives you the recommended "LTS" (Long Term Support) version, which is perfect for your needs. Don't worry about version numbers — any recent version works fine with Claude Code.</p>
-                    </div>
+            <p><strong>📝 Copy this command to check if you already have it:</strong></p>
+            <pre><code>node --version</code></pre>
+            
+            <p><strong>Paste it in your Terminal/PowerShell and press Enter.</strong></p>
+            
+            <p><strong>✅ If you see something like:</strong> <code>v18.17.0</code> or a similar number — <strong>Great! You have Node.js.</strong> Skip to Step 3 below.</p>
+            
+            <p><strong>⚠️ If you see:</strong> <code>command not found</code> — <strong>You need to install Node.js first.</strong> Follow these steps:</p>
+            
+            <div class="warning-box">
+                <p style="margin:0 0 8px 0"><strong>📦 Installing Node.js (One-Time Setup)</strong></p>
+                <ol style="margin:0;padding-left:20px;line-height:1.8">
+                    <li>Visit <a href="https://nodejs.org/en" target="_blank">nodejs.org</a> in your web browser</li>
+                    <li>Click the large green <strong>"Get Node.js®"</strong> button</li>
+                    <li>The installer downloads to your Downloads folder (30-60 seconds)</li>
+                    <li>Find and double-click the installer file (node-v22-x64.msi on Windows or node-v22.pkg on Mac)</li>
+                    <li>Follow the wizard — keep clicking <strong>"Next"</strong> then <strong>"Install"</strong></li>
+                    <li>If Windows asks permission, click <strong>"Yes"</strong></li>
+                    <li>Wait 2-3 minutes for installation</li>
+                    <li>Click <strong>"Finish"</strong> when done</li>
+                    <li>Close and reopen your Terminal/PowerShell completely</li>
+                    <li>Run <code>node --version</code> again — you should now see a version number like <code>v22.20.0</code></li>
+                </ol>
                 </div>
             </div>
 
-            <div style="background: white; border-radius: 12px; padding: 24px; margin: 24px 0; border: 2px solid var(--accent);">
-                <h4 style="color: var(--accent-2); margin-top: 0;">Step 3: Install Claude Code</h4>
+        <div class="install-step">
+            <h4>Step 3: Install Claude Code</h4>
                 <p><strong>What you're doing:</strong> Now that Node.js is installed, you can download and install Claude Code, just like installing Microsoft Word or Excel.</p>
                 
-                <p style="margin-top: 16px;"><strong>📝 Copy this command exactly as written:</strong></p>
-                <pre style="background: #2d3748; padding: 16px; border-radius: 8px; border: 2px solid var(--accent); font-size: 1.1rem; overflow-x: auto;"><code style="color: #f8f9fa; font-weight: 600;">npm install -g @anthropic-ai/claude-code</code></pre>
+            <p><strong>📝 Copy this command exactly as written:</strong></p>
+            <pre><code>npm install -g @anthropic-ai/claude-code</code></pre>
                 
-                <p style="margin-top: 16px;"><strong>Now do this:</strong></p>
-                <ol style="line-height: 1.8;">
+            <p><strong>Now do this:</strong></p>
+            <ol>
                     <li><strong>Right-click</strong> inside the Terminal/PowerShell window</li>
                     <li>Choose <strong>"Paste"</strong> (or press <strong>Ctrl+V</strong> on Windows, <strong>Cmd+V</strong> on Mac)</li>
                     <li>Press <strong>Enter</strong></li>
                     <li><strong>Wait 1-3 minutes</strong> — you'll see text scrolling. This is normal! The computer is downloading files.</li>
                 </ol>
                 
-                <div style="background: #e7f3ff; border-left: 4px solid #0dcaf0; padding: 16px; margin-top: 24px; border-radius: 8px;">
-                    <h4 style="color: #084298; margin: 0 0 12px 0;">📖 What You'll See (and What It Means)</h4>
-                    <p style="margin: 0 0 12px 0; font-size: 0.95rem;">The Terminal will show several messages. <strong>Here's what they mean:</strong></p>
-                    
-                    <div style="margin-bottom: 12px;">
-                        <pre style="background: #f8f9fa; padding: 12px; border-radius: 6px; font-size: 0.9rem; margin: 8px 0;"><code style="color: #495057;">changed 2 packages in 18s</code></pre>
-                        <p style="margin: 0; font-size: 0.9rem;"><strong>✅ This is success!</strong> The installation worked. You might see "added 2 packages" or "changed 2 packages" — both mean the same thing. The numbers and time might be slightly different — that's completely fine.</p>
+            <div class="info-box">
+                <p style="margin:0 0 8px 0"><strong>📖 What You'll See:</strong></p>
+                <p><strong>✅ Success message:</strong> <code>changed 2 packages in 18s</code> or <code>added 2 packages</code> — The installation worked!</p>
+                <p><strong>✅ Funding message:</strong> <code>1 package is looking for funding</code> — Ignore this completely. It's just asking for donations.</p>
+                <p><strong>✅ Security message:</strong> <code>found 0 vulnerabilities</code> — Nice! The software is safe.</p>
+                <p style="margin-bottom:0"><strong>💡 Key point:</strong> As long as you see "changed 2 packages" and your cursor is blinking with <strong>no red "ERROR" text</strong>, you're done!</p>
                     </div>
                     
-                    <div style="margin-bottom: 12px;">
-                        <pre style="background: #f8f9fa; padding: 12px; border-radius: 6px; font-size: 0.9rem; margin: 8px 0;"><code style="color: #495057;">1 package is looking for funding
-  run `npm fund` for details</code></pre>
-                        <p style="margin: 0; font-size: 0.9rem;"><strong>✅ Ignore this completely.</strong> It's just a message from the open-source community asking for donations. You don't need to do anything. Claude Code is already installed and ready to use.</p>
+            <div class="success-box">
+                <p style="margin:0"><strong>✅ Success looks like:</strong> You see "added 2 packages" and your cursor is blinking again with <strong>no red "ERROR" text.</strong></p>
+                    </div>
                     </div>
                     
-                    <div style="margin-bottom: 12px;">
-                        <pre style="background: #f8f9fa; padding: 12px; border-radius: 6px; font-size: 0.9rem; margin: 8px 0;"><code style="color: #495057;">found 0 vulnerabilities</code></pre>
-                        <p style="margin: 0; font-size: 0.9rem;"><strong>✅ Nice!</strong> If you see this message, it confirms the software is safe and secure. <strong>But don't worry if you don't see it</strong> — it doesn't always appear, and that's normal.</p>
-                    </div>
-                    
-                    <div style="background: white; border: 1px solid #0dcaf0; padding: 12px; margin-top: 16px; border-radius: 6px;">
-                        <p style="margin: 0; font-size: 0.9rem;"><strong>💡 The key message:</strong> As long as you see "changed 2 packages" (or "added 2 packages") and your cursor is blinking again with <strong>no red "ERROR" text</strong>, you're done! Everything else is just informational noise you can ignore.</p>
-                    </div>
-                </div>
-                
-                <div style="background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border-radius: 12px; padding: 24px; margin-top: 24px; border: 2px solid #0ea5e9;">
-                    <h4 style="color: #0369a1; margin: 0 0 16px 0;">🎓 Learn the Lingo (Optional — But You'll Sound Like a Pro!)</h4>
-                    <p style="margin: 0 0 16px 0; font-size: 0.95rem;">Now that you've successfully installed Claude Code, let's decode what those messages actually meant. Understanding this will make you more confident next time you work with similar tools.</p>
-                    
-                    <div style="background: white; border-radius: 8px; padding: 16px; margin-bottom: 12px;">
-                        <h4 style="color: #0369a1; margin: 0 0 8px 0; font-size: 1rem;">📦 What is a "package"?</h4>
-                        <p style="margin: 0 0 8px 0; font-size: 0.9rem;">Think of a package as a <strong>pre-built software component</strong> — like a Lego brick. Instead of building everything from scratch, developers download and use packages that others have already created and tested.</p>
-                        <p style="margin: 0; font-size: 0.85rem; color: #6b7280;"><strong>Real-world analogy:</strong> It's like buying a pre-assembled cabinet from IKEA instead of cutting wood and building from scratch. Claude Code is a package, and it might depend on other smaller packages to work.</p>
-                    </div>
-                    
-                    <div style="background: white; border-radius: 8px; padding: 16px; margin-bottom: 12px;">
-                        <h4 style="color: #0369a1; margin: 0 0 8px 0; font-size: 1rem;">🔧 What is "npm"?</h4>
-                        <p style="margin: 0 0 8px 0; font-size: 0.9rem;"><strong>npm</strong> stands for "Node Package Manager." It's like the <strong>App Store for developers</strong>. When you typed <code style="background: #f3f4f6; padding: 2px 6px; border-radius: 4px;">npm install</code>, you told npm: "Go to the store, find Claude Code, and install it on my computer."</p>
-                        <p style="margin: 0; font-size: 0.85rem; color: #6b7280;"><strong>Real-world analogy:</strong> npm is like Amazon for software. You tell it what you want, and it downloads and sets it up for you. The difference? Almost everything on npm is free and open-source!</p>
-                    </div>
-                    
-                    <div style="background: white; border-radius: 8px; padding: 16px; margin-bottom: 12px;">
-                        <h4 style="color: #0369a1; margin: 0 0 8px 0; font-size: 1rem;">💰 What is "npm fund"?</h4>
-                        <p style="margin: 0 0 8px 0; font-size: 0.9rem;">Most packages on npm are created by volunteers in their free time and shared for free. <strong>"npm fund"</strong> is like a tip jar — it shows you which packages accept donations to support the developers who maintain them.</p>
-                        <p style="margin: 0; font-size: 0.85rem; color: #6b7280;"><strong>Real-world analogy:</strong> It's like a busker (street musician) playing beautiful music for free, with a hat on the ground where you can drop a coin if you want. You're not required to donate — the music (software) is free either way.</p>
-                    </div>
-                    
-                    <div style="background: white; border-radius: 8px; padding: 16px; margin-bottom: 12px;">
-                        <h4 style="color: #0369a1; margin: 0 0 8px 0; font-size: 1rem;">🔒 What are "vulnerabilities"?</h4>
-                        <p style="margin: 0 0 8px 0; font-size: 0.9rem;">A vulnerability is a <strong>security weakness</strong> in software that hackers could potentially exploit. When npm says "found 0 vulnerabilities," it means it scanned the packages and didn't find any known security issues.</p>
-                        <p style="margin: 0; font-size: 0.85rem; color: #6b7280;"><strong>Real-world analogy:</strong> It's like a home security inspection. "0 vulnerabilities" means all the locks work and there are no broken windows. If it finds issues, it will tell you how to fix them.</p>
-                    </div>
-                    
-                    <div style="background: white; border-radius: 8px; padding: 16px; margin-bottom: 0;">
-                        <h4 style="color: #0369a1; margin: 0 0 8px 0; font-size: 1rem;">⚡ What does "-g" mean in the command?</h4>
-                        <p style="margin: 0 0 8px 0; font-size: 0.9rem;">The <code style="background: #f3f4f6; padding: 2px 6px; border-radius: 4px;">-g</code> flag stands for <strong>"global."</strong> It means "install this package so I can use it anywhere on my computer, not just in one folder." That's why you can type <code style="background: #f3f4f6; padding: 2px 6px; border-radius: 4px;">claude</code> from any location in your Terminal.</p>
-                        <p style="margin: 0; font-size: 0.85rem; color: #6b7280;"><strong>Real-world analogy:</strong> It's like installing Microsoft Word on your computer (global) versus saving a document to your Desktop (local). Word is available everywhere; the document is only in that one spot.</p>
-                    </div>
-                    
-                    <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 12px; margin-top: 16px; border-radius: 6px;">
-                        <p style="margin: 0; font-size: 0.9rem;"><strong>💪 Why this matters:</strong> You just learned the language of modern software development! Next time you see npm, packages, or terminal commands, you'll understand what's happening under the hood. You're not just following instructions — you're becoming tech-literate.</p>
-                    </div>
-                </div>
-                
-                <div style="background: var(--ok-soft); border-left: 4px solid var(--ok); padding: 16px; margin-top: 16px; border-radius: 8px;">
-                    <p style="margin: 0; font-size: 0.95rem;"><strong>✅ Success looks like:</strong> You see messages like "added 2 packages" and your cursor is blinking again, waiting for your next command. <strong>No red "ERROR" text.</strong></p>
-                </div>
-            </div>
-
-            <div style="background: white; border-radius: 12px; padding: 24px; margin: 24px 0; border: 2px solid var(--accent);">
-                <h4 style="color: var(--accent-2); margin-top: 0;">Step 4: Close and Reopen Your Terminal (Important!)</h4>
+        <div class="install-step">
+            <h4>Step 4: Close and Reopen Your Terminal (Important!)</h4>
                 <p><strong>Why?</strong> Your computer needs to "refresh" to recognize the new program you just installed. Think of it like restarting after a software update.</p>
                 
-                <p style="margin-top: 16px;"><strong>How to do it:</strong></p>
-                <ol style="line-height: 1.8;">
+            <p><strong>How to do it:</strong></p>
+            <ol>
                     <li><strong>Close the Terminal/PowerShell window completely</strong> (click the X button)</li>
                     <li><strong>Open it again:</strong>
-                        <ul style="margin-top: 8px; margin-bottom: 8px;">
-                            <li style="margin-bottom: 8px;"><strong>🍎 On Mac:</strong> Click the <strong>magnifying glass</strong> icon (top-right) → Type <strong>Terminal</strong> → Press <strong>Enter</strong></li>
-                            <li style="margin-bottom: 0;"><strong>🪟 On Windows:</strong> Click the <strong>Start menu</strong> → Type <strong>PowerShell</strong> → Click <strong>Windows PowerShell</strong></li>
+                    <ul>
+                        <li><strong>🍎 On Mac:</strong> Click the <strong>magnifying glass</strong> icon → Type <strong>Terminal</strong> → Press <strong>Enter</strong></li>
+                        <li><strong>🪟 On Windows:</strong> Click the <strong>Start menu</strong> → Type <strong>PowerShell</strong> → Click <strong>Windows PowerShell</strong></li>
                         </ul>
                     </li>
                     <li>You should see a fresh window with a blinking cursor — ready for the next step!</li>
                 </ol>
             </div>
 
-            <div style="background: white; border-radius: 12px; padding: 24px; margin: 24px 0; border: 2px solid var(--accent);">
-                <h4 style="color: var(--accent-2); margin-top: 0;">Step 5: Log In to Claude</h4>
+        <div class="install-step">
+            <h4>Step 5: Log In to Claude</h4>
                 <p><strong>What you're doing:</strong> Connecting your computer to your Claude account, like logging into Gmail or Netflix.</p>
                 
-                <p style="margin-top: 16px;"><strong>📝 Copy this command:</strong></p>
-                <pre style="background: #2d3748; padding: 16px; border-radius: 8px; border: 2px solid var(--accent); font-size: 1.1rem;"><code style="color: #f8f9fa; font-weight: 600;">claude auth login</code></pre>
+            <p><strong>📝 Copy this command:</strong></p>
+            <pre><code>claude auth login</code></pre>
                 
-                <p style="margin-top: 16px;"><strong>Then:</strong></p>
-                <ol style="line-height: 1.8;">
+            <p><strong>Then:</strong></p>
+            <ol>
                     <li>Paste it into the Terminal/PowerShell (right-click → Paste)</li>
                     <li>Press <strong>Enter</strong></li>
                 </ol>
                 
-                <div style="background: #fff8e1; border-left: 4px solid #ffc107; padding: 16px; margin-top: 16px; border-radius: 8px;">
-                    <h4 style="color: #856404; margin: 0 0 12px 0;">⚠️ Screen 1: Security Confirmation (Don't Panic!)</h4>
-                    <p style="margin: 0 0 12px 0; font-size: 0.95rem;">You'll see an orange/yellow box with text that says:</p>
-                    <pre style="background: #2d3748; padding: 12px; border-radius: 6px; font-size: 0.9rem; margin: 8px 0; color: #f59e0b;">Do you trust the files in this folder?
-
-C:\Users\[YourName]
-
-Claude Code may read, write, or execute files contained in this directory.
-This can pose security risks, so only use files from trusted sources.
-
-Learn more ( https://docs.claude.com/s/claude-code-security )
-
-> 1. Yes, proceed
-  2. No, exit
-
-Enter to confirm · Esc to exit</pre>
-                    
-                    <p style="margin: 12px 0 0 0; font-size: 0.95rem;"><strong>What this means:</strong> Claude Code is asking "Can I work with files in your home folder?" This is a normal security check. Since you just installed it yourself, it's safe to proceed.</p>
-                    
-                    <p style="margin: 12px 0 0 0; font-size: 0.95rem;"><strong>✅ What to do:</strong> The cursor is already on "1. Yes, proceed" (that's the blue text). Simply press <strong>Enter</strong> on your keyboard.</p>
+            <div class="warning-box">
+                <p style="margin:0 0 8px 0"><strong>⚠️ Screen 1: Security Confirmation (Don't Panic!)</strong></p>
+                <p>You'll see a message asking "Do you trust the files in this folder?" This is a normal security check.</p>
+                <p style="margin-bottom:0"><strong>✅ What to do:</strong> Press <strong>Enter</strong> to select "1. Yes, proceed"</p>
                 </div>
                 
-                <div style="background: #e0f2fe; border-left: 4px solid #0ea5e9; padding: 16px; margin-top: 16px; border-radius: 8px;">
-                    <h4 style="color: #0369a1; margin: 0 0 12px 0;">🌐 Screen 2: Browser Login (First-Time Users Only)</h4>
-                    <p style="margin: 0 0 12px 0; font-size: 0.95rem;"><strong>If this is your FIRST TIME logging in:</strong> Your web browser will automatically open and show the Anthropic login page.</p>
-                    
-                    <p style="margin: 12px 0 0 0; font-size: 0.95rem;"><strong>What to do:</strong></p>
-                    <ol style="margin: 8px 0 0 20px; padding: 0; line-height: 1.8;">
-                        <li>If you already have an Anthropic/Claude account:
-                            <ul style="margin: 4px 0 8px 20px;">
-                                <li>Enter your email and password</li>
-                                <li>Click <strong>"Sign In"</strong></li>
-                            </ul>
-                        </li>
-                        <li>If you DON'T have an account yet:
-                            <ul style="margin: 4px 0 8px 20px;">
-                                <li>Click <strong>"Create Account"</strong> or <strong>"Sign Up"</strong></li>
-                                <li>Enter your email address</li>
-                                <li>Create a password</li>
-                                <li>Follow the prompts to complete registration</li>
-                                <li>You may need to verify your email (check your inbox)</li>
-                            </ul>
-                        </li>
-                        <li>After successful login, the browser will show: <strong>"Authentication successful! You can close this tab."</strong></li>
-                        <li>Close the browser tab and <strong>go back to your Terminal/PowerShell</strong></li>
-                    </ol>
-                    
-                    <div style="background: white; border: 1px solid #0ea5e9; padding: 12px; margin-top: 12px; border-radius: 6px;">
-                        <p style="margin: 0; font-size: 0.9rem;"><strong>💡 Already have an account?</strong> If you already used Claude on the website (claude.ai), you can use the same email and password here. It's the same account!</p>
+            <div class="info-box">
+                <p style="margin:0 0 8px 0"><strong>🌐 Screen 2: Browser Login (First-Time Users)</strong></p>
+                <p>Your web browser will open automatically. Sign in with your Anthropic/Claude account (or create one if you don't have it). After login, close the browser tab and return to Terminal.</p>
+                <p style="margin-bottom:0"><strong>💡 Tip:</strong> If you use claude.ai, it's the same account!</p>
                     </div>
                     
-                    <div style="background: white; border: 1px solid #0ea5e9; padding: 12px; margin-top: 12px; border-radius: 6px;">
-                        <p style="margin: 0; font-size: 0.9rem;"><strong>🔒 Is this safe?</strong> Yes! The Terminal opens your actual web browser (Chrome, Edge, Safari, etc.) and takes you to Anthropic's official website. Your password goes directly to Anthropic, not through the Terminal. It's as safe as logging into any website.</p>
+            <div class="success-box">
+                <p style="margin:0 0 8px 0"><strong>🎉 Screen 3: Welcome to Claude Code!</strong></p>
+                <p style="margin-bottom:0">You'll see a welcome message with your name and a blinking cursor <code>> █</code> — Claude is ready for your instructions!</p>
                     </div>
                     
-                    <p style="margin: 12px 0 0 0; font-size: 0.9rem;"><strong>Note:</strong> If you've already logged in before on this computer, you might skip this step entirely and go straight to the welcome screen below.</p>
-                </div>
-                
-                <div style="background: #e7f3ff; border-left: 4px solid #0dcaf0; padding: 16px; margin-top: 16px; border-radius: 8px;">
-                    <h4 style="color: #084298; margin: 0 0 12px 0;">🎉 Screen 3: Welcome to Claude Code! (You're In!)</h4>
-                    <p style="margin: 0 0 12px 0; font-size: 0.95rem;">After the browser login (or if you were already logged in), you'll see a welcome screen in the Terminal with an orange border that shows:</p>
-                    
-                    <div style="background: white; padding: 12px; border-radius: 6px; border: 1px solid #dee2e6; margin: 12px 0; font-family: monospace; font-size: 0.85rem;">
-                        <div style="color: #dc2626; margin-bottom: 8px;">━━━ Claude Code v2.0.9 ━━━</div>
-                        <div style="margin-bottom: 12px;"><strong>Welcome back [YourName]!</strong></div>
-                        <div style="margin-bottom: 8px;">🤖 [ASCII art of a robot]</div>
-                        <div style="margin-bottom: 12px; color: #6b7280;">Sonnet 4.5 • Claude Max<br/>C:\Users\[YourName]</div>
-                        <div style="margin-bottom: 12px; color: #dc2626;"><strong>Tips for getting started</strong><br/>Run /init to create a CLAUDE.md file with instructions for Claude<br/>Note: You have launched claude in your home directory...</div>
-                        <div style="color: #6b7280;"><strong>Recent activity</strong><br/>No recent activity</div>
+            <p><strong>💬 Try your first command:</strong> Type something like <code>tell me a joke about spreadsheets</code> or <code>what folder am I in?</code> and press Enter. Claude will respond!</p>
+            
+            <p><strong>✅ To exit:</strong> Type <code>exit</code> and press Enter, or close the Terminal window.</p>
                     </div>
                     
-                    <p style="margin: 12px 0 0 0; font-size: 0.95rem;"><strong>What this means:</strong> You're logged in and Claude Code is ready! This is like the "home screen" of Claude Code.</p>
-                    
-                    <p style="margin: 12px 0 0 0; font-size: 0.95rem;"><strong>✅ You'll also see a prompt at the bottom:</strong></p>
-                    <pre style="background: #2d3748; padding: 12px; border-radius: 6px; font-size: 0.9rem; margin: 8px 0;"><code style="color: #f8f9fa;">> █</code></pre>
-                    <p style="margin: 8px 0 0 0; font-size: 0.9rem;">This blinking cursor means Claude is listening and ready for your instructions! You can now type messages to Claude, just like chatting.</p>
-                </div>
-                
-                <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 16px; margin-top: 16px; border-radius: 8px;">
-                    <h4 style="color: #856404; margin: 0 0 12px 0;">⚠️ You Might See: "I need more context..." Message</h4>
-                    <p style="margin: 0 0 12px 0; font-size: 0.95rem;"><strong>If Claude shows a message asking about "authentication":</strong></p>
-                    <pre style="background: #2d3748; padding: 12px; border-radius: 6px; font-size: 0.85rem; margin: 8px 0;"><code style="color: #f8f9fa;">> auth
-
-I need more context to help you. Could you clarify what you'd like to 
-do with authentication? For example:
-  - Implement authentication in a project?
-  - Debug an auth issue?
-  - Review authentication code?
-  - Set up OAuth, JWT, or another auth method?
-  - Something else?</code></pre>
-                    
-                    <p style="margin: 12px 0 0 0; font-size: 0.95rem;"><strong>Don't panic! This is NOT an error.</strong> What happened:</p>
-                    <ul style="margin: 8px 0 0 20px; line-height: 1.8;">
-                        <li>When you typed <code style="background: white; padding: 2px 6px; border-radius: 4px;">claude auth login</code> earlier, you were talking to your <strong>computer's Terminal</strong></li>
-                        <li>Now you're inside Claude Code, so you're talking to <strong>Claude AI</strong></li>
-                        <li>If you accidentally type just <code style="background: white; padding: 2px 6px; border-radius: 4px;">auth</code> by itself, Claude thinks you want help with authentication coding (like building login systems for websites)</li>
-                    </ul>
-                    
-                    <p style="margin: 12px 0 0 0; font-size: 0.95rem;"><strong>✅ What to do:</strong> Just ignore this message and move on to testing with a real instruction below. You're already logged in and ready to go!</p>
-                    
-                    <div style="background: white; border: 1px solid #ffc107; padding: 12px; margin-top: 12px; border-radius: 6px;">
-                        <p style="margin: 0; font-size: 0.9rem;"><strong>🎓 Teaching moment:</strong> "auth" is short for "authentication" — the technical term for login systems. Programmers use this term when they're building the "Sign In" features you see on websites. Since you're not a programmer (yet!), you won't need this — just type your plain-language requests to Claude instead.</p>
-                    </div>
-                </div>
-                
-                <div style="background: #d1ecf1; border-left: 4px solid #0dcaf0; padding: 16px; margin-top: 16px; border-radius: 8px;">
-                    <h4 style="color: #084298; margin: 0 0 12px 0; font-size: 1rem;">💬 Try Your First Real Command</h4>
-                    <p style="margin: 0 0 12px 0; font-size: 0.95rem;">Now let's test that everything is working! You can type anything you want, but here are some examples:</p>
-                    
-                    <div style="background: white; padding: 12px; border-radius: 6px; border: 1px solid #0dcaf0; margin: 12px 0;">
-                        <p style="margin: 0 0 8px 0; font-weight: 600;">Example 1: Simple test</p>
-                        <pre style="background: #2d3748; padding: 12px; border-radius: 6px; font-size: 0.95rem; margin: 8px 0 0 0;"><code style="color: #f8f9fa; font-weight: 600;">tell me a joke about spreadsheets</code></pre>
-                    </div>
-                    
-                    <div style="background: white; padding: 12px; border-radius: 6px; border: 1px solid #0dcaf0; margin: 12px 0;">
-                        <p style="margin: 0 0 8px 0; font-weight: 600;">Example 2: Ask about files</p>
-                        <pre style="background: #2d3748; padding: 12px; border-radius: 6px; font-size: 0.95rem; margin: 8px 0 0 0;"><code style="color: #f8f9fa; font-weight: 600;">what folder am I in right now?</code></pre>
-                    </div>
-                    
-                    <div style="background: white; padding: 12px; border-radius: 6px; border: 1px solid #0dcaf0; margin: 12px 0;">
-                        <p style="margin: 0 0 8px 0; font-weight: 600;">Example 3: Get help</p>
-                        <pre style="background: #2d3748; padding: 12px; border-radius: 6px; font-size: 0.95rem; margin: 8px 0 0 0;"><code style="color: #f8f9fa; font-weight: 600;">what can you help me with?</code></pre>
-                    </div>
-                    
-                    <p style="margin: 12px 0 0 0; font-size: 0.95rem;">Type any of these (or your own message), press <strong>Enter</strong>, and Claude will respond! This confirms your installation is complete and working perfectly.</p>
-                    
-                    <div style="background: white; border: 1px solid #0dcaf0; padding: 12px; margin-top: 12px; border-radius: 6px;">
-                        <p style="margin: 0; font-size: 0.9rem;"><strong>💡 Pro tip:</strong> You can chat with Claude in plain English, just like you're texting a colleague. No coding knowledge required for basic questions and tasks!</p>
-                    </div>
-                </div>
-                
-                <div style="background: var(--ok-soft); border-left: 4px solid var(--ok); padding: 16px; margin-top: 16px; border-radius: 8px;">
-                    <p style="margin: 0; font-size: 0.95rem;"><strong>✅ How to exit Claude Code when you're done:</strong> Type <code style="background: white; padding: 2px 6px; border-radius: 4px; color: var(--accent);">exit</code> and press Enter, or simply close the Terminal window.</p>
-                </div>
-                
-                <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 12px; margin-top: 16px; border-radius: 8px;">
-                    <p style="margin: 0; font-size: 0.9rem;"><strong>🔒 Is this safe?</strong> Yes! The security prompt is Anthropic's way of making sure you understand Claude Code can work with files in that folder. Since you installed it yourself and it's working in your home directory, it's completely safe to say "Yes, proceed."</p>
-                </div>
-            </div>
-
-            <div style="background: white; border-radius: 12px; padding: 24px; margin: 24px 0; border: 2px solid var(--accent);">
-                <h4 style="color: var(--accent-2); margin-top: 0;">Step 6: Verify It's Working</h4>
+        <div class="install-step">
+            <h4>Step 6: Verify It's Working</h4>
                 <p><strong>Let's make sure everything is set up correctly!</strong></p>
                 
-                <p style="margin-top: 16px;"><strong>📝 Copy this command:</strong></p>
-                <pre style="background: #2d3748; padding: 16px; border-radius: 8px; border: 2px solid var(--accent); font-size: 1.1rem;"><code style="color: #f8f9fa; font-weight: 600;">claude --version</code></pre>
-                
-                <p style="margin-top: 16px;"><strong>What you should see:</strong></p>
-                <pre style="background: #d1e7dd; padding: 16px; border-radius: 8px; border: 2px solid var(--ok); font-size: 1.05rem;"><code style="color: #0f5132; font-weight: 600;">claude-code version 1.2.3</code></pre>
-                
-                <p style="margin-top: 16px;">(The numbers might be different — that's fine! As long as you see "claude-code version" and some numbers, you're good!)</p>
-                
-                <div style="background: var(--ok-soft); border-left: 4px solid var(--ok); padding: 16px; margin-top: 16px; border-radius: 8px;">
-                    <p style="margin: 0 0 12px 0; font-weight: 600; color: var(--ok);">🎉 Congratulations! You're Ready!</p>
-                    <p style="margin: 0; font-size: 0.95rem;">If you saw the version number, Claude Code is successfully installed and you're authenticated. You can now use Claude to help with your work!</p>
+            <p><strong>📝 Copy this command:</strong></p>
+            <pre><code>claude --version</code></pre>
+            
+            <p><strong>What you should see:</strong> <code>claude-code version 1.2.3</code> (numbers may vary)</p>
+            
+            <div class="success-box">
+                <p style="margin:0"><strong>🎉 Congratulations! You're Ready!</strong> If you saw the version number, Claude Code is successfully installed and authenticated.</p>
                 </div>
                 
-                <div style="background: var(--bad-soft); border-left: 4px solid var(--bad); padding: 12px; margin-top: 16px; border-radius: 8px;">
-                    <p style="margin: 0 0 8px 0; font-weight: 600; color: var(--bad);">❌ Didn't work?</p>
-                    <p style="margin: 0; font-size: 0.95rem;">If you see "command not found" or similar, go back to Step 3 and make sure you closed and reopened your Terminal. Still stuck? Check the FAQ section below for common troubleshooting tips.</p>
-                </div>
+            <p><strong>❌ Didn't work?</strong> If you see "command not found", go back to Step 4 and make sure you closed and reopened your Terminal.</p>
             </div>
 
-            <div style="background: linear-gradient(135deg, #fff3cd 0%, #fff8e1 100%); border-radius: 12px; padding: 20px; margin-top: 24px; border: 2px solid #ffc107;">
-                <h4 style="color: #856404; margin-top: 0;">💪 You Just Did Something Amazing!</h4>
-                <p style="margin: 0; line-height: 1.7;">You opened the Terminal (maybe for the first time!), ran commands, and installed professional AI software. That's not "tech stuff" — that's real capability. You're now equipped to use AI tools that most consultants only dream about.</p>
-            </div>
+        <div class="warning-box">
+            <h4 style="color:#856404;margin-top:0">💪 You Just Did Something Amazing!</h4>
+            <p style="margin:0;line-height:1.7">You opened the Terminal (maybe for the first time!), ran commands, and installed professional AI software. That's not "tech stuff" — that's real capability. You're now equipped to use AI tools that most consultants only dream about.</p>
         </div>
     </section>
 
@@ -974,18 +853,7 @@ do with authentication? For example:
         <h3>Where you're going next:</h3>
         <p>In Module 3, you'll use your newly installed Claude Code to make your first real change to a file and learn the critical "review and approve" workflow.</p>
         
-        <div style="background: #e3f2fd; border-left: 4px solid #2196f3; padding: 16px; margin: 16px 0; border-radius: 8px;">
-            <h4 style="color: #1976d2; margin: 0 0 12px 0;">💡 For VS Code Beginners</h4>
-            <p style="margin: 0 0 12px 0; font-size: 0.95rem;">If you just installed VS Code and aren't familiar with it yet, here's what you need to know:</p>
-            <ul style="margin: 0; padding-left: 20px; line-height: 1.6;">
-                <li><strong>VS Code</strong> is a free code editor (like a fancy version of Notepad)</li>
-                <li><strong>Claude Code side panel</strong> is a special area in VS Code where you can chat with Claude</li>
-                <li>To open it: Look for the <strong>Claude icon</strong> (👤) in the left sidebar of VS Code</li>
-                <li>If you don't see it, go to <strong>View → Extensions</strong> and search for "Claude" to install the extension</li>
-                <li>Once open, you'll see a chat box where you can type your requests in plain English</li>
-            </ul>
-            <p style="margin: 12px 0 0 0; font-size: 0.9rem; font-style: italic;">Don't worry if this sounds confusing now — Module 3 will walk you through every step!</p>
-        </div>
+        <p><strong>💡 For VS Code Beginners:</strong> If you just installed VS Code, look for the Claude icon (👤) in the left sidebar to open the chat panel. Module 3 will walk you through every step!</p>
         
         <a href="claude_code_for_financial_consultants_part_3.html">Continue to Module 3: Your First Real Change</a>
     </div>
@@ -998,6 +866,24 @@ do with authentication? For example:
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
+    // --- Hamburger Toggle ---
+    window.toggleNav = function() {
+        const nav = document.getElementById('siteNav');
+        const hamburger = document.querySelector('.hamburger');
+        const isOpen = nav.classList.toggle('open');
+        hamburger.setAttribute('aria-expanded', isOpen);
+    };
+    
+    // Close menu when clicking a nav link
+    document.querySelectorAll('.site-nav a').forEach(link => {
+        link.addEventListener('click', () => {
+            const nav = document.getElementById('siteNav');
+            const hamburger = document.querySelector('.hamburger');
+            nav.classList.remove('open');
+            hamburger.setAttribute('aria-expanded', 'false');
+        });
+    });
+    
     // --- Module Navigation with Completion Tracking ---
     const currentModule = 2;
     
@@ -1024,42 +910,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (link) link.classList.add('completed');
         }
     });
-    
-    // Mobile carousel navigation
-    const navInner = document.getElementById('moduleNavInner');
-    const navPrev = document.getElementById('navPrev');
-    const navNext = document.getElementById('navNext');
-    
-    if (navInner && navPrev && navNext) {
-        // Scroll to active module on load (mobile)
-        const activeLink = navInner.querySelector('.module-link.active');
-        if (activeLink && window.innerWidth <= 768) {
-            activeLink.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-        }
-        
-        // Prev/Next button handlers
-        navPrev.addEventListener('click', () => {
-            navInner.scrollBy({ left: -160, behavior: 'smooth' });
-        });
-        
-        navNext.addEventListener('click', () => {
-            navInner.scrollBy({ left: 160, behavior: 'smooth' });
-        });
-        
-        // Update button states on scroll
-        function updateNavButtons() {
-            const scrollLeft = navInner.scrollLeft;
-            const scrollWidth = navInner.scrollWidth;
-            const clientWidth = navInner.clientWidth;
-            
-            navPrev.disabled = scrollLeft <= 0;
-            navNext.disabled = scrollLeft + clientWidth >= scrollWidth - 5;
-        }
-        
-        navInner.addEventListener('scroll', updateNavButtons);
-        window.addEventListener('resize', updateNavButtons);
-        updateNavButtons();
-    }
     
     // --- Rest of Module 2 JavaScript ---
     const faqData = [
@@ -1630,6 +1480,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (exp) {
                 exp.classList.add('active');
                 
+                // Scroll to explanation (especially important on mobile)
+                setTimeout(() => {
+                    exp.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }, 100);
+                
                 // Trigger animation
                 if (wayNum === '1') animateWay1();
                 else if (wayNum === '2') animateWay2();
@@ -1645,29 +1500,6 @@ document.addEventListener('DOMContentLoaded', () => {
             way1Card.click();
         }
     }, 500); // Small delay to ensure DOM is fully ready
-    
-    // Minimize header on scroll
-    const moduleNav = document.querySelector('.module-nav');
-    let lastScrollTop = 0;
-    let ticking = false;
-    
-    window.addEventListener('scroll', () => {
-        if (!ticking) {
-            window.requestAnimationFrame(() => {
-                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-                
-                if (scrollTop > 200) {
-                    moduleNav.classList.add('minimized');
-                } else {
-                    moduleNav.classList.remove('minimized');
-                }
-                
-                lastScrollTop = scrollTop;
-                ticking = false;
-            });
-            ticking = true;
-        }
-    });
 });
 </script>
 

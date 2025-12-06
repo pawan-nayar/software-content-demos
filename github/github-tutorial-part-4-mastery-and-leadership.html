@@ -65,12 +65,12 @@
             background: var(--accent); 
             color: white; 
             border: none; 
-            padding: 1rem; 
-            font-size: 1.2rem; 
+            padding: 0.875rem; 
+            font-size: 1.1rem; 
             font-weight: 700; 
             border-radius: 8px; 
             cursor: pointer; 
-            margin-top: 1.5rem; 
+            margin-top: 0.75rem; 
             transition: background-color 0.2s; 
         }
         .start-btn:hover { background: var(--accent-2); }
@@ -209,35 +209,795 @@
         @media(min-width: 760px) { .match-grid { grid-template-columns: 1fr 1fr; } }
         .match-item { background: #fff; border: 1px solid var(--border); border-radius: 10px; padding: 0.55rem 0.7rem; cursor: pointer; transition: 0.2s; margin-bottom: 0.4rem; }
         .match-item.is-picked { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(239, 125, 85, 0.18); }
+
+        /* Educational Quiz Feedback Styling */
+        .quiz-feedback-box {
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .quiz-feedback-box code {
+            background: rgba(0,0,0,0.08);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        /* ============================================
+           MOBILE RESPONSIVE STYLES
+           ============================================ */
+        
+        /* --- Desktop: Ensure no scrollbar from mobile elements --- */
+        .mobile-topic-view,
+        .mobile-topic-nav,
+        .mobile-topic-header {
+            display: none !important;
+        }
+        
+        /* --- Hop 1: Foundation Mobile CSS --- */
+        @media (max-width: 768px) {
+            html, body {
+                overflow-x: hidden;
+                scroll-behavior: smooth;
+            }
+            
+            /* Re-enable mobile elements on mobile */
+            .mobile-topic-view:not(.hidden) {
+                display: flex !important;
+            }
+            .mobile-topic-nav {
+                display: flex !important;
+            }
+            .mobile-topic-header {
+                display: flex !important;
+            }
+            body {
+                font-size: 15px;
+            }
+            
+            /* Typography scaling */
+            .wizard-panel h1 {
+                font-size: clamp(1.4rem, 5vw, 1.8rem);
+            }
+            .wizard-panel h2 {
+                font-size: clamp(1.1rem, 4vw, 1.3rem);
+            }
+            .wizard-panel p {
+                font-size: 0.95rem;
+                word-wrap: break-word;
+            }
+            
+            /* Header compact */
+            .site-header {
+                padding: 12px 16px;
+            }
+            .logo {
+                font-size: 1rem;
+            }
+            
+            /* Footer compact */
+            .site-footer {
+                padding: 20px 16px;
+                font-size: 0.85rem;
+            }
+            
+            /* Touch targets - all buttons min 48px */
+            .start-btn {
+                min-height: 48px;
+                font-size: 1.1rem;
+                padding: 14px 16px;
+            }
+            .back-btn {
+                min-height: 44px;
+                padding: 10px 16px;
+            }
+            
+            /* Wizard panels - reduced padding */
+            .wizard-container {
+                padding: 12px;
+                align-items: flex-start;
+            }
+            .wizard-panel {
+                padding: 1.25rem 1rem;
+                border-radius: 10px;
+            }
+            
+            /* Code blocks - full width, line wrap */
+            .code-viewer {
+                font-size: 0.8rem;
+                padding: 12px;
+                white-space: pre-wrap;
+                word-wrap: break-word;
+                overflow-x: visible;
+                line-height: 1.5;
+            }
+            
+            /* Output viewer */
+            .output-viewer {
+                font-size: 0.9rem;
+            }
+            .output-viewer h1 {
+                font-size: 1.2rem;
+            }
+            .output-viewer h2 {
+                font-size: 1.1rem;
+            }
+        }
+        
+        /* --- Hop 2: Home/Select Screen Mobile --- */
+        @media (max-width: 768px) {
+            /* Select grid - single column */
+            .select-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            
+            /* Select cards - touch optimized */
+            .select-card {
+                padding: 16px;
+                min-height: 80px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                text-align: left;
+            }
+            .select-card h3 {
+                font-size: 1.05rem;
+                margin-bottom: 4px;
+            }
+            .select-card p {
+                font-size: 0.85rem;
+                line-height: 1.4;
+            }
+            .select-card:hover {
+                transform: none; /* Disable hover transform on mobile */
+            }
+            .select-card:active {
+                transform: scale(0.98);
+                background: #e9ecef;
+            }
+        }
+        
+        /* --- Hop 3: Mobile Topic View (Accordion Layout) --- */
+        /* Hide desktop tutorial on mobile */
+        @media (max-width: 768px) {
+            .tutorial-container {
+                display: none !important;
+            }
+            
+            /* Mobile Topic View */
+            .mobile-topic-view:not(.hidden) {
+                display: flex !important;
+                flex-direction: column;
+                min-height: calc(100vh - 60px);
+                padding-bottom: 70px;
+            }
+            .mobile-topic-view.hidden {
+                display: none !important;
+            }
+            
+            /* Mobile sticky header */
+            .mobile-topic-header {
+                display: flex !important;
+                align-items: center;
+                gap: 12px;
+                padding: 12px 16px;
+                background: var(--bg);
+                border-bottom: 1px solid var(--border);
+                position: sticky;
+                top: 52px;
+                z-index: 90;
+            }
+            .mobile-topic-header .back-home-btn {
+                background: none;
+                border: none;
+                font-size: 1.2rem;
+                cursor: pointer;
+                padding: 8px;
+                min-width: 44px;
+                min-height: 44px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 8px;
+                color: var(--text);
+            }
+            .mobile-topic-header .back-home-btn:active {
+                background: var(--muted);
+            }
+            .mobile-topic-header .topic-title {
+                font-weight: 600;
+                font-size: 1rem;
+                color: var(--accent-2);
+                flex-grow: 1;
+            }
+        }
+        
+        /* Mobile accordions */
+        .mobile-accordion {
+            border-bottom: 1px solid var(--border);
+        }
+        .mobile-accordion-header {
+            width: 100%;
+            background: var(--bg);
+            border: none;
+            padding: 16px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 56px;
+            color: var(--text);
+        }
+        .mobile-accordion-header:active {
+            background: var(--muted);
+        }
+        .mobile-accordion-header .chevron {
+            font-size: 0.9rem;
+            transition: transform 0.2s;
+            color: #6c757d;
+        }
+        .mobile-accordion-header.expanded .chevron {
+            transform: rotate(180deg);
+        }
+        .mobile-accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+            padding: 0 16px;
+            background: var(--bg);
+        }
+        .mobile-accordion-content.expanded {
+            max-height: 2000px;
+            padding: 0 16px 16px 16px;
+            overflow: visible;
+            animation: fadeIn 0.2s ease-out;
+        }
+        
+        /* Playground accordion special styling */
+        .mobile-accordion-content .mobile-code-viewer {
+            background: var(--code-bg);
+            color: var(--code-fg);
+            font-family: var(--font-code);
+            font-size: 0.8rem;
+            line-height: 1.5;
+            padding: 12px;
+            border-radius: 8px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            margin-bottom: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .mobile-accordion-content .mobile-output-viewer {
+            background: var(--muted);
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+        .mobile-accordion-content .mobile-output-viewer h1 {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+        .mobile-accordion-content .mobile-commit-info {
+            background: #fff3e0;
+            padding: 10px 12px;
+            border-radius: 6px;
+            font-family: var(--font-code);
+            font-size: 0.8rem;
+            margin-top: 12px;
+            border-left: 3px solid var(--accent);
+        }
+        
+        /* Ensure analogy boxes wrap properly */
+        @media (max-width: 768px) {
+            .analogy, .mobile-accordion-content .analogy {
+                word-wrap: break-word;
+                overflow-wrap: break-word;
+            }
+            .mobile-accordion-content code {
+                background: rgba(0,0,0,0.08);
+                padding: 2px 6px;
+                border-radius: 4px;
+                font-size: 0.85em;
+                word-break: break-word;
+            }
+        }
+        
+        /* Mobile quiz options - larger touch targets */
+        @media (max-width: 768px) {
+            .quiz-option {
+                min-height: 52px;
+                padding: 14px 12px;
+                display: flex;
+                align-items: center;
+                font-size: 0.95rem;
+            }
+            .quiz-option input {
+                width: 20px;
+                height: 20px;
+                margin-right: 12px;
+                flex-shrink: 0;
+            }
+        }
+        
+        /* Mobile sticky bottom navigation */
+        @media (max-width: 768px) {
+            .mobile-topic-nav {
+                display: flex !important;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: var(--bg);
+                border-top: 1px solid var(--border);
+                padding: 12px 16px;
+                gap: 12px;
+                z-index: 100;
+                box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            }
+            .mobile-topic-nav button {
+                flex: 1;
+                min-height: 48px;
+                border: 1px solid var(--border);
+                background: var(--muted);
+                border-radius: 8px;
+                font-weight: 600;
+                font-size: 0.95rem;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 6px;
+                color: var(--text);
+            }
+            .mobile-topic-nav button:active {
+                background: #e9ecef;
+            }
+            .mobile-topic-nav .topic-counter {
+                flex: 0 0 auto;
+                min-width: 60px;
+                text-align: center;
+                font-weight: 600;
+                font-size: 0.9rem;
+                color: var(--accent-2);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+        }
+        
+        /* --- Hop 4: Final Quiz Mobile --- */
+        @media (max-width: 768px) {
+            .quiz-container .quiz-panel {
+                padding: 1rem;
+                border-radius: 10px;
+            }
+            .quiz-container .quiz-panel .q-card {
+                min-height: auto;
+            }
+            .quiz-container .quiz-panel .q-card h2 {
+                font-size: 1.15rem;
+                line-height: 1.4;
+            }
+            
+            /* Quiz options - large touch targets */
+            .question-options label {
+                min-height: 52px;
+                padding: 14px 12px;
+                display: flex;
+                align-items: center;
+                font-size: 0.95rem;
+            }
+            .question-options input[type="radio"],
+            .question-options input[type="checkbox"] {
+                width: 22px;
+                height: 22px;
+                margin-right: 12px;
+                flex-shrink: 0;
+            }
+            
+            /* Sequence items - tap to reorder */
+            .seq-item {
+                min-height: 52px;
+                padding: 12px;
+                cursor: pointer;
+            }
+            .seq-item .handle {
+                display: none; /* Hide drag handle on mobile */
+            }
+            .seq-item.selected-for-move {
+                background: #fff3e0;
+                border-color: var(--accent);
+                box-shadow: 0 0 0 2px rgba(253, 126, 20, 0.3);
+            }
+            
+            /* Match items - larger */
+            .match-item {
+                min-height: 52px;
+                padding: 14px 12px;
+                display: flex;
+                align-items: center;
+            }
+            
+            /* Quiz navigation */
+            .quiz-nav {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            .quiz-nav button {
+                min-height: 48px;
+                padding: 12px 16px;
+                font-size: 0.95rem;
+            }
+            #quiz-skip-btn {
+                order: -1;
+                width: 100%;
+            }
+            #quiz-prev-btn, #quiz-next-btn {
+                flex: 1;
+            }
+            
+            /* Progress bar */
+            .progress-bar {
+                height: 8px;
+            }
+            #quiz-counter {
+                font-size: 0.85rem;
+            }
+            
+            /* Feedback */
+            .feedback {
+                padding: 12px;
+                font-size: 0.9rem;
+            }
+            
+            /* Ensure feedback visible */
+            .quiz-container {
+                padding-bottom: 20px;
+            }
+            #quiz-feedback {
+                margin-bottom: 80px; /* Space above navigation */
+            }
+        }
+        
+        /* Smaller mobile screens */
+        @media (max-width: 400px) {
+            .wizard-panel {
+                padding: 1rem 0.75rem;
+            }
+            .wizard-panel h1 {
+                font-size: 1.3rem;
+            }
+            .select-card {
+                padding: 14px 12px;
+            }
+            .mobile-topic-header {
+                padding: 10px 12px;
+            }
+            .mobile-accordion-header {
+                padding: 14px 12px;
+            }
+            .mobile-accordion-content {
+                padding: 0 12px;
+            }
+            .mobile-accordion-content.expanded {
+                padding: 0 12px 14px 12px;
+            }
+            .mobile-topic-nav {
+                padding: 10px 12px;
+            }
+        }
+        
+        /* --- Hop 5: Polish & Edge Cases --- */
+        /* Hide footer when in mobile topic view */
+        @media (max-width: 768px) {
+            body.mobile-topic-active .site-footer {
+                display: none;
+            }
+        }
+        
+        /* Enhanced Intro Screen Styling */
+        .intro-panel-enhanced {
+            text-align: center;
+        }
+        .intro-hero {
+            margin-bottom: 0.75rem;
+        }
+        .intro-icon-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+        .intro-icon-row .intro-icon:nth-child(2),
+        .intro-icon-row .intro-icon:nth-child(4) {
+            font-size: 1rem;
+            color: var(--accent);
+        }
+        .intro-panel-enhanced h1 {
+            font-size: 1.8rem;
+            margin-bottom: 0.25rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .intro-subtitle {
+            font-size: 1rem;
+            color: #6c757d;
+            margin-bottom: 0 !important;
+            font-weight: 500;
+        }
+        .intro-features {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 12px;
+            padding: 1rem;
+            margin: 1rem 0;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+        .intro-feature {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 8px;
+            text-align: center;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .feature-icon {
+            font-size: 1.3rem;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .intro-feature span:last-child {
+            font-size: 0.85rem;
+            color: var(--text);
+            line-height: 1.3;
+        }
+        .intro-note {
+            font-size: 0.9rem;
+            color: #495057;
+            line-height: 1.4;
+            margin-bottom: 0.75rem !important;
+        }
+        .intro-panel-enhanced .start-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 1.15rem;
+        }
+        .start-btn .btn-arrow {
+            font-size: 1.2rem;
+            transition: transform 0.2s;
+        }
+        .start-btn:hover .btn-arrow {
+            transform: translateX(4px);
+        }
+        .intro-hint {
+            font-size: 0.8rem !important;
+            color: #868e96 !important;
+            margin-top: 0.75rem !important;
+            margin-bottom: 0 !important;
+        }
+        
+        /* Mobile intro enhancements */
+        @media (max-width: 768px) {
+            .intro-panel-enhanced {
+                padding: 1.25rem 1rem !important;
+            }
+            .intro-icon-row {
+                font-size: 1.8rem;
+                margin-bottom: 0.75rem;
+            }
+            .intro-panel-enhanced h1 {
+                font-size: clamp(1.5rem, 6vw, 1.8rem);
+            }
+            .intro-subtitle {
+                font-size: 0.9rem;
+            }
+            .intro-features {
+                padding: 0.75rem;
+                margin: 1rem 0;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            .intro-feature {
+                padding: 10px 6px;
+            }
+            .feature-icon {
+                width: 32px;
+                height: 32px;
+                font-size: 1.1rem;
+            }
+            .intro-feature span:last-child {
+                font-size: 0.8rem;
+            }
+            .intro-note {
+                font-size: 0.9rem;
+                padding: 0 4px;
+            }
+            .intro-panel-enhanced .start-btn {
+                font-size: 1.1rem;
+            }
+        }
+        
+        @media (max-width: 400px) {
+            .intro-icon-row {
+                font-size: 1.5rem;
+                gap: 6px;
+            }
+            .intro-panel-enhanced h1 {
+                font-size: 1.4rem;
+            }
+            .intro-features {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+                padding: 0.5rem;
+            }
+            .intro-feature {
+                padding: 8px 4px;
+            }
+            .intro-feature span:last-child {
+                font-size: 0.75rem;
+            }
+        }
+        
+        /* Enhanced Select Screen */
+        .select-panel-enhanced .select-header {
+            margin-bottom: 1rem;
+        }
+        .select-panel-enhanced .select-header h1 {
+            font-size: 1.6rem;
+            margin-bottom: 0.5rem;
+        }
+        .select-intro {
+            font-size: 0.95rem;
+            color: #6c757d;
+            margin-bottom: 0 !important;
+        }
+        
+        @media (max-width: 768px) {
+            .select-panel-enhanced {
+                padding: 1rem !important;
+            }
+            .select-panel-enhanced .select-header h1 {
+                font-size: 1.4rem;
+                text-align: center;
+            }
+            .select-intro {
+                text-align: center;
+                font-size: 0.9rem;
+                line-height: 1.4;
+            }
+            
+            /* Enhanced topic cards on mobile */
+            .select-card {
+                background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+                border-left: 4px solid var(--accent);
+                border-top: none;
+                padding: 14px 16px;
+                position: relative;
+                overflow: hidden;
+            }
+            .select-card::after {
+                content: '→';
+                position: absolute;
+                right: 16px;
+                top: 50%;
+                transform: translateY(-50%);
+                font-size: 1.2rem;
+                color: var(--accent);
+                opacity: 0.6;
+            }
+            .select-card h3 {
+                font-size: 1rem;
+                padding-right: 24px;
+            }
+            .select-card p {
+                font-size: 0.85rem;
+                color: #6c757d;
+                padding-right: 24px;
+            }
+            .select-card.completed {
+                border-left-color: var(--ok);
+                background: linear-gradient(135deg, #f0fff4 0%, #dcfce7 100%);
+            }
+            .select-card.completed::after {
+                content: '✓';
+                color: var(--ok);
+                opacity: 1;
+            }
+            
+            /* Quiz unlock section */
+            #select-screen hr {
+                margin: 1.5rem 0 1rem 0;
+            }
+            #select-screen h2 {
+                font-size: 1.2rem;
+            }
+            #quiz-status-text {
+                font-size: 0.9rem;
+                color: #6c757d;
+            }
+        }
         
     </style>
 </head>
 <body>
 
     <header class="site-header">
-        <a class="logo" onclick="showScreen(introScreen)">GitHub Mastery Series</a>
+        <a class="logo" id="logo-link" href="#">GitHub Mastery Series</a>
     </header>
 
     <!-- Screen 1: Intro -->
-    <div id="intro-screen" class="wizard-container">
-        <div class="wizard-panel">
-            <h1>Part 4: Git Mastery & Open Source Leadership 🎓</h1>
-            <p id="intro-text">
-                <strong>Your Learning Journey So Far:</strong><br>
-                You've progressed from individual basics (Part 1), to team collaboration (Part 2), and on to professional automation (Part 3). You've learned the *how*. Now it's time to learn the *why* and the *when*.
-            </p>
-            <p>
-                This capstone module is about moving beyond commands to strategy. You will learn to think like a repository maintainer and a technical lead, focusing on the architectural and leadership decisions that enable projects to scale successfully.
-            </p>
-            <button id="start-tutorial-btn" class="start-btn">Begin the Capstone 🚀</button>
+    <section id="intro-screen" class="wizard-container">
+        <div class="wizard-panel intro-panel-enhanced">
+            <div class="intro-hero">
+                <div class="intro-icon-row">
+                    <span class="intro-icon">🎓</span>
+                    <span class="intro-icon">+</span>
+                    <span class="intro-icon">🌍</span>
+                    <span class="intro-icon">=</span>
+                    <span class="intro-icon">👑</span>
+                </div>
+                <h1>Git Mastery & Leadership</h1>
+                <p class="intro-subtitle">Part 4: The Capstone Module</p>
+            </div>
+            
+            <div class="intro-features">
+                <div class="intro-feature">
+                    <span class="feature-icon">🔬</span>
+                    <span>Understand Git internals</span>
+                </div>
+                <div class="intro-feature">
+                    <span class="feature-icon">✍️</span>
+                    <span>Curate project history</span>
+                </div>
+                <div class="intro-feature">
+                    <span class="feature-icon">🤖</span>
+                    <span>Automate governance</span>
+                </div>
+                <div class="intro-feature">
+                    <span class="feature-icon">🏗️</span>
+                    <span>Scale large repositories</span>
+                </div>
+            </div>
+            
+            <p class="intro-note">Move beyond commands to strategy—think like a repository maintainer and technical lead.</p>
+            
+            <button type="button" id="start-tutorial-btn" class="start-btn">
+                <span>Begin the Capstone</span>
+                <span class="btn-arrow">→</span>
+            </button>
+            
+            <p class="intro-hint">⏱️ ~25 minutes • 6 expert topics • 1 capstone quiz</p>
         </div>
-    </div>
+    </section>
     
     <!-- Screen 2: Select Tutorial -->
-    <div id="select-screen" class="wizard-container" style="display: none;">
-        <div class="wizard-panel">
-            <h1>Expert Topics & Leadership Skills ✨</h1>
-            <p>Go beyond the commands. Learn the strategies for managing complex, large-scale projects and technical teams.</p>
+    <section id="select-screen" class="wizard-container hidden">
+        <div class="wizard-panel select-panel-enhanced">
+            <div class="select-header">
+                <h1>🎯 Choose a Topic</h1>
+                <p class="select-intro">Tap any card to start learning. Complete 3 topics to unlock the capstone quiz!</p>
+            </div>
             <div id="select-grid" class="select-grid">
                 <div class="select-card" data-crud="internals">
                     <h3>🔬 Git Internals</h3>
@@ -269,27 +1029,27 @@
 
             <h2>Capstone Drill! 🧠</h2>
             <p id="quiz-status-text">Complete at least 3 topics above to unlock the final capstone quiz!</p>
-            <button id="start-quiz-btn" class="start-btn" disabled>Start Final Capstone Quiz</button>
+            <button type="button" id="start-quiz-btn" class="start-btn" disabled>Start Final Capstone Quiz</button>
         </div>
-    </div>
+    </section>
     
     <!-- Screen 3: Tutorial -->
-    <main id="tutorial-screen" class="tutorial-container">
+    <section id="tutorial-screen" class="tutorial-container hidden">
         <!-- Left Column: Code and Output -->
         <div class="left-column">
              <div class="panel">
                 <div class="panel-header">
                     <h2 class="panel-title">Playground</h2>
-                    <button id="back-btn" class="back-btn">← Back to Topics</button>
+                    <button type="button" id="back-btn" class="back-btn">← Back to Topics</button>
                 </div>
                 <div class="panel-body" style="padding:0; display:flex; flex-direction:column; flex-grow:1;">
                     <div class="playground-tabs">
-                        <button class="crud-tab" data-crud="internals">🔬 Internals</button>
-                        <button class="crud-tab" data-crud="history">✍️ History</button>
-                        <button class="crud-tab" data-crud="automation">🤖 Automation</button>
-                        <button class="crud-tab" data-crud="scale">🏗️ Scale</button>
-                        <button class="crud-tab" data-crud="maintainer">🌍 Maintainer</button>
-                        <button class="crud-tab" data-crud="recovery">⛑️ Recovery</button>
+                        <button type="button" class="crud-tab" data-crud="internals">🔬 Internals</button>
+                        <button type="button" class="crud-tab" data-crud="history">✍️ History</button>
+                        <button type="button" class="crud-tab" data-crud="automation">🤖 Automation</button>
+                        <button type="button" class="crud-tab" data-crud="scale">🏗️ Scale</button>
+                        <button type="button" class="crud-tab" data-crud="maintainer">🌍 Maintainer</button>
+                        <button type="button" class="crud-tab" data-crud="recovery">⛑️ Recovery</button>
                     </div>
                     <pre id="code-viewer" class="code-viewer"></pre>
                     <div id="commit-section" class="commit-section"></div>
@@ -311,10 +1071,85 @@
                 </div>
             </div>
         </div>
-    </main>
+    </section>
+
+    <!-- Mobile Topic View (Hidden on Desktop) -->
+    <div id="mobile-topic-screen" class="mobile-topic-view hidden">
+        <div class="mobile-topic-header">
+            <button class="back-home-btn" id="mobile-back-btn">←</button>
+            <span class="topic-title" id="mobile-topic-title">🔬 Git Internals</span>
+        </div>
+        
+        <div id="mobile-accordions">
+            <!-- Accordion 1: Playground -->
+            <div class="mobile-accordion">
+                <button class="mobile-accordion-header" data-accordion="playground">
+                    <span>🎮 Playground</span>
+                    <span class="chevron">▼</span>
+                </button>
+                <div class="mobile-accordion-content" id="mobile-playground-content">
+                    <div class="mobile-code-viewer" id="mobile-code-viewer"></div>
+                    <div class="mobile-output-viewer" id="mobile-output-viewer"></div>
+                    <div class="mobile-commit-info" id="mobile-commit-info"></div>
+                </div>
+            </div>
+            
+            <!-- Accordion 2: Concepts (Open by default) -->
+            <div class="mobile-accordion">
+                <button class="mobile-accordion-header expanded" data-accordion="concepts">
+                    <span>💡 Concepts</span>
+                    <span class="chevron">▼</span>
+                </button>
+                <div class="mobile-accordion-content expanded" id="mobile-concepts-content"></div>
+            </div>
+            
+            <!-- Accordion 3: Labs & Checklists -->
+            <div class="mobile-accordion">
+                <button class="mobile-accordion-header" data-accordion="steps">
+                    <span>📋 Labs & Checklists</span>
+                    <span class="chevron">▼</span>
+                </button>
+                <div class="mobile-accordion-content" id="mobile-steps-content"></div>
+            </div>
+            
+            <!-- Accordion 4: Knowledge Quiz -->
+            <div class="mobile-accordion">
+                <button class="mobile-accordion-header" data-accordion="quiz">
+                    <span>✅ Knowledge Quiz</span>
+                    <span class="chevron">▼</span>
+                </button>
+                <div class="mobile-accordion-content" id="mobile-quiz-content"></div>
+            </div>
+            
+            <!-- Accordion 5: Best Practices & Glossary -->
+            <div class="mobile-accordion">
+                <button class="mobile-accordion-header" data-accordion="bestpractices">
+                    <span>⭐ Best Practices & Glossary</span>
+                    <span class="chevron">▼</span>
+                </button>
+                <div class="mobile-accordion-content" id="mobile-bestpractices-content"></div>
+            </div>
+            
+            <!-- Accordion 6: FAQs -->
+            <div class="mobile-accordion">
+                <button class="mobile-accordion-header" data-accordion="faq">
+                    <span>❓ FAQs</span>
+                    <span class="chevron">▼</span>
+                </button>
+                <div class="mobile-accordion-content" id="mobile-faq-content"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Mobile Sticky Bottom Navigation -->
+    <div class="mobile-topic-nav" id="mobile-topic-nav" style="display: none;">
+        <button id="mobile-prev-topic">← Prev</button>
+        <span class="topic-counter" id="mobile-topic-counter">1/6</span>
+        <button id="mobile-next-topic">Next →</button>
+    </div>
 
     <!-- Screen 4: Final Quiz -->
-    <div id="final-quiz-screen" class="wizard-container light-quiz-style hidden">
+    <section id="final-quiz-screen" class="wizard-container hidden">
         <div class="quiz-panel w-full max-w-2xl bg-white rounded-xl shadow-md p-6 sm:p-8">
             <div class="flex justify-between items-center mb-4">
                 <div class="progress-bar-container w-full h-2 bg-gray-200 rounded-full overflow-hidden">
@@ -326,12 +1161,12 @@
                 <!-- Quiz question will be rendered here -->
             </div>
             <div class="quiz-nav flex justify-between items-center mt-6">
-                <button id="quiz-prev-btn" class="px-4 py-2 bg-gray-300 text-gray-700 font-semibold rounded-lg shadow-sm hover:bg-gray-400 transition-colors duration-200" disabled>← Previous</button>
-                <button id="quiz-skip-btn" class="px-3 py-1 bg-yellow-500 text-white text-sm font-semibold rounded-lg shadow-sm hover:bg-yellow-600 transition-colors duration-200">Skip Question</button>
-                <button id="quiz-next-btn" class="px-4 py-2 bg-orange-500 text-white font-semibold rounded-lg shadow-sm hover:bg-orange-600 transition-colors duration-200">Submit Answer</button>
+                <button type="button" id="quiz-prev-btn" class="px-4 py-2 bg-gray-300 text-gray-700 font-semibold rounded-lg shadow-sm hover:bg-gray-400 transition-colors duration-200" disabled>← Previous</button>
+                <button type="button" id="quiz-skip-btn" class="px-3 py-1 bg-yellow-500 text-white text-sm font-semibold rounded-lg shadow-sm hover:bg-yellow-600 transition-colors duration-200">Skip Question</button>
+                <button type="button" id="quiz-next-btn" class="px-4 py-2 bg-orange-500 text-white font-semibold rounded-lg shadow-sm hover:bg-orange-600 transition-colors duration-200">Submit Answer</button>
             </div>
         </div>
-    </div>
+    </section>
 
 
     <footer class="site-footer">
@@ -656,6 +1491,18 @@ e5f6g7h HEAD@{1}: commit: This is the good commit I lost!
         score: 0,
         answers: new Array(finalQuizQuestions.length).fill(null)
     };
+    
+    // Topic order for circular navigation
+    const topicOrder = ['internals', 'history', 'automation', 'scale', 'maintainer', 'recovery'];
+    const topicTitles = {
+        internals: '🔬 Git Internals',
+        history: '✍️ History Strategy',
+        automation: '🤖 Automated Governance',
+        scale: '🏗️ Scaling Repos',
+        maintainer: '🌍 Maintainer Playbook',
+        recovery: '⛑️ Disaster Recovery'
+    };
+    let currentTopicIndex = 0;
 
     function renderMarkdown(text) {
         if (!text) return '';
@@ -665,11 +1512,17 @@ e5f6g7h HEAD@{1}: commit: This is the good commit I lost!
             .replace(/`(.*?)`/g, '<code>$1</code>');
     }
     
+    function isMobileDevice() {
+        return window.innerWidth <= 768;
+    }
+    
     // UI elements
     const introScreen = document.getElementById('intro-screen');
     const selectScreen = document.getElementById('select-screen');
     const tutorialScreen = document.getElementById('tutorial-screen');
     const finalQuizScreen = document.getElementById('final-quiz-screen');
+    const mobileTopicScreen = document.getElementById('mobile-topic-screen');
+    const mobileTopicNav = document.getElementById('mobile-topic-nav');
     const quizStatusText = document.getElementById('quiz-status-text');
     const startQuizBtn = document.getElementById('start-quiz-btn');
     const quizProgress = document.getElementById('quiz-progress');
@@ -679,22 +1532,34 @@ e5f6g7h HEAD@{1}: commit: This is the good commit I lost!
     const quizCounter = document.getElementById('quiz-counter');
     const quizSkipBtn = document.getElementById('quiz-skip-btn');
     
-    function showScreen(screen) {
-        introScreen.style.display = 'none';
-        selectScreen.style.display = 'none';
-        tutorialScreen.style.display = 'none';
-        finalQuizScreen.style.display = 'none';
-        screen.style.display = 'flex';
-        if (screen.id === 'tutorial-screen') {
-            screen.style.display = 'grid';
-        }
-        if (screen.id === 'final-quiz-screen') {
-            document.body.style.display = 'flex';
-            document.body.style.flexDirection = 'column';
+    function showScreen(screenId) {
+        const screens = ['intro-screen', 'select-screen', 'tutorial-screen', 'final-quiz-screen'];
+        screens.forEach(id => {
+            const screen = document.getElementById(id);
+            if(id === screenId) {
+                screen.classList.remove('hidden');
+                if(id === 'tutorial-screen') {
+                    screen.style.display = 'grid';
+                } else {
+                    screen.style.display = 'flex';
+                }
+            } else {
+                screen.classList.add('hidden');
+                screen.style.display = 'none';
+            }
+        });
+        
+        // Handle mobile topic screen
+        if (screenId === 'mobile-topic-screen') {
+            mobileTopicScreen.classList.remove('hidden');
+            mobileTopicNav.style.display = 'flex';
+            document.body.classList.add('mobile-topic-active');
         } else {
-            document.body.style.display = 'flex';
-            document.body.style.flexDirection = 'column';
+            mobileTopicScreen.classList.add('hidden');
+            mobileTopicNav.style.display = 'none';
+            document.body.classList.remove('mobile-topic-active');
         }
+        
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
     
@@ -718,6 +1583,8 @@ e5f6g7h HEAD@{1}: commit: This is the good commit I lost!
 
     function switchCrudTab(crudAction) {
         const data = playgroundData[crudAction];
+        
+        // Desktop: populate code viewer
         document.getElementById('code-viewer').textContent = data.code;
         document.getElementById('commit-section').innerHTML = renderMarkdown(data.commit);
         document.getElementById('output-viewer').innerHTML = renderMarkdown(data.output);
@@ -725,6 +1592,207 @@ e5f6g7h HEAD@{1}: commit: This is the good commit I lost!
         document.querySelectorAll('.crud-tab').forEach(t => t.classList.toggle('active', t.dataset.crud === crudAction));
         renderExplanation(crudAction);
         markTutorialCompleted(crudAction);
+        
+        // Mobile: populate accordions
+        if (isMobileDevice()) {
+            currentTopicIndex = topicOrder.indexOf(crudAction);
+            
+            // Update mobile header title
+            document.getElementById('mobile-topic-title').textContent = topicTitles[crudAction];
+            
+            // Update mobile counter
+            document.getElementById('mobile-topic-counter').textContent = `${currentTopicIndex + 1}/${topicOrder.length}`;
+            
+            // Populate Playground accordion
+            document.getElementById('mobile-code-viewer').textContent = data.code;
+            document.getElementById('mobile-output-viewer').innerHTML = renderMarkdown(data.output);
+            document.getElementById('mobile-commit-info').innerHTML = renderMarkdown(data.commit);
+            
+            // Populate Concepts accordion
+            const conceptsHtml = `
+                <h3 style="font-size: 1.1rem; color: var(--accent-2); margin-bottom: 12px;">${data.explanation.concepts.title}</h3>
+                <p class="analogy" style="background: var(--muted); border-left: 4px solid var(--accent); padding: 12px; border-radius: 4px; font-style: italic; margin-bottom: 12px;">${renderMarkdown(data.explanation.concepts.analogy)}</p>
+                <p>${renderMarkdown(data.explanation.concepts.text)}</p>
+                ${data.explanation.concepts.dangerZone ? `<div class="danger-zone" style="background: var(--danger-soft); border-left: 4px solid var(--danger); padding: 12px; border-radius: 4px; margin-top: 12px;">${renderMarkdown(data.explanation.concepts.dangerZone)}</div>` : ''}
+            `;
+            document.getElementById('mobile-concepts-content').innerHTML = conceptsHtml;
+            
+            // Populate Steps accordion
+            const stepsHtml = `
+                <h3 style="font-size: 1.1rem; color: var(--accent-2); margin-bottom: 12px;">${data.explanation.steps.title}</h3>
+                <ol class="step-list">
+                    ${data.explanation.steps.list.map(step => `<li><span>${renderMarkdown(step)}</span></li>`).join('')}
+                </ol>
+            `;
+            document.getElementById('mobile-steps-content').innerHTML = stepsHtml;
+            
+            // Populate Quiz accordion
+            const quizHtml = `
+                <h3 style="font-size: 1.1rem; color: var(--accent-2); margin-bottom: 12px;">Knowledge Check</h3>
+                ${data.explanation.quiz.map((quizItem, index) => `
+                    <div class="quiz-question mobile-quiz-q" data-correct="${quizItem.correct}" data-explain="${quizItem.explain.replace(/"/g, '&quot;')}" data-correct-text="${quizItem.options[quizItem.correct].replace(/"/g, '&quot;')}" style="margin-bottom: 20px;">
+                        <p style="font-weight: 600; margin-bottom: 8px;"><strong>Q${index + 1}:</strong> ${renderMarkdown(quizItem.q)}</p>
+                        <div class="quiz-options">
+                            ${quizItem.options.map((opt, optIndex) => `
+                                <label class="quiz-option" for="mobile-q-${crudAction}-${index}-${optIndex}" style="display: flex; align-items: center; min-height: 52px; padding: 12px; margin: 8px 0; border: 1px solid var(--border); border-radius: 6px; cursor: pointer;">
+                                    <input type="radio" id="mobile-q-${crudAction}-${index}-${optIndex}" name="mobile-q-${crudAction}-${index}" value="${optIndex}" style="width: 20px; height: 20px; margin-right: 12px;"> <span>${renderMarkdown(opt)}</span>
+                                </label>
+                            `).join('')}
+                        </div>
+                        <div class="quiz-feedback-box" style="display: none; margin-top: 12px;"></div>
+                    </div>
+                `).join('')}
+            `;
+            document.getElementById('mobile-quiz-content').innerHTML = quizHtml;
+            
+            // Populate Best Practices accordion
+            const bpHtml = `
+                <h3 style="font-size: 1.1rem; color: var(--accent-2); margin-bottom: 12px;">Best Practices</h3>
+                <h4 style="font-weight: 600; margin-bottom: 8px;">Do's</h4>
+                <ul style="list-style: none; padding: 0; margin-bottom: 16px;">
+                    ${data.explanation.bestPractices.dos.map(item => `<li style="margin-bottom: 8px; display: flex; align-items: flex-start;"><span style="margin-right: 10px;">✅</span><span>${renderMarkdown(item)}</span></li>`).join('')}
+                </ul>
+                <h4 style="font-weight: 600; margin-bottom: 8px;">Don'ts</h4>
+                <ul style="list-style: none; padding: 0; margin-bottom: 16px;">
+                    ${data.explanation.bestPractices.donts.map(item => `<li style="margin-bottom: 8px; display: flex; align-items: flex-start;"><span style="margin-right: 10px;">❌</span><span>${renderMarkdown(item)}</span></li>`).join('')}
+                </ul>
+                <h4 style="font-weight: 600; margin-bottom: 8px;">Glossary</h4>
+                <ul style="list-style: none; padding: 0;">
+                    ${data.explanation.bestPractices.glossary.map(item => `<li style="margin-bottom: 8px;"><strong style="color: var(--accent-2);">${item.term}</strong>: ${renderMarkdown(item.def)}</li>`).join('')}
+                </ul>
+            `;
+            document.getElementById('mobile-bestpractices-content').innerHTML = bpHtml;
+            
+            // Populate FAQ accordion
+            const faqHtml = `
+                <h3 style="font-size: 1.1rem; color: var(--accent-2); margin-bottom: 12px;">FAQs</h3>
+                ${data.explanation.faq.map(item => `
+                    <div style="margin-bottom: 16px;">
+                        <h4 style="font-weight: 600; margin-bottom: 6px;">${renderMarkdown(item.q)}</h4>
+                        <p style="margin: 0;">${renderMarkdown(item.a)}</p>
+                    </div>
+                `).join('')}
+            `;
+            document.getElementById('mobile-faq-content').innerHTML = faqHtml;
+            
+            // Setup mobile accordions and quiz
+            setupMobileAccordions();
+            setupMobileQuiz();
+            resetMobileAccordions();
+        }
+    }
+    
+    // --- Mobile-specific functions ---
+    function setupMobileAccordions() {
+        const accordionHeaders = document.querySelectorAll('.mobile-accordion-header');
+        accordionHeaders.forEach(header => {
+            // Remove existing listeners to prevent duplicates
+            const newHeader = header.cloneNode(true);
+            header.parentNode.replaceChild(newHeader, header);
+            
+            newHeader.addEventListener('click', () => {
+                const accordionType = newHeader.dataset.accordion;
+                const content = document.getElementById(`mobile-${accordionType}-content`);
+                
+                const wasExpanded = newHeader.classList.contains('expanded');
+                
+                if (wasExpanded) {
+                    newHeader.classList.remove('expanded');
+                    content.classList.remove('expanded');
+                } else {
+                    newHeader.classList.add('expanded');
+                    content.classList.add('expanded');
+                }
+            });
+        });
+    }
+    
+    function resetMobileAccordions() {
+        const accordionHeaders = document.querySelectorAll('.mobile-accordion-header');
+        const accordionContents = document.querySelectorAll('.mobile-accordion-content');
+        
+        // Open second accordion (Concepts) by default - establishes the interaction pattern
+        accordionHeaders.forEach((header, index) => {
+            if (index === 1) {
+                header.classList.add('expanded');
+            } else {
+                header.classList.remove('expanded');
+            }
+        });
+        
+        accordionContents.forEach((content, index) => {
+            if (index === 1) {
+                content.classList.add('expanded');
+            } else {
+                content.classList.remove('expanded');
+            }
+        });
+    }
+    
+    function setupMobileQuiz() {
+        const quizQuestions = document.querySelectorAll('.mobile-quiz-q');
+        quizQuestions.forEach(quizQuestion => {
+            const optionsContainer = quizQuestion.querySelector('.quiz-options');
+            const correctAnswerIndex = parseInt(quizQuestion.dataset.correct);
+            const explanation = quizQuestion.dataset.explain;
+            const correctText = quizQuestion.dataset.correctText;
+            const feedbackBox = quizQuestion.querySelector('.quiz-feedback-box');
+
+            optionsContainer.addEventListener('click', (e) => {
+                const selectedLabel = e.target.closest('label');
+                if (!selectedLabel || selectedLabel.classList.contains('disabled')) return;
+
+                const selectedIndex = parseInt(selectedLabel.querySelector('input').value);
+                const labels = optionsContainer.querySelectorAll('.quiz-option');
+
+                labels.forEach(label => label.classList.add('disabled'));
+
+                if (selectedIndex === correctAnswerIndex) {
+                    selectedLabel.classList.add('correct');
+                    feedbackBox.innerHTML = `
+                        <div style="background: var(--ok-soft); border-left: 4px solid var(--ok); padding: 12px; border-radius: 8px;">
+                            <p style="font-weight: 600; color: var(--ok); margin-bottom: 6px;">✅ Correct!</p>
+                            <p style="margin-bottom: 8px;">${renderMarkdown(explanation)}</p>
+                            <p style="font-size: 0.9rem; color: #666;"><strong>💡 Tip:</strong> This is a key concept for Git mastery and leadership.</p>
+                        </div>
+                    `;
+                } else {
+                    selectedLabel.classList.add('incorrect');
+                    labels[correctAnswerIndex].classList.add('correct');
+                    feedbackBox.innerHTML = `
+                        <div style="background: var(--bad-soft); border-left: 4px solid var(--bad); padding: 12px; border-radius: 8px;">
+                            <p style="font-weight: 600; color: var(--bad); margin-bottom: 6px;">❌ Not quite right</p>
+                            <p style="margin-bottom: 8px;"><strong>The correct answer is:</strong> ${renderMarkdown(correctText)}</p>
+                            <p style="margin-bottom: 0;"><strong>Why?</strong> ${renderMarkdown(explanation)}</p>
+                        </div>
+                    `;
+                }
+                feedbackBox.style.display = 'block';
+            });
+        });
+    }
+    
+    function setupMobileTopicNav() {
+        const prevBtn = document.getElementById('mobile-prev-topic');
+        const nextBtn = document.getElementById('mobile-next-topic');
+        
+        if (prevBtn) {
+            prevBtn.addEventListener('click', () => {
+                // Circular navigation: prev of first is last
+                currentTopicIndex = (currentTopicIndex - 1 + topicOrder.length) % topicOrder.length;
+                const crudAction = topicOrder[currentTopicIndex];
+                switchCrudTab(crudAction);
+            });
+        }
+        
+        if (nextBtn) {
+            nextBtn.addEventListener('click', () => {
+                // Circular navigation: next of last is first
+                currentTopicIndex = (currentTopicIndex + 1) % topicOrder.length;
+                const crudAction = topicOrder[currentTopicIndex];
+                switchCrudTab(crudAction);
+            });
+        }
     }
     
     function renderExplanation(crudAction) {
@@ -1149,38 +2217,75 @@ e5f6g7h HEAD@{1}: commit: This is the good commit I lost!
 
     // --- Event Listeners ---
     document.addEventListener('DOMContentLoaded', () => {
+        const logoLink = document.getElementById('logo-link');
         const startBtn = document.getElementById('start-tutorial-btn');
         const backBtn = document.getElementById('back-btn');
         const selectCards = document.querySelectorAll('.select-card');
         const tutorialTabs = document.querySelectorAll('.crud-tab');
         
-        showScreen(introScreen);
+        showScreen('intro-screen');
         
+        logoLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            showScreen('intro-screen');
+        });
+
         startBtn.addEventListener('click', () => {
-            showScreen(selectScreen);
+            showScreen('select-screen');
             updateQuizButton();
         });
         
         backBtn.addEventListener('click', () => {
-            showScreen(selectScreen);
+            showScreen('select-screen');
         });
         
         selectCards.forEach(card => {
             card.addEventListener('click', () => {
                 const crudAction = card.dataset.crud;
-                showScreen(tutorialScreen);
+                if (isMobileDevice()) {
+                    showScreen('mobile-topic-screen');
+                } else {
+                    showScreen('tutorial-screen');
+                }
                 switchCrudTab(crudAction);
             });
         });
 
         tutorialTabs.forEach(tab => {
             tab.addEventListener('click', () => {
-                switchCrudTab(tab.dataset.crud);
+                const crudAction = tab.dataset.crud;
+                if (isMobileDevice()) {
+                    showScreen('mobile-topic-screen');
+                }
+                switchCrudTab(crudAction);
             });
+        });
+        
+        // Mobile back button
+        const mobileBackBtn = document.getElementById('mobile-back-btn');
+        if (mobileBackBtn) {
+            mobileBackBtn.addEventListener('click', () => {
+                showScreen('select-screen');
+            });
+        }
+        
+        // Setup mobile topic navigation
+        setupMobileTopicNav();
+        
+        // Handle window resize - switch between mobile and desktop views
+        window.addEventListener('resize', () => {
+            const mobileTopicActive = !mobileTopicScreen.classList.contains('hidden');
+            const desktopTutorialActive = tutorialScreen.style.display === 'grid';
+            
+            if (isMobileDevice() && desktopTutorialActive) {
+                showScreen('mobile-topic-screen');
+            } else if (!isMobileDevice() && mobileTopicActive) {
+                showScreen('tutorial-screen');
+            }
         });
 
         startQuizBtn.addEventListener('click', () => {
-            showScreen(finalQuizScreen);
+            showScreen('final-quiz-screen');
             quizState.currentQ = 0;
             quizState.score = 0;
             quizState.answers.fill(null);
@@ -1238,7 +2343,7 @@ e5f6g7h HEAD@{1}: commit: This is the good commit I lost!
                 <p class="mt-2">You've reached the end of the Mastery Series. Congratulations on becoming a Git expert!</p>
                 <div class="mt-8">
                     <button onclick="window.location.reload()" class="start-btn">Practice Again</button>
-                    <button onclick="showScreen(selectScreen);" class="back-btn mt-4">Back to Topics</button>
+                    <button onclick="showScreen('select-screen');" class="back-btn mt-4">Back to Topics</button>
                 </div>
             </div>`;
         quizProgress.style.width = '100%';

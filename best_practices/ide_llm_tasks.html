@@ -53,7 +53,7 @@
       --ok:#16a34a; --ok-soft:#dcfce7; --bad:#dc2626; --bad-soft:#fee2e2;
     }
     *{box-sizing:border-box;margin:0;padding:0}
-    html,body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;scroll-behavior:smooth}
+    html,body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;scroll-behavior:smooth;overflow-x:hidden}
     .container{max-width:800px;margin:auto;padding:24px;background:#fff}
     a{color:var(--accent);text-decoration:none}
     a:hover{text-decoration:underline}
@@ -85,9 +85,11 @@
     .site-header.shrink .logo{
       font-size:1rem;
     }
-    .site-header nav{display:flex;gap:14px}
-    .site-header nav a{color:#ced4da;transition:color 0.2s ease}
-    .site-header nav a:hover{color:#fff}
+    .site-nav{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+    .site-nav a{color:#ced4da;transition:color 0.2s ease;text-decoration:none}
+    .site-nav a:hover{color:#fff;text-decoration:none}
+    .hamburger{display:none;background:none;border:1px solid rgba(255,255,255,0.4);color:#fff;border-radius:8px;padding:8px 10px;font-size:1.2rem;cursor:pointer;line-height:1;transition:background 0.2s;min-width:48px;min-height:48px}
+    .hamburger:hover,.hamburger[aria-expanded="true"]{background:rgba(255,255,255,0.15)}
     
     .site-footer{background:var(--header-bg);color:var(--header-fg);text-align:center;margin-top:50px;padding:40px}
     .breadcrumbs{margin-bottom:24px;font-size:0.9rem;color:#6c757d}
@@ -525,17 +527,134 @@
     .glossary-close{color:#aaa;float:right;font-size:28px;font-weight:bold;cursor:pointer;margin-left:auto}
     .glossary-close:hover{color:#000}
 
-    /* ================= Responsive ================= */
+    /* ================= Mobile Responsive ================= */
     @media(max-width:768px){
-      .carousel-container{padding:0 55px}
-      .carousel-nav{width:40px;height:40px;font-size:20px}
-      .site-header{padding:14px 16px}
+      /* Header & Hamburger */
+      .site-header{padding:12px 16px;flex-wrap:nowrap}
       .site-header.shrink{padding:10px 16px}
-      .container{padding:16px}
-      h1{font-size:1.8rem}
-      h2{font-size:1.5rem;margin:32px 0 12px}
-      .flip-card-front .card-emoji{font-size:3rem}
-      .flip-card-front h3{font-size:1.4rem}
+      .logo{flex:0 0 auto;font-size:1rem}
+      .hamburger{display:inline-flex;align-items:center;justify-content:center;margin-left:auto}
+      .site-nav{display:none;position:absolute;top:100%;right:16px;flex-direction:column;gap:0;background:var(--header-bg);padding:8px 0;border-radius:8px;box-shadow:0 10px 25px rgba(0,0,0,0.35);min-width:200px;z-index:999}
+      .site-nav.open{display:flex}
+      .site-nav a{display:block;padding:12px 18px;color:#f8f9fa;white-space:nowrap}
+      .site-nav a + a{border-top:1px solid rgba(255,255,255,0.15)}
+      
+      /* Container & Typography */
+      .container{padding:16px;max-width:100%;box-sizing:border-box}
+      h1{font-size:1.75rem}
+      h2{font-size:1.4rem;margin:32px 0 12px}
+      h3{font-size:1.2rem}
+      h4{font-size:1rem}
+      .byline{font-size:0.95rem}
+      .intro{padding:16px;font-size:1rem}
+      
+      /* Carousel & Flip Cards */
+      .carousel-container{padding:0 42px;margin:0 8px}
+      .carousel-nav{width:32px;height:32px;font-size:16px;min-width:32px;min-height:32px}
+      #carousel-prev,.carousel-container > .carousel-nav:first-of-type{left:0}
+      #carousel-next,.carousel-container > .carousel-nav:nth-of-type(2){right:0}
+      .flip-card{min-height:280px}
+      .flip-card-front,.flip-card-back{padding:20px;min-height:280px}
+      .flip-card-front .card-emoji{font-size:2.5rem}
+      .flip-card-front .card-icon{width:80px;height:80px;margin:20px auto 15px}
+      .flip-card-front h3{font-size:1.25rem;margin-bottom:10px}
+      .flip-card-front p{font-size:0.95rem}
+      .flip-card-front .card-subtitle{font-size:0.85rem}
+      .flip-card-front .tap-hint{font-size:0.8rem;margin-top:16px;margin-bottom:20px}
+      .flip-card-back h4{font-size:1.1rem;margin-bottom:14px;padding-bottom:10px}
+      .flip-card-back li{font-size:0.9rem;margin-bottom:8px}
+      
+      /* Touch targets */
+      .btn{min-height:48px;padding:14px 18px}
+      .accordion-header{min-height:48px;padding:14px 16px;font-size:1rem}
+      .quiz-option label{min-height:48px;padding:14px}
+      .glossary-chip{min-height:44px;padding:10px 14px}
+      .share-link{width:48px;height:48px}
+      
+      /* Quiz */
+      .quiz-container{padding:16px}
+      .quiz-question{font-size:1rem}
+      .quiz-controls{flex-wrap:nowrap;gap:8px}
+      .quiz-controls .btn{flex:1}
+      
+      /* Tables */
+      .table-wrap{margin:24px 0}
+      table.data-table th,table.data-table td{padding:10px 12px;font-size:0.85rem}
+      
+      /* Pitfall cards */
+      .pitfall-grid{grid-template-columns:1fr;gap:16px}
+      .code-block{font-size:0.85rem;padding:14px;overflow-x:auto;white-space:pre-wrap;word-wrap:break-word}
+      
+      /* Page TOC */
+      .page-toc{padding:16px}
+      .page-toc li{margin-bottom:6px}
+      
+      /* Glossary cloud & Modal */
+      .glossary-cloud{margin:20px 0;padding:0 4px}
+      .glossary-modal-content{width:calc(100% - 32px);max-width:calc(100vw - 32px);margin:15% 16px}
+      .glossary-modal-header{padding:16px}
+      .glossary-modal-header h3{font-size:1.1rem}
+      .glossary-modal-body{padding:16px;max-height:50vh}
+      .glossary-modal-body p{font-size:0.95rem}
+      
+      /* Quiz - CBSE style */
+      .quiz-container{padding:16px;margin:32px 0;border-radius:10px}
+      .quiz-header{padding-bottom:12px;margin-bottom:16px}
+      .quiz-header h3{font-size:1.1rem}
+      .quiz-question{font-size:1rem;margin-bottom:16px}
+      .quiz-options{gap:10px}
+      .quiz-option label{padding:14px 12px;border-radius:8px;font-size:0.95rem}
+      .quiz-option .option-text{font-size:0.95rem}
+      .quiz-option .explanation{padding:12px;font-size:0.9rem;margin-top:8px}
+      .quiz-controls{margin-top:16px;gap:10px}
+      .quiz-controls .btn{flex:1;padding:12px 16px;font-size:0.9rem}
+    }
+    
+    @media(max-width:480px){
+      .container{padding:12px;max-width:100%;box-sizing:border-box}
+      h1{font-size:1.5rem}
+      h2{font-size:1.25rem}
+      h3{font-size:1.1rem}
+      .byline{font-size:0.9rem}
+      .intro{padding:14px;font-size:0.95rem}
+      
+      /* Carousel tighter */
+      .carousel-container{padding:0 36px;margin:0 6px}
+      .carousel-nav{width:28px;height:28px;font-size:14px;min-width:28px;min-height:28px}
+      .flip-card-front{padding:16px}
+      .flip-card-front .card-emoji{font-size:2rem}
+      .flip-card-front .card-icon{width:60px;height:60px;margin:15px auto 10px}
+      .flip-card-front h3{font-size:1.1rem}
+      .flip-card-front p{font-size:0.9rem}
+      .flip-card-back{padding:16px}
+      .flip-card-back li{font-size:0.85rem}
+      
+      /* Quiz controls ONE row */
+      .quiz-controls{gap:6px}
+      .quiz-controls .btn{padding:12px 14px;font-size:0.85rem}
+      
+      /* Glossary */
+      .glossary-cloud{gap:6px;margin:16px 0;padding:0 2px}
+      .glossary-chip{font-size:0.8rem;padding:8px 10px;min-height:40px}
+      .glossary-modal-content{width:calc(100% - 24px);margin:12% 12px}
+      .glossary-modal-header{padding:14px}
+      .glossary-modal-header h3{font-size:1rem}
+      .glossary-modal-body{padding:14px;max-height:45vh}
+      .glossary-modal-body p{font-size:0.9rem}
+      
+      /* Quiz tighter */
+      .quiz-container{padding:14px;margin:24px 0}
+      .quiz-question{font-size:0.95rem}
+      .quiz-option label{padding:12px 10px;font-size:0.9rem}
+      .quiz-option .explanation{padding:10px;font-size:0.85rem}
+      .quiz-controls .btn{padding:10px 12px;font-size:0.85rem}
+      
+      /* Code blocks */
+      .code-block{font-size:0.8rem;padding:12px}
+      
+      /* Accordion */
+      .accordion-header{font-size:0.95rem;padding:12px 14px}
+      .accordion-content{padding:14px}
     }
   </style>
 </head>
@@ -543,7 +662,8 @@
   <!-- Header -->
   <header class="site-header" id="mainHeader">
     <div class="logo">💻 DevGuide</div>
-    <nav>
+    <button class="hamburger" aria-label="Toggle navigation" aria-expanded="false" onclick="toggleNav()">☰</button>
+    <nav class="site-nav" id="siteNav">
       <a href="#intro">Home</a>
       <a href="#tasks">Tasks</a>
       <a href="#reference">Reference</a>
@@ -2724,6 +2844,24 @@
   </div>
 
   <script>
+    // ============ Hamburger Navigation Toggle ============
+    function toggleNav() {
+      var nav = document.getElementById('siteNav');
+      var hamburger = document.querySelector('.hamburger');
+      var isOpen = nav.classList.toggle('open');
+      hamburger.setAttribute('aria-expanded', isOpen);
+    }
+    
+    // Close menu when clicking a nav link
+    document.querySelectorAll('.site-nav a').forEach(function(link) {
+      link.addEventListener('click', function() {
+        var nav = document.getElementById('siteNav');
+        var hamburger = document.querySelector('.hamburger');
+        nav.classList.remove('open');
+        hamburger.setAttribute('aria-expanded', 'false');
+      });
+    });
+    
     // ============ Shrinking Header on Scroll ============
     window.addEventListener('scroll', function() {
       var header = document.getElementById('mainHeader');

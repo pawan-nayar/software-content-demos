@@ -13,16 +13,19 @@
       --table-header:#fff7ed;
     }
     *{box-sizing:border-box;margin:0;padding:0}
-    html,body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;}
-    .container{max-width:800px;margin:auto;padding:24px;background:#fff}
+    html{width:100%}
+    body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;scroll-behavior:smooth;overflow-x:hidden;width:100%;min-height:100vh}
+    .container{max-width:1080px;margin:auto;padding:24px;background:#fff;overflow-x:hidden}
     a{color:var(--accent);text-decoration:none}
     a:hover{text-decoration:underline}
     .site-header,.site-footer{background:var(--header-bg);color:var(--header-fg);padding:14px 24px}
     .site-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;position:sticky;top:0;z-index:100}
     .logo{font-weight:700;font-size:1.15rem;color:#fff}
-    .site-header nav{display:flex;gap:14px}
-    .site-header nav a{color:#ced4da}
-    .site-header nav a:hover{color:#fff}
+    .site-nav{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+    .site-nav a{color:#ced4da}
+    .site-nav a:hover{color:#fff}
+    .hamburger{display:none;background:none;border:1px solid rgba(255,255,255,0.4);color:#fff;border-radius:8px;padding:8px 10px;font-size:1rem;cursor:pointer;line-height:1;transition:background 0.2s;min-width:48px;min-height:48px}
+    .hamburger:hover,.hamburger[aria-expanded="true"]{background:rgba(255,255,255,0.15)}
     .site-footer{text-align:center;margin-top:50px;padding:40px}
     .breadcrumbs{margin-bottom:24px;font-size:0.9rem;color:#6c757d}
     .breadcrumbs a{color:var(--accent)}
@@ -32,18 +35,21 @@
     h3{font-size:clamp(1.2rem,3vw,1.5rem);color:var(--text);margin-top:32px;margin-bottom:12px}
     h4{font-size:clamp(1rem,2.5vw,1.2rem);font-weight:bold;color:var(--accent-2);margin-bottom:10px}
     p{margin-bottom:16px;word-wrap:break-word}
-    ul{margin-left:24px;margin-bottom:24px;list-style-type:'🔹';padding-left:1em}
+    ul,ol{margin-left:24px;margin-bottom:24px;padding-left:1em}
+    ul{list-style-type:'🔹'}
+    ol{list-style-type:decimal}
     li{margin-bottom:12px;padding-left:0.5em}
     .article-meta{display:flex;align-items:center;gap:12px;color:#6c757d;margin-bottom:32px;font-size:0.9rem}
     .author-emoji{font-size:32px;line-height:1}
     .intro{font-size:1.05rem;line-height:1.7;background:var(--muted);padding:18px;border-radius:12px;border-left:4px solid var(--accent);margin:24px 0}
     .img-frame{position:relative;width:100%;padding-top:50%;overflow:hidden;border-radius:12px;margin:16px 0 24px;box-shadow:0 4px 15px rgba(0,0,0,0.1)}
     .img-frame img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover}
-    .btn{background:var(--accent);color:#fff;border:none;padding:8px 12px;border-radius:8px;font-weight:600;cursor:pointer;transition:background-color 0.2s ease;font-size:0.9rem;}
-    .btn:hover{background-color:var(--accent-2);}
+    .btn{background:var(--accent);color:#fff;border:none;padding:10px 14px;border-radius:10px;font-weight:700;cursor:pointer;transition:background-color 0.2s ease;font-size:0.95rem;min-height:48px}
+    .btn:hover{background-color:var(--accent-2)}
+    .btn:disabled{background:#ced4da;cursor:not-allowed}
     .interactive-box{background:#f8f9fa;border:1px solid var(--border);border-radius:12px;padding:24px;margin:24px 0}
     .table-wrap{position:relative;border:1px solid var(--border);border-radius:12px;background:#fff;margin:24px 0}
-    .table-scroll{position:relative;overflow-x:auto}
+    .table-scroll{position:relative;overflow-x:auto;-webkit-overflow-scrolling:touch}
     table.data-table{width:100%;border-collapse:collapse;}
     table.data-table th,table.data-table td{padding:12px 15px;border:1px solid var(--border);text-align:left;vertical-align:top;}
     table.data-table thead th{background:var(--table-header);font-weight:700;color:var(--accent-2);border-bottom:2px solid var(--accent);}
@@ -55,40 +61,43 @@
     .accordion-header[aria-expanded="true"]{background:#e9ecef;border-bottom-left-radius:0;border-bottom-right-radius:0}
     .accordion-header[aria-expanded="true"]::after{content:'−'}
     .accordion-content{padding:20px;display:none;border:1px solid var(--border);border-top:none;border-radius:0 0 8px 8px}
-    .carousel-container{perspective:1000px;position:relative;padding:0 50px;}
-    .flip-card{width:100%;height:310px;background-color:transparent;display:none;}
-    .flip-card.active{display:block;}
-    .flip-card-inner{position:relative;width:100%;height:100%;text-align:center;transition:transform 0.6s;transform-style:preserve-3d;cursor:pointer;border:1px solid var(--border);border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.08);}
-    .flip-card-inner:hover{box-shadow:0 4px 16px rgba(253,126,20,0.15);}
-    .flip-card.flipped .flip-card-inner{transform:rotateY(180deg);}
-    .flip-card-front, .flip-card-back{position:absolute;width:100%;height:100%;backface-visibility:hidden;display:flex;flex-direction:column;justify-content:center;padding:20px;border-radius:12px;}
-    .flip-card-front{background-color:#fff;color:var(--text);}
-    .flip-card-back{background-color:#2d2d2d;color:white;transform:rotateY(180deg);text-align:left;overflow-y:auto;}
+    .carousel-container{perspective:1000px;position:relative;padding:0 50px}
+    .flip-card{width:100%;height:min(350px,70vh);background-color:transparent;display:none}
+    .flip-card.active{display:block}
+    .flip-card-inner{position:relative;width:100%;height:100%;text-align:center;transition:transform 0.6s;transform-style:preserve-3d;cursor:pointer;border:1px solid var(--border);border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.08)}
+    .flip-card-inner:hover{box-shadow:0 4px 16px rgba(253,126,20,0.15)}
+    .flip-card.flipped .flip-card-inner{transform:rotateY(180deg)}
+    .flip-card-front,.flip-card-back{position:absolute;width:100%;height:100%;-webkit-backface-visibility:hidden;backface-visibility:hidden;display:flex;flex-direction:column;justify-content:center;padding:20px;border-radius:12px}
+    .flip-card-front{background-color:#fff;color:var(--text)}
+    .flip-card-back{background-color:#2d2d2d;color:white;transform:rotateY(180deg);text-align:left;overflow-y:auto}
     .flip-card-emoji{font-size:2.5rem;margin-bottom:12px;display:block;}
     .flip-card-front h4{border-bottom:2px solid var(--accent);padding-bottom:8px;margin-bottom:12px;font-size:1.1rem;}
     .flip-card-front p{font-size:0.9rem;color:#495057;}
     .flip-card-front strong{color:var(--accent-2);}
-    .carousel-nav{position:absolute;top:50%;transform:translateY(-50%);background-color:var(--accent);color:white;border:none;border-radius:50%;width:40px;height:40px;font-size:24px;cursor:pointer;z-index:10;display:flex;align-items:center;justify-content:center;}
-    .carousel-nav:hover{background-color:var(--accent-2);}
-    #carousel-prev{left:0;}
-    #carousel-next{right:0;}
+    .carousel-nav{position:absolute;top:50%;transform:translateY(-50%);background-color:var(--accent);color:white;border:none;border-radius:50%;width:40px;height:40px;font-size:24px;cursor:pointer;z-index:10;display:flex;align-items:center;justify-content:center}
+    .carousel-nav:hover{background-color:var(--accent-2)}
+    #carousel-prev{left:0}
+    #carousel-next{right:0}
     .carousel-footer{text-align:center;margin-top:15px;}
     #carousel-counter{font-weight:600;color:#6c757d;margin-bottom:10px;}
     .quiz-container{padding:20px;border:2px solid var(--border);border-radius:12px;background:#fff}
-    .quiz-navigation{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border)}
-    .quiz-body{display:none;}.quiz-body.active{display:block}
-    .quiz-options{display:grid;gap:12px;}
-    .quiz-option label{display:flex;align-items:center;gap:12px;padding:14px;border:2px solid var(--border);border-radius:8px;cursor:pointer;background:#f8f9fa}
-    .quiz-option input[type="radio"]{flex-shrink:0;}
+    .quiz-navigation{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border);gap:16px}
+    .quiz-navigation .btn{min-width:48px;display:flex;align-items:center;justify-content:center}
+    .question-counter{font-weight:600;font-size:1.05rem;text-align:center;flex:1;color:var(--text);white-space:nowrap}
+    .quiz-body{display:none}.quiz-body.active{display:block}
+    .quiz-options{display:grid;gap:12px}
+    .quiz-option label{display:flex;align-items:center;gap:12px;padding:14px;border:2px solid var(--border);border-radius:8px;cursor:pointer;background:#f8f9fa;transition:all 0.2s}
+    .quiz-option label:hover{background:#e9ecef;border-color:var(--accent)}
+    .quiz-option input[type="radio"]{flex-shrink:0}
     .quiz-option .explanation{display:none;margin-top:10px;padding:15px;border-radius:6px;border-left:4px solid #a0aec0}
     .quiz-option.selected.correct label{background:var(--ok-soft);border-color:var(--ok)}
     .quiz-option.selected.wrong label{background:var(--bad-soft);border-color:var(--bad)}
     .quiz-option.correct .explanation{border-left-color:var(--ok);background:#f0fff4}
     .quiz-option.wrong .explanation{border-left-color:var(--bad);background:#fff5f5}
-    .glossary-cloud{display:flex;flex-wrap:wrap;gap:16px;margin-top:24px;justify-content:center}
-    .glossary-chip{position:relative;display:flex;align-items:center;justify-content:center;gap:8px;padding:12px 16px;border-radius:999px;background:#fff7ed;border:1px solid #ffd8a8;color:#d9480f;font-weight:600;cursor:pointer;box-shadow:0 2px 6px rgba(253,126,20,.12);transition:all 0.2s;text-align:center;min-width:160px;}
-    .glossary-chip:hover, .glossary-chip:focus{background:#ffecde;transform:translateY(-2px);box-shadow:0 4px 12px rgba(253,126,20,.2);}
-    .chip-tip{position:fixed;z-index:101;min-width:240px;max-width:min(92vw,420px);background:var(--accent);color:#fff;padding:12px 14px;border-radius:12px;box-shadow:0 12px 28px rgba(253,126,20,.35);opacity:0;visibility:hidden;transition:.15s;line-height:1.45}
+    .glossary-cloud{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px;justify-content:center}
+    .glossary-chip{position:relative;display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:999px;background:#fff7ed;border:1px solid #ffd8a8;color:#d9480f;font-weight:600;cursor:pointer;box-shadow:0 2px 6px rgba(253,126,20,.12);max-width:100%}
+    .glossary-chip:hover,.glossary-chip:focus{background:#ffecde}
+    .chip-tip{position:fixed;z-index:101;min-width:0;max-width:min(92vw,420px);background:var(--accent);color:#fff;padding:12px 14px;border-radius:12px;box-shadow:0 12px 28px rgba(253,126,20,.35);opacity:0;visibility:hidden;transition:.15s;line-height:1.45}
     .chip-tip.show{opacity:1;visibility:visible}
     .chip-tip .arrow{position:absolute;width:12px;height:12px;background:var(--accent);transform:rotate(45deg)}
     .tier-badge{display:inline-block;padding:4px 12px;border-radius:6px;font-size:0.85rem;font-weight:600;margin-bottom:16px;}
@@ -96,15 +105,81 @@
     .tier-2{background:#fef3c7;color:#92400e;}
     .tip-box{background:#f0f9ff;border-left:4px solid #0ea5e9;padding:16px;border-radius:8px;margin:16px 0;display:flex;gap:12px;align-items:start;}
     .tip-icon{font-size:1.5rem;flex-shrink:0;}
-    .svg-visual{margin:24px 0;padding:20px;background:#f8f9fa;border-radius:12px;text-align:center;}
+    .svg-visual{margin:24px 0;padding:20px;background:#f8f9fa;border-radius:12px;text-align:center;overflow:hidden}
+    .svg-visual svg{max-width:100%;height:auto}
+    .repl-mobile{display:none}
+    .repl-desktop{display:block}
     .icon-label{display:inline-flex;align-items:center;gap:8px;background:#fff7ed;padding:4px 12px;border-radius:6px;font-size:0.9rem;font-weight:600;color:var(--accent-2);margin:4px;}
+
+    /* Mobile header & menu: collapse nav into right-side hamburger */
+    @media (max-width: 768px) {
+      .site-header{
+        flex-wrap:nowrap;
+      }
+      .logo{
+        flex:0 0 auto;
+      }
+      .hamburger{
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        margin-left:auto;
+      }
+      .site-nav{
+        display:none;
+        position:absolute;
+        top:100%;
+        right:16px;
+        flex-direction:column;
+        gap:0;
+        background:var(--header-bg);
+        padding:8px 0;
+        border-radius:8px;
+        box-shadow:0 10px 25px rgba(0,0,0,0.35);
+        min-width:200px;
+      }
+      .site-nav.open{
+        display:flex;
+      }
+      .site-nav a{
+        display:block;
+        padding:10px 18px;
+        color:#f8f9fa;
+        white-space:nowrap;
+      }
+      .site-nav a + a{
+        border-top:1px solid rgba(255,255,255,0.15);
+      }
+      .carousel-container{padding:0 50px}
+      .tip-box{flex-direction:column;gap:8px}
+      /* Two-tier grid stacks */
+      div[style*="grid-template-columns:1fr 1fr"],div[style*="grid-template-columns: 1fr 1fr"]{grid-template-columns:1fr !important}
+      /* REPL: Show vertical on mobile */
+      .repl-desktop{display:none !important}
+      .repl-mobile{display:block !important}
+    }
+
+    @media(max-width:600px){
+      h1{font-size:clamp(1.8rem,6vw,2.2rem)}
+      .carousel-nav{width:32px;height:32px;font-size:18px}
+      .interactive-box{padding:18px}
+    }
+
+    @media(max-width:480px){
+      .container{padding:20px}
+      .carousel-container{padding:0 44px}
+      .carousel-nav{width:36px;height:36px;font-size:20px}
+      .glossary-chip{justify-content:center}
+      .chip-tip{padding:10px 12px}
+    }
   </style>
 </head>
 <body>
 
   <header class="site-header">
       <a href="#" class="logo">Beyond Dictionary</a>
-      <nav><a href="#">For Doctors</a><a href="#">Learning Paths</a><a href="#">Tools</a><a href="#">Blog</a></nav>
+      <button class="hamburger" id="hamburger-btn" aria-expanded="false" aria-controls="primary-nav">☰ Menu</button>
+      <nav id="primary-nav" class="site-nav"><a href="#">For Doctors</a><a href="#">Learning Paths</a><a href="#">Tools</a><a href="#">Blog</a></nav>
   </header>
 
   <div class="container">
@@ -246,33 +321,37 @@
         
         <div class="svg-visual">
           <h4 style="margin-bottom:16px;">The REPL Loop in Action</h4>
-          <svg width="100%" height="180" viewBox="0 0 600 180">
-            <!-- REPL cycle -->
+          <!-- Desktop: Horizontal SVG -->
+          <svg class="repl-desktop" width="100%" height="180" viewBox="0 0 600 180">
             <rect x="50" y="40" width="100" height="60" rx="8" fill="#fff7ed" stroke="#fd7e14" stroke-width="2"/>
             <text x="100" y="65" text-anchor="middle" fill="#d9480f" font-weight="bold" font-size="12">1. Type Code</text>
             <text x="100" y="82" text-anchor="middle" fill="#6c757d" font-size="10">One line at a time</text>
-            
             <path d="M 150 70 L 190 70" stroke="#fd7e14" stroke-width="2" marker-end="url(#arrowhead)"/>
-            
             <rect x="190" y="40" width="100" height="60" rx="8" fill="#e0f2fe" stroke="#0ea5e9" stroke-width="2"/>
             <text x="240" y="65" text-anchor="middle" fill="#0c4a6e" font-weight="bold" font-size="12">2. Execute</text>
             <text x="240" y="82" text-anchor="middle" fill="#6c757d" font-size="10">Computer runs it</text>
-            
             <path d="M 290 70 L 330 70" stroke="#0ea5e9" stroke-width="2" marker-end="url(#arrowhead)"/>
-            
             <rect x="330" y="40" width="100" height="60" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
             <text x="380" y="65" text-anchor="middle" fill="#166534" font-weight="bold" font-size="12">3. See Result</text>
             <text x="380" y="82" text-anchor="middle" fill="#6c757d" font-size="10">Instant feedback</text>
-            
             <path d="M 380 100 Q 380 130 240 130 Q 100 130 100 100" fill="none" stroke="#16a34a" stroke-width="2" marker-end="url(#arrowhead)"/>
             <text x="240" y="150" text-anchor="middle" fill="#166534" font-weight="bold" font-size="11">4. Adjust & Repeat</text>
-            
             <defs>
               <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
                 <polygon points="0 0, 10 3, 0 6" fill="#16a34a"/>
               </marker>
             </defs>
           </svg>
+          <!-- Mobile: Vertical steps list -->
+          <div class="repl-mobile" style="display:none;text-align:left;">
+            <div style="background:#fff7ed;border:2px solid #fd7e14;border-radius:8px;padding:12px 16px;margin-bottom:8px;"><strong style="color:#d9480f;">1. Type Code</strong><br><span style="color:#6c757d;font-size:0.9rem;">One line at a time</span></div>
+            <div style="text-align:center;color:#fd7e14;font-size:1.5rem;margin:4px 0;">↓</div>
+            <div style="background:#e0f2fe;border:2px solid #0ea5e9;border-radius:8px;padding:12px 16px;margin-bottom:8px;"><strong style="color:#0c4a6e;">2. Execute</strong><br><span style="color:#6c757d;font-size:0.9rem;">Computer runs it</span></div>
+            <div style="text-align:center;color:#0ea5e9;font-size:1.5rem;margin:4px 0;">↓</div>
+            <div style="background:#dcfce7;border:2px solid #16a34a;border-radius:8px;padding:12px 16px;margin-bottom:8px;"><strong style="color:#166534;">3. See Result</strong><br><span style="color:#6c757d;font-size:0.9rem;">Instant feedback</span></div>
+            <div style="text-align:center;color:#16a34a;font-size:1.5rem;margin:4px 0;">↻</div>
+            <div style="background:#f8f9fa;border:2px solid #16a34a;border-radius:8px;padding:12px 16px;text-align:center;"><strong style="color:#166534;">4. Adjust & Repeat</strong></div>
+          </div>
         </div>
 
         <div class="tip-box">
@@ -684,9 +763,9 @@
 
         <div class="quiz-container">
             <div class="quiz-navigation">
-                <button class="btn" id="qPrev">←</button>
+                <button class="btn" id="qPrev">⮜</button>
                 <span class="question-counter"><span id="qCur">1</span> of <span id="qTotal">15</span></span>
-                <button class="btn" id="qNext">→</button>
+                <button class="btn" id="qNext">⮞</button>
             </div>
             <div id="quiz-body"></div>
         </div>
@@ -778,7 +857,7 @@
     <!-- SECTION 9: GLOSSARY - BEFORE FINAL THOUGHTS -->
     <section id="glossary">
       <h2>Master These Tech Terms</h2>
-      <p class="intro">Hover over any term to learn its meaning. These are your terminal essentials—no need to memorize, just reference when needed.</p>
+      <p class="intro">Click any term to learn its meaning. These are your terminal essentials—no need to memorize, just reference when needed.</p>
       <div class="glossary-cloud" id="glossary-cloud"></div>
     </section>
 
@@ -800,6 +879,24 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {
+      // HAMBURGER MENU TOGGLE
+      const hamburgerBtn = document.getElementById('hamburger-btn');
+      const primaryNav = document.getElementById('primary-nav');
+      if (hamburgerBtn && primaryNav) {
+        hamburgerBtn.addEventListener('click', function() {
+          const expanded = this.getAttribute('aria-expanded') === 'true';
+          this.setAttribute('aria-expanded', !expanded);
+          primaryNav.classList.toggle('open');
+        });
+        // Close menu when clicking outside
+        document.addEventListener('click', function(e) {
+          if (!hamburgerBtn.contains(e.target) && !primaryNav.contains(e.target)) {
+            hamburgerBtn.setAttribute('aria-expanded', 'false');
+            primaryNav.classList.remove('open');
+          }
+        });
+      }
+
       // FLIP CARD DATA (WITH EMOJIS)
       const cards = [
         { emoji: "🖥️", title: "Terminal vs REPL", front: "What's the fundamental difference?", back: "TERMINAL: General command interface. Run system commands, navigate files, install packages.\n\nREPL: Interactive programming only. Type Python code, see immediate results.\n\nDoctor Use: Terminal for setup tasks, REPL for testing patient data transformations before writing full scripts." },
@@ -930,45 +1027,44 @@
       document.getElementById('qNext').onclick = () => { if(qIdx < quiz.length-1) { qIdx++; showQ(qIdx); }};
       showQ(0);
 
-      // SETUP GLOSSARY
+      // SETUP GLOSSARY (Click/Focus based - CBSE pattern)
       const gc = document.getElementById('glossary-cloud');
       if (gc) {
-        gc.innerHTML = glossary.map(g => `<button class="glossary-chip"><span>${g.term}</span></button>`).join('');
+        gc.innerHTML = glossary.map(g => `<button class="glossary-chip" type="button"><span>${g.term}</span></button>`).join('');
         const tip = document.createElement('div');
         tip.className = 'chip-tip';
         tip.innerHTML = '<div class="arrow"></div><div class="tip-content"></div>';
         document.body.appendChild(tip);
-        const tipC = tip.querySelector('.tip-content');
-        const tipA = tip.querySelector('.arrow');
+        const tipContent = tip.querySelector('.tip-content');
+        const tipArrow = tip.querySelector('.arrow');
         let openBtn = null;
-        function posTip(btn) {
-          const r = btn.getBoundingClientRect();
+
+        function clamp(n, min, max){ return Math.max(min, Math.min(n, max)); }
+        function positionTipFor(btn){
+          const rect = btn.getBoundingClientRect();
           const vw = window.innerWidth;
-          tip.style.maxWidth = Math.min(vw-16,420)+'px';
-          const tr = tip.getBoundingClientRect();
-          const preferTop = r.top > (window.innerHeight - r.bottom);
-          const top = preferTop ? r.top - tr.height - 12 : r.bottom + 12;
-          const left = Math.max(8, Math.min(r.left + r.width/2 - tr.width/2, vw - tr.width - 8));
-          tip.style.top = Math.max(8,top)+'px';
-          tip.style.left = left+'px';
-          tipA.style.top = (preferTop ? tr.height-6 : -6)+'px';
-          tipA.style.left = Math.max(10, Math.min(r.left + r.width/2 - left - 6, tr.width-22))+'px';
+          const pad = 8;
+          tip.style.maxWidth = Math.min(vw - pad*2, 420) + 'px';
+          const tipRect = tip.getBoundingClientRect();
+          const preferTop = rect.top > (window.innerHeight - rect.bottom);
+          const top = preferTop ? rect.top - tipRect.height - 12 : rect.bottom + 12;
+          const left = clamp(rect.left + rect.width/2 - tipRect.width/2, pad, vw - tipRect.width - pad);
+          tip.style.top = Math.max(8, top) + 'px';
+          tip.style.left = left + 'px';
+          tipArrow.style.top = preferTop ? (tipRect.height - 6) + 'px' : '-6px';
+          tipArrow.style.left = clamp(rect.left + rect.width/2 - left - 6, 10, tipRect.width - 22) + 'px';
         }
-        gc.querySelectorAll('.glossary-chip').forEach((btn,i) => {
+        function openTip(btn, text){ tipContent.textContent = text; tip.classList.add('show'); positionTipFor(btn); openBtn = btn; }
+        function closeTip(){ tip.classList.remove('show'); openBtn = null; }
+
+        gc.querySelectorAll('.glossary-chip').forEach((btn,i)=>{
           const def = glossary[i].def;
-          btn.onmouseover = btn.onfocus = () => {
-            tipC.innerHTML = def;
-            tip.classList.add('show');
-            posTip(btn);
-            openBtn = btn;
-          };
-          btn.onmouseout = btn.onblur = () => {
-            tip.classList.remove('show');
-            openBtn = null;
-          };
+          ['click','focus'].forEach(evt=>btn.addEventListener(evt,()=>{ openTip(btn, def); }));
+          btn.addEventListener('blur',()=>{ if(document.activeElement!==btn) closeTip(); });
         });
-        window.onresize = () => { if(openBtn) posTip(openBtn); };
-        window.onscroll = () => { if(openBtn) posTip(openBtn); };
+        window.addEventListener('resize',()=>{ closeTip(); });
+        window.addEventListener('scroll',()=>{ closeTip(); }, {passive:true});
+        document.addEventListener('click',(e)=>{ if(openBtn && !openBtn.contains(e.target) && !tip.contains(e.target)) closeTip(); });
       }
 
       // SETUP ACCORDIONS (2nd item open by default)

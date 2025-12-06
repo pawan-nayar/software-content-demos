@@ -23,21 +23,100 @@
         
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
+        html, body {
+            scroll-behavior: smooth;
+            overflow-x: hidden;
+        }
+        
         body {
             font-family: 'Inter', sans-serif;
             background: var(--bg);
             color: var(--text);
             line-height: 1.7;
-            padding: 40px 20px;
+            padding: 0;
+        }
+        
+        /* Scroll offset for sticky header */
+        section[id] {
+            scroll-margin-top: 80px;
+        }
+        
+        /* ================= Header / Navigation ================= */
+        .site-header {
+            background: var(--header-bg);
+            color: var(--header-fg);
+            padding: 14px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .logo {
+            font-weight: 700;
+            font-size: 1.15rem;
+            color: #fff;
+            text-decoration: none;
+        }
+        
+        .site-nav {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .site-nav a {
+            color: #ced4da;
+            text-decoration: none;
+            padding: 6px 10px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+        
+        .site-nav a:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .hamburger {
+            display: none;
+            background: none;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            color: #fff;
+            border-radius: 8px;
+            padding: 8px 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            line-height: 1;
+            transition: background 0.2s;
+            min-width: 44px;
+            min-height: 44px;
+        }
+        
+        .hamburger:hover,
+        .hamburger[aria-expanded="true"] {
+            background: rgba(255, 255, 255, 0.15);
         }
         
         .container { 
             max-width: 1000px; 
-            margin: 0 auto; 
+            margin: 40px 20px; 
             background: #fff; 
             padding: 60px;
             border-radius: 12px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+        }
+        
+        @media (min-width: 1040px) {
+            .container {
+                margin-left: auto;
+                margin-right: auto;
+            }
         }
         
         /* Typography with proper spacing */
@@ -210,12 +289,13 @@
             z-index: 40; 
             display: flex; 
             align-items: center; 
-            justify-content: center; 
+            justify-content: center;
+            touch-action: none;
         }
         
         .comparison-slider .handle-icon { 
-            width: 40px; 
-            height: 40px; 
+            width: 48px; 
+            height: 48px; 
             background-color: rgba(255, 255, 255, 0.95); 
             border: 2px solid #e5e7eb; 
             border-radius: 50%; 
@@ -299,10 +379,10 @@
             background-color: #1f2937;
             color: white;
             border-radius: 8px;
-            font-size: 14px;
+            font-size: clamp(0.85rem, 2vw, 0.95rem);
             line-height: 1.5;
             pointer-events: none;
-            max-width: 280px;
+            max-width: min(92vw, 280px);
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
             z-index: 100;
             opacity: 0;
@@ -318,6 +398,7 @@
             font-weight: 600;
             margin-bottom: 4px;
             color: #60a5fa;
+            font-size: clamp(0.9rem, 2.5vw, 1rem);
         }
         
         .tooltip-section-title {
@@ -325,7 +406,7 @@
             color: #9ca3af;
             margin-top: 0.75rem;
             margin-bottom: 0.25rem;
-            font-size: 12px;
+            font-size: clamp(0.75rem, 2vw, 0.85rem);
         }
 
         /* SVG hotspot styles */
@@ -371,16 +452,186 @@
             filter: brightness(1.1); 
         }
 
-        /* Mobile responsiveness */
+        /* ================= MOBILE RESPONSIVE STYLES ================= */
+        
+        /* --- Tablet & Small Desktop (768px) --- */
         @media (max-width: 768px) {
-            body { padding: 20px 10px; }
-            .container { padding: 30px 20px; }
+            /* Header mobile layout */
+            .site-header {
+                flex-wrap: nowrap;
+                padding: 14px 20px;
+            }
+            
+            .logo {
+                flex: 0 0 auto;
+            }
+            
+            .hamburger {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                margin-left: auto;
+            }
+            
+            .site-nav {
+                display: none;
+                position: absolute;
+                top: 100%;
+                right: 16px;
+                flex-direction: column;
+                gap: 0;
+                background: var(--header-bg);
+                padding: 8px 0;
+                border-radius: 8px;
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+                min-width: 200px;
+            }
+            
+            .site-nav.open {
+                display: flex;
+            }
+            
+            .site-nav a {
+                display: block;
+                padding: 10px 18px;
+                color: #f8f9fa;
+                white-space: nowrap;
+            }
+            
+            .site-nav a + a {
+                border-top: 1px solid rgba(255, 255, 255, 0.15);
+            }
+            
+            .container { 
+                padding: 40px 24px;
+                margin: 30px 10px;
+            }
             .two-column { grid-template-columns: 1fr; gap: 20px; }
-            .comparison-slider { height: 350px; }
+            .comparison-slider { height: 380px; }
+            
+            /* Stack chat interface */
+            .chat-interface > div[style*="display: flex"] {
+                flex-direction: column !important;
+                height: auto !important;
+            }
+            
+            .chat-interface > div[style*="display: flex"] > div {
+                width: 100% !important;
+                border-right: none !important;
+                border-bottom: 1px solid #dee2e6;
+            }
+        }
+        
+        /* --- Mobile (600px) --- */
+        @media (max-width: 600px) {
+            .container { 
+                padding: 32px 20px;
+                margin: 24px 8px;
+            }
+            
+            h1 {
+                font-size: clamp(1.8rem, 6vw, 2.2rem);
+            }
+            
+            h2 {
+                font-size: clamp(1.4rem, 5vw, 1.8rem);
+                margin: 48px 0 24px;
+            }
+            
+            /* Comparison slider */
+            .comparison-slider { height: 320px; }
+            
+            /* FAQ buttons - Touch friendly */
+            .faq-button {
+                min-height: 48px;
+                padding: 16px 18px;
+                font-size: clamp(0.95rem, 2.5vw, 1rem);
+            }
+            
+            .faq-icon {
+                font-size: 1.5rem;
+                min-width: 24px;
+            }
+            
+            /* Tables */
+            .comparison-table {
+                font-size: 0.9rem;
+            }
+            
+            .comparison-table th,
+            .comparison-table td {
+                padding: 12px;
+            }
+        }
+        
+        /* --- Small Mobile (480px) --- */
+        @media (max-width: 480px) {
+            .container { 
+                padding: 24px 16px;
+                margin: 20px 8px;
+            }
+            
+            h1 {
+                font-size: clamp(1.6rem, 7vw, 2rem);
+                margin-bottom: 8px;
+            }
+            
+            .byline {
+                font-size: clamp(1rem, 3.5vw, 1.15rem);
+                margin-bottom: 32px;
+            }
+            
+            h2 {
+                margin: 40px 0 20px;
+            }
+            
+            /* Comparison slider - More compact */
+            .comparison-slider { height: 280px; }
+            
+            /* Brain SVG */
+            #brain-svg {
+                max-width: 200px !important;
+            }
+            
+            .brain-container {
+                padding: 24px 16px;
+            }
+            
+            /* Callout boxes */
+            .callout {
+                padding: 18px;
+                margin: 24px 0;
+            }
+            
+            /* Chat interface */
+            .chat-interface [style*="padding: 24px"] {
+                padding: 16px !important;
+            }
+            
+            /* FAQ content */
+            .faq-content {
+                font-size: 0.95rem;
+                padding: 0 16px 16px;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Site Header -->
+    <header class="site-header">
+        <a href="#" class="logo">Beyond Dictionary</a>
+        <button class="hamburger" id="hamburger-btn" aria-expanded="false" aria-label="Toggle navigation">
+            ☰
+        </button>
+        <nav class="site-nav" id="site-nav">
+            <a href="#understanding">Two Environments</a>
+            <a href="#workflow">Workflow</a>
+            <a href="#workbench">Workbench</a>
+            <a href="#doctor-view">Doctor View</a>
+            <a href="#faq">FAQ</a>
+        </nav>
+    </header>
+
     <!-- Tooltip for Brain SVG -->
     <div id="brain-tooltip" class="tooltip"></div>
     <!-- Tooltip for Workbench SVG -->
@@ -402,7 +653,7 @@
             </header>
 
             <!-- Understanding the Two Environments -->
-            <section>
+            <section id="understanding">
                 <h2>🔄 Understanding the Two Environments</h2>
                 
                 <div class="two-column">
@@ -464,7 +715,7 @@
             </section>
 
             <!-- Development Workflow -->
-            <section>
+            <section id="workflow">
                 <h2>Development Workflow</h2>
                 
                 <h3>Part 1: Clinical Reference Data</h3>
@@ -542,7 +793,7 @@
             </section>
 
             <!-- Section 3: The Developer's Workbench -->
-            <section>
+            <section id="workbench">
                 <h2>Part 3: The Developer's Workbench</h2>
                 <p>This is where you prototype and refine your medical AI workflows. The interactive Workbench below shows the actual development environment where you'll build the logic that powers the clinician-facing chat interface. Hover over elements to understand the developer workflow.</p>
                 
@@ -588,7 +839,7 @@
             </section>
 
             <!-- Section 4: What the Doctor Sees -->
-            <section>
+            <section id="doctor-view">
                 <h2>Part 4: What the Doctor Sees</h2>
                 <p>Once you've perfected your prompts in the Workbench, this is how clinicians will interact with your deployed system. The chat interface below demonstrates the end-user experience powered by your Workbench logic.</p>
                 
@@ -689,7 +940,7 @@
             </section>
 
             <!-- FAQ Section -->
-            <section>
+            <section id="faq">
                 <h2>❓ Frequently Asked Questions</h2>
                 <p>Common questions about developing medical AI tools with Claude Workbench, answered for developers.</p>
                 
@@ -833,6 +1084,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     brainHotspots.forEach(hotspot => {
+        // Mouse events for desktop
         hotspot.addEventListener('mouseenter', (e) => {
             const content = brainTooltipContent[hotspot.id];
             if (content) {
@@ -848,6 +1100,24 @@ document.addEventListener('DOMContentLoaded', () => {
             if (brainTooltip.classList.contains('visible')) {
                 updateTooltipPosition(e, brainTooltip);
             }
+        });
+        
+        // Touch events for mobile
+        hotspot.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            const content = brainTooltipContent[hotspot.id];
+            if (content) {
+                brainTooltip.innerHTML = `<div class="tooltip-title">${content.title}</div><p>${content.text}</p>`;
+                brainTooltip.classList.add('visible');
+                const touch = e.touches[0];
+                updateTooltipPosition({ clientX: touch.clientX, clientY: touch.clientY }, brainTooltip);
+            }
+        }, { passive: false });
+        
+        hotspot.addEventListener('touchend', () => {
+            setTimeout(() => {
+                brainTooltip.classList.remove('visible');
+            }, 2000);
         });
     });
     
@@ -879,6 +1149,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     allWorkbenchHotspots.forEach(el => {
+        // Mouse events for desktop
         el.addEventListener('mouseenter', (e) => {
             const content = workbenchTooltipsContent[el.id];
             if (content) {
@@ -895,6 +1166,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 updateTooltipPosition(e, workbenchTooltip);
             }
         });
+        
+        // Touch events for mobile
+        el.addEventListener('touchstart', (e) => {
+            const content = workbenchTooltipsContent[el.id];
+            if (content) {
+                workbenchTooltip.innerHTML = `<div class="tooltip-title">${content.title}</div><div class="tooltip-section-title">Development Function</div><p>${content.whatItIs}</p><div class="tooltip-section-title">Clinical Impact</div><p>${content.impact}</p>`;
+                workbenchTooltip.classList.add('visible');
+                const touch = e.touches[0];
+                updateTooltipPosition({ clientX: touch.clientX, clientY: touch.clientY }, workbenchTooltip);
+                
+                setTimeout(() => {
+                    workbenchTooltip.classList.remove('visible');
+                }, 2500);
+            }
+        }, { passive: true });
     });
 
     // --- Before/After Slider Logic ---
@@ -921,6 +1207,34 @@ document.addEventListener('DOMContentLoaded', () => {
         handle.addEventListener('touchstart', startDrag, { passive: true });
         document.addEventListener('touchend', stopDrag);
         document.addEventListener('touchmove', onDrag);
+    }
+    
+    // --- Hamburger Menu Functionality ---
+    const hamburgerBtn = document.getElementById('hamburger-btn');
+    const siteNav = document.getElementById('site-nav');
+
+    if (hamburgerBtn && siteNav) {
+        hamburgerBtn.addEventListener('click', () => {
+            const isExpanded = hamburgerBtn.getAttribute('aria-expanded') === 'true';
+            hamburgerBtn.setAttribute('aria-expanded', !isExpanded);
+            siteNav.classList.toggle('open');
+        });
+        
+        // Close menu when clicking a nav link
+        siteNav.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                hamburgerBtn.setAttribute('aria-expanded', 'false');
+                siteNav.classList.remove('open');
+            });
+        });
+        
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!hamburgerBtn.contains(e.target) && !siteNav.contains(e.target)) {
+                hamburgerBtn.setAttribute('aria-expanded', 'false');
+                siteNav.classList.remove('open');
+            }
+        });
     }
 });
 

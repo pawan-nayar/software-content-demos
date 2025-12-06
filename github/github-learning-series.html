@@ -14,13 +14,14 @@
             --font-main: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        html { scroll-behavior: smooth; }
-        body { 
+        html, body { 
             font-family: var(--font-main); 
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             color: var(--text); 
-            line-height: 1.6; 
-            font-size: 16px; 
+            line-height: 1.7; 
+            font-size: 16px;
+            scroll-behavior: smooth;
+            overflow-x: hidden;
         }
         .site-header, .site-footer { background: var(--header-bg); color: var(--header-fg); padding: 14px 24px; }
         .site-header { display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
@@ -37,19 +38,21 @@
             border: 1px solid var(--border);
         }
         .hero h1 {
-            font-size: 2.5rem;
+            font-size: clamp(1.75rem, 6vw, 2.5rem);
             font-weight: 700;
             color: var(--accent-2);
+            line-height: 1.2;
         }
         .hero p {
-            font-size: 1.1rem;
+            font-size: clamp(0.95rem, 2.5vw, 1.1rem);
             color: #495057;
             max-width: 700px;
             margin: 1rem auto 0;
+            word-wrap: break-word;
         }
 
         .section-title {
-            font-size: 1.8rem;
+            font-size: clamp(1.4rem, 4vw, 1.8rem);
             font-weight: 600;
             margin-bottom: 1.5rem;
             border-bottom: 2px solid var(--border);
@@ -58,7 +61,7 @@
 
         .card-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 1.5rem;
         }
 
@@ -103,6 +106,95 @@
             text-align: right;
             font-weight: 600;
             color: var(--accent-2);
+        }
+
+        /* ================= Mobile Responsive (CBSE Pattern) ================= */
+        @media (max-width: 768px) {
+            .site-header {
+                padding: 12px 16px;
+            }
+            
+            .container {
+                padding: 1.5rem 1rem;
+            }
+            
+            .hero {
+                padding: 2rem 1rem;
+                margin-bottom: 1.5rem;
+            }
+            
+            .section-title {
+                margin-bottom: 1.25rem;
+            }
+            
+            .card-grid {
+                gap: 1.25rem;
+            }
+            
+            .card-header {
+                padding: 1rem;
+            }
+            
+            .card-header h3 {
+                font-size: 1.1rem;
+            }
+            
+            .card-body {
+                padding: 1rem;
+            }
+            
+            .card-body p {
+                font-size: 0.9rem;
+            }
+            
+            .card-footer {
+                padding: 0.6rem 1rem;
+            }
+            
+            section[style*="margin-top: 3rem"] {
+                margin-top: 2rem !important;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 1.25rem 0.75rem;
+            }
+            
+            .hero {
+                padding: 1.5rem 0.75rem;
+                border-radius: 8px;
+            }
+            
+            .hero p {
+                font-size: 0.9rem;
+            }
+            
+            .card-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .card {
+                border-radius: 8px;
+            }
+            
+            .card-header h3 {
+                font-size: 1rem;
+            }
+            
+            .card-body p {
+                font-size: 0.85rem;
+            }
+            
+            .card-footer {
+                font-size: 0.9rem;
+            }
+            
+            .site-footer {
+                padding: 20px 16px;
+                font-size: 0.9rem;
+            }
         }
     </style>
 </head>

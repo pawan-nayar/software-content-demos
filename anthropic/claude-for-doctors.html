@@ -23,17 +23,22 @@
         --myth-color: #6c757d;
       }
       *{box-sizing:border-box;margin:0;padding:0}
-      html,body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.8; scroll-behavior: smooth;}
+      html,body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.8;scroll-behavior:smooth;overflow-x:hidden}
       .container{max-width:900px;margin:auto;padding:24px;background:#fff}
       a{color:var(--accent);text-decoration:none}
       a:hover{text-decoration:underline}
 
       /* Header / Footer */
       .site-header,.site-footer{background:var(--header-bg);color:var(--header-fg);padding:14px 24px}
-      .site-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;position:sticky;top:0;z-index:100}
-      .logo{font-weight:700;font-size:1.15rem;color:#fff}
-      .site-header nav{display:flex;gap:14px} .site-header nav a{color:#ced4da} .site-header nav a:hover{color:#fff}
-      .site-footer{text-align:center;margin-top:50px;padding:20px; font-size: 0.9rem;}
+      .site-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;position:sticky;top:0;z-index:100;box-shadow:0 2px 10px rgba(0,0,0,0.1)}
+      .logo{font-weight:700;font-size:1.15rem;color:#fff;text-decoration:none}
+      .logo:hover{color:var(--accent);text-decoration:none}
+      .site-nav{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+      .site-nav a{color:#ced4da;text-decoration:none}
+      .site-nav a:hover{color:#fff;text-decoration:none}
+      .hamburger{display:none;background:none;border:1px solid rgba(255,255,255,0.4);color:#fff;border-radius:8px;padding:8px 10px;font-size:1rem;cursor:pointer;line-height:1;transition:background 0.2s;min-width:48px;min-height:48px}
+      .hamburger:hover,.hamburger[aria-expanded="true"]{background:rgba(255,255,255,0.15)}
+      .site-footer{text-align:center;margin-top:50px;padding:20px;font-size:0.9rem}
       
       /* Typography & Layout */
       h1{font-size:clamp(2rem,5vw,2.8rem);text-align:left;margin-bottom:8px;color:var(--text);line-height:1.2}
@@ -53,41 +58,41 @@
       pre code { background: transparent; padding: 0; }
 
       /* Button Styles */
-      .btn { background: var(--accent); color: #fff; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: background-color 0.2s ease; font-size: 1.1rem; text-decoration: none; display: inline-block; }
+      .btn { background: var(--accent); color: #fff; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: background-color 0.2s ease; font-size: 1rem; text-decoration: none; display: inline-block; }
       .btn:hover { background-color: var(--accent-2); text-decoration: none; }
+      .btn:disabled { background: #ced4da; cursor: not-allowed; opacity: 0.6; }
 
       /* Card Grid */
       .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; margin-top: 16px; }
       .card { background: #fff; border: 2px solid var(--border); border-radius: 12px; padding: 20px; transition: all 0.3s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
       .card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
 
-      /* --- Interactive Workflow Diagram --- */
-      .workflow-wrapper { background: var(--muted); padding: 2.5rem 2rem; border-radius: 12px; text-align: center; }
-      .workflow-diagram { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin: 2rem 0; }
-      .workflow-step { display: flex; flex-direction: column; gap: 20px; align-items: center; }
-      .workflow-node { width: 100%; min-height: 120px; padding: 1.2rem; border-radius: 12px; background: #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.07); cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; border: 2px solid transparent; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
-      .workflow-node:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
-      .workflow-node.active { border-color: var(--accent); transform: translateY(-5px) scale(1.03); box-shadow: 0 8px 25px rgba(217, 72, 15, 0.2); }
-      .node-title { font-weight: 700; font-size: 1.1rem; color: var(--text); margin-bottom: 8px; }
-      .node-prompt { font-style: italic; color: var(--myth-color); font-size: 0.95rem; }
-      .workflow-actor { font-weight: 600; font-size: 0.9rem; padding: 4px 12px; border-radius: 99px; }
-      .actor-anya { background-color: var(--info-soft); color: var(--info-color); border: 1px solid var(--info-color); }
-      .actor-claude { background-color: var(--ok-soft); color: var(--ok); border: 1px solid var(--ok); }
-      .workflow-arrow { font-size: 2rem; color: var(--myth-color); margin-top: 1rem; }
-      .workflow-legend { display: flex; justify-content: center; gap: 20px; margin-top: 2rem; flex-wrap: wrap; }
-      .legend-item { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; }
-      .legend-swatch { width: 16px; height: 16px; border-radius: 4px; border: 1px solid rgba(0,0,0,0.1); }
-
-      /* --- Detailed Breakdown Section --- */
-      .breakdown-section { border-left: 3px solid var(--border); padding: 1rem 0 1rem 2rem; margin-top: 2rem; transition: border-color 0.3s; }
-      .breakdown-section.active { border-color: var(--accent); }
-      .breakdown-section h3 { margin-top: 0; display: flex; align-items: center; gap: 12px; }
-      .step-number { background: var(--accent); color: white; width: 36px; height: 36px; border-radius: 50%; display: inline-flex; justify-content: center; align-items: center; font-weight: 700; font-size: 1.2rem; flex-shrink: 0;}
-      .breakdown-card { background: var(--muted); padding: 1.5rem; border-radius: 8px; margin-top: 1rem; }
-      .breakdown-card h4 { margin: 0 0 10px; font-size: 1.1rem; color: var(--myth-color); font-weight: 600;}
-      .breakdown-card p { font-size: 1rem; margin-bottom: 0; }
-      .fallback-tip { background: var(--bad-soft); border: 1px solid var(--bad); padding: 1rem; border-radius: 8px; margin: 1rem 0; }
-      .fallback-tip code { background: rgba(0,0,0,0.1); padding: 2px 6px; border-radius: 4px; font-family: 'Roboto Mono', monospace;}
+      /* --- Simple Workflow Flow --- */
+      .workflow-wrapper { background: var(--muted); padding: 1.5rem 1rem; border-radius: 12px; text-align: center; margin-bottom: 2rem; }
+      .workflow-flow { display: flex; justify-content: center; align-items: center; gap: 12px; margin: 1rem 0; }
+      .flow-step { background: #fff; padding: 12px 20px; border-radius: 8px; font-weight: 600; font-size: 0.95rem; color: var(--text); border: 2px solid var(--border); white-space: nowrap; }
+      .flow-arrow { font-size: 1.5rem; color: var(--myth-color); flex-shrink: 0; }
+      
+      /* --- Interactive Accordion Steps --- */
+      .workflow-accordion { margin-top: 2rem; }
+      .workflow-accordion-item { margin-bottom: 12px; border: 2px solid var(--border); border-radius: 8px; overflow: hidden; background: #fff; }
+      .workflow-accordion-item.active { border-color: var(--accent); }
+      .workflow-accordion-item.completed { border-color: var(--ok); }
+      .workflow-accordion-header { width: 100%; text-align: left; background: var(--muted); border: none; padding: 16px 20px; cursor: pointer; font-size: 1.05rem; font-weight: 600; display: flex; align-items: center; gap: 12px; transition: background 0.2s; }
+      .workflow-accordion-header:hover { background: #e9ecef; }
+      .workflow-accordion-header[aria-expanded="true"] { background: #e9ecef; }
+      .step-number { background: var(--accent); color: white; width: 32px; height: 32px; border-radius: 50%; display: inline-flex; justify-content: center; align-items: center; font-weight: 700; font-size: 1rem; flex-shrink: 0; }
+      .workflow-accordion-item.completed .step-number { background: var(--ok); }
+      .step-title { flex-grow: 1; }
+      .accordion-toggle { font-size: 1.5rem; color: #6b7280; transition: transform 0.3s ease; }
+      .workflow-accordion-header[aria-expanded="true"] .accordion-toggle { transform: rotate(45deg); }
+      .workflow-accordion-content { padding: 20px; display: none; }
+      .step-explanation { margin-bottom: 1rem; line-height: 1.7; }
+      .step-explanation p { font-size: 1rem; margin-bottom: 12px; }
+      .step-result { margin-top: 1.5rem; padding: 1rem; background: var(--muted); border-radius: 8px; border-left: 3px solid var(--ok); }
+      .step-result h4 { margin: 0 0 10px; color: var(--ok); font-size: 1rem; }
+      .step-result p { font-size: 0.95rem; margin-bottom: 8px; }
+      .step-result code { background: rgba(0,0,0,0.1); padding: 2px 6px; border-radius: 4px; font-family: 'Roboto Mono', monospace; }
 
       /* --- Prompt Library --- */
       .prompt-category h3 { border-left: 3px solid var(--accent); padding-left: 12px; }
@@ -101,13 +106,71 @@
       .scan-visual { max-width: 100%; height: auto; margin: 20px 0; }
       @keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
       .pulse-animate { animation: pulse 2s infinite; }
+      
+      /* Mobile Responsive Breakpoints */
+      @media (max-width: 768px) {
+        .site-header{flex-wrap:nowrap;padding:12px 16px}
+        .logo{flex:0 0 auto;font-size:1.05rem}
+        .hamburger{display:inline-flex;align-items:center;justify-content:center;margin-left:auto}
+        .site-nav{display:none;position:absolute;top:100%;right:16px;flex-direction:column;gap:0;background:var(--header-bg);padding:8px 0;border-radius:8px;box-shadow:0 10px 25px rgba(0,0,0,0.35);min-width:200px}
+        .site-nav.open{display:flex}
+        .site-nav a{display:block;padding:10px 18px;color:#f8f9fa;white-space:nowrap}
+        .site-nav a + a{border-top:1px solid rgba(255,255,255,0.15)}
+        
+        .container{padding:16px}
+        h2{margin:40px 0 16px}
+        .intro{font-size:1.05rem;padding:18px}
+        
+        /* Workflow: Stack flow steps vertically */
+        .workflow-wrapper{padding:1rem 0.75rem}
+        .workflow-flow{flex-direction:column;gap:4px;align-items:stretch}
+        .flow-step{width:100%;max-width:100%;padding:10px 16px;font-size:0.9rem;white-space:normal}
+        .flow-arrow{transform:rotate(90deg);font-size:1.3rem;margin:2px 0}
+        
+        /* Accordion mobile optimization */
+        .workflow-accordion-header{padding:12px 16px;font-size:0.95rem}
+        .step-number{width:28px;height:28px;font-size:0.9rem}
+        .workflow-accordion-content{padding:16px}
+        
+        /* Grid layouts: Multi-column → 1 column */
+        .grid{grid-template-columns:1fr;gap:12px}
+        
+        /* Prompt items: Stack vertically */
+        .prompt-item{flex-direction:column;align-items:flex-start}
+        .copy-btn{width:100%;margin-top:8px}
+        
+        /* Breakdown section: Reduce left padding */
+        .breakdown-section{padding:1rem 0 1rem 1rem}
+        
+        /* Code blocks: Reduce padding */
+        .code-block{padding:1em;font-size:0.9rem}
+      }
+      
+      @media (max-width: 640px) {
+        .container{padding:12px}
+        h2{margin:32px 0 12px}
+        .workflow-wrapper{padding:0.75rem 0.5rem}
+        .workflow-flow{gap:2px}
+        .flow-step{padding:8px 12px;font-size:0.85rem}
+        .flow-arrow{font-size:1.2rem}
+        .btn{padding:8px 16px;font-size:0.95rem}
+        .workflow-accordion-header{padding:10px 14px;font-size:0.9rem}
+        .step-title{font-size:0.9rem}
+        .step-result{padding:0.75rem}
+        .code-block{font-size:0.85rem;padding:0.9rem}
+      }
     </style>
 </head>
 <body>
 
  <header class="site-header">
      <a href="#" class="logo">Beyond Dictionary</a>
-     <nav><a href="#">What's New</a><a href="#">Learning</a><a href="#">AI Guides</a></nav>
+     <button class="hamburger" id="hamburger-btn" aria-expanded="false" aria-controls="primary-nav">☰ Menu</button>
+     <nav id="primary-nav" class="site-nav">
+         <a href="#">What's New</a>
+         <a href="#">Learning</a>
+         <a href="#">AI Guides</a>
+     </nav>
  </header>
 
  <div class="container">
@@ -343,54 +406,22 @@ node --version</div>
     <section id="interactive-workflow">
         <h2>Interactive Workflow</h2>
         <div class="workflow-wrapper">
-            <p style="margin-bottom: 0;">Click on any step to see detailed explanations below.</p>
-            <div class="workflow-diagram">
-                <div class="workflow-step">
-                    <span class="workflow-actor actor-anya">Anya Asks</span>
-                    <div class="workflow-node" data-target="node-1">
-                        <span class="node-title">Describe Goal</span>
-                        <span class="node-prompt">"Create patient feedback tool"</span>
-                    </div>
-                    <span class="workflow-arrow">👇</span>
-                    <span class="workflow-actor actor-claude">Claude Acts</span>
-                    <div class="workflow-node result-node">
-                        <p style="margin:0; font-family: 'Roboto Mono', monospace; font-size: 1rem;">Claude Creates<br><code>index.html</code><br>with form &amp; textarea</p>
-                    </div>
-                </div>
-                <div class="workflow-step">
-                    <span class="workflow-actor actor-anya">Anya Asks</span>
-                    <div class="workflow-node" data-target="node-2">
-                        <span class="node-title">Style It</span>
-                        <span class="node-prompt">"Make it look professional"</span>
-                    </div>
-                    <span class="workflow-arrow">👇</span>
-                    <span class="workflow-actor actor-claude">Claude Acts</span>
-                    <div class="workflow-node result-node">
-                        <p style="margin:0; font-family: 'Roboto Mono', monospace; font-size: 1rem;">Claude Styles<br>Generates CSS<br>Inter font, Blue button</p>
-                    </div>
-                </div>
-                <div class="workflow-step">
-                    <span class="workflow-actor actor-anya">Anya Asks</span>
-                    <div class="workflow-node" data-target="node-3">
-                        <span class="node-title">Save to GitHub</span>
-                        <span class="node-prompt">"Push to my GitHub account"</span>
-                    </div>
-                    <span class="workflow-arrow">👇</span>
-                    <span class="workflow-actor actor-claude">Claude Acts</span>
-                    <div class="workflow-node result-node">
-                         <p style="margin:0; font-family: 'Roboto Mono', monospace; font-size: 1rem;">Claude Ships<br>Git init, commit<br>Creates repo, Pushes code</p>
-                    </div>
-                </div>
-            </div>
-            <div class="workflow-legend">
-                <div class="legend-item"><span class="legend-swatch" style="background-color: var(--info-soft); border-color: var(--info-color);"></span> Anya's Role</div>
-                <div class="legend-item"><span class="legend-swatch" style="background-color: var(--ok-soft); border-color: var(--ok);"></span> Claude's Role</div>
-                <div class="legend-item"><span class="legend-swatch" style="background: #fff; border-color: var(--border);"></span> Action Step</div>
+            <p style="margin-bottom: 16px; font-size: 1rem;">Here's how Anya builds her patient feedback tool in three steps:</p>
+            <div class="workflow-flow">
+                <div class="flow-step">🩺 Describe Goal</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step">🎨 Style It</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step">📦 Save to GitHub</div>
             </div>
         </div>
+        
+        <p style="margin-bottom: 16px;"><strong>👇 Try each step below.</strong> Click to see details, then hit the action button to see results instantly.</p>
+        
+        <div class="workflow-accordion" id="workflow-steps"></div>
     </section>
 
-   <section id="breakdown">
+   <section id="breakdown" style="display: none;">
         <h2>Detailed Breakdown: Each Step Explained</h2>
         <p>Here's the complete journey from Anya's perspective, showing exactly what happens at each stage:</p>
 
@@ -625,28 +656,165 @@ sudo chmod -R 755 your-project-folder</div>
  </footer>
 
 <script>
+// Hamburger menu toggle
+document.getElementById('hamburger-btn')?.addEventListener('click', function() {
+    const nav = document.getElementById('primary-nav');
+    const isOpen = this.getAttribute('aria-expanded') === 'true';
+    this.setAttribute('aria-expanded', !isOpen);
+    nav?.classList.toggle('open');
+});
+
+// Close menu when clicking outside
+document.addEventListener('click', function(e) {
+    const hamburger = document.getElementById('hamburger-btn');
+    const nav = document.getElementById('primary-nav');
+    if (hamburger && nav && !hamburger.contains(e.target) && !nav.contains(e.target)) {
+        hamburger.setAttribute('aria-expanded', 'false');
+        nav.classList.remove('open');
+    }
+});
+
 document.addEventListener('DOMContentLoaded', () => {
-    // --- Interactive Workflow ---
-    const workflowNodes = document.querySelectorAll('.workflow-node[data-target]');
-    const breakdownSections = document.querySelectorAll('.breakdown-section');
+    // --- Workflow Data ---
+    const workflowData = [
+        {
+            step: 1,
+            title: "Describe goal, not syntax",
+            request: '"Create a new project for a patient feedback tool. Make a single HTML page called index.html with a form. The form should have a textarea for feedback and a submit button."',
+            explanation: "You describe what you want in plain English. No HTML syntax needed.",
+            action: "Creates folder + index.html with a functional form",
+            code: `&lt;!-- index.html --&gt;
+&lt;form action="#" method="post"&gt;
+  &lt;textarea name="feedback" required placeholder="Enter your feedback..."&gt;&lt;/textarea&gt;
+  &lt;button type="submit"&gt;Submit Feedback&lt;/button&gt;
+&lt;/form&gt;`,
+            learned: "HTML form basics; minimum viable UI patterns. Form elements work without needing to remember syntax.",
+            why: ["No need to memorize HTML tags or attributes", "Focus on the goal, not the implementation details", "From idea to working prototype in seconds", "Perfect for non-technical founders and designers"]
+        },
+        {
+            step: 2,
+            title: "Style it professionally",
+            request: '"Style the page. Center the form, use a clean font like \'Inter\', and make the submit button blue with white text."',
+            explanation: "Ask for professional styling with natural language—no CSS expertise required.",
+            action: "Generates style.css, links it to HTML, applies centered layout with professional button styling",
+            code: `/* style.css */
+body {
+  font-family: 'Inter', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+button {
+  background: #3b82f6;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}`,
+            learned: "External CSS linking, typography choices, modern layout techniques like Flexbox.",
+            why: ["Professional design without CSS expertise", "Modern UI patterns applied automatically", "Consistent color schemes and typography", "Responsive design principles included"]
+        },
+        {
+            step: 3,
+            title: "Save to GitHub without friction",
+            request: '"This looks good. Save all my work and create a new project on my GitHub account called \'patient-feedback-tool\'. Push all the files there."',
+            explanation: "One command handles the entire Git workflow and GitHub repository creation.",
+            action: "Executes the complete Git workflow and GitHub repository creation automatically",
+            code: `git init
+git add .
+git commit -m "Initial commit: Create patient feedback form"
+gh repo create patient-feedback-tool --public
+git remote add origin https://github.com/username/patient-feedback-tool.git
+git push -u origin main`,
+            learned: "Git basics (init, add, commit, push), remote repository creation, and conventional commit messages.",
+            why: ["From local files to deployed project instantly", "No Git commands to memorize or mess up", "Professional commit messages with context", "Ready for collaboration and portfolio showcasing"]
+        }
+    ];
 
-    workflowNodes.forEach(node => {
-        node.addEventListener('click', () => {
-            const targetId = node.dataset.target;
-            const targetElement = document.getElementById(targetId);
+    // --- Initialize Workflow Accordion ---
+    const stepsContainer = document.getElementById('workflow-steps');
+    if (stepsContainer) {
+        stepsContainer.innerHTML = workflowData.map((step, index) => `
+            <div class="workflow-accordion-item ${index === 0 ? 'active' : ''}" data-index="${index}">
+                <button class="workflow-accordion-header" aria-expanded="${index === 0 ? 'true' : 'false'}">
+                    <span class="step-number">${step.step}</span>
+                    <span class="step-title">Step ${step.step}: ${step.title}</span>
+                    <span class="accordion-toggle">${index === 0 ? '−' : '+'}</span>
+                </button>
+                <div class="workflow-accordion-content" style="display: ${index === 0 ? 'block' : 'none'};">
+                    <div class="step-explanation">
+                        <p><strong>🩺 Anya's Request:</strong></p>
+                        <p style="font-style: italic; color: #6b7280;">${step.request}</p>
+                        <p style="margin-top: 12px;"><strong>What happens:</strong> ${step.explanation}</p>
+                    </div>
+                    
+                    <button class="btn step-action-btn" data-index="${index}">
+                        ▶ See What Claude Does
+                    </button>
+                    
+                    <div class="step-result" id="result-${index}" style="display: none;">
+                        <h4>✅ Claude's Action:</h4>
+                        <p>${step.action}</p>
+                        
+                        <h4 style="margin-top: 16px;">Generated Code:</h4>
+                        <div class="code-block">${step.code}</div>
+                        
+                        <p style="margin-top: 12px;"><strong>What you learned:</strong> ${step.learned}</p>
+                        
+                        <h4 style="margin-top: 16px;">Why this matters:</h4>
+                        <ul style="margin-left: 20px; margin-top: 8px;">
+                            ${step.why.map(reason => `<li style="margin-bottom: 8px;">${reason}</li>`).join('')}
+                        </ul>
+                    </div>
+                </div>
+            </div>`).join('');
 
-            // Toggle active class on nodes
-            workflowNodes.forEach(n => n.classList.remove('active'));
-            node.classList.add('active');
-            
-            // Toggle active class on sections
-            breakdownSections.forEach(s => s.classList.remove('active'));
-            if (targetElement) {
-                targetElement.classList.add('active');
-                targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
+        // Accordion toggle functionality
+        stepsContainer.querySelectorAll('.workflow-accordion-header').forEach(header => {
+            header.addEventListener('click', function() {
+                const item = this.parentElement;
+                const content = item.querySelector('.workflow-accordion-content');
+                const isExpanded = this.getAttribute('aria-expanded') === 'true';
+                
+                // Toggle current accordion
+                this.setAttribute('aria-expanded', !isExpanded);
+                content.style.display = isExpanded ? 'none' : 'block';
+                this.querySelector('.accordion-toggle').textContent = isExpanded ? '+' : '−';
+            });
         });
-    });
+
+        // Action button functionality
+        stepsContainer.querySelectorAll('.step-action-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const index = this.dataset.index;
+                const resultContainer = document.getElementById(`result-${index}`);
+                const currentItem = this.closest('.workflow-accordion-item');
+                
+                // Show result
+                resultContainer.style.display = 'block';
+                this.disabled = true;
+                this.textContent = '✓ Complete';
+                
+                // Mark as completed
+                currentItem.classList.add('completed');
+                
+                // Auto-open next step if exists
+                const nextItem = stepsContainer.querySelector(`[data-index="${parseInt(index) + 1}"]`);
+                if (nextItem) {
+                    setTimeout(() => {
+                        const nextHeader = nextItem.querySelector('.workflow-accordion-header');
+                        const nextContent = nextItem.querySelector('.workflow-accordion-content');
+                        nextHeader.setAttribute('aria-expanded', 'true');
+                        nextContent.style.display = 'block';
+                        nextHeader.querySelector('.accordion-toggle').textContent = '−';
+                        nextItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    }, 500);
+                }
+            });
+        });
+    }
 
     // --- Prompt Library Copy Buttons ---
     const copyButtons = document.querySelectorAll('.copy-btn');

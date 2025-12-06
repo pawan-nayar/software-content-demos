@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Salesforce API Learning Architecture</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -12,47 +15,68 @@
         }
 
         :root {
-            --primary-blue: #0176d3;
-            --secondary-blue: #014486;
-            --success-green: #4bca81;
-            --warning-orange: #fe9339;
-            --error-red: #ea001e;
-            --neutral-gray: #747474;
-            --light-gray: #f3f3f3;
+            --accent: #fd7e14;
+            --accent-2: #e87312;
+            --success-green: #16a34a;
+            --ok-soft: #dcfce7;
+            --error-red: #dc2626;
+            --bad-soft: #fee2e2;
+            --neutral-gray: #6c757d;
+            --light-gray: #f8f9fa;
+            --border: #e9ecef;
             --white: #ffffff;
-            --text-dark: #080707;
-            --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            --border-radius: 8px;
-            --transition: all 0.3s ease;
+            --text-dark: #212529;
+            --header-bg: #1a1a2e;
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            --border-radius: 10px;
         }
 
         body {
-            font-family: 'Salesforce Sans', 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, #f3f3f3 0%, #e8ecef 100%);
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
             min-height: 100vh;
+            color: var(--text-dark);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
         }
 
         .header {
-            background: var(--primary-blue);
+            background: var(--header-bg);
             color: var(--white);
-            padding: 1rem 2rem;
-            box-shadow: var(--shadow);
+            padding: 14px 24px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
             position: sticky;
             top: 0;
             z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .header h1 {
-            font-size: 1.5rem;
-            font-weight: 300;
+            font-size: 1.1rem;
+            font-weight: 600;
         }
+
+        .info-btn {
+            background: rgba(255,255,255,0.15);
+            border: none;
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .info-btn:hover { background: rgba(255,255,255,0.25); transform: scale(1.1); }
 
         .main-container {
             display: grid;
             grid-template-columns: 300px 1fr 350px;
-            gap: 1rem;
-            padding: 1rem;
-            min-height: calc(100vh - 80px);
+            gap: 16px;
+            padding: 16px;
+            min-height: calc(100vh - 60px);
         }
 
         .pane {
@@ -60,72 +84,68 @@
             border-radius: var(--border-radius);
             box-shadow: var(--shadow);
             overflow: hidden;
-            transition: var(--transition);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid var(--border);
         }
 
         .pane:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
         }
 
         .pane-header {
-            padding: 1rem;
+            padding: 12px 16px;
             font-weight: 600;
+            font-size: 0.95rem;
+            border-bottom: 1px solid var(--border);
+            background: var(--light-gray);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pane-header .icon {
             font-size: 1.1rem;
-            border-bottom: 1px solid var(--light-gray);
-        }
-
-        .field-pane .pane-header {
-            background: linear-gradient(45deg, var(--primary-blue), var(--secondary-blue));
-            color: var(--white);
-        }
-
-        .see-pane .pane-header {
-            background: linear-gradient(45deg, var(--success-green), #2e844a);
-            color: var(--white);
-        }
-
-        .learn-pane .pane-header {
-            background: linear-gradient(45deg, var(--warning-orange), #cc6600);
-            color: var(--white);
         }
 
         .pane-content {
-            padding: 1rem;
+            padding: 16px;
             height: calc(100vh - 160px);
             overflow-y: auto;
         }
 
         /* Field Pane Styles */
         .api-selector {
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.25rem;
         }
 
         .api-selector select {
             width: 100%;
-            padding: 0.75rem;
-            border: 2px solid var(--light-gray);
-            border-radius: var(--border-radius);
-            font-size: 1rem;
+            padding: 12px 14px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-family: inherit;
             background: var(--white);
-            transition: var(--transition);
+            transition: all 0.2s;
+            cursor: pointer;
         }
 
         .api-selector select:focus {
             outline: none;
-            border-color: var(--primary-blue);
-            box-shadow: 0 0 0 3px rgba(1, 118, 211, 0.1);
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(253, 126, 20, 0.15);
         }
 
         .api-card {
-            border: 1px solid var(--light-gray);
+            border: 1px solid var(--border);
             border-radius: var(--border-radius);
-            padding: 1rem;
+            padding: 16px;
             margin-bottom: 1rem;
-            transition: var(--transition);
+            background: linear-gradient(135deg, #fafafa, #fff);
             opacity: 0;
             transform: translateY(20px);
-            animation: slideIn 0.5s ease forwards;
+            animation: slideIn 0.4s ease forwards;
         }
 
         @keyframes slideIn {
@@ -135,78 +155,98 @@
             }
         }
 
-        .api-method {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
+        .api-card h3 {
+            font-size: 1rem;
             font-weight: 600;
-            margin-bottom: 0.5rem;
+            color: var(--accent-2);
+            margin-bottom: 10px;
         }
 
-        .method-get { background: #e3f2fd; color: #1976d2; }
-        .method-post { background: #e8f5e8; color: #388e3c; }
-        .method-patch { background: #fff3e0; color: #f57c00; }
-        .method-delete { background: #ffebee; color: #d32f2f; }
+        .api-method {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            font-family: 'SF Mono', monospace;
+            margin-bottom: 8px;
+        }
+
+        .method-get { background: #dbeafe; color: #1d4ed8; }
+        .method-post { background: #dcfce7; color: #16a34a; }
+        .method-patch { background: #fef3c7; color: #d97706; }
+        .method-delete { background: #fee2e2; color: #dc2626; }
 
         .use-case-tags {
             display: flex;
             flex-wrap: wrap;
-            gap: 0.5rem;
-            margin: 0.75rem 0;
+            gap: 6px;
+            margin: 12px 0;
         }
 
         .tag {
             background: var(--light-gray);
             color: var(--text-dark);
-            padding: 0.25rem 0.5rem;
+            padding: 4px 10px;
             border-radius: 12px;
-            font-size: 0.75rem;
+            font-size: 0.72rem;
+            font-weight: 500;
+            border: 1px solid var(--border);
         }
 
         .scenario-snap {
-            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-            padding: 0.75rem;
-            border-radius: var(--border-radius);
-            font-style: italic;
+            background: #fff;
+            padding: 12px 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
             color: #495057;
-            border-left: 4px solid var(--primary-blue);
+            border-left: 3px solid var(--accent);
+            margin-top: 12px;
         }
 
-        /* See Pane Styles */
+        /* ========== PERSONA TABS WITH MOTION ========== */
         .persona-tabs {
             display: flex;
-            margin-bottom: 1rem;
-            border-bottom: 1px solid var(--light-gray);
+            margin-bottom: 16px;
+            background: var(--light-gray);
+            padding: 6px;
+            border-radius: 12px;
+            gap: 6px;
         }
 
         .persona-tab {
             flex: 1;
-            padding: 0.75rem;
-            background: none;
+            padding: 10px 8px;
+            background: transparent;
             border: none;
             cursor: pointer;
-            font-weight: 500;
-            transition: var(--transition);
-            position: relative;
+            font-weight: 600;
+            font-size: 0.82rem;
+            font-family: inherit;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 8px;
+            color: #666;
+        }
+
+        .persona-tab:hover {
+            background: rgba(253, 126, 20, 0.12);
+            color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .persona-tab:active {
+            transform: scale(0.95);
         }
 
         .persona-tab.active {
-            color: var(--primary-blue);
-        }
-
-        .persona-tab.active::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: var(--primary-blue);
+            color: #fff;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            box-shadow: 0 4px 14px rgba(253, 126, 20, 0.4);
+            transform: translateY(-2px);
         }
 
         .api-demo {
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.25rem;
         }
 
         .demo-section {
@@ -214,73 +254,109 @@
         }
 
         .demo-section h4 {
-            margin-bottom: 0.5rem;
-            color: var(--secondary-blue);
-            font-size: 0.9rem;
+            margin-bottom: 10px;
+            color: var(--accent-2);
+            font-size: 0.95rem;
+            font-weight: 600;
         }
 
         .code-block {
             background: #1e1e1e;
             color: #d4d4d4;
-            padding: 1rem;
-            border-radius: var(--border-radius);
-            font-family: 'Monaco', 'Consolas', monospace;
-            font-size: 0.85rem;
+            padding: 14px;
+            border-radius: 8px;
+            font-family: 'SF Mono', 'Monaco', monospace;
+            font-size: 0.78rem;
+            line-height: 1.5;
             overflow-x: auto;
+            white-space: pre-wrap;
             position: relative;
         }
 
         .code-block::before {
             content: attr(data-lang);
             position: absolute;
-            top: 0.5rem;
-            right: 0.5rem;
-            font-size: 0.7rem;
-            color: #888;
+            top: 8px;
+            right: 10px;
+            font-size: 0.65rem;
+            color: #666;
             text-transform: uppercase;
         }
 
+        /* ========== INDUSTRY CARDS WITH MOTION ========== */
         .industry-examples {
             display: grid;
-            gap: 0.75rem;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 16px;
         }
 
         .industry-card {
-            border: 1px solid var(--light-gray);
-            border-radius: var(--border-radius);
-            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px 10px;
             cursor: pointer;
-            transition: var(--transition);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             opacity: 0.7;
+            background: #fff;
+            text-align: center;
+        }
+
+        .industry-card:hover {
+            opacity: 1;
+            border-color: var(--accent);
+            background: #fffaf5;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(253, 126, 20, 0.18);
+        }
+
+        .industry-card:active {
+            transform: scale(0.94);
         }
 
         .industry-card.active {
             opacity: 1;
-            border-color: var(--primary-blue);
-            background: linear-gradient(135deg, #f8fbff, #e8f4fd);
-        }
-
-        .industry-card:hover {
-            transform: translateX(5px);
+            border-color: var(--accent);
+            background: linear-gradient(135deg, #fff7ed, #ffedd5);
+            box-shadow: 0 6px 18px rgba(253, 126, 20, 0.25);
+            transform: translateY(-3px);
         }
 
         .industry-icon {
-            font-size: 1.5rem;
-            margin-bottom: 0.5rem;
+            font-size: 1.6rem;
+            margin-bottom: 6px;
+            display: block;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .industry-card:hover .industry-icon {
+            transform: scale(1.2) rotate(-8deg);
+        }
+
+        .industry-card strong {
+            font-size: 0.8rem;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .industry-card p {
+            font-size: 0.7rem;
+            color: #666;
+            margin: 0;
         }
 
         .ui-simulation {
             background: var(--light-gray);
-            border-radius: var(--border-radius);
-            padding: 1rem;
-            margin: 1rem 0;
+            border-radius: 8px;
+            padding: 14px;
+            margin: 12px 0;
             position: relative;
             overflow: hidden;
         }
 
         .ui-state {
             display: none;
-            animation: fadeIn 0.5s ease;
+            animation: fadeIn 0.4s ease;
         }
 
         .ui-state.active {
@@ -297,34 +373,40 @@
             width: 8px;
             height: 8px;
             border-radius: 50%;
-            margin-right: 0.5rem;
+            margin-right: 8px;
         }
 
-        .status-loading { background: var(--warning-orange); animation: pulse 1s infinite; }
+        .status-loading { background: var(--accent); animation: pulse 1s infinite; }
         .status-success { background: var(--success-green); }
         .status-error { background: var(--error-red); }
 
         @keyframes pulse {
             0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+            50% { opacity: 0.4; }
         }
 
         /* Learn Pane Styles */
         .learn-section {
-            margin-bottom: 1.5rem;
-            border: 1px solid var(--light-gray);
+            margin-bottom: 12px;
+            border: 1px solid var(--border);
             border-radius: var(--border-radius);
             overflow: hidden;
         }
 
         .learn-section-header {
             background: var(--light-gray);
-            padding: 0.75rem;
+            padding: 12px 14px;
             font-weight: 600;
+            font-size: 0.88rem;
             cursor: pointer;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            transition: background 0.2s;
+        }
+
+        .learn-section-header:hover {
+            background: #eee;
         }
 
         .learn-section-content {
@@ -336,7 +418,7 @@
 
         .learn-section.expanded .learn-section-content {
             max-height: 500px;
-            padding: 1rem;
+            padding: 14px;
         }
 
         .parameter-list {
@@ -344,96 +426,224 @@
         }
 
         .parameter-item {
-            padding: 0.5rem;
+            padding: 8px 0;
             border-bottom: 1px solid #eee;
             display: flex;
             justify-content: space-between;
+            font-size: 0.85rem;
+        }
+
+        .parameter-item:last-child {
+            border-bottom: none;
         }
 
         .parameter-name {
             font-weight: 600;
-            color: var(--secondary-blue);
+            color: var(--accent-2);
+            font-family: monospace;
         }
 
         .parameter-type {
             color: var(--neutral-gray);
-            font-size: 0.85rem;
+            font-size: 0.8rem;
         }
 
         .best-practice {
-            background: linear-gradient(135deg, #e8f5e8, #f1f8f1);
-            border-left: 4px solid var(--success-green);
-            padding: 0.75rem;
-            margin: 0.5rem 0;
-            border-radius: 0 var(--border-radius) var(--border-radius) 0;
+            background: var(--ok-soft);
+            border-left: 3px solid var(--success-green);
+            padding: 12px 14px;
+            margin: 8px 0;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.85rem;
         }
 
         .anti-pattern {
-            background: linear-gradient(135deg, #ffebee, #ffedef);
-            border-left: 4px solid var(--error-red);
-            padding: 0.75rem;
-            margin: 0.5rem 0;
-            border-radius: 0 var(--border-radius) var(--border-radius) 0;
+            background: var(--bad-soft);
+            border-left: 3px solid var(--error-red);
+            padding: 12px 14px;
+            margin: 8px 0;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.85rem;
         }
 
+        /* ========== RUN BUTTON WITH MOTION ========== */
         .run-button {
-            background: var(--success-green);
+            width: 100%;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
             color: var(--white);
             border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: var(--border-radius);
+            padding: 14px 24px;
+            border-radius: 10px;
             cursor: pointer;
             font-weight: 600;
-            transition: var(--transition);
-            margin: 1rem 0;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-top: 8px;
+            box-shadow: 0 4px 14px rgba(253, 126, 20, 0.3);
         }
 
         .run-button:hover {
-            background: #2e844a;
-            transform: translateY(-2px);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(253, 126, 20, 0.4);
+        }
+
+        .run-button:active {
+            transform: scale(0.97);
         }
 
         .run-button:disabled {
-            background: var(--neutral-gray);
+            background: #ccc;
             cursor: not-allowed;
             transform: none;
+            box-shadow: none;
         }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(3px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-overlay.show { display: flex; }
+        .modal-box {
+            background: #fff;
+            border-radius: 14px;
+            padding: 28px;
+            max-width: 420px;
+            width: 100%;
+            position: relative;
+            animation: modalIn 0.25s ease;
+        }
+        @keyframes modalIn { from { opacity: 0; transform: scale(0.95) translateY(-10px); } }
+        .modal-close {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: var(--light-gray);
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .modal-close:hover { background: #ddd; }
+        .modal-box h2 { font-size: 1.3rem; margin-bottom: 10px; color: var(--accent-2); }
+        .modal-box p { font-size: 0.92rem; margin-bottom: 16px; color: #555; }
+        .modal-steps { display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px; }
+        .modal-step {
+            display: flex;
+            gap: 12px;
+            padding: 12px;
+            background: var(--light-gray);
+            border-radius: 10px;
+        }
+        .modal-step .step-icon { font-size: 1.3rem; }
+        .modal-step strong { display: block; margin-bottom: 2px; font-size: 0.9rem; }
+        .modal-step span { font-size: 0.8rem; color: #666; }
+        .modal-cta {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .modal-cta:hover { opacity: 0.95; }
+
+        /* Mobile Tab Bar */
+        .mobile-tab-bar { display: none; }
 
         /* Responsive Design */
-        @media (max-width: 1200px) {
-            .main-container {
-                grid-template-columns: 1fr;
-                grid-template-rows: auto auto auto;
+        @media (max-width: 900px) {
+            .main-container { grid-template-columns: 1fr; }
+            .pane { display: none; }
+            .pane.active { display: block; }
+            .mobile-tab-bar {
+                display: flex;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: #fff;
+                border-top: 1px solid var(--border);
+                padding: 8px 12px;
+                padding-bottom: calc(8px + env(safe-area-inset-bottom));
+                z-index: 100;
+                box-shadow: 0 -4px 16px rgba(0,0,0,0.08);
+                gap: 8px;
             }
-        }
-
-        @media (max-width: 768px) {
-            .header {
-                padding: 1rem;
+            .mobile-tab-bar .m-tab {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 4px;
+                padding: 10px 8px;
+                border: none;
+                background: var(--light-gray);
+                border-radius: 12px;
+                font-size: 0.68rem;
+                font-weight: 600;
+                cursor: pointer;
+                font-family: inherit;
+                transition: all 0.2s;
             }
-            
-            .main-container {
-                padding: 0.5rem;
-                gap: 0.5rem;
+            .mobile-tab-bar .m-tab:active { transform: scale(0.95); }
+            .mobile-tab-bar .m-tab.active {
+                background: linear-gradient(135deg, var(--accent), var(--accent-2));
+                color: #fff;
+                box-shadow: 0 4px 12px rgba(253,126,20,0.3);
             }
-            
-            .pane-content {
-                height: auto;
-                min-height: 400px;
-            }
+            .mobile-tab-bar .m-tab .m-icon { font-size: 1.3rem; }
+            .main-container { padding-bottom: 90px; }
+            .pane-content { height: auto; min-height: 400px; }
+            .header { padding: 12px 16px; }
+            .header h1 { font-size: 0.95rem; }
+            .industry-examples { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+            .industry-card { padding: 10px 6px; }
+            .industry-icon { font-size: 1.3rem; }
+            .industry-card strong { font-size: 0.7rem; }
+            .industry-card p { display: none; }
         }
     </style>
 </head>
 <body>
     <header class="header">
-        <h1>🌟 Salesforce API Learning Architecture</h1>
+        <h1>🚀 Salesforce API Learning Architecture</h1>
+        <button class="info-btn" id="infoBtn">ⓘ</button>
     </header>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal-box">
+            <button class="modal-close" id="modalClose">✕</button>
+            <h2>🎓 Welcome!</h2>
+            <p>Master Salesforce REST APIs through an immersive 3-step experience.</p>
+            <div class="modal-steps">
+                <div class="modal-step"><span class="step-icon">🎯</span><div><strong>Field</strong><span>Select an API to explore</span></div></div>
+                <div class="modal-step"><span class="step-icon">👁️</span><div><strong>See</strong><span>Watch real industry scenarios</span></div></div>
+                <div class="modal-step"><span class="step-icon">📚</span><div><strong>Learn</strong><span>Master parameters & best practices</span></div></div>
+            </div>
+            <button class="modal-cta" id="modalStart">Let's Begin →</button>
+        </div>
+    </div>
 
     <div class="main-container">
         <!-- FIELD PANE -->
-        <div class="pane field-pane">
+        <div class="pane field-pane active" data-pane="field">
             <div class="pane-header">
-                🎯 Field - Orientation
+                <span class="icon">🎯</span> Field
             </div>
             <div class="pane-content">
                 <div class="api-selector">
@@ -454,15 +664,15 @@
         </div>
 
         <!-- SEE PANE -->
-        <div class="pane see-pane">
+        <div class="pane see-pane" data-pane="see">
             <div class="pane-header">
-                👁️ See - Experience It
+                <span class="icon">👁️</span> See
             </div>
             <div class="pane-content">
                 <div class="persona-tabs">
                     <button class="persona-tab active" data-persona="agent">👩‍💼 Agent</button>
                     <button class="persona-tab" data-persona="supervisor">👨‍💻 Supervisor</button>
-                    <button class="persona-tab" data-persona="automation">🤖 Automation</button>
+                    <button class="persona-tab" data-persona="automation">🤖 Auto</button>
                 </div>
 
                 <div id="apiDemo" class="api-demo">
@@ -471,34 +681,34 @@
 
                 <div class="industry-examples">
                     <div class="industry-card active" data-industry="finance">
-                        <div class="industry-icon">🏦</div>
-                        <strong>Finance & Banking</strong>
-                        <p>Fraud alerts and account issues</p>
+                        <span class="industry-icon">🏦</span>
+                        <strong>Finance</strong>
+                        <p>Fraud alerts</p>
                     </div>
                     <div class="industry-card" data-industry="education">
-                        <div class="industry-icon">🎓</div>
+                        <span class="industry-icon">🎓</span>
                         <strong>Education</strong>
-                        <p>Student portal and exam emergencies</p>
+                        <p>Student portal</p>
                     </div>
                     <div class="industry-card" data-industry="realestate">
-                        <div class="industry-icon">🏠</div>
+                        <span class="industry-icon">🏠</span>
                         <strong>Real Estate</strong>
-                        <p>Property transactions and closings</p>
+                        <p>Transactions</p>
                     </div>
                     <div class="industry-card" data-industry="fashion">
-                        <div class="industry-icon">👗</div>
-                        <strong>Fashion E-commerce</strong>
-                        <p>Returns and VIP experiences</p>
+                        <span class="industry-icon">👗</span>
+                        <strong>Fashion</strong>
+                        <p>VIP returns</p>
                     </div>
                     <div class="industry-card" data-industry="healthcare">
-                        <div class="industry-icon">🏥</div>
+                        <span class="industry-icon">🏥</span>
                         <strong>Healthcare</strong>
-                        <p>Medical devices and patient care</p>
+                        <p>Device care</p>
                     </div>
                     <div class="industry-card" data-industry="saas">
-                        <div class="industry-icon">💻</div>
-                        <strong>SaaS Platform</strong>
-                        <p>API outages and enterprise support</p>
+                        <span class="industry-icon">💻</span>
+                        <strong>SaaS</strong>
+                        <p>API outages</p>
                     </div>
                 </div>
 
@@ -507,9 +717,9 @@
         </div>
 
         <!-- LEARN PANE -->
-        <div class="pane learn-pane">
+        <div class="pane learn-pane" data-pane="learn">
             <div class="pane-header">
-                📚 Learn - Master It
+                <span class="icon">📚</span> Learn
             </div>
             <div class="pane-content">
                 <div id="learnContent">
@@ -518,6 +728,13 @@
             </div>
         </div>
     </div>
+
+    <!-- Mobile Tab Bar -->
+    <nav class="mobile-tab-bar">
+        <button class="m-tab active" data-pane="field"><span class="m-icon">🎯</span>Field</button>
+        <button class="m-tab" data-pane="see"><span class="m-icon">👁️</span>See</button>
+        <button class="m-tab" data-pane="learn"><span class="m-icon">📚</span>Learn</button>
+    </nav>
 
     <script>
         const APIs = {
@@ -615,35 +832,35 @@
                     before: 'Customer reports unauthorized $2,500 charge on credit card',
                     during: 'Agent views case: Fraud flags triggered, transaction details, customer verification needed',
                     after: 'Agent sees spending patterns, initiates card freeze, escalates to fraud team',
-                    uiState: 'Case #FR8901 - Critical - Security Breach - Customer: Sarah Chen - Account: ****4567'
+                    uiState: 'Case #FR8901 - Critical - Security Breach - Customer: Sarah Chen'
                 },
                 'case-patch': {
                     title: 'Fraud Resolution Update',
                     before: 'Case status: "Under Investigation" - Customer anxious, card frozen',
                     during: 'Agent updates: Status → "Resolved", Amount Refunded → $2,500, New Card → Expedited',
                     after: 'Customer relief! Auto-text sent, fraud monitoring enhanced, case closed',
-                    uiState: 'Status: Resolved ✅ - Refund: $2,500 Processed - New Card: 2-Day Express'
+                    uiState: 'Status: Resolved ✅ - Refund: $2,500 - New Card: 2-Day Express'
                 },
                 'case-post': {
                     title: 'Identity Theft Report',
                     before: 'Customer discovers multiple fraudulent accounts opened in their name',
                     during: 'Agent creates case: Identity theft, SSN compromised, multiple institutions affected',
-                    after: 'Case auto-assigned to fraud specialist, credit monitoring activated, police report initiated',
-                    uiState: 'Case #ID2024 Created - Priority: Critical - Type: Identity Theft - Specialist: Assigned'
+                    after: 'Case auto-assigned to fraud specialist, credit monitoring activated',
+                    uiState: 'Case #ID2024 Created - Priority: Critical - Specialist: Assigned'
                 },
                 'contact-get': {
                     title: 'High-Value Customer Lookup',
                     before: 'VIP banking customer calls about investment account discrepancy',
                     during: 'Agent retrieves contact: Private banking tier, $2M portfolio, relationship manager details',
-                    after: 'Agent sees communication preferences, escalates to dedicated advisor immediately',
-                    uiState: 'Contact: Michael Rodriguez - VIP Tier: Private Banking - Portfolio: $2.1M - Advisor: Direct Transfer'
+                    after: 'Agent sees communication preferences, escalates to dedicated advisor',
+                    uiState: 'Contact: Michael Rodriguez - VIP Tier: Private Banking - Portfolio: $2.1M'
                 },
                 'query-soql': {
                     title: 'Compliance Audit Query',
                     before: 'Regulatory audit requires all high-risk transactions from past quarter',
-                    during: 'System queries: SELECT Id, Amount, Type FROM Case WHERE Risk_Level = "High" AND CreatedDate = LAST_QUARTER',
-                    after: 'Results: 847 cases found, exported for compliance team, audit trail documented',
-                    uiState: 'Query Results: 847 High-Risk Cases - Q4 2024 - Export: Compliance_Report_2024.csv'
+                    during: 'System queries: SELECT Id, Amount, Type FROM Case WHERE Risk_Level = "High"',
+                    after: 'Results: 847 cases found, exported for compliance team',
+                    uiState: 'Query Results: 847 High-Risk Cases - Q4 2024'
                 }
             },
             education: {
@@ -652,35 +869,35 @@
                     before: 'Student Emily can\'t access final exam - deadline in 2 hours!',
                     during: 'Agent views case: Technical issue, exam portal down, 200+ affected students',
                     after: 'Agent escalates to IT, extends deadline, notifies all affected students',
-                    uiState: 'Case #EDU456 - Emergency - Exam Portal - Affected: 247 Students - Deadline: Extended'
+                    uiState: 'Case #EDU456 - Emergency - Exam Portal - Affected: 247 Students'
                 },
                 'case-patch': {
                     title: 'Emergency Resolution',
                     before: 'Portal still down, students panicking, dean getting calls',
                     during: 'Agent updates: Status → "Resolved", Portal → "Online", Deadline → "Extended 4hrs"',
                     after: 'Mass email sent, students relieved, portal monitoring increased',
-                    uiState: 'Status: Resolved ✅ - Portal: Online - Extension: 4 hours - Students Notified'
+                    uiState: 'Status: Resolved ✅ - Portal: Online - Extension: 4 hours'
                 },
                 'case-post': {
                     title: 'Grade Dispute Submission',
                     before: 'Student believes final grade calculation is incorrect for Chemistry 201',
-                    during: 'Agent creates case: Grade appeal, professor review needed, transcript on hold',
-                    after: 'Case routed to academic affairs, professor notified, student gets timeline',
-                    uiState: 'Case #GRD789 Created - Type: Grade Appeal - Course: CHEM201 - Review: 5 Business Days'
+                    during: 'Agent creates case: Grade appeal, professor review needed',
+                    after: 'Case routed to academic affairs, professor notified',
+                    uiState: 'Case #GRD789 Created - Type: Grade Appeal - Review: 5 Business Days'
                 },
                 'contact-get': {
                     title: 'Parent Emergency Contact',
                     before: 'Student hospitalized, need to reach emergency contact immediately',
                     during: 'Agent retrieves contact: Emergency contacts, medical info, guardian permissions',
-                    after: 'Parents contacted, medical release forms accessed, campus security notified',
-                    uiState: 'Emergency Contact: Maria Gonzalez (Mother) - Phone: Called - Medical Release: On File'
+                    after: 'Parents contacted, medical release forms accessed',
+                    uiState: 'Emergency Contact: Maria Gonzalez (Mother) - Phone: Called'
                 },
                 'query-soql': {
                     title: 'Graduation Eligibility Check',
                     before: 'Registrar needs list of all students eligible for May graduation',
-                    during: 'System queries: SELECT Student_ID, Credits, GPA FROM Contact WHERE Credits >= 120 AND GPA >= 2.0',
+                    during: 'System queries: SELECT Student_ID, Credits, GPA FROM Contact WHERE Credits >= 120',
                     after: 'Results: 1,247 eligible students, list sent to graduation committee',
-                    uiState: 'Query Results: 1,247 Eligible Students - May 2025 Graduation - Committee Notified'
+                    uiState: 'Query Results: 1,247 Eligible Students - May 2025 Graduation'
                 }
             },
             realestate: {
@@ -688,36 +905,36 @@
                     title: 'Closing Day Crisis',
                     before: 'Buyer discovers major plumbing issue 2 hours before $450K house closing',
                     during: 'Agent views case: Inspection missed, title company alerted, lawyers involved',
-                    after: 'Agent coordinates with all parties, delays closing, schedules emergency repair assessment',
-                    uiState: 'Case #RE2024 - Critical - Closing Delayed - Property: 123 Oak St - Value: $450K'
+                    after: 'Agent coordinates with all parties, delays closing, schedules emergency repair',
+                    uiState: 'Case #RE2024 - Critical - Closing Delayed - Property: 123 Oak St'
                 },
                 'case-patch': {
                     title: 'Settlement Agreement',
                     before: 'Negotiations ongoing, buyer threatens to walk, seller upset',
-                    during: 'Agent updates: Status → "Resolved", Agreement → "$8K seller credit", Closing → "Rescheduled"',
-                    after: 'All parties agree, new closing date set, contracts updated, everyone relieved',
-                    uiState: 'Status: Resolved ✅ - Credit: $8,000 - New Closing: Friday 2PM - All Parties Agreed'
+                    during: 'Agent updates: Status → "Resolved", Agreement → "$8K seller credit"',
+                    after: 'All parties agree, new closing date set, contracts updated',
+                    uiState: 'Status: Resolved ✅ - Credit: $8,000 - New Closing: Friday 2PM'
                 },
                 'case-post': {
                     title: 'Property Damage Claim',
-                    before: 'Storm damages roof 3 days before scheduled closing, insurance claim needed',
-                    during: 'Agent creates case: Storm damage, insurance involved, closing at risk, photos attached',
-                    after: 'Case assigned to insurance specialist, adjuster scheduled, closing contingency added',
-                    uiState: 'Case #STORM24 Created - Type: Property Damage - Adjuster: Tomorrow 9AM - Closing: Contingent'
+                    before: 'Storm damages roof 3 days before scheduled closing',
+                    during: 'Agent creates case: Storm damage, insurance involved, closing at risk',
+                    after: 'Case assigned to insurance specialist, adjuster scheduled',
+                    uiState: 'Case #STORM24 Created - Adjuster: Tomorrow 9AM - Closing: Contingent'
                 },
                 'contact-get': {
                     title: 'Multi-Party Coordination',
                     before: 'Complex commercial sale needs all stakeholders contacted urgently',
-                    during: 'Agent retrieves contact: Buyer, seller, agents, lawyers, lenders, inspectors',
-                    after: 'Conference call scheduled, all parties notified, document sharing set up',
-                    uiState: 'Contact: Wilson Properties LLC - Stakeholders: 8 - Conference: Today 3PM - Documents: Shared'
+                    during: 'Agent retrieves contact: Buyer, seller, agents, lawyers, lenders',
+                    after: 'Conference call scheduled, all parties notified',
+                    uiState: 'Contact: Wilson Properties LLC - Stakeholders: 8 - Conference: Today 3PM'
                 },
                 'query-soql': {
                     title: 'Market Analysis Request',
                     before: 'Client wants comparable sales data for pricing strategy',
-                    during: 'System queries: SELECT Property, Sale_Price, Date FROM Cases WHERE Property_Type = "Condo" AND Zip = "10001"',
-                    after: 'Results: 23 comparable sales, market report generated, client presentation ready',
-                    uiState: 'Query Results: 23 Comparable Sales - Avg Price: $875K - Report: Generated'
+                    during: 'System queries: SELECT Property, Sale_Price FROM Cases WHERE Property_Type = "Condo"',
+                    after: 'Results: 23 comparable sales, market report generated',
+                    uiState: 'Query Results: 23 Comparable Sales - Avg Price: $875K'
                 }
             },
             fashion: {
@@ -726,35 +943,35 @@
                     before: 'Customer Emma wants to return a $500 designer jacket',
                     during: 'Agent views case: "Item damaged on arrival, customer upset"',
                     after: 'Agent sees purchase history, VIP status, offers immediate replacement',
-                    uiState: 'Case #123456 - Priority: High - Emma Thompson - VIP Customer'
+                    uiState: 'Case #123456 - Priority: High - Emma Thompson - VIP ⭐'
                 },
                 'case-patch': {
                     title: 'VIP Resolution Update',
                     before: 'Case shows "Investigating" status, VIP customer waiting',
-                    during: 'Agent updates: Status → "Resolved", Action → "Replacement + $50 credit", Shipping → "Next-day"',
+                    during: 'Agent updates: Status → "Resolved", Action → "Replacement + $50 credit"',
                     after: 'Customer delighted, loyalty increased, social media praise posted',
-                    uiState: 'Status: Resolved ✅ - Replacement Sent - Bonus: $50 Credit - Delivery: Tomorrow'
+                    uiState: 'Status: Resolved ✅ - Replacement Sent - Credit: $50'
                 },
                 'case-post': {
                     title: 'Influencer Collaboration Issue',
                     before: 'Fashion influencer reports wrong items sent for sponsored post deadline',
-                    during: 'Agent creates case: Influencer partnership, wrong SKUs, social deadline tomorrow',
-                    after: 'Case escalated to partnerships team, correct items rushed, crisis averted',
-                    uiState: 'Case #INF2024 Created - Priority: Urgent - Influencer: @StyleMaven - Deadline: 18 hours'
+                    during: 'Agent creates case: Influencer partnership, wrong SKUs, deadline tomorrow',
+                    after: 'Case escalated to partnerships team, correct items rushed',
+                    uiState: 'Case #INF2024 Created - Priority: Urgent - Deadline: 18 hours'
                 },
                 'contact-get': {
                     title: 'Celebrity Stylist Emergency',
-                    before: 'A-list celebrity stylist needs custom dress for red carpet event tonight',
+                    before: 'A-list celebrity stylist needs custom dress for red carpet tonight',
                     during: 'Agent retrieves contact: Celebrity tier, stylist preferences, emergency protocols',
                     after: 'Personal shopper activated, designer contacted, same-day courier arranged',
-                    uiState: 'Contact: Jessica Martinez (Celebrity Stylist) - Client: A-List - Event: Tonight - Courier: Dispatched'
+                    uiState: 'Contact: Jessica Martinez - Client: A-List - Event: Tonight'
                 },
                 'query-soql': {
                     title: 'Trend Analysis Report',
                     before: 'Marketing team needs data on return patterns for winter collection',
-                    during: 'System queries: SELECT Product, Return_Reason, Date FROM Case WHERE Season = "Winter" AND Type = "Return"',
-                    after: 'Results: Sizing issues dominate, design team notified, next season adjustments planned',
-                    uiState: 'Query Results: 342 Winter Returns - Top Issue: Sizing (67%) - Design Team: Notified'
+                    during: 'System queries: SELECT Product, Return_Reason FROM Case WHERE Season = "Winter"',
+                    after: 'Results: Sizing issues dominate, design team notified',
+                    uiState: 'Query Results: 342 Winter Returns - Top Issue: Sizing (67%)'
                 }
             },
             healthcare: {
@@ -768,30 +985,30 @@
                 'case-patch': {
                     title: 'Life-Critical Device Fix',
                     before: 'Patient waiting for replacement insulin pump, blood sugar unstable',
-                    during: 'Agent updates: Status → "Resolved", Device → "Replacement shipped overnight", Temp Solution → "Provided"',
+                    during: 'Agent updates: Status → "Resolved", Device → "Replacement shipped overnight"',
                     after: 'Patient safe, device arrives next morning, follow-up care scheduled',
-                    uiState: 'Status: Resolved ✅ - Replacement: Express Delivery - Patient: Stable - Follow-up: Scheduled'
+                    uiState: 'Status: Resolved ✅ - Replacement: Express - Follow-up: Scheduled'
                 },
                 'case-post': {
                     title: 'Adverse Drug Reaction',
                     before: 'Patient reports severe allergic reaction to new medication',
-                    during: 'Agent creates case: ADR report, FDA notification required, immediate medical attention',
-                    after: 'Case routed to pharmacovigilance, FDA alert filed, patient emergency care coordinated',
-                    uiState: 'Case #ADR2024 Created - Priority: Critical - FDA: Alert Filed - Patient: Emergency Care'
+                    during: 'Agent creates case: ADR report, FDA notification required',
+                    after: 'Case routed to pharmacovigilance, FDA alert filed',
+                    uiState: 'Case #ADR2024 Created - Priority: Critical - FDA: Alert Filed'
                 },
                 'contact-get': {
                     title: 'ICU Family Communication',
                     before: 'ICU patient\'s family needs update on treatment progress',
-                    during: 'Agent retrieves contact: Family members, authorized contacts, communication preferences',
-                    after: 'Primary contact reached, medical update provided, family conference scheduled',
-                    uiState: 'Contact: Robert Kim (Son) - Authorization: Full - Update: Provided - Conference: Tomorrow 2PM'
+                    during: 'Agent retrieves contact: Family members, authorized contacts',
+                    after: 'Primary contact reached, medical update provided',
+                    uiState: 'Contact: Robert Kim (Son) - Authorization: Full - Update: Provided'
                 },
                 'query-soql': {
                     title: 'Clinical Trial Eligibility',
-                    before: 'Research team needs patients matching specific criteria for new cancer treatment',
-                    during: 'System queries: SELECT Patient_ID, Diagnosis, Stage FROM Contact WHERE Cancer_Type = "Lung" AND Stage = "III"',
-                    after: 'Results: 45 eligible patients, research coordinator notified, consent process initiated',
-                    uiState: 'Query Results: 45 Eligible Patients - Trial: LungCancer-III - Coordinator: Notified'
+                    before: 'Research team needs patients matching specific criteria',
+                    during: 'System queries: SELECT Patient_ID, Diagnosis FROM Contact WHERE Cancer_Type = "Lung"',
+                    after: 'Results: 45 eligible patients, research coordinator notified',
+                    uiState: 'Query Results: 45 Eligible Patients - Trial: LungCancer-III'
                 }
             },
             saas: {
@@ -805,30 +1022,30 @@
                 'case-patch': {
                     title: 'Enterprise Crisis Resolution',
                     before: 'API still failing, customer losing $50K/day, CEO escalation',
-                    during: 'Agent updates: Status → "Resolved", Fix → "API endpoint restored", Credits → "$25K applied"',
-                    after: 'Customer operations restored, goodwill credit applied, relationship saved',
-                    uiState: 'Status: Resolved ✅ - API: Restored - Credit: $25K - Relationship: Saved'
+                    during: 'Agent updates: Status → "Resolved", Fix → "API endpoint restored"',
+                    after: 'Customer operations restored, goodwill credit applied',
+                    uiState: 'Status: Resolved ✅ - API: Restored - Credit: $25K'
                 },
                 'case-post': {
                     title: 'Security Breach Report',
                     before: 'Customer discovers unauthorized access to their SaaS instance',
-                    during: 'Agent creates case: Security incident, forensics needed, compliance implications',
-                    after: 'Case escalated to security team, incident response activated, customer briefed',
-                    uiState: 'Case #SEC2024 Created - Priority: Critical - Security Team: Activated - Customer: Briefed'
+                    during: 'Agent creates case: Security incident, forensics needed',
+                    after: 'Case escalated to security team, incident response activated',
+                    uiState: 'Case #SEC2024 Created - Security Team: Activated'
                 },
                 'contact-get': {
                     title: 'Executive Escalation',
-                    before: 'Fortune 500 customer CEO demands immediate meeting about service issues',
-                    during: 'Agent retrieves contact: C-level contacts, account hierarchy, escalation protocols',
-                    after: 'CEO contact retrieved, our executive team notified, emergency meeting scheduled',
-                    uiState: 'Contact: David Chen (CEO, TechCorp) - Account Value: $2.5M - Meeting: Today 4PM - Exec Team: Notified'
+                    before: 'Fortune 500 customer CEO demands immediate meeting',
+                    during: 'Agent retrieves contact: C-level contacts, account hierarchy',
+                    after: 'CEO contact retrieved, our executive team notified',
+                    uiState: 'Contact: David Chen (CEO, TechCorp) - Account Value: $2.5M'
                 },
                 'query-soql': {
                     title: 'Churn Risk Analysis',
-                    before: 'Customer success team needs list of accounts at risk of cancellation',
-                    during: 'System queries: SELECT Account, Usage_Drop, Support_Cases FROM Contact WHERE Health_Score < 30',
-                    after: 'Results: 23 at-risk accounts, outreach campaigns triggered, retention team mobilized',
-                    uiState: 'Query Results: 23 At-Risk Accounts - Health Score: <30 - Retention Team: Mobilized'
+                    before: 'Customer success team needs list of accounts at risk',
+                    during: 'System queries: SELECT Account, Usage_Drop FROM Contact WHERE Health_Score < 30',
+                    after: 'Results: 23 at-risk accounts, outreach campaigns triggered',
+                    uiState: 'Query Results: 23 At-Risk Accounts - Retention Team: Mobilized'
                 }
             }
         };
@@ -877,6 +1094,22 @@
                     e.target.parentElement.classList.toggle('expanded');
                 }
             });
+
+            // Modal handlers
+            document.getElementById('infoBtn').onclick = () => document.getElementById('modal').classList.add('show');
+            document.getElementById('modalClose').onclick = () => document.getElementById('modal').classList.remove('show');
+            document.getElementById('modalStart').onclick = () => document.getElementById('modal').classList.remove('show');
+            document.getElementById('modal').onclick = e => { if (e.target.id === 'modal') e.target.classList.remove('show'); };
+
+            // Mobile Tab Bar
+            document.querySelectorAll('.m-tab').forEach(tab => {
+                tab.onclick = () => {
+                    document.querySelectorAll('.m-tab').forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
+                    document.querySelector(`.pane[data-pane="${tab.dataset.pane}"]`).classList.add('active');
+                };
+            });
         }
 
         function loadAPI(apiKey) {
@@ -911,17 +1144,17 @@
                     </div>
                     
                     <div style="margin-top: 1rem;">
-                        <h4>🔄 System Flow</h4>
-                        <p><strong>Triggers:</strong> ${api.triggers.join(', ')}</p>
-                        <p><strong>Upstream:</strong> ${api.upstream.join(', ')}</p>
-                        <p><strong>Downstream:</strong> ${api.downstream.join(', ')}</p>
+                        <h4 style="font-size:0.9rem;color:var(--accent-2);margin-bottom:8px;">🔄 System Flow</h4>
+                        <p style="font-size:0.85rem;"><strong>Triggers:</strong> ${api.triggers.join(', ')}</p>
+                        <p style="font-size:0.85rem;"><strong>Upstream:</strong> ${api.upstream.join(', ')}</p>
+                        <p style="font-size:0.85rem;"><strong>Downstream:</strong> ${api.downstream.join(', ')}</p>
                     </div>
                     
                     <div style="margin-top: 1rem;">
-                        <h4>👥 Role Mapping</h4>
-                        <p><strong>Agent:</strong> ${api.roles.agent}</p>
-                        <p><strong>Supervisor:</strong> ${api.roles.supervisor}</p>
-                        <p><strong>Automation:</strong> ${api.roles.automation}</p>
+                        <h4 style="font-size:0.9rem;color:var(--accent-2);margin-bottom:8px;">👥 Role Mapping</h4>
+                        <p style="font-size:0.85rem;"><strong>Agent:</strong> ${api.roles.agent}</p>
+                        <p style="font-size:0.85rem;"><strong>Supervisor:</strong> ${api.roles.supervisor}</p>
+                        <p style="font-size:0.85rem;"><strong>Automation:</strong> ${api.roles.automation}</p>
                     </div>
                 </div>
             `;
@@ -935,7 +1168,7 @@
             const scenario = IndustryScenarios[currentIndustry]?.[currentAPI];
             
             if (!scenario) {
-                demo.innerHTML = '<p>Demo scenario coming soon for this industry...</p>';
+                demo.innerHTML = '<p style="color:#888;">Demo scenario coming soon...</p>';
                 return;
             }
             
@@ -958,22 +1191,20 @@
                         </div>
                     </div>
                     
-                    <div class="code-block" data-lang="http">
-${api.method} ${api.name.split(' ')[1]}
+                    <div class="code-block" data-lang="http">${api.method} ${api.name.split(' ')[1]}
 Host: your-instance.salesforce.com
-Authorization: Bearer your_access_token
+Authorization: Bearer {access_token}
 
 Response: 200 OK
 {
-  "Id": "5003000000D8cuI",
+  "Id": "5003X00001AbCdE",
   "Subject": "${scenario.title}",
-  "Status": "In Progress",
-  "Priority": "High"
+  "Status": "In Progress"
 }</div>
                 </div>
                 
-                <div style="margin-top: 1rem; padding: 0.75rem; background: #f8f9fa; border-radius: 8px;">
-                    <strong>UI State:</strong> ${scenario.uiState}
+                <div style="margin-top: 12px; padding: 12px 14px; background: #fff7ed; border-radius: 8px; border-left: 3px solid var(--accent); font-size: 0.85rem;">
+                    <strong>🖥️ UI State:</strong> ${scenario.uiState}
                 </div>
             `;
         }
@@ -1050,15 +1281,14 @@ Response: 200 OK
                         <span>▼</span>
                     </div>
                     <div class="learn-section-content">
-                        <div class="code-block" data-lang="json">
-// Common Error Responses
+                        <div class="code-block" data-lang="json">// Common Error Responses
 {
   "message": "NOT_FOUND",
   "errorCode": "NOT_FOUND"
 }
 
 {
-  "message": "INSUFFICIENT_ACCESS_OR_READONLY",
+  "message": "INSUFFICIENT_ACCESS",
   "errorCode": "INSUFFICIENT_ACCESS"
 }</div>
                     </div>
@@ -1070,7 +1300,7 @@ Response: 200 OK
                         <span>▼</span>
                     </div>
                     <div class="learn-section-content">
-                        <p><strong>GET /sobjects/Contact/{ID}</strong> - Fetch case contact details</p>
+                        <p><strong>GET /sobjects/Contact/{ID}</strong> - Fetch contact details</p>
                         <p><strong>GET /sobjects/Account/{ID}</strong> - Get account information</p>
                         <p><strong>POST /sobjects/CaseComment</strong> - Add case comments</p>
                         <p><strong>GET /query?q=SELECT...</strong> - Query related cases</p>
@@ -1097,16 +1327,11 @@ Response: 200 OK
             const button = document.getElementById('runDemo');
             const demoArea = document.getElementById('apiDemo');
             
-            // Scroll to demo area for better focus
-            demoArea.scrollIntoView({ 
-                behavior: 'smooth', 
-                block: 'start' 
-            });
+            demoArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
             
             button.disabled = true;
-            button.textContent = '⏳ Running Demo...';
+            button.textContent = '⏳ Running...';
             
-            // Simulate the API call states
             const states = ['beforeState', 'duringState', 'afterState'];
             let currentStateIndex = 0;
             
@@ -1119,21 +1344,21 @@ Response: 200 OK
                 currentStateIndex++;
                 
                 if (currentStateIndex < states.length) {
-                    setTimeout(cycleStates, 2000);
+                    setTimeout(cycleStates, 1500);
                 } else {
                     button.disabled = false;
                     button.textContent = '▶️ Run Live Demo';
                 }
             };
             
-            setTimeout(cycleStates, 1000);
+            setTimeout(cycleStates, 600);
         }
 
         // Auto-load the PATCH API to showcase the update scenarios
         setTimeout(() => {
             document.getElementById('apiSelect').value = 'case-patch';
             loadAPI('case-patch');
-        }, 500);
+        }, 300);
     </script>
 </body>
 </html>

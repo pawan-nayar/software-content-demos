@@ -7,25 +7,113 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f8fafc;
+            background: linear-gradient(180deg, #f1f5f9 0%, #f8fafc 50%, #fff 100%);
             color: #1e293b;
+            -webkit-tap-highlight-color: transparent;
         }
+        
+        /* GitHub-style hero */
         .hero-gradient {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            background: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #21262d 100%);
+            position: relative;
+            overflow: hidden;
         }
+        .hero-gradient::before {
+            content: '🐙';
+            position: absolute;
+            font-size: 120px;
+            opacity: 0.06;
+            top: -20px;
+            right: 5%;
+            animation: float 6s ease-in-out infinite;
+        }
+        .hero-gradient::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #30363d, transparent);
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(5deg); }
+        }
+        
+        /* Card interactions */
         .card-link {
             display: block;
             text-decoration: none;
             color: inherit;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            -webkit-tap-highlight-color: transparent;
         }
         .card-link:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            transform: translateY(-6px);
+            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.15);
+        }
+        .card-link:active {
+            transform: scale(0.98);
+        }
+        
+        /* Featured card glow */
+        .featured-glow {
+            animation: glow 3s ease-in-out infinite;
+        }
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(88, 166, 255, 0.3); }
+            50% { box-shadow: 0 0 0 8px rgba(88, 166, 255, 0); }
+        }
+        
+        /* Emoji bounce */
+        .card-emoji {
+            transition: transform 0.3s ease;
+        }
+        .card-link:hover .card-emoji {
+            transform: scale(1.15) rotate(-5deg);
+        }
+        
+        /* Progress line for tutorial series */
+        .tutorial-card {
+            position: relative;
+        }
+        .tutorial-card::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            right: -8px;
+            width: 16px;
+            height: 2px;
+            background: linear-gradient(90deg, #e2e8f0, transparent);
+        }
+        .tutorial-card:last-child::after {
+            display: none;
+        }
+        
+        /* Back button */
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #238636, #2ea043);
+            color: white;
+            font-weight: 600;
+            border-radius: 12px;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(35, 134, 54, 0.3);
+        }
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(35, 134, 54, 0.4);
+        }
+        .back-btn:active {
+            transform: scale(0.98);
         }
     </style>
 </head>
@@ -33,212 +121,415 @@
 
     <!-- Header / Hero Section -->
     <header class="hero-gradient text-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10 text-center">
-            <h1 class="text-2xl md:text-3xl font-bold tracking-tight">📘 GitHub Learning Series</h1>
-            <p class="mt-3 max-w-3xl mx-auto text-sm text-slate-300">Interactive micro-lessons that capture the confusion, curiosity, and creativity real learners face. Teaching GitHub the way a mentor would, not the way a manual does.</p>
+        <div class="max-w-5xl mx-auto px-5 sm:px-6 py-10 md:py-14 text-center">
+            <div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full text-sm mb-5">
+                <span class="text-xl">🐙</span>
+                <span class="text-slate-300">Version Control Mastery</span>
+            </div>
+            <h1 class="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight">
+                GitHub Learning Series
+            </h1>
+            <p class="mt-5 max-w-2xl mx-auto text-base md:text-lg text-slate-300 leading-relaxed">
+                Teaching Git the way a <strong class="text-white">mentor</strong> would—not a manual.<br class="hidden md:block">
+                Interactive lessons for real-world confusion and curiosity.
+            </p>
+            
+            <!-- Quick stats -->
+            <div class="flex justify-center gap-6 md:gap-10 mt-8 text-sm">
+                <div class="text-center">
+                    <div class="text-2xl md:text-3xl font-bold text-white">4</div>
+                    <div class="text-slate-400 text-xs md:text-sm">Tutorials</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl md:text-3xl font-bold text-white">3</div>
+                    <div class="text-slate-400 text-xs md:text-sm">Scenarios</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl md:text-3xl font-bold text-white">4</div>
+                    <div class="text-slate-400 text-xs md:text-sm">Tools</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl md:text-3xl font-bold text-white">2</div>
+                    <div class="text-slate-400 text-xs md:text-sm">Quizzes</div>
+                </div>
+            </div>
         </div>
     </header>
 
     <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10">
+    <main class="max-w-5xl mx-auto px-5 sm:px-6 py-10">
+
+        <!-- Featured Start Card -->
+        <section class="mb-10">
+            <div class="flex items-center gap-3 mb-5">
+                <span class="text-2xl">🚀</span>
+                <h2 class="text-xl md:text-2xl font-bold text-slate-800">Start Your Journey</h2>
+            </div>
+            
+            <a href="./github-tutorial-part-1-foundations.html" target="_blank" rel="noopener noreferrer" 
+               class="card-link featured-glow block bg-gradient-to-br from-slate-50 to-slate-100 border-2 border-slate-300 rounded-2xl overflow-hidden">
+                <div class="p-5 md:p-6 flex flex-col md:flex-row md:items-center gap-4">
+                    <div class="flex-shrink-0 w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-slate-700 to-slate-900 rounded-2xl flex items-center justify-center shadow-lg">
+                        <span class="text-3xl md:text-4xl">📘</span>
+                    </div>
+                    <div class="flex-grow">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-500 text-white">START HERE</span>
+                        </div>
+                        <h3 class="text-lg md:text-xl font-bold text-slate-900 mb-1">Part 1: Foundations</h3>
+                        <p class="text-slate-600 text-sm md:text-base">Master the essentials: version control concepts, repositories, commits, and basic Git commands. Perfect foundation for everything else.</p>
+                    </div>
+                    <div class="hidden md:flex flex-shrink-0 items-center justify-center w-12 h-12 bg-slate-800 rounded-full text-white">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </div>
+                </div>
+                <div class="px-5 md:px-6 py-3 bg-slate-200/50 border-t border-slate-300 flex items-center justify-between">
+                    <span class="text-sm font-semibold text-slate-700">Begin Learning →</span>
+                    <span class="text-xs text-slate-500">~45 min</span>
+                </div>
+            </a>
+        </section>
 
         <!-- Tutorial Series Section -->
-        <section id="tutorial-series" class="mb-10">
-            <h2 class="text-xl font-bold pb-2 mb-5 text-slate-900">Core Tutorial Series</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-                <article class="h-full">
-                    <a href="./github-tutorial-part-1-foundations.html" target="_blank" rel="noopener noreferrer" class="card-link bg-white rounded-xl shadow-lg overflow-hidden h-full flex flex-col">
-                        <div class="p-3 flex-grow">
-                            <div class="flex items-center space-x-3 mb-2">
-                                <div class="flex-shrink-0 w-9 h-9 bg-orange-100 rounded-lg flex items-center justify-center"><span class="font-bold text-orange-600">1</span></div>
-                                <h3 class="text-base font-semibold text-slate-900">Part 1: Foundations</h3>
+        <section id="tutorial-series" class="mb-12">
+            <div class="flex items-center gap-3 mb-5">
+                <span class="text-2xl">📚</span>
+                <div>
+                    <h2 class="text-xl md:text-2xl font-bold text-slate-800">Core Tutorial Series</h2>
+                    <p class="text-sm text-slate-500">Follow the numbered path to mastery</p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <!-- Part 2 -->
+                <article class="tutorial-card">
+                    <a href="./github-tutorial-part-2-teamwork-and-collaboration.html" target="_blank" rel="noopener noreferrer" 
+                       class="card-link bg-white border border-slate-200 rounded-xl overflow-hidden h-full flex flex-col hover:border-blue-300">
+                        <div class="p-4 flex-grow">
+                            <div class="flex items-start gap-3">
+                                <div class="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center shadow text-white font-bold">2</div>
+                                <div>
+                                    <h3 class="font-semibold text-slate-900 mb-1">Collaboration</h3>
+                                    <p class="text-sm text-slate-600 leading-relaxed">Branching, pull requests, and code reviews for teams.</p>
+                                </div>
                             </div>
-                            <p class="text-sm text-slate-600">Start with the essentials of version control, repositories, and basic commands.</p>
                         </div>
-                        <div class="px-4 py-2 bg-gray-50 border-t"><span class="text-sm font-medium text-orange-600">View Tutorial →</span></div>
+                        <div class="px-4 py-3 bg-slate-50 border-t flex items-center justify-between">
+                            <span class="text-sm font-medium text-blue-600">View →</span>
+                            <span class="text-xs text-slate-400">Teams</span>
+                        </div>
                     </a>
                 </article>
-                <article class="h-full">
-                    <a href="./github-tutorial-part-2-teamwork-and-collaboration.html" target="_blank" rel="noopener noreferrer" class="card-link bg-white rounded-xl shadow-lg overflow-hidden h-full flex flex-col">
-                        <div class="p-3 flex-grow">
-                            <div class="flex items-center space-x-3 mb-2">
-                                <div class="flex-shrink-0 w-9 h-9 bg-orange-100 rounded-lg flex items-center justify-center"><span class="font-bold text-orange-600">2</span></div>
-                                <h3 class="text-base font-semibold text-slate-900">Part 2: Collaboration</h3>
+                
+                <!-- Part 3 -->
+                <article class="tutorial-card">
+                    <a href="./github-tutorial-part-3-professional-workflows.html" target="_blank" rel="noopener noreferrer" 
+                       class="card-link bg-white border border-slate-200 rounded-xl overflow-hidden h-full flex flex-col hover:border-violet-300">
+                        <div class="p-4 flex-grow">
+                            <div class="flex items-start gap-3">
+                                <div class="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-violet-500 to-violet-600 rounded-lg flex items-center justify-center shadow text-white font-bold">3</div>
+                                <div>
+                                    <h3 class="font-semibold text-slate-900 mb-1">Pro Workflows</h3>
+                                    <p class="text-sm text-slate-600 leading-relaxed">Merge conflicts, clean history, and advanced patterns.</p>
+                                </div>
                             </div>
-                            <p class="text-sm text-slate-600">Learn the collaborative workflow of branching, pull requests, and code reviews.</p>
                         </div>
-                        <div class="px-4 py-2 bg-gray-50 border-t"><span class="text-sm font-medium text-orange-600">View Tutorial →</span></div>
+                        <div class="px-4 py-3 bg-slate-50 border-t flex items-center justify-between">
+                            <span class="text-sm font-medium text-violet-600">View →</span>
+                            <span class="text-xs text-slate-400">Advanced</span>
+                        </div>
                     </a>
                 </article>
-                <article class="h-full">
-                     <a href="./github-tutorial-part-3-professional-workflows.html" target="_blank" rel="noopener noreferrer" class="card-link bg-white rounded-xl shadow-lg overflow-hidden h-full flex flex-col">
-                        <div class="p-3 flex-grow">
-                            <div class="flex items-center space-x-3 mb-2">
-                                <div class="flex-shrink-0 w-9 h-9 bg-orange-100 rounded-lg flex items-center justify-center"><span class="font-bold text-orange-600">3</span></div>
-                                <h3 class="text-base font-semibold text-slate-900">Part 3: Pro Workflows</h3>
+                
+                <!-- Part 4 -->
+                <article>
+                    <a href="./github-tutorial-part-4-mastery-and-leadership.html" target="_blank" rel="noopener noreferrer" 
+                       class="card-link bg-white border border-slate-200 rounded-xl overflow-hidden h-full flex flex-col hover:border-amber-300">
+                        <div class="p-4 flex-grow">
+                            <div class="flex items-start gap-3">
+                                <div class="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-500 rounded-lg flex items-center justify-center shadow text-white font-bold">4</div>
+                                <div>
+                                    <h3 class="font-semibold text-slate-900 mb-1">Mastery</h3>
+                                    <p class="text-sm text-slate-600 leading-relaxed">Leadership, project management, GitHub Actions.</p>
+                                </div>
                             </div>
-                            <p class="text-sm text-slate-600">Dive into advanced topics like resolving merge conflicts and maintaining a clean project history.</p>
                         </div>
-                        <div class="px-4 py-2 bg-gray-50 border-t"><span class="text-sm font-medium text-orange-600">View Tutorial →</span></div>
-                    </a>
-                </article>
-                 <article class="h-full">
-                    <a href="./github-tutorial-part-4-mastery-and-leadership.html" target="_blank" rel="noopener noreferrer" class="card-link bg-white rounded-xl shadow-lg overflow-hidden h-full flex flex-col">
-                        <div class="p-3 flex-grow">
-                            <div class="flex items-center space-x-3 mb-2">
-                                <div class="flex-shrink-0 w-9 h-9 bg-orange-100 rounded-lg flex items-center justify-center"><span class="font-bold text-orange-600">4</span></div>
-                                <h3 class="text-base font-semibold text-slate-900">Part 4: Mastery</h3>
-                            </div>
-                            <p class="text-sm text-slate-600">Explore leadership concepts, including project management and automation with GitHub Actions.</p>
+                        <div class="px-4 py-3 bg-slate-50 border-t flex items-center justify-between">
+                            <span class="text-sm font-medium text-amber-600">View →</span>
+                            <span class="text-xs text-slate-400">Leadership</span>
                         </div>
-                        <div class="px-4 py-2 bg-gray-50 border-t"><span class="text-sm font-medium text-orange-600">View Tutorial →</span></div>
                     </a>
                 </article>
             </div>
         </section>
 
         <!-- Confusion Scenarios Section -->
-        <section id="confusion-scenarios" class="mb-10">
-            <h2 class="text-xl font-bold pb-2 mb-5 text-slate-900">Common Confusion Scenarios</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                <article class="h-full">
-                    <a href="./github-confusion-understanding-rebase-vs-merge.html" target="_blank" rel="noopener noreferrer" class="card-link bg-white rounded-xl shadow-lg overflow-hidden h-full flex flex-col">
-                        <div class="p-3 flex-grow">
-                            <div class="flex items-center space-x-3 mb-2">
-                                <div class="flex-shrink-0 w-9 h-9 bg-orange-100 rounded-lg flex items-center justify-center"><svg class="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a2 2 0 01-2-2V4a2 2 0 012-2h2.586a1 1 0 01.707.293l2.414 2.414a1 1 0 00.707.293H17z"></path></svg></div>
-                                <h3 class="text-base font-semibold text-slate-900">Rebase vs. Merge</h3>
+        <section id="confusion-scenarios" class="mb-12">
+            <div class="flex items-center gap-3 mb-5">
+                <span class="text-2xl">🤔</span>
+                <div>
+                    <h2 class="text-xl md:text-2xl font-bold text-slate-800">Common Confusion Scenarios</h2>
+                    <p class="text-sm text-slate-500">Demystifying the parts that trip everyone up</p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <!-- Rebase vs Merge -->
+                <article>
+                    <a href="./github-confusion-understanding-rebase-vs-merge.html" target="_blank" rel="noopener noreferrer" 
+                       class="card-link bg-gradient-to-br from-amber-50 to-yellow-50 border border-amber-200 rounded-xl overflow-hidden h-full flex flex-col hover:border-amber-400">
+                        <div class="p-4 flex-grow">
+                            <div class="flex items-start gap-3">
+                                <div class="flex-shrink-0 w-11 h-11 bg-gradient-to-br from-amber-400 to-yellow-500 rounded-xl flex items-center justify-center shadow">
+                                    <span class="card-emoji text-xl">🔀</span>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-slate-900 mb-1">Rebase vs. Merge</h3>
+                                    <p class="text-sm text-slate-600 leading-relaxed">Two ways to integrate changes—when to use each for clean history.</p>
+                                </div>
                             </div>
-                            <p class="text-sm text-slate-600">Understand the two primary ways of integrating changes and when to choose each for a clean history.</p>
                         </div>
-                        <div class="px-4 py-2 bg-gray-50 border-t"><span class="text-sm font-medium text-orange-600">View Explainer →</span></div>
+                        <div class="px-4 py-3 bg-amber-100/50 border-t border-amber-200 flex items-center justify-between">
+                            <span class="text-sm font-medium text-amber-700">Explainer →</span>
+                            <span class="text-xs text-amber-600">Popular</span>
+                        </div>
                     </a>
                 </article>
-                <article class="h-full">
-                    <a href="./github-confusion-understanding-detached-head.html" target="_blank" rel="noopener noreferrer" class="card-link bg-white rounded-xl shadow-lg overflow-hidden h-full flex flex-col">
-                        <div class="p-3 flex-grow">
-                            <div class="flex items-center space-x-3 mb-2">
-                                <div class="flex-shrink-0 w-9 h-9 bg-orange-100 rounded-lg flex items-center justify-center"><svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
-                                <h3 class="text-base font-semibold text-slate-900">Detached HEAD State</h3>
+                
+                <!-- Detached HEAD -->
+                <article>
+                    <a href="./github-confusion-understanding-detached-head.html" target="_blank" rel="noopener noreferrer" 
+                       class="card-link bg-gradient-to-br from-amber-50 to-yellow-50 border border-amber-200 rounded-xl overflow-hidden h-full flex flex-col hover:border-amber-400">
+                        <div class="p-4 flex-grow">
+                            <div class="flex items-start gap-3">
+                                <div class="flex-shrink-0 w-11 h-11 bg-gradient-to-br from-amber-400 to-yellow-500 rounded-xl flex items-center justify-center shadow">
+                                    <span class="card-emoji text-xl">😵</span>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-slate-900 mb-1">Detached HEAD</h3>
+                                    <p class="text-sm text-slate-600 leading-relaxed">What it means and how to navigate it safely.</p>
+                                </div>
                             </div>
-                            <p class="text-sm text-slate-600">Demystify this common state, understanding what it is and how to safely navigate it.</p>
                         </div>
-                         <div class="px-4 py-2 bg-gray-50 border-t"><span class="text-sm font-medium text-orange-600">View Explainer →</span></div>
+                        <div class="px-4 py-3 bg-amber-100/50 border-t border-amber-200 flex items-center justify-between">
+                            <span class="text-sm font-medium text-amber-700">Explainer →</span>
+                            <span class="text-xs text-amber-600">Common</span>
+                        </div>
                     </a>
                 </article>
-                <article class="h-full">
-                    <a href="./github-confusion-understanding-reflog-and-recovery.html" target="_blank" rel="noopener noreferrer" class="card-link bg-white rounded-xl shadow-lg overflow-hidden h-full flex flex-col">
-                        <div class="p-3 flex-grow">
-                            <div class="flex items-center space-x-3 mb-2">
-                                <div class="flex-shrink-0 w-9 h-9 bg-orange-100 rounded-lg flex items-center justify-center"><svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h5M20 20v-5h-5M4 20h5v-5M20 4h-5v5"></path></svg></div>
-                                <h3 class="text-base font-semibold text-slate-900">Reflog & Reset</h3>
+                
+                <!-- Reflog & Reset -->
+                <article>
+                    <a href="./github-confusion-understanding-reflog-and-recovery.html" target="_blank" rel="noopener noreferrer" 
+                       class="card-link bg-gradient-to-br from-amber-50 to-yellow-50 border border-amber-200 rounded-xl overflow-hidden h-full flex flex-col hover:border-amber-400">
+                        <div class="p-4 flex-grow">
+                            <div class="flex items-start gap-3">
+                                <div class="flex-shrink-0 w-11 h-11 bg-gradient-to-br from-amber-400 to-yellow-500 rounded-xl flex items-center justify-center shadow">
+                                    <span class="card-emoji text-xl">⏪</span>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-slate-900 mb-1">Reflog & Reset</h3>
+                                    <p class="text-sm text-slate-600 leading-relaxed">Recover from mistakes using Git's time machine.</p>
+                                </div>
                             </div>
-                            <p class="text-sm text-slate-600">Learn how to recover from mistakes using `reflog` and the different types of `reset`.</p>
                         </div>
-                        <div class="px-4 py-2 bg-gray-50 border-t"><span class="text-sm font-medium text-orange-600">View Explainer →</span></div>
+                        <div class="px-4 py-3 bg-amber-100/50 border-t border-amber-200 flex items-center justify-between">
+                            <span class="text-sm font-medium text-amber-700">Explainer →</span>
+                            <span class="text-xs text-amber-600">Lifesaver</span>
+                        </div>
                     </a>
                 </article>
             </div>
         </section>
 
         <!-- Advanced Concepts Section -->
-        <section id="advanced-concepts" class="mb-10">
-            <h2 class="text-xl font-bold pb-2 mb-5 text-slate-900">Advanced Concepts & Tools</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                 <article class="h-full">
-                    <a href="./git-deepthink-player-professional-scenarios.html" target="_blank" rel="noopener noreferrer" class="card-link bg-white rounded-xl shadow-lg overflow-hidden h-full flex flex-col">
-                        <div class="p-3 flex-grow">
-                            <div class="flex items-center space-x-3 mb-2">
-                                <div class="flex-shrink-0 w-9 h-9 bg-orange-100 rounded-lg flex items-center justify-center"><svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg></div>
-                                <h3 class="text-base font-semibold text-slate-900">Professional Scenarios</h3>
-                            </div>
-                            <p class="text-sm text-slate-600">An interactive player to walk through complex, real-world version control challenges.</p>
-                        </div>
-                        <div class="px-4 py-2 bg-gray-50 border-t"><span class="text-sm font-medium text-orange-600">Launch Tool →</span></div>
-                    </a>
-                </article>
-                 <article class="h-full">
-                    <a href="./github-understanding-git-objects.html" target="_blank" rel="noopener noreferrer" class="card-link bg-white rounded-xl shadow-lg overflow-hidden h-full flex flex-col">
-                        <div class="p-3 flex-grow">
-                            <div class="flex items-center space-x-3 mb-2">
-                                <div class="flex-shrink-0 w-9 h-9 bg-orange-100 rounded-lg flex items-center justify-center"><svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg></div>
-                                <h3 class="text-base font-semibold text-slate-900">Understanding Git Objects</h3>
-                            </div>
-                            <p class="text-sm text-slate-600">A deep dive into the core of Git: blobs, trees, commits, and tags.</p>
-                        </div>
-                        <div class="px-4 py-2 bg-gray-50 border-t"><span class="text-sm font-medium text-orange-600">View Explainer →</span></div>
-                    </a>
-                </article>
-                <article class="h-full">
-                    <a href="./github-confusion-understanding-submodules-vs-subtrees.html" target="_blank" rel="noopener noreferrer" class="card-link bg-white rounded-xl shadow-lg overflow-hidden h-full flex flex-col">
-                        <div class="p-3 flex-grow">
-                            <div class="flex items-center space-x-3 mb-2">
-                                <div class="flex-shrink-0 w-9 h-9 bg-orange-100 rounded-lg flex items-center justify-center"><svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg></div>
-                                <h3 class="text-base font-semibold text-slate-900">Submodules vs. Subtrees</h3>
-                            </div>
-                            <p class="text-sm text-slate-600">Clarify the two methods for managing repositories within other repositories.</p>
-                        </div>
-                        <div class="px-4 py-2 bg-gray-50 border-t"><span class="text-sm font-medium text-orange-600">View Explainer →</span></div>
-                    </a>
-                </article>
-                 <article class="h-full">
-                    <a href="./git-and-github-with-claude-code.html" target="_blank" rel="noopener noreferrer" class="card-link bg-white rounded-xl shadow-lg overflow-hidden h-full flex flex-col">
-                        <div class="p-3 flex-grow">
-                            <div class="flex items-center space-x-3 mb-2">
-                                <div class="flex-shrink-0 w-9 h-9 bg-orange-100 rounded-lg flex items-center justify-center"><svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg></div>
-                                <h3 class="text-base font-semibold text-slate-900">Git & GitHub with Claude</h3>
-                            </div>
-                            <p class="text-sm text-slate-600">Explore how to use AI to assist with commit messages, code reviews, and more.</p>
-                        </div>
-                        <div class="px-4 py-2 bg-gray-50 border-t"><span class="text-sm font-medium text-orange-600">View Demo →</span></div>
-                    </a>
-                </article>
+        <section id="advanced-concepts" class="mb-12">
+            <div class="flex items-center gap-3 mb-5">
+                <span class="text-2xl">🔬</span>
+                <div>
+                    <h2 class="text-xl md:text-2xl font-bold text-slate-800">Advanced Concepts & Tools</h2>
+                    <p class="text-sm text-slate-500">Deep dives for the curious</p>
+                </div>
             </div>
-        </section>
-        
-         <!-- Quizzes Section -->
-        <section id="quizzes" class="mb-10">
-            <h2 class="text-xl font-bold pb-2 mb-5 text-slate-900">Knowledge Checks</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                <article class="h-full">
-                    <a href="./github-rubric-quizzes.html" target="_blank" rel="noopener noreferrer" class="card-link bg-white rounded-xl shadow-lg overflow-hidden h-full flex flex-col">
-                        <div class="p-3 flex-grow">
-                            <div class="flex items-center space-x-3 mb-2">
-                                <div class="flex-shrink-0 w-9 h-9 bg-orange-100 rounded-lg flex items-center justify-center"><svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg></div>
-                                <h3 class="text-base font-semibold text-slate-900">Rubric Quizzes</h3>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <!-- Professional Scenarios -->
+                <article>
+                    <a href="./git-deepthink-player-professional-scenarios.html" target="_blank" rel="noopener noreferrer" 
+                       class="card-link bg-gradient-to-br from-slate-800 to-slate-900 text-white rounded-xl overflow-hidden h-full flex flex-col">
+                        <div class="p-5 flex-grow">
+                            <div class="flex items-start gap-4">
+                                <div class="flex-shrink-0 w-12 h-12 bg-indigo-500/20 rounded-xl flex items-center justify-center">
+                                    <span class="text-2xl">🎮</span>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-white mb-1">Professional Scenarios</h3>
+                                    <p class="text-sm text-slate-300 leading-relaxed">Interactive player for complex, real-world version control challenges.</p>
+                                </div>
                             </div>
-                            <p class="text-sm text-slate-600">Assess your understanding against a detailed rubric for professional standards.</p>
                         </div>
-                        <div class="px-4 py-2 bg-gray-50 border-t"><span class="text-sm font-medium text-orange-600">Take Quiz →</span></div>
+                        <div class="px-5 py-3 bg-white/5 border-t border-white/10 flex items-center justify-between">
+                            <span class="text-sm font-medium text-indigo-400">Launch Tool →</span>
+                            <span class="text-xs text-slate-400">Interactive</span>
+                        </div>
                     </a>
                 </article>
-                 <article class="h-full">
-                    <a href="./github-series-capstone-quiz.html" target="_blank" rel="noopener noreferrer" class="card-link bg-white rounded-xl shadow-lg overflow-hidden h-full flex flex-col">
-                        <div class="p-3 flex-grow">
-                            <div class="flex items-center space-x-3 mb-2">
-                                <div class="flex-shrink-0 w-9 h-9 bg-orange-100 rounded-lg flex items-center justify-center"><svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
-                                <h3 class="text-base font-semibold text-slate-900">Capstone Quiz</h3>
+                
+                <!-- Git Objects -->
+                <article>
+                    <a href="./github-understanding-git-objects.html" target="_blank" rel="noopener noreferrer" 
+                       class="card-link bg-gradient-to-br from-slate-800 to-slate-900 text-white rounded-xl overflow-hidden h-full flex flex-col">
+                        <div class="p-5 flex-grow">
+                            <div class="flex items-start gap-4">
+                                <div class="flex-shrink-0 w-12 h-12 bg-cyan-500/20 rounded-xl flex items-center justify-center">
+                                    <span class="text-2xl">🧬</span>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-white mb-1">Git Objects Deep Dive</h3>
+                                    <p class="text-sm text-slate-300 leading-relaxed">The core of Git: blobs, trees, commits, and tags explained.</p>
+                                </div>
                             </div>
-                            <p class="text-sm text-slate-600">A comprehensive quiz covering concepts from the entire tutorial series.</p>
                         </div>
-                        <div class="px-4 py-2 bg-gray-50 border-t"><span class="text-sm font-medium text-orange-600">Take Quiz →</span></div>
+                        <div class="px-5 py-3 bg-white/5 border-t border-white/10 flex items-center justify-between">
+                            <span class="text-sm font-medium text-cyan-400">Explore →</span>
+                            <span class="text-xs text-slate-400">Deep Dive</span>
+                        </div>
+                    </a>
+                </article>
+                
+                <!-- Submodules vs Subtrees -->
+                <article>
+                    <a href="./github-confusion-understanding-submodules-vs-subtrees.html" target="_blank" rel="noopener noreferrer" 
+                       class="card-link bg-gradient-to-br from-slate-800 to-slate-900 text-white rounded-xl overflow-hidden h-full flex flex-col">
+                        <div class="p-5 flex-grow">
+                            <div class="flex items-start gap-4">
+                                <div class="flex-shrink-0 w-12 h-12 bg-purple-500/20 rounded-xl flex items-center justify-center">
+                                    <span class="text-2xl">📦</span>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-white mb-1">Submodules vs. Subtrees</h3>
+                                    <p class="text-sm text-slate-300 leading-relaxed">Managing repos within repos—two approaches compared.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="px-5 py-3 bg-white/5 border-t border-white/10 flex items-center justify-between">
+                            <span class="text-sm font-medium text-purple-400">Explainer →</span>
+                            <span class="text-xs text-slate-400">Architecture</span>
+                        </div>
+                    </a>
+                </article>
+                
+                <!-- Git with Claude -->
+                <article>
+                    <a href="./git-and-github-with-claude-code.html" target="_blank" rel="noopener noreferrer" 
+                       class="card-link bg-gradient-to-br from-slate-800 to-slate-900 text-white rounded-xl overflow-hidden h-full flex flex-col">
+                        <div class="p-5 flex-grow">
+                            <div class="flex items-start gap-4">
+                                <div class="flex-shrink-0 w-12 h-12 bg-orange-500/20 rounded-xl flex items-center justify-center">
+                                    <span class="text-2xl">🤖</span>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-white mb-1">Git & GitHub with Claude</h3>
+                                    <p class="text-sm text-slate-300 leading-relaxed">AI-assisted commit messages, code reviews, and workflows.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="px-5 py-3 bg-white/5 border-t border-white/10 flex items-center justify-between">
+                            <span class="text-sm font-medium text-orange-400">Demo →</span>
+                            <span class="text-xs text-slate-400">AI-Powered</span>
+                        </div>
                     </a>
                 </article>
             </div>
         </section>
 
+        <!-- Quizzes Section -->
+        <section id="quizzes" class="mb-10">
+            <div class="flex items-center gap-3 mb-5">
+                <span class="text-2xl">✅</span>
+                <div>
+                    <h2 class="text-xl md:text-2xl font-bold text-slate-800">Knowledge Checks</h2>
+                    <p class="text-sm text-slate-500">Test your understanding</p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <!-- Rubric Quizzes -->
+                <article>
+                    <a href="./github-rubric-quizzes.html" target="_blank" rel="noopener noreferrer" 
+                       class="card-link bg-gradient-to-br from-emerald-50 to-green-50 border border-emerald-200 rounded-xl overflow-hidden h-full flex flex-col hover:border-emerald-400">
+                        <div class="p-4 flex-grow">
+                            <div class="flex items-start gap-4">
+                                <div class="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-emerald-500 to-green-500 rounded-xl flex items-center justify-center shadow">
+                                    <span class="card-emoji text-xl">📋</span>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-slate-900 mb-1">Rubric Quizzes</h3>
+                                    <p class="text-sm text-slate-600 leading-relaxed">Assess against professional standards with detailed rubrics.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="px-4 py-3 bg-emerald-100/50 border-t border-emerald-200 flex items-center justify-between">
+                            <span class="text-sm font-medium text-emerald-700">Take Quiz →</span>
+                            <span class="text-xs text-emerald-600">Standards</span>
+                        </div>
+                    </a>
+                </article>
+                
+                <!-- Capstone Quiz -->
+                <article>
+                    <a href="./github-series-capstone-quiz.html" target="_blank" rel="noopener noreferrer" 
+                       class="card-link bg-gradient-to-br from-emerald-50 to-green-50 border border-emerald-200 rounded-xl overflow-hidden h-full flex flex-col hover:border-emerald-400">
+                        <div class="p-4 flex-grow">
+                            <div class="flex items-start gap-4">
+                                <div class="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-emerald-500 to-green-500 rounded-xl flex items-center justify-center shadow">
+                                    <span class="card-emoji text-xl">🏆</span>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-slate-900 mb-1">Capstone Quiz</h3>
+                                    <p class="text-sm text-slate-600 leading-relaxed">Comprehensive test covering the entire tutorial series.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="px-4 py-3 bg-emerald-100/50 border-t border-emerald-200 flex items-center justify-between">
+                            <span class="text-sm font-medium text-emerald-700">Take Quiz →</span>
+                            <span class="text-xs text-emerald-600">Final</span>
+                        </div>
+                    </a>
+                </article>
+            </div>
+        </section>
+
+        <!-- Tip Card -->
+        <section class="mb-8">
+            <div class="bg-gradient-to-r from-slate-100 to-slate-50 border border-slate-200 rounded-xl p-5">
+                <div class="flex items-start gap-4">
+                    <span class="text-2xl">💡</span>
+                    <div>
+                        <h3 class="font-semibold text-slate-800 mb-1">Learning Path Tip</h3>
+                        <p class="text-sm text-slate-600">Start with <strong>Part 1: Foundations</strong>, then follow the numbered tutorials. Jump into <strong>Confusion Scenarios</strong> whenever you hit a specific challenge!</p>
+                    </div>
+                </div>
+            </div>
+        </section>
 
     </main>
 
     <!-- Footer -->
     <footer class="bg-slate-800 text-slate-400">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 text-center text-sm">
-            <p><a href="../index.html" class="text-orange-400 hover:text-orange-300 font-semibold">↑ Back to Main Index</a></p>
-            <p class="mt-4 font-semibold text-white">Copyright Notice / Usage Policy</p>
-            <p class="mt-2 max-w-2xl mx-auto text-xs">This repository is for viewing and inspiration purposes only. You are not permitted to fork, copy, duplicate, download, reproduce, or redistribute any part of this repository.</p>
-            <p class="mt-4 text-xs">&copy; All rights are reserved by the author.</p>
+        <div class="max-w-5xl mx-auto px-5 sm:px-6 py-8 text-center">
+            <a href="../index.html" class="back-btn mb-6 inline-flex">
+                <span>←</span>
+                <span>Back to Main Index</span>
+            </a>
+            
+            <div class="mt-6 pt-6 border-t border-slate-700">
+                <p class="font-semibold text-slate-300 text-sm">Copyright Notice</p>
+                <p class="mt-2 max-w-xl mx-auto text-xs text-slate-500">This repository is for viewing and inspiration purposes only. Reproduction or redistribution is not permitted.</p>
+                <p class="mt-3 text-xs text-slate-500">© All rights reserved by the author.</p>
+            </div>
         </div>
     </footer>
 
 </body>
 </html>
-

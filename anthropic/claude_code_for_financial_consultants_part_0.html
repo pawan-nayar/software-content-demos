@@ -34,57 +34,62 @@
         --info: #0d6efd; --info-soft: #cfe2ff;
       }
       *{box-sizing:border-box;margin:0;padding:0}
-      html,body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.8; scroll-behavior: smooth;}
+      html,body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;scroll-behavior:smooth;overflow-x:hidden}
       
-      .container{max-width:900px;margin:auto;padding:24px;background:#fff}
+      .container{max-width:1080px;margin:auto;padding:24px;background:#fff}
       
-      h1, h2, h3, h4 { color: var(--header-bg); font-weight: 700; line-height: 1.3; }
-      h1{font-size:clamp(2rem,5vw,2.8rem); margin-bottom: 8px;}
-      h2{font-size:clamp(1.6rem,4vw,2.2rem); margin: 60px 0 24px; border-bottom: 2px solid var(--border); padding-bottom: 12px;}
-      h3{font-size:clamp(1.2rem,3vw,1.5rem); margin: 40px 0 16px; color: var(--accent-2); }
-      p{margin-bottom: 20px;}
+      h1{font-size:clamp(2rem,5vw,2.6rem);margin-bottom:8px;color:var(--text);line-height:1.2}
+      h2{font-size:clamp(1.5rem,4vw,2rem);color:var(--text);margin:48px 0 16px;border-bottom:2px solid var(--border);padding-bottom:8px}
+      h3{font-size:clamp(1.2rem,3vw,1.5rem);color:var(--text);margin-top:32px;margin-bottom:12px}
+      h4{font-size:clamp(1rem,2.5vw,1.2rem);font-weight:bold;color:var(--accent-2);margin-bottom:10px}
+      p{margin-bottom:16px;word-wrap:break-word}
 
       .site-header,.site-footer{background:var(--header-bg);color:var(--header-fg);padding:14px 24px}
-      .site-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;position:sticky;top:0;z-index:100; box-shadow: 0 2px 10px rgba(0,0,0,0.1);}
-      .logo{font-weight:700;font-size:1.15rem;color:#fff; text-decoration: none;}
-      .logo:hover{color:var(--accent);}
-      .site-footer{text-align:center;margin-top:50px;padding:30px; font-size: 0.9rem;}
-      
-      /* Module Navigation */
-      .module-nav { background: #2d2d2d; border-bottom: 2px solid var(--accent); padding: 12px 24px; position: sticky; top: 56px; z-index: 99; }
-      .module-nav-inner { display: flex; gap: 8px; overflow-x: auto; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; scrollbar-width: thin; scrollbar-color: var(--accent) #3a3a3a; }
-      .module-nav-inner::-webkit-scrollbar { height: 4px; }
-      .module-nav-inner::-webkit-scrollbar-track { background: #3a3a3a; }
-      .module-nav-inner::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
-      .module-link { display: flex; align-items: center; gap: 6px; padding: 8px 14px; background: #3a3a3a; color: #e2e8f0; text-decoration: none; border-radius: 6px; font-size: 0.85rem; font-weight: 500; transition: all 0.2s; white-space: nowrap; flex-shrink: 0; }
-      .module-link:hover { background: var(--accent); color: white; }
-      .module-link.active { background: var(--accent); color: white; font-weight: 600; }
-      .module-link.completed::before { content: '✓'; display: inline-block; width: 16px; height: 16px; background: var(--ok); color: white; border-radius: 50%; text-align: center; line-height: 16px; font-size: 11px; margin-right: 2px; }
-      .module-link .module-num { opacity: 0.7; }
-      .nav-controls { display: none; }
+      .site-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;position:sticky;top:0;z-index:200;box-shadow:0 2px 10px rgba(0,0,0,0.1)}
+      .logo{font-weight:700;font-size:1.15rem;color:#fff;text-decoration:none}
+      .logo:hover{color:var(--accent);text-decoration:none}
+      .site-nav{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+      .site-nav a{color:#ced4da;text-decoration:none}
+      .site-nav a:hover{color:#fff;text-decoration:none}
+      .hamburger{display:none;background:none;border:1px solid rgba(255,255,255,0.4);color:#fff;border-radius:8px;padding:8px 10px;font-size:1rem;cursor:pointer;line-height:1;transition:background 0.2s;min-width:48px;min-height:48px}
+      .hamburger:hover,.hamburger[aria-expanded="true"]{background:rgba(255,255,255,0.15)}
+      .site-footer{text-align:center;margin-top:50px;padding:40px;font-size:0.9rem}
       
       @media (max-width: 768px) {
-        .module-nav { top: 52px; padding: 8px 12px; position: relative; }
-        .module-nav-wrapper { position: relative; }
-        .module-nav-inner { gap: 12px; padding: 0 40px; scroll-snap-type: x mandatory; }
-        .module-link { scroll-snap-align: center; padding: 10px 16px; font-size: 0.9rem; min-width: 140px; justify-content: center; }
-        .nav-controls { display: flex; position: absolute; top: 50%; transform: translateY(-50%); width: 100%; justify-content: space-between; pointer-events: none; z-index: 1; }
-        .nav-btn { pointer-events: all; background: var(--accent); color: white; border: none; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
-        .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-        .nav-btn-prev { margin-left: 4px; }
-        .nav-btn-next { margin-right: 4px; }
+        .site-header{flex-wrap:nowrap;padding:12px 16px}
+        .logo{flex:0 0 auto;font-size:1.05rem}
+        .hamburger{display:inline-flex;align-items:center;justify-content:center;margin-left:auto}
+        .site-nav{display:none;position:absolute;top:100%;right:16px;flex-direction:column;gap:0;background:var(--header-bg);padding:8px 0;border-radius:8px;box-shadow:0 10px 25px rgba(0,0,0,0.35);min-width:200px}
+        .site-nav.open{display:flex}
+        .site-nav a{display:block;padding:10px 18px;color:#f8f9fa;white-space:nowrap}
+        .site-nav a + a{border-top:1px solid rgba(255,255,255,0.15)}
+      }
+      
+      /* Module Navigation */
+      .module-nav{background:#2d2d2d;border-bottom:2px solid var(--accent);padding:12px 24px;position:sticky;top:56px;z-index:99}
+      .module-nav-inner{display:flex;gap:8px;flex-wrap:wrap}
+      .module-link{display:flex;align-items:center;gap:6px;padding:8px 14px;background:#3a3a3a;color:#e2e8f0;text-decoration:none;border-radius:6px;font-size:0.85rem;font-weight:500;transition:all 0.2s;white-space:nowrap}
+      .module-link:hover{background:var(--accent);color:white;text-decoration:none}
+      .module-link.active{background:var(--accent);color:white;font-weight:600}
+      .module-link.completed::before{content:'✓';display:inline-block;width:16px;height:16px;background:var(--ok);color:white;border-radius:50%;text-align:center;line-height:16px;font-size:11px;margin-right:2px}
+      .module-link .module-num{opacity:0.7}
+      
+      @media (max-width: 768px) {
+        .module-nav{top:52px;padding:10px 12px}
+        .module-nav-inner{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+        .module-link{padding:10px 8px;font-size:0.8rem;min-height:48px;justify-content:center;text-align:center;flex-direction:column;gap:2px}
+        .module-link .module-num{font-size:0.75rem}
       }
       
       .module-section { margin-bottom: 60px; }
       .icon-prefix { font-size: 1.5rem; margin-right: 12px; }
 
-      .context-box, .analogy-box { background: var(--accent-soft); border-left: 4px solid var(--accent); padding: 24px; margin: 32px 0; border-radius: 8px; }
-      .context-box h3, .analogy-box h3 { color: var(--accent-2); font-size: 1.3rem; margin-top: 0; margin-bottom: 10px; }
-      .context-box p, .analogy-box p { font-size: 1.1rem; margin-bottom: 0; }
+      .context-box,.analogy-box{background:var(--accent-soft);border-left:4px solid var(--accent);padding:24px;margin:32px 0;border-radius:8px}
+      .context-box h3,.analogy-box h3{color:var(--accent-2);font-size:1.3rem;margin-top:0;margin-bottom:10px}
+      .context-box p,.analogy-box p{font-size:1.1rem;margin-bottom:0}
 
-      .reasons-list { list-style: none; padding-left: 0; }
-      .reasons-list li { display: flex; align-items: flex-start; margin-bottom: 16px; font-size: 1.1rem; }
-      .reasons-list li::before { content: '✓'; color: var(--ok); font-weight: bold; font-size: 1.5rem; margin-right: 12px; line-height: 1.2; }
+      .reasons-list{list-style:decimal;padding-left:24px;margin-bottom:24px}
+      .reasons-list li{margin-bottom:12px;padding-left:8px;line-height:1.6}
       
       .comparison-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin: 32px 0; }
       .comparison-card { background: var(--muted); padding: 24px; border-radius: 12px; }
@@ -142,48 +147,72 @@
       .bridge-box a { background: var(--accent); color: white; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: 700; display: inline-block; transition: background-color 0.2s; }
       .bridge-box a:hover { background: var(--accent-2); }
 
-      @media (max-width: 640px) { .comparison-grid { grid-template-columns: 1fr; } }
+      @media (max-width: 768px) { 
+        body { font-size: 0.95rem; }
+        .container { padding: 18px 16px; }
+        h1 { font-size: 1.75rem; margin-bottom: 10px; }
+        h2 { font-size: 1.4rem; margin: 32px 0 12px; padding-bottom: 6px; }
+        h3 { font-size: 1.2rem; margin: 24px 0 10px; }
+        .context-box, .analogy-box { padding: 18px; margin: 24px 0; }
+        .reasons-list{padding-left:20px}
+        .reasons-list li{font-size:0.95rem;margin-bottom:10px}
+        .comparison-grid { grid-template-columns: 1fr; gap: 16px; }
+        .comparison-card { padding: 18px; }
+        .key-tips-grid { grid-template-columns: 1fr; gap: 16px; }
+        .tip-card { padding: 16px; }
+        .accordion-header { padding: 14px 16px; font-size: 1rem; }
+        .accordion-content { padding: 18px; }
+        .quiz-container { padding: 16px; }
+        .quiz-navigation { margin-bottom: 16px; padding-bottom: 16px; }
+        .quiz-navigation .btn { min-width: 48px; min-height: 48px; font-size: 1.1rem; }
+        .quiz-option label { padding: 12px; font-size: 0.95rem; }
+        .bridge-box { padding: 24px 18px; margin-top: 32px; }
+        .bridge-box a { padding: 14px 24px; min-height: 48px; display: inline-flex; align-items: center; justify-content: center; }
+      }
     </style>
 </head>
 <body>
 
  <header class="site-header">
      <a href="claude_code_for_financial_consultants_index.html" class="logo">Claude for Consultants</a>
-     <span style="font-size:0.9rem;opacity:0.8;">Module 0 of 6</span>
+     <button class="hamburger" aria-label="Toggle navigation" aria-expanded="false" onclick="toggleNav()">☰</button>
+     <nav class="site-nav" id="siteNav">
+       <a href="#context">Context</a>
+       <a href="#core-content">Core Content</a>
+       <a href="#hands-on">Hands-On</a>
+       <a href="#tips">Tips</a>
+       <a href="#faq">FAQ</a>
+       <a href="#glossary">Glossary</a>
+       <a href="#quiz">Quiz</a>
+     </nav>
  </header>
 
  <nav class="module-nav" role="navigation" aria-label="Course modules">
-     <div class="module-nav-wrapper">
-         <div class="nav-controls">
-             <button class="nav-btn nav-btn-prev" id="navPrev" aria-label="Previous modules">‹</button>
-             <button class="nav-btn nav-btn-next" id="navNext" aria-label="Next modules">›</button>
-         </div>
-         <div class="module-nav-inner" id="moduleNavInner">
-             <a href="claude_code_for_financial_consultants_part_0.html" class="module-link active" data-module="0">
-                 <span class="module-num">M0</span> Introduction
-             </a>
-             <a href="claude_code_for_financial_consultants_part_1.html" class="module-link" data-module="1">
-                 <span class="module-num">M1</span> Orientation
-             </a>
-             <a href="claude_code_for_financial_consultants_part_2.html" class="module-link" data-module="2">
-                 <span class="module-num">M2</span> Installation
-             </a>
-             <a href="claude_code_for_financial_consultants_part_3.html" class="module-link" data-module="3">
-                 <span class="module-num">M3</span> First Changes
-             </a>
-             <a href="claude_code_for_financial_consultants_part_4.html" class="module-link" data-module="4">
-                 <span class="module-num">M4</span> CLAUDE.md
-             </a>
-             <a href="claude_code_for_financial_consultants_part_5.html" class="module-link" data-module="5">
-                 <span class="module-num">M5</span> AI-Native
-             </a>
-         </div>
+     <div class="module-nav-inner" id="moduleNavInner">
+         <a href="claude_code_for_financial_consultants_part_0.html" class="module-link active" data-module="0">
+             <span class="module-num">M0</span> Introduction
+         </a>
+         <a href="claude_code_for_financial_consultants_part_1.html" class="module-link" data-module="1">
+             <span class="module-num">M1</span> Orientation
+         </a>
+         <a href="claude_code_for_financial_consultants_part_2.html" class="module-link" data-module="2">
+             <span class="module-num">M2</span> Installation
+         </a>
+         <a href="claude_code_for_financial_consultants_part_3.html" class="module-link" data-module="3">
+             <span class="module-num">M3</span> First Changes
+         </a>
+         <a href="claude_code_for_financial_consultants_part_4.html" class="module-link" data-module="4">
+             <span class="module-num">M4</span> CLAUDE.md
+         </a>
+         <a href="claude_code_for_financial_consultants_part_5.html" class="module-link" data-module="5">
+             <span class="module-num">M5</span> AI-Native
+         </a>
      </div>
  </nav>
 
  <div class="container">
    
-    <h1>MODULE 0: Why Claude Code?</h1>
+    <h1>Module 0: Why Claude Code?</h1>
   <div class="analogy-box" role="note" aria-label="Note for non‑coders">
     <h3>For financial consultants, not programmers</h3>
     <p>You won’t write code here. You’ll speak to Claude in plain English to draft analyses, summarize docs, and structure deliverables. No IDE setup today—Module 1 handles installation in a few clicks, and Module 2 walks you through using the workspace. You stay in charge: Claude proposes; you review and approve.</p>
@@ -197,7 +226,7 @@
    </div>
 
     <!-- 1. CONTEXT -->
-    <section class="module-section">
+    <section id="context" class="module-section">
         <h2><span class="icon-prefix">📍</span>Context: Why This Matters Now</h2>
         <div class="context-box">
             <h3>What Claude Code actually is</h3>
@@ -207,7 +236,7 @@
     </section>
 
     <!-- 2. CORE CONTENT -->
-    <section class="module-section">
+    <section id="core-content" class="module-section">
         <h2><span class="icon-prefix">💡</span>Core Content: 10 Reasons to Start</h2>
         <ul class="reasons-list">
             <li><strong>Secure & local</strong> — runs in your IDE; reviews diffs before changes land.</li>
@@ -224,7 +253,7 @@
     </section>
 
     <!-- 3. HANDS-ON PRACTICE (Conceptual for Module 0) -->
-    <section class="module-section">
+    <section id="hands-on" class="module-section">
         <h2><span class="icon-prefix">🛠️</span>Hands-On: See the Difference</h2>
         <p>Below is a simulated view of the Claude Code interface in VS Code. You'll use the <strong>real workspace</strong> in Module 2.</p>
         <div class="comparison-grid">
@@ -368,7 +397,7 @@
     </section>
 
     <!-- 4. KEY TIPS -->
-    <section class="module-section">
+    <section id="tips" class="module-section">
         <h2><span class="icon-prefix">💬</span>3 Key Tips from Early Adopters</h2>
         <div class="key-tips-grid">
             <div class="tip-card">
@@ -416,7 +445,7 @@
     </section>
 
     <!-- 6. COMMON QUESTIONS (FAQ) -->
-    <section class="module-section">
+    <section id="faq" class="module-section">
         <h2><span class="icon-prefix">❓</span>Common Questions</h2>
         <div class="accordion" id="faq-accordion">
             <!-- FAQ Items will be injected by JS -->
@@ -424,7 +453,7 @@
     </section>
 
     <!-- 7. GLOSSARY -->
-    <section class="module-section">
+    <section id="glossary" class="module-section">
         <h2><span class="icon-prefix">📚</span>6 Key Terms You Just Learned</h2>
         <dl class="glossary-list">
             <dt>Claude Code</dt>
@@ -445,7 +474,7 @@
     </section>
     
     <!-- 8. MC QUESTIONS -->
-    <section class="module-section">
+    <section id="quiz" class="module-section">
         <h2><span class="icon-prefix">✅</span>Knowledge Check</h2>
         <div class="quiz-container">
             <div class="quiz-navigation">
@@ -477,6 +506,24 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
+    // --- Hamburger Toggle ---
+    window.toggleNav = function() {
+        const nav = document.getElementById('siteNav');
+        const hamburger = document.querySelector('.hamburger');
+        const isOpen = nav.classList.toggle('open');
+        hamburger.setAttribute('aria-expanded', isOpen);
+    };
+    
+    // Close menu when clicking a nav link
+    document.querySelectorAll('.site-nav a').forEach(link => {
+        link.addEventListener('click', () => {
+            const nav = document.getElementById('siteNav');
+            const hamburger = document.querySelector('.hamburger');
+            nav.classList.remove('open');
+            hamburger.setAttribute('aria-expanded', 'false');
+        });
+    });
+    
     // --- Module Navigation with Completion Tracking ---
     const currentModule = 0;
     
@@ -503,42 +550,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (link) link.classList.add('completed');
         }
     });
-    
-    // Mobile carousel navigation
-    const navInner = document.getElementById('moduleNavInner');
-    const navPrev = document.getElementById('navPrev');
-    const navNext = document.getElementById('navNext');
-    
-    if (navInner && navPrev && navNext) {
-        // Scroll to active module on load (mobile)
-        const activeLink = navInner.querySelector('.module-link.active');
-        if (activeLink && window.innerWidth <= 768) {
-            activeLink.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-        }
-        
-        // Prev/Next button handlers
-        navPrev.addEventListener('click', () => {
-            navInner.scrollBy({ left: -160, behavior: 'smooth' });
-        });
-        
-        navNext.addEventListener('click', () => {
-            navInner.scrollBy({ left: 160, behavior: 'smooth' });
-        });
-        
-        // Update button states on scroll
-        function updateNavButtons() {
-            const scrollLeft = navInner.scrollLeft;
-            const scrollWidth = navInner.scrollWidth;
-            const clientWidth = navInner.clientWidth;
-            
-            navPrev.disabled = scrollLeft <= 0;
-            navNext.disabled = scrollLeft + clientWidth >= scrollWidth - 5;
-        }
-        
-        navInner.addEventListener('scroll', updateNavButtons);
-        window.addEventListener('resize', updateNavButtons);
-        updateNavButtons();
-    }
     
     // --- Rest of Module 0 JavaScript ---
     // --- Data ---

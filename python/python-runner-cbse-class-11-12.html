@@ -106,17 +106,1224 @@
         .status-chip { font-size: 0.85rem; font-weight: 600; padding: 4px 10px; border-radius: 999px; }
         .status-chip.success { background: var(--ok-soft); color: var(--ok); }
         
-        /* --- Tooltip --- */
+        /* --- Tooltip (Desktop) --- */
         .code-tooltip { position: fixed; z-index: 1000; background: var(--accent); color: #fff; padding: 10px 14px; border-radius: 8px; font-size: 0.9rem; line-height: 1.5; max-width: 350px; pointer-events: none; opacity: 0; transition: opacity 0.2s; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
 
-        /* --- Responsive Design --- */
+        /* ================= HOP 2: Mobile Code Tooltip Overlay ================= */
+        .mobile-code-tooltip {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 9999;
+            backdrop-filter: blur(3px);
+            -webkit-backdrop-filter: blur(3px);
+        }
+        .mobile-code-tooltip.active {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding: 16px;
+            animation: mobileOverlayFade 0.2s ease-out;
+        }
+        @keyframes mobileOverlayFade {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .mobile-code-tooltip-content {
+            background: #fff;
+            border-radius: 16px 16px 8px 8px;
+            width: 100%;
+            max-width: calc(100% - 32px);
+            max-height: 60vh;
+            overflow-y: auto;
+            box-shadow: 0 -4px 30px rgba(0,0,0,0.3);
+            animation: mobileTooltipSlide 0.25s ease-out;
+        }
+        @keyframes mobileTooltipSlide {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .mobile-code-tooltip-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border);
+            background: var(--accent);
+            border-radius: 16px 16px 0 0;
+            position: sticky;
+            top: 0;
+        }
+        .mobile-code-tooltip-header h4 {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #fff;
+        }
+        .mobile-code-tooltip-close {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: #fff;
+            font-size: 1.4rem;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .mobile-code-tooltip-body {
+            padding: 16px;
+            font-size: 1rem;
+            line-height: 1.7;
+            color: var(--text);
+        }
+        .mobile-code-tooltip-body code {
+            background: var(--code-bg);
+            color: var(--code-fg);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        /* ================= HOP 1: Responsive Layout Breakpoints ================= */
         @media (max-width: 1024px) {
             .app-container { grid-template-columns: 1fr; }
             .left-column, .right-column { height: auto; }
         }
+        
+        @media (max-width: 768px) {
+            /* Layout adjustments */
+            .app-container { 
+                padding: 16px; 
+                gap: 16px;
+            }
+            .left-column, .right-column { 
+                gap: 16px;
+            }
+            
+            /* Intro panel */
+            .intro-panel {
+                padding: 18px;
+            }
+            .intro-panel h1 {
+                font-size: 1.5rem;
+            }
+            .intro-panel p {
+                font-size: 0.95rem;
+            }
+            
+            /* Panels */
+            .panel-header {
+                padding: 10px 14px;
+            }
+            .panel-body {
+                padding: 14px;
+            }
+            
+            /* Hide desktop tooltip on mobile */
+            .code-tooltip {
+                display: none !important;
+            }
+            
+            /* Code viewer tap hint */
+            .code-viewer-container {
+                position: relative;
+            }
+            .code-viewer-container::after {
+                content: '👆 Tap any line for explanation';
+                display: block;
+                text-align: center;
+                padding: 10px;
+                font-size: 0.85rem;
+                color: #a0aec0;
+                background: var(--code-bg);
+                border-top: 1px solid #4a5568;
+            }
+            
+            /* HOP 3: Tab navigation scroll */
+            .tab-nav {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+                padding: 0 12px;
+                gap: 4px;
+            }
+            .tab-nav::-webkit-scrollbar {
+                display: none;
+            }
+            .tab-btn {
+                padding: 12px 14px;
+                font-size: 0.85rem;
+                white-space: nowrap;
+                flex-shrink: 0;
+            }
+            
+            /* HOP 4: Touch targets */
+            .quiz-option {
+                padding: 14px;
+                min-height: 48px;
+            }
+            .mistake-reveal-btn {
+                padding: 12px 18px;
+                font-size: 1rem;
+                min-height: 44px;
+            }
+            .accordion-header {
+                padding: 14px 16px;
+                min-height: 48px;
+            }
+            
+            /* Comparison grid single column */
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            /* Further reductions */
+            .app-container {
+                padding: 12px;
+                gap: 12px;
+            }
+            .intro-panel {
+                padding: 14px;
+            }
+            .intro-panel h1 {
+                font-size: 1.3rem;
+            }
+            .panel-title {
+                font-size: 1rem;
+            }
+            
+            /* Code viewer */
+            .code-viewer-container {
+                font-size: 0.8rem;
+            }
+            .line-numbers {
+                padding: 12px 6px;
+            }
+            .code-content {
+                padding: 12px;
+            }
+            
+            /* Tab buttons even smaller */
+            .tab-btn {
+                padding: 10px 12px;
+                font-size: 0.8rem;
+            }
+            
+            /* Cards */
+            .concept-card-header {
+                padding: 10px;
+            }
+            .concept-card-body {
+                padding: 10px;
+            }
+            .comparison-card {
+                padding: 10px;
+            }
+            .comparison-card pre {
+                font-size: 0.8rem;
+                padding: 8px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .app-container {
+                padding: 10px;
+            }
+            .intro-panel h1 {
+                font-size: 1.2rem;
+            }
+            .intro-panel p {
+                font-size: 0.9rem;
+            }
+            .site-header {
+                padding: 12px 16px;
+            }
+            .logo {
+                font-size: 1rem;
+            }
+            
+            /* Very compact code */
+            .code-viewer-container {
+                font-size: 0.75rem;
+            }
+            
+            /* Mistake items */
+            .mistake-item {
+                padding: 10px;
+            }
+            .mistake-item pre {
+                font-size: 0.8rem;
+                padding: 8px;
+            }
+            
+            /* Quiz questions */
+            .quiz-question p {
+                font-size: 0.95rem;
+            }
+        }
+
+        /* ============================================
+           ENHANCED MOBILE ACCORDION EXPERIENCE
+           Inspired by GitHub Tutorial Pattern
+           ============================================ */
+        
+        /* Hide mobile elements on desktop */
+        .mobile-view,
+        .mobile-sticky-header,
+        .mobile-bottom-nav,
+        .mobile-start-screen,
+        .mobile-article-screen,
+        .confetti {
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            /* Hide desktop layout on mobile */
+            .app-container {
+                display: none !important;
+            }
+            .intro-panel {
+                display: none !important;
+            }
+            
+            /* ============ 2-SCREEN MOBILE LAYOUT ============ */
+            
+            /* SCREEN 1: START SCREEN - Show on mobile */
+            .mobile-start-screen {
+                display: flex;
+                flex-direction: column;
+                min-height: calc(100vh - 52px);
+                background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+                padding: 24px 20px;
+                text-align: center;
+                justify-content: center;
+                align-items: center;
+                position: relative;
+                z-index: 10;
+            }
+            
+            /* Ensure button is clickable */
+            .mobile-start-screen .start-btn {
+                position: relative;
+                z-index: 20;
+            }
+            
+            /* Confetti visible on mobile */
+            .confetti {
+                display: block;
+            }
+            .start-emoji {
+                font-size: 4rem;
+                margin-bottom: 16px;
+                animation: bounce 2s infinite;
+            }
+            @keyframes bounce {
+                0%, 100% { transform: translateY(0); }
+                50% { transform: translateY(-10px); }
+            }
+            .start-title {
+                font-size: 1.5rem;
+                font-weight: 700;
+                color: #fff;
+                margin-bottom: 8px;
+            }
+            .start-subtitle {
+                font-size: 1rem;
+                color: #a0aec0;
+                margin-bottom: 24px;
+            }
+            .start-objectives {
+                background: rgba(255,255,255,0.1);
+                border-radius: 12px;
+                padding: 20px;
+                margin-bottom: 24px;
+                text-align: left;
+                width: 100%;
+                max-width: 320px;
+            }
+            .start-objectives h3 {
+                color: var(--accent);
+                font-size: 0.9rem;
+                margin-bottom: 12px;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+            }
+            .start-objectives ul {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }
+            .start-objectives li {
+                color: #fff;
+                font-size: 0.95rem;
+                padding: 8px 0;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            .start-objectives li::before {
+                content: '✓';
+                color: var(--ok);
+                font-weight: bold;
+            }
+            .start-meta {
+                display: flex;
+                gap: 16px;
+                justify-content: center;
+                margin-bottom: 24px;
+            }
+            .start-meta span {
+                color: #a0aec0;
+                font-size: 0.85rem;
+                display: flex;
+                align-items: center;
+                gap: 4px;
+            }
+            .start-btn {
+                background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+                color: #fff;
+                border: none;
+                padding: 18px 44px;
+                border-radius: 30px;
+                font-size: 1.15rem;
+                font-weight: 700;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 10px;
+                box-shadow: 0 8px 25px rgba(253, 126, 20, 0.4);
+                transition: transform 0.2s, box-shadow 0.2s;
+                -webkit-tap-highlight-color: transparent;
+                touch-action: manipulation;
+                user-select: none;
+                min-height: 56px;
+            }
+            .start-btn:active {
+                transform: scale(0.96);
+                box-shadow: 0 4px 15px rgba(253, 126, 20, 0.3);
+            }
+            .start-preview {
+                color: #718096;
+                font-size: 0.8rem;
+                margin-top: 20px;
+            }
+            
+            /* Confetti animation - must not block clicks */
+            .confetti {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                pointer-events: none !important;
+                z-index: 9999;
+                overflow: hidden;
+            }
+            .confetti-piece {
+                position: absolute;
+                width: 10px;
+                height: 10px;
+                background: var(--accent);
+                animation: confetti-fall 3s ease-out forwards;
+            }
+            @keyframes confetti-fall {
+                0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
+                100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+            }
+            
+            /* SCREEN 2: ARTICLE SCREEN */
+            .mobile-article-screen {
+                display: none;
+                flex-direction: column;
+                min-height: calc(100vh - 52px);
+                background: #f8f9fa;
+            }
+            .article-header {
+                display: flex;
+                align-items: center;
+                padding: 14px 16px;
+                background: #fff;
+                border-bottom: 1px solid var(--border);
+                position: sticky;
+                top: 52px;
+                z-index: 50;
+            }
+            .article-back-btn {
+                background: none;
+                border: none;
+                font-size: 1.2rem;
+                padding: 8px;
+                cursor: pointer;
+                color: var(--accent-2);
+            }
+            .article-title {
+                flex: 1;
+                font-weight: 600;
+                font-size: 1rem;
+                color: var(--text);
+                margin-left: 8px;
+            }
+            .article-content {
+                flex: 1;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+                padding-bottom: 40px;
+            }
+            
+            /* Article Accordion Styles */
+            .article-accordion {
+                background: #fff;
+                margin: 8px 12px;
+                border-radius: 12px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+                overflow: hidden;
+            }
+            .article-accordion:first-child {
+                margin-top: 12px;
+            }
+            .article-accordion-header {
+                width: 100%;
+                background: #fff;
+                border: none;
+                padding: 16px;
+                font-size: 1rem;
+                font-weight: 600;
+                text-align: left;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                min-height: 56px;
+                color: var(--text);
+            }
+            .article-accordion-header:active {
+                background: var(--muted);
+            }
+            .article-accordion-header .acc-icon {
+                font-size: 1.3rem;
+                margin-right: 12px;
+            }
+            .article-accordion-header .acc-title {
+                flex-grow: 1;
+            }
+            .article-accordion-header .acc-badge {
+                background: var(--muted);
+                color: #6c757d;
+                font-size: 0.75rem;
+                padding: 4px 8px;
+                border-radius: 10px;
+                margin-right: 10px;
+            }
+            .article-accordion-header .chevron {
+                font-size: 0.9rem;
+                color: #6c757d;
+                transition: transform 0.25s ease;
+            }
+            .article-accordion-header.expanded {
+                background: linear-gradient(135deg, #fff 0%, var(--muted) 100%);
+                border-bottom: 1px solid var(--border);
+            }
+            .article-accordion-header.expanded .chevron {
+                transform: rotate(180deg);
+            }
+            .article-accordion-content {
+                max-height: 0;
+                overflow: hidden;
+                transition: max-height 0.35s ease-out;
+                background: #fff;
+            }
+            .article-accordion-content.expanded {
+                max-height: 8000px;
+                overflow: visible;
+            }
+            .article-accordion-content-inner {
+                padding: 16px;
+                border-top: 1px solid var(--border);
+            }
+            
+            /* Purpose section styling */
+            .purpose-content {
+                line-height: 1.7;
+            }
+            .purpose-content h4 {
+                color: var(--accent-2);
+                font-size: 1rem;
+                margin-bottom: 12px;
+            }
+            .purpose-list {
+                list-style: none;
+                padding: 0;
+                margin: 16px 0;
+            }
+            .purpose-list li {
+                padding: 10px 0;
+                border-bottom: 1px solid var(--border);
+                display: flex;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            .purpose-list li:last-child {
+                border-bottom: none;
+            }
+            .purpose-list .num {
+                background: var(--accent);
+                color: #fff;
+                width: 24px;
+                height: 24px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 0.8rem;
+                font-weight: 700;
+                flex-shrink: 0;
+            }
+            
+            /* Code section styling */
+            .code-section-display {
+                background: var(--code-bg);
+                border-radius: 10px;
+                padding: 16px;
+                margin-bottom: 16px;
+                overflow-x: auto;
+            }
+            .code-section-display pre {
+                margin: 0;
+                font-family: 'Courier New', monospace;
+                font-size: 0.85rem;
+                line-height: 1.6;
+                color: var(--code-fg);
+                white-space: pre-wrap;
+            }
+            .code-section-display .line-num {
+                color: #718096;
+                margin-right: 12px;
+                user-select: none;
+            }
+            .output-section-display {
+                background: var(--muted);
+                border-radius: 10px;
+                padding: 14px;
+                border-left: 4px solid var(--ok);
+            }
+            .output-section-display h5 {
+                color: var(--ok);
+                font-size: 0.85rem;
+                margin-bottom: 8px;
+            }
+            .output-section-display pre {
+                margin: 0;
+                font-family: 'Courier New', monospace;
+                font-size: 0.85rem;
+                color: #495057;
+                white-space: pre-wrap;
+            }
+            
+            /* Line-by-line explanation */
+            .line-explanation-carousel {
+                position: relative;
+            }
+            .line-exp-nav {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 16px;
+                padding-bottom: 12px;
+                border-bottom: 1px solid var(--border);
+            }
+            .line-exp-nav button {
+                background: var(--muted);
+                border: 1px solid var(--border);
+                padding: 10px 16px;
+                border-radius: 8px;
+                font-weight: 600;
+                cursor: pointer;
+            }
+            .line-exp-nav button:disabled {
+                opacity: 0.4;
+            }
+            .line-exp-counter {
+                font-weight: 700;
+                color: var(--accent-2);
+            }
+            .line-exp-card {
+                background: var(--code-bg);
+                border-radius: 10px;
+                padding: 14px;
+                margin-bottom: 12px;
+            }
+            .line-exp-card code {
+                color: var(--code-fg);
+                font-family: 'Courier New', monospace;
+                font-size: 0.9rem;
+            }
+            .line-exp-text {
+                background: #fff;
+                border-radius: 10px;
+                padding: 14px;
+                border-left: 4px solid var(--accent);
+                line-height: 1.6;
+            }
+            
+            /* ============ FULLSCREEN CODE OVERLAY ============ */
+            .fullscreen-code-overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: var(--code-bg);
+                z-index: 9999;
+                flex-direction: column;
+            }
+            .fullscreen-code-overlay.active {
+                display: flex;
+            }
+            .fullscreen-code-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 14px 16px;
+                background: #1a202c;
+                border-bottom: 1px solid #3d4852;
+            }
+            .fullscreen-code-header h3 {
+                color: #fff;
+                font-size: 1rem;
+                margin: 0;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+            .fullscreen-code-header .close-btn {
+                background: #dc2626;
+                color: #fff;
+                border: none;
+                padding: 8px 16px;
+                border-radius: 8px;
+                font-weight: 600;
+                font-size: 0.9rem;
+                cursor: pointer;
+            }
+            .fullscreen-code-body {
+                flex: 1;
+                overflow-y: auto;
+                padding: 16px;
+                font-family: 'Courier New', monospace;
+                font-size: 0.9rem;
+                line-height: 1.7;
+                color: var(--code-fg);
+                -webkit-overflow-scrolling: touch;
+            }
+            .fullscreen-code-body .code-line {
+                display: block;
+                padding: 4px 8px;
+                margin: 0 -8px;
+                border-radius: 4px;
+                white-space: pre-wrap;
+            }
+            .fullscreen-code-body .code-line:active {
+                background: rgba(253, 126, 20, 0.3);
+            }
+            .fullscreen-code-body .line-num {
+                color: #718096;
+                margin-right: 16px;
+                min-width: 24px;
+                display: inline-block;
+                text-align: right;
+            }
+            .fullscreen-output {
+                background: #1a202c;
+                padding: 16px;
+                border-top: 1px solid #3d4852;
+            }
+            .fullscreen-output h4 {
+                color: var(--accent);
+                font-size: 0.9rem;
+                margin-bottom: 8px;
+            }
+            .fullscreen-output pre {
+                color: #a0aec0;
+                font-size: 0.85rem;
+                white-space: pre-wrap;
+                margin: 0;
+            }
+            
+            /* Hide old elements */
+            .mobile-sticky-header,
+            .mobile-intro-banner,
+            .mobile-code-section,
+            .mobile-tap-hint,
+            .mobile-output-section {
+                display: none !important;
+            }
+            
+            /* Mobile concept cards */
+            .mobile-concept-card {
+                background: #fff;
+                border: 1px solid var(--border);
+                border-radius: 10px;
+                margin-bottom: 14px;
+                overflow: hidden;
+            }
+            .mobile-concept-card-header {
+                background: linear-gradient(135deg, var(--muted) 0%, #fff 100%);
+                padding: 12px 14px;
+                border-bottom: 1px solid var(--border);
+            }
+            .mobile-concept-card-header h4 {
+                font-size: 1rem;
+                margin: 0;
+                color: var(--accent-2);
+            }
+            .mobile-concept-card-body {
+                padding: 14px;
+            }
+            .mobile-concept-card-body p {
+                margin-bottom: 12px;
+                line-height: 1.6;
+            }
+            
+            /* Mobile comparison - stacked */
+            .mobile-comparison {
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+            }
+            .mobile-comparison-item {
+                border-radius: 8px;
+                overflow: hidden;
+            }
+            .mobile-comparison-item.do-this {
+                border: 2px solid var(--ok);
+            }
+            .mobile-comparison-item.dont-do {
+                border: 2px solid var(--bad);
+            }
+            .mobile-comparison-item .label {
+                padding: 8px 12px;
+                font-weight: 600;
+                font-size: 0.85rem;
+            }
+            .mobile-comparison-item.do-this .label {
+                background: var(--ok-soft);
+                color: var(--ok);
+            }
+            .mobile-comparison-item.dont-do .label {
+                background: var(--bad-soft);
+                color: var(--bad);
+            }
+            .mobile-comparison-item pre {
+                padding: 10px 12px;
+                margin: 0;
+                font-family: 'Courier New', monospace;
+                font-size: 0.8rem;
+                background: var(--code-bg);
+                color: var(--code-fg);
+                white-space: pre-wrap;
+            }
+            .mobile-comparison-item .why-text {
+                padding: 10px 12px;
+                background: var(--bad-soft);
+                font-size: 0.85rem;
+                color: var(--bad);
+            }
+            
+            /* ============ CBSE HORIZONTAL SCROLL QUIZ ============ */
+            .mobile-quiz-carousel {
+                position: relative;
+                overflow: hidden;
+            }
+            .mobile-quiz-nav {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 12px 0;
+                margin-bottom: 12px;
+                border-bottom: 1px solid var(--border);
+            }
+            .mobile-quiz-nav button {
+                background: var(--muted);
+                border: 1px solid var(--border);
+                padding: 10px 16px;
+                border-radius: 8px;
+                font-weight: 600;
+                font-size: 0.9rem;
+                cursor: pointer;
+                min-width: 80px;
+            }
+            .mobile-quiz-nav button:disabled {
+                opacity: 0.4;
+                cursor: not-allowed;
+            }
+            .mobile-quiz-nav button:active:not(:disabled) {
+                background: #e9ecef;
+            }
+            .mobile-quiz-counter {
+                font-weight: 700;
+                color: var(--accent-2);
+                font-size: 0.9rem;
+            }
+            .mobile-quiz-track {
+                display: flex;
+                transition: transform 0.3s ease;
+            }
+            .mobile-quiz-card {
+                flex: 0 0 100%;
+                min-width: 100%;
+                padding: 0 4px;
+            }
+            .mobile-quiz-card-inner {
+                background: #fff;
+                border: 2px solid var(--border);
+                border-radius: 12px;
+                padding: 16px;
+                min-height: 280px;
+                display: flex;
+                flex-direction: column;
+            }
+            .mobile-quiz-card .q-text {
+                font-weight: 600;
+                margin-bottom: 16px;
+                font-size: 1rem;
+                line-height: 1.5;
+                color: #1a202c;
+            }
+            .mobile-quiz-options {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                flex-grow: 1;
+            }
+            .mobile-quiz-option {
+                display: flex;
+                align-items: center;
+                padding: 14px;
+                border: 2px solid var(--border);
+                border-radius: 10px;
+                cursor: pointer;
+                transition: all 0.15s;
+                min-height: 52px;
+                background: #f8f9fa;
+            }
+            .mobile-quiz-option:active {
+                background: #e9ecef;
+            }
+            .mobile-quiz-option input {
+                width: 20px;
+                height: 20px;
+                margin-right: 12px;
+                flex-shrink: 0;
+            }
+            .mobile-quiz-option span {
+                font-size: 0.95rem;
+                line-height: 1.4;
+            }
+            .mobile-quiz-option.correct {
+                background: var(--ok-soft);
+                border-color: var(--ok);
+            }
+            .mobile-quiz-option.incorrect {
+                background: var(--bad-soft);
+                border-color: var(--bad);
+            }
+            .mobile-quiz-option.disabled {
+                pointer-events: none;
+            }
+            .mobile-quiz-feedback {
+                margin-top: 14px;
+                padding: 14px;
+                border-radius: 10px;
+                font-size: 0.9rem;
+                line-height: 1.6;
+            }
+            .mobile-quiz-feedback.correct {
+                background: var(--ok-soft);
+                border-left: 4px solid var(--ok);
+            }
+            .mobile-quiz-feedback.incorrect {
+                background: var(--bad-soft);
+                border-left: 4px solid var(--bad);
+            }
+            .mobile-quiz-feedback strong {
+                display: block;
+                margin-bottom: 6px;
+            }
+            
+            /* Mobile FAQ accordion */
+            .mobile-faq-item {
+                border-bottom: 1px solid var(--border);
+                padding: 14px 0;
+            }
+            .mobile-faq-item:last-child {
+                border-bottom: none;
+            }
+            .mobile-faq-q {
+                font-weight: 600;
+                font-size: 0.95rem;
+                color: var(--accent-2);
+                margin-bottom: 8px;
+            }
+            .mobile-faq-a {
+                font-size: 0.9rem;
+                line-height: 1.6;
+                color: #495057;
+            }
+            
+            /* Mobile glossary */
+            .mobile-glossary-item {
+                padding: 12px 0;
+                border-bottom: 1px solid var(--border);
+            }
+            .mobile-glossary-item:last-child {
+                border-bottom: none;
+            }
+            .mobile-glossary-term {
+                font-weight: 700;
+                color: var(--accent-2);
+                font-size: 0.95rem;
+                margin-bottom: 4px;
+            }
+            .mobile-glossary-def {
+                font-size: 0.9rem;
+                line-height: 1.5;
+                color: #495057;
+            }
+            
+            /* ============ CBSE SPOT THE MISTAKE - Horizontal Scroll ============ */
+            .mobile-mistakes-carousel {
+                position: relative;
+                overflow: hidden;
+            }
+            .mobile-mistakes-nav {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 12px 0;
+                margin-bottom: 12px;
+                border-bottom: 1px solid var(--border);
+            }
+            .mobile-mistakes-nav button {
+                background: var(--muted);
+                border: 1px solid var(--border);
+                padding: 10px 16px;
+                border-radius: 8px;
+                font-weight: 600;
+                font-size: 0.9rem;
+                cursor: pointer;
+                min-width: 80px;
+            }
+            .mobile-mistakes-nav button:disabled {
+                opacity: 0.4;
+                cursor: not-allowed;
+            }
+            .mobile-mistakes-counter {
+                font-weight: 700;
+                color: var(--accent-2);
+                font-size: 0.9rem;
+            }
+            .mobile-mistakes-track {
+                display: flex;
+                transition: transform 0.3s ease;
+            }
+            .mobile-mistake-card {
+                flex: 0 0 100%;
+                min-width: 100%;
+                padding: 0 4px;
+            }
+            .mobile-mistake-card-inner {
+                background: #fff;
+                border: 2px solid var(--border);
+                border-radius: 12px;
+                padding: 16px;
+                min-height: 200px;
+            }
+            .mobile-mistake-card pre {
+                background: var(--code-bg);
+                color: var(--code-fg);
+                padding: 14px;
+                border-radius: 10px;
+                font-size: 0.85rem;
+                margin-bottom: 14px;
+                white-space: pre-wrap;
+                line-height: 1.5;
+            }
+            .mobile-mistake-btn {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                width: auto;
+                margin: 0 auto;
+                background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+                color: white;
+                border: none;
+                padding: 12px 24px;
+                border-radius: 25px;
+                font-weight: 600;
+                font-size: 0.95rem;
+                cursor: pointer;
+                min-height: 44px;
+                box-shadow: 0 4px 12px rgba(253, 126, 20, 0.3);
+            }
+            .mobile-mistake-btn:active {
+                transform: scale(0.98);
+            }
+            .mobile-mistake-reveal {
+                display: none;
+                margin-top: 14px;
+                border-radius: 10px;
+                overflow: hidden;
+            }
+            .mobile-mistake-reveal.shown {
+                display: block;
+                animation: revealSlide 0.3s ease;
+            }
+            @keyframes revealSlide {
+                from { opacity: 0; transform: translateY(-10px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            .mobile-mistake-section {
+                padding: 12px;
+            }
+            .mobile-mistake-section.wrong {
+                background: var(--bad-soft);
+                border-left: 4px solid var(--bad);
+            }
+            .mobile-mistake-section.right {
+                background: var(--ok-soft);
+                border-left: 4px solid var(--ok);
+            }
+            .mobile-mistake-section h5 {
+                font-size: 0.85rem;
+                margin-bottom: 6px;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+            .mobile-mistake-section.wrong h5 { color: var(--bad); }
+            .mobile-mistake-section.right h5 { color: var(--ok); }
+            .mobile-mistake-section p {
+                font-size: 0.9rem;
+                line-height: 1.5;
+                margin: 0;
+            }
+            .mobile-mistake-section pre {
+                background: var(--code-bg);
+                color: var(--code-fg);
+                padding: 10px;
+                border-radius: 6px;
+                font-size: 0.8rem;
+                margin: 8px 0 0 0;
+            }
+            
+            /* Mobile sticky bottom navigation - Hidden in split-screen */
+            .mobile-bottom-nav {
+                display: none !important;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: #fff;
+                border-top: 1px solid var(--border);
+                padding: 12px 16px;
+                gap: 10px;
+                z-index: 100;
+                box-shadow: 0 -4px 12px rgba(0,0,0,0.08);
+            }
+            .mobile-bottom-nav .nav-btn {
+                flex: 1;
+                min-height: 48px;
+                border: 1px solid var(--border);
+                background: var(--muted);
+                border-radius: 10px;
+                font-weight: 600;
+                font-size: 0.9rem;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 6px;
+                color: var(--text);
+                transition: all 0.15s;
+            }
+            .mobile-bottom-nav .nav-btn:active {
+                background: #e9ecef;
+                transform: scale(0.98);
+            }
+            .mobile-bottom-nav .nav-btn.primary {
+                background: var(--accent);
+                color: white;
+                border-color: var(--accent);
+            }
+            .mobile-bottom-nav .nav-btn.primary:active {
+                background: var(--accent-2);
+            }
+            .mobile-bottom-nav .topic-indicator {
+                flex: 0 0 auto;
+                min-width: 50px;
+                text-align: center;
+                font-weight: 700;
+                font-size: 0.85rem;
+                color: var(--accent-2);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            /* Hide footer on mobile when in mobile view */
+            body.mobile-active .site-footer {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 400px) {
+            .mobile-sticky-header {
+                padding: 10px 12px;
+            }
+            .mobile-intro-banner {
+                padding: 16px 12px;
+            }
+            .mobile-intro-banner h1 {
+                font-size: 1.2rem;
+            }
+            .mobile-accordion-header {
+                padding: 14px 12px;
+            }
+            .mobile-accordion-content-inner {
+                padding: 14px 12px;
+            }
+            .mobile-bottom-nav {
+                padding: 10px 12px;
+            }
+            .mobile-bottom-nav .nav-btn {
+                font-size: 0.85rem;
+            }
+        }
     </style>
 </head>
 <body>
+
+    <!-- Mobile Code Tooltip Overlay (HOP 2) -->
+    <div class="mobile-code-tooltip" id="mobileCodeTooltip">
+        <div class="mobile-code-tooltip-content">
+            <div class="mobile-code-tooltip-header">
+                <h4 id="mobileTooltipLineNum">Line 1</h4>
+                <button class="mobile-code-tooltip-close" id="mobileTooltipClose" aria-label="Close">&times;</button>
+            </div>
+            <div class="mobile-code-tooltip-body" id="mobileTooltipBody">
+                <!-- Content populated by JavaScript -->
+            </div>
+        </div>
+    </div>
 
     <header class="site-header">
         <a href="#" class="logo">CBSE Python Runner</a>
@@ -170,6 +1377,140 @@
     <footer class="site-footer">
         <p>© 2025 Beyond Dictionary. For CBSE Class 11/12 Computer Science.</p>
     </footer>
+
+    <!-- ============================================
+         MOBILE 2-SCREEN LAYOUT
+         ============================================ -->
+    
+    <!-- SCREEN 1: START SCREEN -->
+    <div class="mobile-start-screen" id="mobileStartScreen">
+        <div class="start-emoji">🐍</div>
+        <h1 class="start-title">Input, Print & Variables</h1>
+        <p class="start-subtitle">Your First Python Program</p>
+        
+        <div class="start-objectives">
+            <h3>What You'll Master</h3>
+            <ul>
+                <li>Get input from users</li>
+                <li>Store data in variables</li>
+                <li>Display results with print()</li>
+                <li>Convert data types</li>
+            </ul>
+        </div>
+        
+        <div class="start-meta">
+            <span>⏱️ 10 min</span>
+            <span>📚 Beginner</span>
+        </div>
+        
+        <button class="start-btn" id="startLearningBtn" type="button">
+            <span>🚀 Start Learning →</span>
+        </button>
+        
+        <p class="start-preview">4 concepts • 12 quiz questions • 25 FAQs</p>
+    </div>
+    
+    <!-- SCREEN 2: ARTICLE SCREEN -->
+    <div class="mobile-article-screen" id="mobileArticleScreen">
+        <div class="article-header">
+            <button class="article-back-btn" id="articleBackBtn">←</button>
+            <span class="article-title">Input, Print & Variables</span>
+        </div>
+        
+        <div class="article-content" id="articleContent">
+            <!-- Accordion 1: Purpose -->
+            <div class="article-accordion">
+                <button class="article-accordion-header expanded" data-accordion="purpose">
+                    <span class="acc-icon">🎯</span>
+                    <span class="acc-title">The Purpose</span>
+                    <span class="chevron">▼</span>
+                </button>
+                <div class="article-accordion-content expanded">
+                    <div class="article-accordion-content-inner" id="mobilePurposeContent"></div>
+                </div>
+            </div>
+            
+            <!-- Accordion 2: The Code -->
+            <div class="article-accordion">
+                <button class="article-accordion-header" data-accordion="code">
+                    <span class="acc-icon">💻</span>
+                    <span class="acc-title">The Code</span>
+                    <span class="chevron">▼</span>
+                </button>
+                <div class="article-accordion-content">
+                    <div class="article-accordion-content-inner" id="mobileCodeContent"></div>
+                </div>
+            </div>
+            
+            <!-- Accordion 3: Line-by-Line -->
+            <div class="article-accordion">
+                <button class="article-accordion-header" data-accordion="linebyline">
+                    <span class="acc-icon">📖</span>
+                    <span class="acc-title">Line-by-Line</span>
+                    <span class="acc-badge">10 lines</span>
+                    <span class="chevron">▼</span>
+                </button>
+                <div class="article-accordion-content">
+                    <div class="article-accordion-content-inner" id="mobileLineByLineContent"></div>
+                </div>
+            </div>
+            
+            <!-- Accordion 4: Concepts -->
+            <div class="article-accordion">
+                <button class="article-accordion-header" data-accordion="concepts">
+                    <span class="acc-icon">💡</span>
+                    <span class="acc-title">Concepts</span>
+                    <span class="acc-badge">4 topics</span>
+                    <span class="chevron">▼</span>
+                </button>
+                <div class="article-accordion-content">
+                    <div class="article-accordion-content-inner" id="mobileConceptsContent"></div>
+                </div>
+            </div>
+            
+            <!-- Accordion 5: Spot the Mistake -->
+            <div class="article-accordion">
+                <button class="article-accordion-header" data-accordion="mistakes">
+                    <span class="acc-icon">🔍</span>
+                    <span class="acc-title">Spot the Mistake</span>
+                    <span class="acc-badge">10 challenges</span>
+                    <span class="chevron">▼</span>
+                </button>
+                <div class="article-accordion-content">
+                    <div class="article-accordion-content-inner" id="mobileMistakesContent"></div>
+                </div>
+            </div>
+            
+            <!-- Accordion 6: Quiz -->
+            <div class="article-accordion">
+                <button class="article-accordion-header" data-accordion="quiz">
+                    <span class="acc-icon">✅</span>
+                    <span class="acc-title">Mastery Quiz</span>
+                    <span class="acc-badge">12 questions</span>
+                    <span class="chevron">▼</span>
+                </button>
+                <div class="article-accordion-content">
+                    <div class="article-accordion-content-inner" id="mobileQuizContent"></div>
+                </div>
+            </div>
+            
+            <!-- Accordion 7: FAQ & Glossary -->
+            <div class="article-accordion">
+                <button class="article-accordion-header" data-accordion="reference">
+                    <span class="acc-icon">❓</span>
+                    <span class="acc-title">FAQ & Glossary</span>
+                    <span class="acc-badge">45 items</span>
+                    <span class="chevron">▼</span>
+                </button>
+                <div class="article-accordion-content">
+                    <div class="article-accordion-content-inner" id="mobileReferenceContent"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Confetti Container -->
+    <div class="confetti" id="confettiContainer"></div>
 
     <div id="code-tooltip" class="code-tooltip"></div>
 
@@ -449,7 +1790,55 @@
             const tooltip = document.getElementById('code-tooltip');
             const codeContainer = document.getElementById('code-viewer');
             
+            // Mobile detection
+            function isMobile() {
+                return window.innerWidth <= 768 || 'ontouchstart' in window;
+            }
+            
+            // Mobile tooltip elements
+            const mobileTooltip = document.getElementById('mobileCodeTooltip');
+            const mobileTooltipLineNum = document.getElementById('mobileTooltipLineNum');
+            const mobileTooltipBody = document.getElementById('mobileTooltipBody');
+            const mobileTooltipClose = document.getElementById('mobileTooltipClose');
+            
+            // Show mobile tooltip
+            function showMobileTooltip(lineNum, explanation) {
+                mobileTooltipLineNum.textContent = `Line ${lineNum}`;
+                mobileTooltipBody.innerHTML = explanation;
+                mobileTooltip.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+            
+            // Hide mobile tooltip
+            function hideMobileTooltip() {
+                mobileTooltip.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+            
+            // Mobile close button
+            if (mobileTooltipClose) {
+                mobileTooltipClose.addEventListener('click', hideMobileTooltip);
+            }
+            
+            // Close on backdrop click
+            if (mobileTooltip) {
+                mobileTooltip.addEventListener('click', (e) => {
+                    if (e.target === mobileTooltip) {
+                        hideMobileTooltip();
+                    }
+                });
+            }
+            
+            // Close on Escape
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && mobileTooltip?.classList.contains('active')) {
+                    hideMobileTooltip();
+                }
+            });
+            
+            // Desktop: hover tooltips
             codeContainer.addEventListener('mouseover', (e) => {
+                if (isMobile()) return;
                 if (e.target.classList.contains('code-line')) {
                     const lineNum = e.target.dataset.line;
                     const explanation = samples[0].explain.line_by_line[lineNum];
@@ -461,6 +1850,7 @@
             });
 
             codeContainer.addEventListener('mousemove', (e) => {
+                if (isMobile()) return;
                 if (tooltip.style.opacity === '1') {
                     const x = e.clientX;
                     const y = e.clientY;
@@ -477,8 +1867,35 @@
             });
 
             codeContainer.addEventListener('mouseout', (e) => {
+                if (isMobile()) return;
                 if (e.target.classList.contains('code-line')) {
                     tooltip.style.opacity = '0';
+                }
+            });
+            
+            // Mobile: tap to show bottom sheet
+            codeContainer.addEventListener('click', (e) => {
+                if (!isMobile()) return;
+                if (e.target.classList.contains('code-line')) {
+                    const lineNum = e.target.dataset.line;
+                    const explanation = samples[0].explain.line_by_line[lineNum];
+                    if (explanation) {
+                        showMobileTooltip(lineNum, explanation);
+                    }
+                }
+            });
+            
+            // Touch-specific for better mobile UX
+            codeContainer.addEventListener('touchend', (e) => {
+                if (!isMobile()) return;
+                const target = e.target;
+                if (target.classList.contains('code-line')) {
+                    e.preventDefault();
+                    const lineNum = target.dataset.line;
+                    const explanation = samples[0].explain.line_by_line[lineNum];
+                    if (explanation) {
+                        showMobileTooltip(lineNum, explanation);
+                    }
                 }
             });
         }
@@ -499,6 +1916,530 @@
                 });
             });
         }
+
+        // ============================================
+        // MOBILE ACCORDION EXPERIENCE
+        // ============================================
+        
+        function isMobileView() {
+            return window.innerWidth <= 768;
+        }
+        
+        function initMobileView() {
+            if (!isMobileView()) return;
+            
+            document.body.classList.add('mobile-active');
+            
+            // Setup start screen button
+            const startBtn = document.getElementById('startLearningBtn');
+            const backBtn = document.getElementById('articleBackBtn');
+            const startScreen = document.getElementById('mobileStartScreen');
+            const articleScreen = document.getElementById('mobileArticleScreen');
+            
+            if (startBtn) {
+                startBtn.onclick = function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    // Show confetti
+                    createConfetti();
+                    
+                    // Transition to article screen
+                    startScreen.style.display = 'none';
+                    articleScreen.style.display = 'flex';
+                    
+                    // Render content
+                    const sample = samples[0];
+                    if (sample) {
+                        renderMobileArticleContent(sample);
+                    }
+                    
+                    window.scrollTo({ top: 0 });
+                };
+            }
+            
+            if (backBtn) {
+                backBtn.onclick = function(e) {
+                    e.preventDefault();
+                    articleScreen.style.display = 'none';
+                    startScreen.style.display = 'flex';
+                    window.scrollTo({ top: 0 });
+                };
+            }
+            
+            setupArticleAccordions();
+            setupMobileTooltipClose();
+        }
+        
+        function createConfetti() {
+            const container = document.getElementById('confettiContainer');
+            const colors = ['#fd7e14', '#16a34a', '#3b82f6', '#ec4899', '#fbbf24'];
+            
+            for (let i = 0; i < 50; i++) {
+                const piece = document.createElement('div');
+                piece.className = 'confetti-piece';
+                piece.style.left = Math.random() * 100 + '%';
+                piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+                piece.style.animationDelay = Math.random() * 0.5 + 's';
+                piece.style.animationDuration = (2 + Math.random()) + 's';
+                container.appendChild(piece);
+                
+                setTimeout(() => piece.remove(), 3500);
+            }
+        }
+        
+        function setupArticleAccordions() {
+            document.querySelectorAll('.article-accordion-header').forEach(header => {
+                header.addEventListener('click', () => {
+                    const content = header.nextElementSibling;
+                    const isExpanded = header.classList.contains('expanded');
+                    
+                    if (isExpanded) {
+                        header.classList.remove('expanded');
+                        content.classList.remove('expanded');
+                    } else {
+                        header.classList.add('expanded');
+                        content.classList.add('expanded');
+                    }
+                });
+            });
+        }
+        
+        function setupMobileTooltipClose() {
+            const mobileTooltip = document.getElementById('mobileCodeTooltip');
+            const closeBtn = document.getElementById('mobileTooltipClose');
+            
+            if (closeBtn) {
+                closeBtn.addEventListener('click', () => {
+                    mobileTooltip.classList.remove('active');
+                    document.body.style.overflow = '';
+                });
+            }
+            
+            if (mobileTooltip) {
+                mobileTooltip.addEventListener('click', (e) => {
+                    if (e.target === mobileTooltip) {
+                        mobileTooltip.classList.remove('active');
+                        document.body.style.overflow = '';
+                    }
+                });
+            }
+        }
+        
+        function renderMobileArticleContent(sample) {
+            const code = sample.code;
+            const lines = code.split('\n');
+            const explain = sample.explain;
+            
+            // 1. PURPOSE SECTION
+            document.getElementById('mobilePurposeContent').innerHTML = `
+                <div class="purpose-content">
+                    <h4>🎯 What We're Building</h4>
+                    <p>${explain.introduction}</p>
+                    
+                    <h4 style="margin-top: 20px;">📋 This Program Will:</h4>
+                    <ul class="purpose-list">
+                        <li><span class="num">1</span>Ask the user for their name</li>
+                        <li><span class="num">2</span>Ask for their age</li>
+                        <li><span class="num">3</span>Convert the age to a number</li>
+                        <li><span class="num">4</span>Calculate their birth year</li>
+                        <li><span class="num">5</span>Display a personalized greeting</li>
+                    </ul>
+                    
+                    <h4 style="margin-top: 20px;">🧠 Core Concepts You'll Learn:</h4>
+                    <p><strong>input()</strong> → <strong>variables</strong> → <strong>int()</strong> → <strong>print()</strong></p>
+                </div>
+            `;
+            
+            // 2. CODE SECTION
+            const codeHtml = lines.map((line, i) => 
+                `<span class="line-num">${i + 1}</span>${escapeHtml(line) || ' '}\n`
+            ).join('');
+            
+            document.getElementById('mobileCodeContent').innerHTML = `
+                <div class="code-section-display">
+                    <pre>${codeHtml}</pre>
+                </div>
+                <div class="output-section-display">
+                    <h5>🖥️ Expected Output</h5>
+                    <pre>${sample.expected_output}</pre>
+                </div>
+            `;
+            
+            // 3. LINE-BY-LINE SECTION
+            const lineExplanations = Object.entries(explain.line_by_line);
+            let currentLineIdx = 0;
+            
+            document.getElementById('mobileLineByLineContent').innerHTML = `
+                <div class="line-explanation-carousel">
+                    <div class="line-exp-nav">
+                        <button id="lineExpPrev" disabled>← Prev</button>
+                        <span class="line-exp-counter" id="lineExpCounter">Line 1 of ${lineExplanations.length}</span>
+                        <button id="lineExpNext">Next →</button>
+                    </div>
+                    <div id="lineExpContent">
+                        <div class="line-exp-card">
+                            <code>${escapeHtml(lines[parseInt(lineExplanations[0][0]) - 1] || '')}</code>
+                        </div>
+                        <div class="line-exp-text">${lineExplanations[0][1]}</div>
+                    </div>
+                </div>
+            `;
+            
+            // Setup line-by-line navigation
+            setTimeout(() => setupLineByLineNav(lines, lineExplanations), 100);
+            
+            // Render concepts
+            let conceptsHtml = `<p style="margin-bottom: 16px; line-height: 1.6;">${explain.introduction}</p>`;
+            explain.concept_cards.forEach(card => {
+                conceptsHtml += `
+                    <div class="mobile-concept-card">
+                        <div class="mobile-concept-card-header">
+                            <h4>${card.concept}</h4>
+                        </div>
+                        <div class="mobile-concept-card-body">
+                            <p>${card.explanation}</p>
+                            <div class="mobile-comparison">
+                                ${card.dos.map(d => `
+                                    <div class="mobile-comparison-item do-this">
+                                        <div class="label">✅ ${d.title}</div>
+                                        <pre>${escapeHtml(d.code)}</pre>
+                                    </div>
+                                `).join('')}
+                                ${card.donts.map(d => `
+                                    <div class="mobile-comparison-item dont-do">
+                                        <div class="label">❌ ${d.title}</div>
+                                        <pre>${escapeHtml(d.code)}</pre>
+                                        <div class="why-text">${d.why}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            document.getElementById('mobileConceptsContent').innerHTML = conceptsHtml;
+            
+            // Render mistakes - CBSE Horizontal Scroll
+            const mistakesData = explain.spot_the_mistake;
+            let mistakesHtml = `
+                <div class="mobile-mistakes-carousel">
+                    <div class="mobile-mistakes-nav">
+                        <button id="mistakesPrev" disabled>← Prev</button>
+                        <span class="mobile-mistakes-counter">1 / ${mistakesData.length}</span>
+                        <button id="mistakesNext">Next →</button>
+                    </div>
+                    <div class="mobile-mistakes-track" id="mistakesTrack">
+                        ${mistakesData.map((item, idx) => `
+                            <div class="mobile-mistake-card">
+                                <div class="mobile-mistake-card-inner">
+                                    <pre>${escapeHtml(item.code)}</pre>
+                                    <button class="mobile-mistake-btn" data-idx="${idx}">🔍 Reveal Mistake</button>
+                                    <div class="mobile-mistake-reveal" id="mistake-reveal-${idx}">
+                                        <div class="mobile-mistake-section wrong">
+                                            <h5>❌ The Mistake</h5>
+                                            <p>${item.mistake}</p>
+                                        </div>
+                                        <div class="mobile-mistake-section right">
+                                            <h5>✅ The Fix</h5>
+                                            <pre>${escapeHtml(item.fix)}</pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            document.getElementById('mobileMistakesContent').innerHTML = mistakesHtml;
+            setupMistakesCarousel(mistakesData.length);
+            
+            // Render quiz - CBSE Horizontal Scroll
+            const quizData = explain.quiz;
+            let quizHtml = `
+                <div class="mobile-quiz-carousel">
+                    <div class="mobile-quiz-nav">
+                        <button id="quizPrev" disabled>← Prev</button>
+                        <span class="mobile-quiz-counter">Q1 / ${quizData.length}</span>
+                        <button id="quizNext">Next →</button>
+                    </div>
+                    <div class="mobile-quiz-track" id="quizTrack">
+                        ${quizData.map((q, idx) => `
+                            <div class="mobile-quiz-card" data-qidx="${idx}" data-correct="${q.correct}">
+                                <div class="mobile-quiz-card-inner">
+                                    <div class="q-text">Q${idx + 1}: ${q.q}</div>
+                                    <div class="mobile-quiz-options">
+                                        ${q.options.map((opt, optIdx) => `
+                                            <label class="mobile-quiz-option" data-optidx="${optIdx}">
+                                                <input type="radio" name="mq-${idx}" value="${optIdx}">
+                                                <span>${opt}</span>
+                                            </label>
+                                        `).join('')}
+                                    </div>
+                                    <div class="mobile-quiz-feedback" data-feedback="${q.feedback.replace(/"/g, '&quot;')}"></div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            document.getElementById('mobileQuizContent').innerHTML = quizHtml;
+            setupQuizCarousel(quizData.length);
+            
+            // Render FAQ & Glossary combined
+            let referenceHtml = `
+                <h4 style="color: var(--accent-2); margin-bottom: 16px;">❓ Frequently Asked Questions</h4>
+            `;
+            explain.faqs.slice(0, 10).forEach(item => {
+                referenceHtml += `
+                    <div class="mobile-faq-item">
+                        <div class="mobile-faq-q">${item.q}</div>
+                        <div class="mobile-faq-a">${item.a}</div>
+                    </div>
+                `;
+            });
+            
+            referenceHtml += `<h4 style="color: var(--accent-2); margin: 24px 0 16px;">📖 Glossary</h4>`;
+            explain.glossary.forEach(item => {
+                referenceHtml += `
+                    <div class="mobile-glossary-item">
+                        <div class="mobile-glossary-term">${item.term}</div>
+                        <div class="mobile-glossary-def">${item.def}</div>
+                    </div>
+                `;
+            });
+            document.getElementById('mobileReferenceContent').innerHTML = referenceHtml;
+        }
+        
+        function setupLineByLineNav(lines, lineExplanations) {
+            let currentIdx = 0;
+            const prevBtn = document.getElementById('lineExpPrev');
+            const nextBtn = document.getElementById('lineExpNext');
+            const counter = document.getElementById('lineExpCounter');
+            const content = document.getElementById('lineExpContent');
+            
+            if (!prevBtn || !nextBtn) return;
+            
+            function updateLineExp() {
+                const [lineNum, explanation] = lineExplanations[currentIdx];
+                const lineCode = lines[parseInt(lineNum) - 1] || '';
+                
+                content.innerHTML = `
+                    <div class="line-exp-card">
+                        <code>Line ${lineNum}: ${escapeHtml(lineCode)}</code>
+                    </div>
+                    <div class="line-exp-text">${explanation}</div>
+                `;
+                
+                counter.textContent = `Line ${currentIdx + 1} of ${lineExplanations.length}`;
+                prevBtn.disabled = currentIdx === 0;
+                nextBtn.disabled = currentIdx === lineExplanations.length - 1;
+            }
+            
+            prevBtn.addEventListener('click', () => {
+                if (currentIdx > 0) {
+                    currentIdx--;
+                    updateLineExp();
+                }
+            });
+            
+            nextBtn.addEventListener('click', () => {
+                if (currentIdx < lineExplanations.length - 1) {
+                    currentIdx++;
+                    updateLineExp();
+                }
+            });
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        function setupMobileAccordions() {
+            const accordionHeaders = document.querySelectorAll('.mobile-accordion-header');
+            
+            accordionHeaders.forEach(header => {
+                header.addEventListener('click', () => {
+                    const content = header.nextElementSibling;
+                    const isExpanded = header.classList.contains('expanded');
+                    
+                    if (isExpanded) {
+                        header.classList.remove('expanded');
+                        content.classList.remove('expanded');
+                    } else {
+                        header.classList.add('expanded');
+                        content.classList.add('expanded');
+                    }
+                });
+            });
+        }
+        
+        // Enhanced quiz feedback with 30-50 word explanations
+        const enhancedFeedback = {
+            0: "The input() function ALWAYS returns a string type, regardless of what the user types. This is a fundamental concept in Python—even if users type '16', it's stored as the text \"16\", not the number 16. Always use int() or float() to convert when needed.",
+            1: "Python cannot combine strings and integers with the + operator directly. The expression \"Age: \" + 16 mixes text and numbers, causing a TypeError. Use str(16) to convert the number, or use comma-separation in print() which handles this automatically.",
+            2: "The = symbol is Python's assignment operator—it stores a value in a variable. For equality comparison, Python uses == (double equals). This distinction is critical: x = 5 assigns 5 to x, while x == 5 checks if x equals 5.",
+            3: "Python variable names must start with a letter or underscore, never a number. They cannot contain spaces or be reserved keywords like 'for'. The name user_name follows Python's naming conventions perfectly using snake_case.",
+            4: "The int() function expects strings containing whole numbers only. The decimal point in \"25.5\" makes it invalid for int(). You must first use float(\"25.5\") to get 25.5, then optionally int() to get 25 by truncation.",
+            5: "Python's print() function accepts multiple arguments separated by commas. Each comma-separated item is printed with a space between them automatically. This is cleaner than string concatenation and handles mixed types effortlessly.",
+            6: "Python treats uppercase and lowercase letters as completely different. The variable myVar is NOT the same as myvar, Myvar, or MYVAR. This case-sensitivity extends to function names, keywords, and all identifiers.",
+            7: "The * operator with strings performs repetition, not multiplication. \"Hello\" * 3 creates three consecutive copies: HelloHelloHello. This is a powerful string operation for creating repeated patterns or separators.",
+            8: "The str() function converts any value to its string representation. Numbers become text (42 → \"42\"), making them safe for concatenation. It's the opposite of int() and float() which convert strings to numbers.",
+            9: "The # symbol starts a single-line comment in Python. Everything after # on that line is ignored by the interpreter. Comments document code for humans but have zero effect on program execution.",
+            10: "Variables serve as named containers in computer memory. When you write name = \"Amit\", Python allocates memory to store \"Amit\" and labels it 'name' for future reference. Variables make data reusable and meaningful.",
+            11: "Anything enclosed in quotes—single or double—is a string in Python. Even if it looks like a number, quotes make it text. So x = \"5\" creates a string, while x = 5 (no quotes) creates an integer."
+        };
+        
+        function setupMistakesCarousel(total) {
+            let current = 0;
+            const track = document.getElementById('mistakesTrack');
+            const prevBtn = document.getElementById('mistakesPrev');
+            const nextBtn = document.getElementById('mistakesNext');
+            const counter = document.querySelector('.mobile-mistakes-counter');
+            
+            function updateMistakes() {
+                track.style.transform = `translateX(-${current * 100}%)`;
+                counter.textContent = `${current + 1} / ${total}`;
+                prevBtn.disabled = current === 0;
+                nextBtn.disabled = current === total - 1;
+            }
+            
+            prevBtn.addEventListener('click', () => { if (current > 0) { current--; updateMistakes(); } });
+            nextBtn.addEventListener('click', () => { if (current < total - 1) { current++; updateMistakes(); } });
+            
+            // Setup reveal buttons
+            document.querySelectorAll('.mobile-mistake-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const idx = btn.dataset.idx;
+                    const reveal = document.getElementById(`mistake-reveal-${idx}`);
+                    reveal.classList.toggle('shown');
+                    btn.innerHTML = reveal.classList.contains('shown') ? '👁️ Hide Answer' : '🔍 Reveal Mistake';
+                });
+            });
+        }
+        
+        function setupQuizCarousel(total) {
+            let current = 0;
+            const track = document.getElementById('quizTrack');
+            const prevBtn = document.getElementById('quizPrev');
+            const nextBtn = document.getElementById('quizNext');
+            const counter = document.querySelector('.mobile-quiz-counter');
+            
+            function updateQuiz() {
+                track.style.transform = `translateX(-${current * 100}%)`;
+                counter.textContent = `Q${current + 1} / ${total}`;
+                prevBtn.disabled = current === 0;
+                nextBtn.disabled = current === total - 1;
+            }
+            
+            prevBtn.addEventListener('click', () => { if (current > 0) { current--; updateQuiz(); } });
+            nextBtn.addEventListener('click', () => { if (current < total - 1) { current++; updateQuiz(); } });
+            
+            // Setup quiz options
+            document.querySelectorAll('.mobile-quiz-card').forEach((card, qIdx) => {
+                const options = card.querySelectorAll('.mobile-quiz-option');
+                const correctIdx = parseInt(card.dataset.correct);
+                const feedbackDiv = card.querySelector('.mobile-quiz-feedback');
+                
+                options.forEach(opt => {
+                    opt.addEventListener('click', () => {
+                        if (opt.classList.contains('disabled')) return;
+                        
+                        const selectedIdx = parseInt(opt.dataset.optidx);
+                        options.forEach(o => o.classList.add('disabled'));
+                        
+                        const feedback = enhancedFeedback[qIdx] || feedbackDiv.dataset.feedback;
+                        
+                        if (selectedIdx === correctIdx) {
+                            opt.classList.add('correct');
+                            feedbackDiv.classList.add('correct');
+                            feedbackDiv.innerHTML = `<strong>✅ Correct!</strong> ${feedback}`;
+                        } else {
+                            opt.classList.add('incorrect');
+                            options[correctIdx].classList.add('correct');
+                            feedbackDiv.classList.add('incorrect');
+                            feedbackDiv.innerHTML = `<strong>❌ Not quite.</strong> ${feedback}`;
+                        }
+                        feedbackDiv.style.display = 'block';
+                    });
+                });
+            });
+        }
+        
+        function setupFullscreenCode() {
+            const expandBtn = document.getElementById('expandCodeBtn');
+            const closeBtn = document.getElementById('closeFullscreenCode');
+            const overlay = document.getElementById('fullscreenCodeOverlay');
+            
+            if (expandBtn) {
+                expandBtn.addEventListener('click', () => {
+                    overlay.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                });
+            }
+            
+            if (closeBtn) {
+                closeBtn.addEventListener('click', () => {
+                    overlay.classList.remove('active');
+                    document.body.style.overflow = '';
+                });
+            }
+            
+            // Close on escape
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && overlay.classList.contains('active')) {
+                    overlay.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            });
+            
+            // Setup tap-to-explain for code lines in both views
+            [document.getElementById('mobileCodeDisplay'), document.getElementById('fullscreenCodeBody')].forEach(container => {
+                if (container) {
+                    container.addEventListener('click', (e) => {
+                        const line = e.target.closest('.code-line');
+                        if (line) {
+                            const lineNum = line.dataset.line;
+                            const explanation = samples[0].explain.line_by_line[lineNum];
+                            if (explanation) {
+                                showMobileTooltip(lineNum, explanation);
+                            }
+                        }
+                    });
+                }
+            });
+        }
+        
+        function showMobileTooltip(lineNum, explanation) {
+            const mobileTooltip = document.getElementById('mobileCodeTooltip');
+            const mobileTooltipLineNum = document.getElementById('mobileTooltipLineNum');
+            const mobileTooltipBody = document.getElementById('mobileTooltipBody');
+            
+            if (mobileTooltip && mobileTooltipLineNum && mobileTooltipBody) {
+                mobileTooltipLineNum.textContent = `Line ${lineNum}`;
+                mobileTooltipBody.innerHTML = explanation;
+                mobileTooltip.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+        
+        // Old setupMobileCodeTooltips removed - functionality moved to setupFullscreenCode and setupMobileTooltipClose
+        
+        // Initialize mobile view on load
+        document.addEventListener('DOMContentLoaded', () => {
+            initMobileView();
+        });
+        
+        // Handle resize
+        window.addEventListener('resize', () => {
+            if (isMobileView()) {
+                document.body.classList.add('mobile-active');
+            } else {
+                document.body.classList.remove('mobile-active');
+            }
+        });
     </script>
 
 </body>

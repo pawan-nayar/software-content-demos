@@ -41,6 +41,10 @@
       background: var(--bg);
       color: var(--text);
       line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      scroll-behavior: smooth;
+      overflow-x: hidden;
     }
 
     .container {
@@ -225,6 +229,8 @@
       gap: 8px;
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
+      flex-wrap: wrap;
+      justify-content: center;
     }
 
     .nav-tab {
@@ -398,11 +404,13 @@
       background: #fff;
       margin: 20px 0;
       overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
+      min-width: 500px;
     }
 
     th, td {
@@ -416,10 +424,36 @@
       background: var(--muted);
       font-weight: 600;
       font-size: 0.95rem;
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
 
     tr:nth-child(even) {
       background: #fafafa;
+    }
+
+    /* Mobile table scrolling hint */
+    @media (max-width: 768px) {
+      .table-wrap::after {
+        content: '← Scroll →';
+        position: absolute;
+        bottom: 8px;
+        right: 8px;
+        background: var(--accent);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        pointer-events: none;
+        opacity: 0.7;
+      }
+
+      .table-wrap:hover::after {
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
     }
 
     /* ================= Feature Lists ================= */
@@ -473,6 +507,14 @@
       margin: 20px 0;
     }
 
+    /* Mobile grid optimization */
+    @media (max-width: 600px) {
+      .grid-2, .grid-3 {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+    }
+
     /* ================= Workflow Diagram Section ================= */
     .workflow-container {
       display: flex;
@@ -488,6 +530,13 @@
       border: 1px solid var(--border);
       border-radius: 12px;
       padding: 20px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .workflow-visual svg {
+      max-width: 100%;
+      height: auto;
     }
 
     .workflow-info {
@@ -503,11 +552,16 @@
     .workflow-step {
       cursor: pointer;
       transition: all 0.3s ease;
+      -webkit-tap-highlight-color: rgba(253, 126, 20, 0.2);
     }
 
     .workflow-step:hover {
       filter: brightness(1.1);
       transform: translateY(-1px);
+    }
+
+    .workflow-step:active {
+      filter: brightness(0.95);
     }
 
     .default-message {
@@ -526,6 +580,21 @@
       color: var(--accent);
     }
 
+    /* Workflow SVG responsive text sizing */
+    @media (max-width: 480px) {
+      .workflow-visual {
+        padding: 12px;
+      }
+      
+      .workflow-visual svg text {
+        font-size: 11px;
+      }
+      
+      .workflow-visual svg {
+        min-width: 320px;
+      }
+    }
+
     /* ================= Code Inline ================= */
     code {
       background: #f1f3f5;
@@ -536,7 +605,9 @@
       color: #e03131;
     }
 
-    /* ================= Mobile Optimizations ================= */
+    /* ================= Mobile Responsive Design ================= */
+    
+    /* Tablet (≤768px) */
     @media (max-width: 768px) {
       .container {
         padding: 16px;
@@ -546,25 +617,100 @@
         padding: 12px 16px;
       }
 
+      .site-header.scrolled {
+        padding: 8px 16px;
+      }
+
+      .logo {
+        font-size: 1.1rem;
+      }
+
+      .site-header.scrolled .logo {
+        font-size: 0.95rem;
+      }
+
+      .tagline {
+        font-size: 0.85rem;
+      }
+
+      .nav-tabs {
+        top: 52px;
+      }
+
+      body.header-scrolled .nav-tabs {
+        top: 40px;
+      }
+
       .nav-tabs-inner {
         padding: 0 16px;
+        gap: 6px;
+        overflow-x: visible;
+        flex-wrap: wrap;
+      }
+
+      .nav-tab {
+        padding: 8px 12px;
+        font-size: 0.85rem;
+        flex: 1 1 auto;
+        min-width: calc(50% - 8px);
+        text-align: center;
       }
 
       .card {
         padding: 16px;
+        margin-bottom: 20px;
       }
 
       h1 {
         margin-bottom: 12px;
         padding-bottom: 8px;
+        border-bottom-width: 2px;
       }
 
       h2 {
         margin: 32px 0 12px;
+        padding-bottom: 6px;
+      }
+
+      h3 {
+        margin-top: 24px;
+        margin-bottom: 10px;
+      }
+
+      h4 {
+        margin-bottom: 8px;
+      }
+
+      p {
+        margin-bottom: 14px;
+      }
+
+      ul, ol {
+        margin-left: 20px;
+        margin-bottom: 16px;
+      }
+
+      li {
+        margin-bottom: 8px;
+        padding-left: 0.25em;
+      }
+
+      .intro-box {
+        padding: 16px;
+        margin: 16px 0;
       }
 
       .workflow-container {
         flex-direction: column;
+        gap: 16px;
+      }
+
+      .workflow-visual, .workflow-info {
+        min-width: 100%;
+      }
+
+      .workflow-info {
+        min-height: 300px;
       }
 
       .terminal-demo {
@@ -572,13 +718,528 @@
         padding: 12px;
       }
 
+      .terminal-header {
+        padding: 6px 10px;
+        margin: -12px -12px 10px -12px;
+        font-size: 0.8rem;
+      }
+
       .example-file, .info-box, .warning-box, .success-box {
         padding: 12px;
+        margin: 12px 0;
+      }
+
+      .example-file pre {
+        font-size: 0.85rem;
+        padding: 10px;
+      }
+
+      .table-wrap {
+        margin: 16px 0;
       }
 
       th, td {
         padding: 8px 10px;
         font-size: 0.9rem;
+      }
+
+      .grid-2, .grid-3 {
+        gap: 12px;
+        margin: 16px 0;
+      }
+
+      .step-number {
+        width: 28px;
+        height: 28px;
+        line-height: 28px;
+        font-size: 0.9rem;
+        margin-right: 8px;
+      }
+
+      .site-footer {
+        padding: 32px 16px;
+        margin-top: 48px;
+      }
+
+      .footer-love {
+        font-size: 1rem;
+      }
+
+      .footer-signature {
+        font-size: 0.9rem;
+      }
+    }
+
+    /* Large Phone (≤600px) */
+    @media (max-width: 600px) {
+      .container {
+        padding: 14px;
+      }
+
+      .site-header {
+        padding: 10px 14px;
+      }
+
+      .logo {
+        font-size: 1rem;
+        margin-bottom: 6px;
+      }
+
+      .site-header.scrolled .logo {
+        font-size: 0.9rem;
+        margin-bottom: 2px;
+      }
+
+      .tagline {
+        font-size: 0.8rem;
+      }
+
+      .nav-tabs {
+        padding: 10px 0;
+      }
+
+      .nav-tabs-inner {
+        padding: 0 14px;
+        gap: 5px;
+        overflow-x: visible;
+      }
+
+      .nav-tab {
+        padding: 7px 10px;
+        font-size: 0.8rem;
+        flex: 1 1 auto;
+        min-width: calc(50% - 6px);
+        text-align: center;
+      }
+
+      h1 {
+        font-size: clamp(1.5rem, 6vw, 2rem);
+        margin-bottom: 10px;
+      }
+
+      h2 {
+        font-size: clamp(1.2rem, 5vw, 1.6rem);
+        margin: 28px 0 10px;
+      }
+
+      h3 {
+        font-size: clamp(1.05rem, 4vw, 1.3rem);
+        margin-top: 20px;
+      }
+
+      h4 {
+        font-size: 1rem;
+      }
+
+      .card {
+        padding: 14px;
+        margin-bottom: 16px;
+      }
+
+      .intro-box {
+        padding: 14px;
+        margin: 14px 0;
+        border-radius: 6px;
+      }
+
+      .workflow-info {
+        min-height: 250px;
+        padding: 16px;
+      }
+
+      .terminal-demo {
+        font-size: 0.8rem;
+        padding: 10px;
+        border-radius: 6px;
+      }
+
+      .terminal-header {
+        padding: 5px 8px;
+        margin: -10px -10px 8px -10px;
+      }
+
+      .example-file, .info-box, .warning-box, .success-box {
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 6px;
+      }
+
+      .example-file pre {
+        font-size: 0.8rem;
+        padding: 8px;
+      }
+
+      th, td {
+        padding: 6px 8px;
+        font-size: 0.85rem;
+      }
+
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+
+      .grid-3 {
+        grid-template-columns: 1fr;
+      }
+
+      .step-number {
+        width: 26px;
+        height: 26px;
+        line-height: 26px;
+        font-size: 0.85rem;
+      }
+
+      code {
+        font-size: 0.85em;
+        padding: 1px 5px;
+      }
+    }
+
+    /* Small Phone (≤480px) */
+    @media (max-width: 480px) {
+      .container {
+        padding: 12px;
+      }
+
+      .site-header {
+        padding: 8px 12px;
+      }
+
+      .site-header.scrolled {
+        padding: 6px 12px;
+      }
+
+      .logo {
+        font-size: 0.95rem;
+        margin-bottom: 5px;
+      }
+
+      .site-header.scrolled .logo {
+        font-size: 0.85rem;
+      }
+
+      .tagline {
+        font-size: 0.75rem;
+      }
+
+      .nav-tabs {
+        padding: 8px 0;
+      }
+
+      .nav-tabs-inner {
+        padding: 0 12px;
+        gap: 4px;
+        overflow-x: visible;
+      }
+
+      .nav-tab {
+        padding: 6px 8px;
+        font-size: 0.75rem;
+        border-radius: 4px;
+        flex: 1 1 auto;
+        min-width: calc(50% - 4px);
+        text-align: center;
+      }
+
+      h1 {
+        font-size: clamp(1.4rem, 7vw, 1.8rem);
+        margin-bottom: 8px;
+        padding-bottom: 6px;
+      }
+
+      h2 {
+        font-size: clamp(1.15rem, 5.5vw, 1.5rem);
+        margin: 24px 0 8px;
+        padding-bottom: 5px;
+      }
+
+      h3 {
+        font-size: clamp(1rem, 4.5vw, 1.2rem);
+        margin-top: 18px;
+        margin-bottom: 8px;
+      }
+
+      h4 {
+        font-size: 0.95rem;
+        margin-bottom: 6px;
+      }
+
+      p {
+        margin-bottom: 12px;
+        font-size: 0.95rem;
+      }
+
+      ul, ol {
+        margin-left: 16px;
+        margin-bottom: 12px;
+      }
+
+      li {
+        margin-bottom: 6px;
+        font-size: 0.95rem;
+      }
+
+      .card {
+        padding: 12px;
+        margin-bottom: 14px;
+        border-radius: 10px;
+      }
+
+      .intro-box {
+        padding: 12px;
+        margin: 12px 0;
+        font-size: 0.95rem;
+      }
+
+      .workflow-container {
+        gap: 12px;
+        margin: 16px 0;
+      }
+
+      .workflow-visual, .workflow-info {
+        padding: 12px;
+        border-radius: 10px;
+      }
+
+      .workflow-info {
+        min-height: 200px;
+      }
+
+      .default-message h3, .step-info h3 {
+        font-size: 1.05rem;
+      }
+
+      .terminal-demo {
+        font-size: 0.75rem;
+        padding: 8px;
+      }
+
+      .terminal-header {
+        padding: 4px 6px;
+        margin: -8px -8px 6px -8px;
+        font-size: 0.7rem;
+      }
+
+      .example-file, .info-box, .warning-box, .success-box {
+        padding: 8px;
+        margin: 8px 0;
+      }
+
+      .example-file pre {
+        font-size: 0.75rem;
+        padding: 6px;
+      }
+
+      .table-wrap {
+        font-size: 0.85rem;
+      }
+
+      th, td {
+        padding: 5px 6px;
+        font-size: 0.8rem;
+      }
+
+      .step-number {
+        width: 24px;
+        height: 24px;
+        line-height: 24px;
+        font-size: 0.8rem;
+        margin-right: 6px;
+      }
+
+      .site-footer {
+        padding: 24px 12px;
+        margin-top: 36px;
+      }
+
+      .footer-love {
+        font-size: 0.95rem;
+        margin-bottom: 8px;
+      }
+
+      .footer-love .heart {
+        font-size: 1.1rem;
+      }
+
+      .footer-signature {
+        font-size: 0.85rem;
+      }
+
+      code {
+        font-size: 0.8em;
+        padding: 1px 4px;
+      }
+
+      ul.feature-list li {
+        padding: 6px 0 6px 24px;
+        font-size: 0.95rem;
+      }
+
+      ul.feature-list li:before {
+        font-size: 1rem;
+      }
+    }
+
+    /* Extra Small Phone (≤375px) */
+    @media (max-width: 375px) {
+      .container {
+        padding: 10px;
+      }
+
+      .site-header {
+        padding: 6px 10px;
+      }
+
+      .logo {
+        font-size: 0.9rem;
+      }
+
+      .tagline {
+        font-size: 0.7rem;
+      }
+
+      .nav-tab {
+        padding: 5px 6px;
+        font-size: 0.7rem;
+        flex: 1 1 auto;
+        min-width: calc(50% - 4px);
+      }
+
+      h1 {
+        font-size: 1.4rem;
+      }
+
+      h2 {
+        font-size: 1.15rem;
+      }
+
+      .card, .intro-box, .workflow-visual, .workflow-info {
+        padding: 10px;
+      }
+
+      .terminal-demo, .example-file pre {
+        font-size: 0.7rem;
+      }
+
+      .site-footer {
+        padding: 20px 10px;
+      }
+    }
+
+    /* Landscape Mobile Optimization */
+    @media (max-width: 768px) and (orientation: landscape) {
+      .workflow-info {
+        min-height: 180px;
+      }
+
+      .intro-box {
+        padding: 12px 14px;
+      }
+
+      .site-footer {
+        padding: 24px 16px;
+      }
+    }
+
+    /* Touch-Friendly Improvements */
+    @media (hover: none) and (pointer: coarse) {
+      .nav-tab {
+        min-height: 44px;
+        min-width: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .workflow-step {
+        cursor: default;
+      }
+
+      .workflow-step:active {
+        filter: brightness(0.95);
+      }
+
+      a, button {
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+      }
+    }
+
+    /* ================= Back to Top Button ================= */
+    .back-to-top {
+      position: fixed;
+      bottom: 32px;
+      right: 32px;
+      width: 56px;
+      height: 56px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+      z-index: 999;
+    }
+
+    .back-to-top.visible {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .back-to-top:hover {
+      background: var(--accent-2);
+      transform: translateY(-4px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .back-to-top:active {
+      transform: translateY(-2px);
+    }
+
+    .back-to-top::before {
+      content: '↑';
+      font-weight: bold;
+    }
+
+    /* Mobile back to top adjustments */
+    @media (max-width: 768px) {
+      .back-to-top {
+        bottom: 24px;
+        right: 24px;
+        width: 50px;
+        height: 50px;
+        font-size: 1.3rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .back-to-top {
+        bottom: 20px;
+        right: 20px;
+        width: 48px;
+        height: 48px;
+        font-size: 1.2rem;
+      }
+    }
+
+    /* Touch-friendly back to top */
+    @media (hover: none) and (pointer: coarse) {
+      .back-to-top {
+        width: 52px;
+        height: 52px;
+      }
+      
+      .back-to-top:active {
+        background: var(--accent-2);
+        transform: scale(0.95);
       }
     }
 
@@ -1643,6 +2304,10 @@ Anything else I can help with?
     </section>
   </main>
 
+  <!-- Back to Top Button -->
+  <button class="back-to-top" id="backToTop" aria-label="Back to top">
+  </button>
+
   <footer class="site-footer">
     <div class="footer-content">
       <div class="footer-love">
@@ -1792,6 +2457,26 @@ Anything else I can help with?
             workflowDefaultMsg.style.display = 'none';
             workflowStepInfo.style.display = 'block';
           }
+        });
+      });
+
+      // Back to Top Button functionality
+      const backToTopButton = document.getElementById('backToTop');
+      
+      // Show/hide button based on scroll position
+      window.addEventListener('scroll', function() {
+        if (window.pageYOffset > 400) {
+          backToTopButton.classList.add('visible');
+        } else {
+          backToTopButton.classList.remove('visible');
+        }
+      });
+
+      // Smooth scroll to top on click
+      backToTopButton.addEventListener('click', function() {
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
         });
       });
     });

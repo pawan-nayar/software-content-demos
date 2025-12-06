@@ -30,31 +30,35 @@
         --myth-color: #6c757d; --myth-soft: #e9ecef;
       }
       *{box-sizing:border-box;margin:0;padding:0}
-      html,body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.8;}
-      .container{max-width:900px;margin:auto;padding:24px;background:#fff}
+      html,body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;scroll-behavior:smooth;overflow-x:hidden}
+      .container{max-width:1080px;margin:auto;padding:24px;background:#fff}
       a{color:var(--accent);text-decoration:none}
       a:hover{text-decoration:underline}
 
       /* Header / Footer / Breadcrumbs */
       .site-header,.site-footer{background:var(--header-bg);color:var(--header-fg);padding:14px 24px}
       .site-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;position:sticky;top:0;z-index:100}
-      .logo{font-weight:700;font-size:1.15rem;color:#fff}
-      .site-header nav{display:flex;gap:14px} .site-header nav a{color:#ced4da} .site-header nav a:hover{color:#fff}
+      .logo{font-weight:700;font-size:1.15rem;color:#fff;text-decoration:none}
+      .site-header nav{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+      .site-header nav a{color:#ced4da;text-decoration:none;transition:color 0.2s}
+      .site-header nav a:hover{color:#fff}
+      .hamburger{display:none;background:none;border:1px solid rgba(255,255,255,0.4);color:#fff;border-radius:8px;padding:8px 10px;font-size:1rem;cursor:pointer;line-height:1;transition:background 0.2s}
+      .hamburger:hover,.hamburger[aria-expanded="true"]{background:rgba(255,255,255,0.15)}
       .site-footer{text-align:center;margin-top:50px;padding:40px}
       .breadcrumbs{margin-bottom:24px;font-size:0.9rem;color:#6c757d} .breadcrumbs a{color:var(--accent)}
 
       /* Typography & Layout */
-      h1{font-size:clamp(2rem,5vw,2.8rem);text-align:left;margin-bottom:8px;color:var(--text);line-height:1.2}
-      .byline{font-size:clamp(1rem,3vw,1.25rem);font-style:italic;color:#4a5568;margin-bottom:24px}
-      h2{font-size:clamp(1.5rem,4vw,2.2rem);color:var(--text);margin:64px 0 24px;border-bottom:2px solid var(--border);padding-bottom:12px}
-      h3{font-size:clamp(1.2rem,3vw,1.6rem);color:var(--text);margin-top:48px;margin-bottom:16px}
-      p, ul, li {font-size: 1.1rem; max-width: 75ch;}
-      p{margin-bottom:20px;word-wrap:break-word; line-height: 1.9;}
-      ul{margin-left:24px;margin-bottom:24px;padding-left:1em}
-      li{margin-bottom:16px;padding-left:0.5em}
+      h1{font-size:clamp(2rem,5vw,2.6rem);text-align:left;margin-bottom:8px;color:var(--text);line-height:1.2}
+      .byline{font-size:clamp(1rem,3vw,1.2rem);font-style:italic;color:#4a5568;margin-bottom:24px}
+      h2{font-size:clamp(1.5rem,4vw,2rem);color:var(--text);margin:48px 0 16px;border-bottom:2px solid var(--border);padding-bottom:8px}
+      h3{font-size:clamp(1.2rem,3vw,1.5rem);color:var(--text);margin-top:32px;margin-bottom:12px}
+      h4{font-size:clamp(1rem,2.5vw,1.2rem);font-weight:bold;color:var(--accent-2);margin-bottom:10px}
+      p{margin-bottom:16px;word-wrap:break-word}
+      ul{margin-left:24px;margin-bottom:24px;list-style-type:'🔸';padding-left:1em}
+      li{margin-bottom:12px;padding-left:0.5em}
       .article-meta{display:flex;align-items:center;gap:12px;color:#6c757d;margin-bottom:32px;font-size:0.95rem}
       .author-emoji{font-size:32px;line-height:1}
-      .intro{font-size:1.2rem;line-height:1.8;background:var(--muted);padding:24px;border-radius:12px;border-left:4px solid var(--accent);margin:24px 0}
+      .intro{font-size:1.1rem;line-height:1.8;background:var(--muted);padding:20px;border-radius:12px;border-left:4px solid var(--accent);margin:24px 0}
       strong { font-weight: 600; }
       .highlight-accent { color: var(--accent-2); font-weight: 600; }
       .transition-bridge { text-align: center; font-style: italic; color: var(--myth-color); padding: 3rem 1rem; margin: 3rem 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); background: var(--muted); border-radius: 12px; }
@@ -67,7 +71,7 @@
       .img-frame img {max-width: 100%; border-radius: 8px;}
       .img-frame figcaption {font-size: 0.9rem; color: var(--myth-color); margin-top: 12px; font-style: italic;}
       .table-wrap{position:relative;border:1px solid var(--border);border-radius:12px;background:#fff;margin:24px 0}
-      .table-scroll{position:relative;overflow-x:auto}
+      .table-scroll{position:relative;overflow-x:auto;-webkit-overflow-scrolling:touch}
       table.data-table{width:100%;border-collapse:collapse;}
       table.data-table th, table.data-table td{padding:12px 15px;border:1px solid var(--border);text-align:left;vertical-align:top;}
       table.data-table thead th{background:var(--muted);font-weight:600;}
@@ -103,15 +107,16 @@
       .explanation{display:none;margin-top:8px;padding:10px;font-size:0.9rem;border-radius:6px;}
       .quiz-option.selected.correct .explanation{display:block;background:var(--ok-soft);}
       .quiz-option.selected.wrong .explanation{display:block;background:var(--bad-soft);}
-      .glossary-cloud{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px;justify-content:center}
+      .glossary-cloud{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px;padding:0 16px;justify-content:center}
       .glossary-chip{position:relative;display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:999px;background:#fff7ed;border:1px solid #ffd8a8;color:#d9480f;font-weight:600;cursor:pointer;box-shadow:0 2px 6px rgba(253,126,20,.12)}
       .glossary-chip:hover, .glossary-chip:focus{background:#ffecde;}
-      .chip-tip{position:fixed;z-index:101;min-width:240px;max-width:min(92vw,420px);background:var(--accent);color:#fff;padding:12px 14px;border-radius:12px;box-shadow:0 12px 28px rgba(253,126,20,.35);opacity:0;visibility:hidden;transition:.15s;line-height:1.45}
+      .chip-tip{position:fixed;z-index:101;min-width:0;max-width:min(92vw,420px);background:var(--accent);color:#fff;padding:12px 14px;border-radius:12px;box-shadow:0 12px 28px rgba(253,126,20,.35);opacity:0;visibility:hidden;transition:.15s;line-height:1.45}
       .chip-tip.show{opacity:1;visibility:visible}
       .chip-tip .arrow{position:absolute;width:12px;height:12px;background:var(--accent);transform:rotate(45deg)}
-      .code-wrapper { margin: 24px 0; }
-      .code-output { background: var(--muted); border: 1px solid var(--border); border-radius: 8px; margin-top: -1px; padding: 1.2em; font-family: 'Roboto Mono', monospace; color: #495057; white-space: pre-wrap; text-align: left;}
-      .code-block { background: var(--ok-soft); color: var(--text); border: 1px solid var(--ok); border-radius: 8px; padding: 1.2em; font-family: 'Inter', sans-serif; white-space: pre-wrap; text-align: left; }
+      .code-wrapper { margin: 16px 0; }
+      pre { margin: 0; white-space: pre-wrap; }
+      .code-output { background: var(--muted); border: 1px solid var(--border); border-radius: 8px; margin-top: -1px; padding: 1.2em; font-family: 'Roboto Mono', monospace; color: #495057; white-space: pre-wrap; word-break: break-word; text-align: left; overflow-x: auto; }
+      .code-block { background: var(--ok-soft); color: var(--text); border: 1px solid var(--ok); border-radius: 8px; padding: 1.2em; font-family: 'Inter', sans-serif; white-space: pre-wrap; word-break: break-word; text-align: left; }
       .code-block p, .code-output p { margin-bottom: 0; line-height: 1.7; }
       
       /* --- Carousel Styles --- */
@@ -149,13 +154,145 @@
       @keyframes draw-line { to { stroke-dashoffset: 0; } }
       @keyframes fade-in { to { opacity: 1; } }
       @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+      /* ================= Mobile Navigation (CBSE Pattern) ================= */
+      @media (max-width: 768px) {
+        .site-header { padding: 15px 20px; gap: 10px; flex-wrap: nowrap; }
+        .hamburger { display: inline-flex; align-items: center; justify-content: center; margin-left: auto; }
+        .site-header nav { 
+          display: none; 
+          position: absolute; 
+          top: 100%; 
+          right: 16px; 
+          flex-direction: column; 
+          gap: 0;
+          background: var(--header-bg); 
+          padding: 8px 0;
+          border-radius: 8px;
+          box-shadow: 0 10px 25px rgba(0,0,0,0.35);
+          min-width: 200px;
+        }
+        .site-header nav.open { display: flex; }
+        .site-header nav a { 
+          display: block; 
+          padding: 10px 18px; 
+          color: #f8f9fa; 
+          white-space: nowrap; 
+        }
+        .site-header nav a + a { border-top: 1px solid rgba(255,255,255,0.15); }
+        
+        /* Grid collapses */
+        .carousel-container { padding: 0 24px; }
+      }
+
+      /* ================= Mobile Responsive (CBSE Pattern) ================= */
+      @media (max-width: 600px) {
+        h1 { font-size: clamp(1.8rem, 6vw, 2.2rem); }
+        .carousel-nav { width: 32px; height: 32px; font-size: 18px; }
+        .interactive-box, .example-box, .formula-box, .application-item, .scenario-card { padding: 18px; }
+        
+        /* Quiz Navigation */
+        .quiz-navigation { flex-wrap: wrap; gap: 8px; }
+        .quiz-navigation span { order: -1; width: 100%; text-align: center; padding-bottom: 8px; }
+        
+        /* Workflow Container - Stack Vertically */
+        .workflow-container { 
+          flex-direction: column !important; 
+          min-height: auto !important; 
+          padding: 16px !important; 
+          gap: 16px !important;
+        }
+        .workflow-section, .info-section { 
+          flex: 1 1 auto !important; 
+          min-height: auto !important; 
+        }
+        /* Info section comes AFTER flowchart (no order change) */
+        
+        /* Hide desktop SVG on mobile, show mobile workflow buttons */
+        .workflow-svg { display: none !important; }
+        .workflow-mobile-buttons { display: flex !important; }
+        .workflow-section .instruction { font-size: 1rem !important; margin-bottom: 12px !important; }
+        
+        /* Scenario grids - stack vertically */
+        [style*="grid-template-columns: 1fr auto 1fr"] { 
+          display: flex !important; 
+          flex-direction: column !important; 
+          gap: 12px !important; 
+        }
+        [style*="text-align: center; color: var(--accent); font-size: 1.5rem"] { 
+          display: none !important; 
+        }
+      }
+      
+      /* Mobile workflow buttons */
+      .workflow-mobile-buttons {
+        display: none;
+        flex-direction: column;
+        gap: 8px;
+        width: 100%;
+      }
+      .workflow-mobile-btn {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 16px;
+        background: #fff;
+        border: 2px solid var(--border);
+        border-radius: 10px;
+        cursor: pointer;
+        text-align: left;
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text);
+        transition: all 0.2s ease;
+      }
+      .workflow-mobile-btn:hover, .workflow-mobile-btn.active {
+        border-color: var(--accent);
+        background: #fff7ed;
+      }
+      .workflow-mobile-btn .step-num {
+        width: 28px;
+        height: 28px;
+        background: var(--muted);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--myth-color);
+        flex-shrink: 0;
+      }
+      .workflow-mobile-btn.active .step-num {
+        background: var(--accent);
+        color: #fff;
+      }
+
+      /* ================= Extra Small Screens (CBSE Pattern) ================= */
+      @media (max-width: 480px) {
+        .site-header { align-items: flex-start; }
+        .container { padding: 20px; }
+        .carousel-container { padding: 0 8px; }
+        .glossary-cloud { padding: 0 12px; }
+        .glossary-chip { justify-content: center; }
+        .chip-tip { padding: 10px 12px; left: 12px !important; right: 12px !important; }
+        
+        /* Progress Tracker */
+        .progress-tracker { flex-wrap: wrap; padding: 12px; gap: 6px; }
+        .progress-tracker span { width: 100%; text-align: center; margin-top: 8px; font-size: 0.8rem; }
+        
+        /* Radar Chart */
+        .radar-chart-toggles { gap: 6px; flex-wrap: wrap; }
+        .radar-chart-toggles button { padding: 8px 10px; font-size: 0.85rem; }
+      }
     </style>
 </head>
 <body>
 
  <header class="site-header">
      <a href="#" class="logo">Beyond Dictionary</a>
-     <nav><a href="#">What's New</a><a href="#">Learning</a><a href="#">Games & Quizzes</a><a href="#">Blog</a></nav>
+     <button class="hamburger" id="hamburger-btn" aria-expanded="false" aria-controls="primary-nav">☰ Menu</button>
+     <nav id="primary-nav"><a href="#">What's New</a><a href="#">Learning</a><a href="#">Games & Quizzes</a><a href="#">Blog</a></nav>
  </header>
 
  <div class="container">
@@ -296,6 +433,18 @@
             <div class="workflow-section" style="flex: 0 0 65%; display: flex; flex-direction: column; justify-content: center; align-items: center; background: white; border-radius: 15px; padding: 20px; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);">
                 <div class="instruction" style="text-align: center; margin-bottom: 20px; color: #6c757d; font-size: 1.2rem;">Click on different steps to learn about the Claude Code workflow!</div>
 
+                <!-- Mobile vertical workflow buttons -->
+                <div class="workflow-mobile-buttons">
+                    <button class="workflow-mobile-btn" data-step="task"><span class="step-num">1</span>Developer Gives Task</button>
+                    <button class="workflow-mobile-btn" data-step="read"><span class="step-num">2</span>Claude Reads Context</button>
+                    <button class="workflow-mobile-btn" data-step="modify"><span class="step-num">3</span>Claude Edits Files</button>
+                    <button class="workflow-mobile-btn" data-step="commit"><span class="step-num">4</span>Git Commit</button>
+                    <button class="workflow-mobile-btn" data-step="pr"><span class="step-num">5</span>GitHub PR</button>
+                    <button class="workflow-mobile-btn" data-step="review"><span class="step-num">6</span>Review</button>
+                    <button class="workflow-mobile-btn" data-step="merge"><span class="step-num">7</span>Merge</button>
+                </div>
+
+                <!-- Desktop SVG workflow -->
                 <svg class="workflow-svg" viewBox="0 0 800 300" style="width:100%; height:auto;">
                     <rect width="800" height="300" fill="#f8f9fa" opacity="0.3" rx="10"/>
 
@@ -1026,26 +1175,73 @@ document.addEventListener('DOMContentLoaded', () => {
         let openBtn = null;
         let isTipOpenByKey = false;
         function clamp(n, min, max){ return Math.max(min, Math.min(n, max)); }
+        function isMobile() { return window.innerWidth <= 600; }
         function positionTipFor(btn){
-          const rect = btn.getBoundingClientRect(); const vw = window.innerWidth; const pad = 8;
+          const rect = btn.getBoundingClientRect(); 
+          const vw = window.innerWidth; 
+          const vh = window.innerHeight;
+          const pad = 8;
+          const margin = 12;
+          
           tip.style.maxWidth = Math.min(vw - pad*2, 420) + 'px';
           const tipRect = tip.getBoundingClientRect();
-          const preferTop = rect.top > (window.innerHeight - rect.bottom);
-          const top = preferTop ? rect.top - tipRect.height - 12 : rect.bottom + 12;
-          const left = clamp(rect.left + rect.width/2 - tipRect.width/2, pad, vw - tipRect.width - pad);
-          tip.style.top = Math.max(8, top) + 'px'; tip.style.left = left + 'px';
-          tipArrow.style.top = preferTop ? (tipRect.height - 6) + 'px' : '-6px';
-          tipArrow.style.left = clamp(rect.left + rect.width/2 - left - 6, 10, tipRect.width - 22) + 'px';
+          
+          // On mobile, position close to the chip
+          if (isMobile()) {
+            const spaceAbove = rect.top;
+            const spaceBelow = vh - rect.bottom;
+            
+            if (spaceAbove > tipRect.height + margin && spaceAbove >= spaceBelow) {
+              tip.style.top = (rect.top - tipRect.height - margin) + 'px';
+              tipArrow.style.top = (tipRect.height - 6) + 'px';
+            } else {
+              let topPos = rect.bottom + margin;
+              if (topPos + tipRect.height > vh - 10) {
+                topPos = vh - tipRect.height - 10;
+              }
+              tip.style.top = topPos + 'px';
+              tipArrow.style.top = '-6px';
+            }
+            // Arrow points to chip center
+            const chipCenter = rect.left + rect.width / 2;
+            tipArrow.style.left = clamp(chipCenter - 6, 16, vw - 24) + 'px';
+          } else {
+            // Desktop positioning
+            const preferTop = rect.top > (vh - rect.bottom);
+            const top = preferTop ? rect.top - tipRect.height - 12 : rect.bottom + 12;
+            const left = clamp(rect.left + rect.width/2 - tipRect.width/2, pad, vw - tipRect.width - pad);
+            tip.style.top = Math.max(8, top) + 'px'; 
+            tip.style.left = left + 'px';
+            tipArrow.style.top = preferTop ? (tipRect.height - 6) + 'px' : '-6px';
+            tipArrow.style.left = clamp(rect.left + rect.width/2 - left - 6, 10, tipRect.width - 22) + 'px';
+          }
         }
         function openTip(btn, text){ tipContent.innerHTML = text; tip.classList.add('show'); positionTipFor(btn); openBtn = btn; }
         function closeTip(){ if(!isTipOpenByKey) { tip.classList.remove('show'); openBtn = null; } }
         
+        let activeChip = null;
         cloud.querySelectorAll('.glossary-chip').forEach((btn,i)=>{
           const def = data[i].def;
-          btn.addEventListener('mouseenter', () => openTip(btn, def));
+          // Desktop: hover
+          btn.addEventListener('mouseenter', () => { if (!isMobile()) openTip(btn, def); });
           btn.addEventListener('focus', () => openTip(btn, def));
-          btn.addEventListener('mouseleave', closeTip);
+          btn.addEventListener('mouseleave', () => { if (!isMobile()) closeTip(); });
           btn.addEventListener('blur', () => { isTipOpenByKey = false; closeTip(); });
+          
+          // Mobile: tap to toggle
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (isMobile()) {
+              if (activeChip === btn) {
+                tip.classList.remove('show');
+                activeChip = null;
+              } else {
+                openTip(btn, def);
+                activeChip = btn;
+              }
+            }
+          });
+          
           btn.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
@@ -1059,8 +1255,29 @@ document.addEventListener('DOMContentLoaded', () => {
             }
           });
         });
+        
+        // Tap outside to close on mobile
+        document.addEventListener('click', () => {
+          if (isMobile() && activeChip) {
+            tip.classList.remove('show');
+            activeChip = null;
+          }
+        });
+        
+        // Close on scroll
+        let scrollTimeout;
+        window.addEventListener('scroll', () => {
+          if (activeChip) {
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(() => {
+              tip.classList.remove('show');
+              activeChip = null;
+            }, 100);
+          }
+          if(openBtn) positionTipFor(openBtn);
+        }, {passive:true});
+        
         window.addEventListener('resize',()=>{ if(openBtn) positionTipFor(openBtn); });
-        window.addEventListener('scroll',()=>{ if(openBtn) positionTipFor(openBtn); }, {passive:true});
     }
 
     function setupGitFlowSVG() {
@@ -1245,7 +1462,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         };
 
-        const elements = document.querySelectorAll('.workflow-step');
+        // Both desktop SVG steps and mobile buttons
+        const svgElements = document.querySelectorAll('.workflow-step');
+        const mobileButtons = document.querySelectorAll('.workflow-mobile-btn');
         const defaultMsg = document.getElementById('defaultWorkflowMessage');
         const stepInfo = document.getElementById('stepInfo');
         const stepTitle = document.getElementById('stepTitle');
@@ -1253,32 +1472,86 @@ document.addEventListener('DOMContentLoaded', () => {
         const stepDetails = document.getElementById('stepDetails');
         let activeStep = null;
 
-        elements.forEach(el => {
-            el.addEventListener('click', () => {
-                const stepName = el.getAttribute('data-step');
-                const data = workflowSteps[stepName];
-                if (activeStep === stepName) {
-                    activeStep = null;
-                    stepInfo.style.display = 'none';
-                    defaultMsg.style.display = 'block';
-                } else {
-                    activeStep = stepName;
-                    stepTitle.textContent = data.name;
-                    stepDescription.textContent = data.description;
-                    stepDetails.textContent = data.details;
-                    defaultMsg.style.display = 'none';
-                    stepInfo.style.display = 'block';
+        function showStepInfo(stepName, clickedEl) {
+            const data = workflowSteps[stepName];
+            if (!data) return;
+            
+            // Update active state on SVG elements
+            svgElements.forEach(el => {
+                const rect = el.querySelector('rect');
+                if (rect && el.getAttribute('data-step') !== stepName) {
+                    rect.setAttribute('stroke', '#6c757d');
+                    rect.setAttribute('stroke-width', '2');
                 }
             });
+            const clickedRect = clickedEl.querySelector ? clickedEl.querySelector('rect') : null;
+            if (clickedRect) {
+                clickedRect.setAttribute('stroke', '#d9480f');
+                clickedRect.setAttribute('stroke-width', '3');
+            }
+            
+            // Update active state on mobile buttons
+            mobileButtons.forEach(btn => btn.classList.remove('active'));
+            if (clickedEl.classList && clickedEl.classList.contains('workflow-mobile-btn')) {
+                clickedEl.classList.add('active');
+            }
+            
+            // Show the info (no toggle - always show)
+            activeStep = stepName;
+            stepTitle.textContent = data.name;
+            stepDescription.textContent = data.description;
+            stepDetails.textContent = data.details;
+            defaultMsg.style.display = 'none';
+            stepInfo.style.display = 'block';
+        }
 
-            el.addEventListener('mouseenter', () => {
-                el.style.filter = 'brightness(1.3) drop-shadow(0 0 10px #d9480f)';
+        // Desktop SVG click handlers
+        svgElements.forEach(el => {
+            el.addEventListener('click', () => {
+                showStepInfo(el.getAttribute('data-step'), el);
             });
+        });
 
+        // Mobile button click handlers
+        mobileButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                showStepInfo(btn.getAttribute('data-step'), btn);
+            });
+        });
+
+        // Hover effects for desktop SVG
+        svgElements.forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                el.style.filter = 'brightness(1.1) drop-shadow(0 0 8px rgba(217, 72, 15, 0.4))';
+            });
             el.addEventListener('mouseleave', () => {
                 el.style.filter = 'none';
             });
         });
+    }
+
+    // --- Hamburger Menu Toggle (CBSE Pattern) ---
+    const hamburgerBtn = document.getElementById('hamburger-btn');
+    const primaryNav = document.getElementById('primary-nav');
+    if (hamburgerBtn && primaryNav) {
+      hamburgerBtn.addEventListener('click', () => {
+        const isOpen = primaryNav.classList.toggle('open');
+        hamburgerBtn.setAttribute('aria-expanded', isOpen);
+      });
+      // Close menu when clicking a link
+      primaryNav.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+          primaryNav.classList.remove('open');
+          hamburgerBtn.setAttribute('aria-expanded', 'false');
+        });
+      });
+      // Close menu when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!hamburgerBtn.contains(e.target) && !primaryNav.contains(e.target)) {
+          primaryNav.classList.remove('open');
+          hamburgerBtn.setAttribute('aria-expanded', 'false');
+        }
+      });
     }
 
     // --- Initialization ---

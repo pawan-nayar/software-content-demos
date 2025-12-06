@@ -13,7 +13,7 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh; /* Full viewport height */
-            overflow: hidden; /* Prevent body scroll, panes will scroll */
+            overflow-x: hidden; /* Prevent horizontal scroll */
             background-color: #f4f4f4;
             color: #333;
         }
@@ -479,41 +479,451 @@
         .font-pairing-demo .caption { font-size: 0.9rem; color: #777; }
 
 
-        /* --- Responsive Design (Mobile First) --- */
-        /* Default for small screens (e.g., mobile portrait) */
-        #app-container {
-            grid-template-columns: 1fr; /* Stacks panes vertically */
-            grid-template-rows: auto auto auto; /* Auto height for stacked panes */
-            height: calc(100vh - 30px - 30px); /* Account for header/footer */
+        /* --- Mobile Tab Navigation --- */
+        .mobile-tabs {
+            display: none; /* Hidden on desktop */
         }
-        /* Hide right pane by default on small screens, show only on specific actions or make collapsible */
-        #right-pane {
-            display: block; /* For MVP, keep it visible */
-            border-bottom: none; /* Last pane, no bottom border */
-        }
-        #mid-pane {
-            border-right: none; /* No vertical border on mobile */
+        
+        /* --- Pane Divider (hidden on desktop) --- */
+        .pane-divider {
+            display: none;
         }
 
-        /* Medium screens (e.g., tablets, larger phones) */
+        /* --- Responsive Design --- */
+        
+        /* Desktop (default) - hide mobile tabs */
         @media (min-width: 768px) {
+            .mobile-tabs { display: none; }
+            
             #app-container {
-                grid-template-columns: 1fr 1.5fr 1fr; /* Wider mid-pane, slightly more balanced */
-                grid-template-rows: 1fr; /* Single row */
-                height: calc(100vh - 30px - 30px); /* Adjust based on actual header/footer combined height */
+                grid-template-columns: 1fr 1.5fr 1fr;
+                grid-template-rows: 1fr;
+                height: calc(100vh - 30px - 30px);
             }
             .pane {
                 border-bottom: none;
+                overflow-y: auto;
             }
-            #left-pane { border-right: 1px solid #ddd; }
-            #mid-pane { border-right: 1px solid #ddd; }
+            #left-pane { border-right: 1px solid #ddd; display: block; }
+            #mid-pane { border-right: 1px solid #ddd; display: flex; }
             #right-pane { display: block; }
         }
 
-        /* Large screens (e.g., desktops, laptops) */
         @media (min-width: 1024px) {
             #app-container {
                 grid-template-columns: 1fr 2fr 1fr;
+            }
+        }
+
+        /* =================================================
+           MOBILE HYBRID LAYOUT (Sticky Preview + Tabbed Panel)
+           ================================================= */
+        @media (max-width: 767px) {
+            html, body {
+                overflow-x: hidden;
+                overflow-y: auto;
+                height: 100%;
+            }
+            
+            header {
+                height: auto;
+                padding: 10px 16px;
+                position: sticky;
+                top: 0;
+                z-index: 100;
+            }
+            header h1 {
+                font-size: 1rem;
+            }
+            
+            /* Mobile Tab Navigation */
+            .mobile-tabs {
+                display: flex;
+                gap: 0;
+                background: #34495e;
+                position: sticky;
+                top: 42px; /* Below header */
+                z-index: 99;
+                padding: 0;
+                border-bottom: 2px solid #2c3e50;
+            }
+            .mobile-tab {
+                flex: 1;
+                padding: 12px 16px;
+                min-height: 48px;
+                background: #34495e;
+                color: #bdc3c7;
+                border: none;
+                font-size: 0.95rem;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 6px;
+            }
+            .mobile-tab:first-child {
+                border-right: 1px solid #2c3e50;
+            }
+            .mobile-tab.active {
+                background: #3498db;
+                color: #fff;
+            }
+            .mobile-tab:hover:not(.active) {
+                background: #3d566e;
+            }
+            
+            /* App Container - Hybrid Layout */
+            #app-container {
+                display: flex;
+                flex-direction: column;
+                height: calc(100vh - 42px - 48px); /* header + tabs */
+                overflow: hidden;
+            }
+            
+            /* Left Pane (Controls) - Tab Content - ORDER 1 (TOP) */
+            #left-pane {
+                order: 1;
+                display: block;
+                padding: 14px;
+                background: #ecf0f1;
+                border-bottom: none;
+                flex: 0 0 auto;
+                height: var(--controls-height, 45vh);
+                max-height: 70vh;
+                min-height: 100px;
+                overflow-y: auto;
+            }
+            #left-pane.tab-hidden {
+                display: none;
+            }
+            #left-pane h2 {
+                display: none;
+            }
+            
+            /* Right Pane (Instructions) - Tab Content - ORDER 1 (TOP, alternate) */
+            #right-pane {
+                order: 1;
+                display: none;
+                padding: 14px;
+                background: #fff;
+                border-bottom: none;
+                flex: 0 0 auto;
+                height: var(--controls-height, 45vh);
+                max-height: 70vh;
+                min-height: 100px;
+                overflow-y: auto;
+            }
+            #right-pane.tab-visible {
+                display: block;
+            }
+            #right-pane h2 {
+                display: none;
+            }
+            #right-pane h3 {
+                font-size: 1.1rem;
+                color: #2c3e50;
+                margin-bottom: 10px;
+                padding-bottom: 8px;
+                border-bottom: 2px solid #3498db;
+            }
+            #right-pane p {
+                font-size: 0.95rem;
+                line-height: 1.5;
+                color: #555;
+            }
+            
+            /* Draggable Divider - ORDER 2 */
+            .pane-divider {
+                order: 2;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                height: 20px;
+                background: linear-gradient(to bottom, #bdc3c7 0%, #ecf0f1 50%, #bdc3c7 100%);
+                cursor: ns-resize;
+                user-select: none;
+                -webkit-user-select: none;
+                touch-action: none;
+                flex-shrink: 0;
+            }
+            .divider-handle {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 60px;
+                height: 16px;
+                background: #3498db;
+                border-radius: 8px;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            }
+            .divider-icon {
+                color: #fff;
+                font-size: 14px;
+                font-weight: bold;
+                line-height: 1;
+            }
+            .pane-divider:active .divider-handle {
+                background: #2980b9;
+                transform: scaleX(1.1);
+            }
+            
+            /* Mid Pane (Preview) - ORDER 3 (BOTTOM - Always visible) */
+            #mid-pane {
+                order: 3;
+                flex: 1 1 auto;
+                background: #fff;
+                border-right: none;
+                min-height: 120px;
+                overflow-y: auto;
+                padding: 12px;
+                padding-top: 8px;
+                box-shadow: 0 -2px 8px rgba(0,0,0,0.06);
+                position: relative;
+            }
+            #mid-pane h2 {
+                /* Small corner badge - visible but not intrusive */
+                position: absolute;
+                top: 0;
+                left: 0;
+                background: #3498db;
+                color: #fff;
+                font-size: 0.65rem;
+                padding: 3px 8px;
+                margin: 0;
+                border-bottom-right-radius: 6px;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                opacity: 0.85;
+                z-index: 5;
+            }
+            
+            /* Scrollbar styling for controls/help panes */
+            #left-pane::-webkit-scrollbar,
+            #right-pane::-webkit-scrollbar {
+                width: 8px;
+            }
+            #left-pane::-webkit-scrollbar-track,
+            #right-pane::-webkit-scrollbar-track {
+                background: #dfe6e9;
+                border-radius: 4px;
+            }
+            #left-pane::-webkit-scrollbar-thumb,
+            #right-pane::-webkit-scrollbar-thumb {
+                background: #3498db;
+                border-radius: 4px;
+            }
+            #left-pane::-webkit-scrollbar-thumb:hover,
+            #right-pane::-webkit-scrollbar-thumb:hover {
+                background: #2980b9;
+            }
+            /* Firefox scrollbar */
+            #left-pane, #right-pane {
+                scrollbar-width: thin;
+                scrollbar-color: #3498db #dfe6e9;
+            }
+            
+            /* Typography Preview */
+            #typography-preview {
+                max-width: 100%;
+                padding: 10px;
+                min-height: 100px;
+                /* Don't set font-size here - let JS control it */
+            }
+            
+            /* Experience Selector */
+            .experience-selector {
+                display: flex;
+                gap: 6px;
+                margin-bottom: 16px;
+                padding-bottom: 12px;
+                border-bottom: 1px solid #ccc;
+                flex-wrap: nowrap;
+            }
+            .experience-selector button {
+                flex: 1;
+                min-height: 44px;
+                padding: 10px 8px;
+                font-size: 0.85rem;
+                border-radius: 6px;
+            }
+            
+            /* Control Groups */
+            .control-group {
+                padding: 12px;
+                margin-bottom: 12px;
+                border-radius: 8px;
+            }
+            .control-group label {
+                font-size: 0.9rem;
+            }
+            .control-group p {
+                font-size: 0.8rem;
+                margin-top: 8px;
+                line-height: 1.4;
+            }
+            .control-group input[type="range"] {
+                height: 12px;
+            }
+            .control-group input[type="range"]::-webkit-slider-thumb {
+                width: 28px;
+                height: 28px;
+            }
+            .control-group input[type="range"]::-moz-range-thumb {
+                width: 28px;
+                height: 28px;
+            }
+            .control-group select,
+            .control-group input[type="text"],
+            .control-group input[type="number"] {
+                min-height: 44px;
+                font-size: 16px; /* Prevent iOS zoom */
+            }
+            .control-group input[type="color"] {
+                height: 44px;
+                width: 60px;
+            }
+            
+            /* Buttons - touch targets */
+            .control-group button,
+            .align-button,
+            .text-transform-button,
+            .text-decoration-button {
+                min-height: 44px;
+                padding: 10px 12px;
+                font-size: 0.85rem;
+                margin: 3px 2px;
+            }
+            
+            /* Kerning buttons */
+            .kerning-buttons {
+                flex-direction: row;
+                gap: 8px;
+            }
+            .kerning-buttons button {
+                min-height: 44px;
+                flex: 1;
+            }
+            
+            /* Kerning specific */
+            .kerning-pair-space {
+                min-width: 20px;
+            }
+            .kerning-line {
+                margin-bottom: 0.8em;
+            }
+            
+            /* Experience It All Grid - let JS control layout */
+            .grid-cell {
+                padding: 6px;
+                min-height: 50px;
+            }
+            .grid-cell-text {
+                font-size: 0.8rem;
+            }
+            .info-icon {
+                width: 20px;
+                height: 20px;
+                font-size: 0.7em;
+            }
+            
+            /* Emoji integration */
+            #emoji-text-display {
+                font-size: 1.2rem;
+                padding: 10px;
+                min-height: 100px;
+            }
+            #emoji-summary-display {
+                font-size: 2.5rem;
+            }
+            .emoji-palette {
+                gap: 6px;
+                padding: 8px;
+            }
+            .draggable-emoji {
+                font-size: 1.8rem;
+                padding: 4px;
+            }
+            
+            /* Text layout demo */
+            .text-layout-demo {
+                width: 100% !important;
+                padding: 10px;
+                min-height: 120px;
+                resize: none;
+            }
+            
+            /* Font pairing demo */
+            .font-pairing-demo h1 { font-size: 1.5rem; }
+            .font-pairing-demo h2 { font-size: 1.2rem; }
+            .font-pairing-demo p { font-size: 0.95rem; }
+            
+            /* Modal */
+            .modal-content {
+                width: calc(100% - 32px);
+                max-width: calc(100vw - 32px);
+                margin: 15% 16px;
+                padding: 18px;
+            }
+            .modal-content h4 {
+                font-size: 1.05rem;
+            }
+            .modal-content p {
+                font-size: 0.9rem;
+            }
+            
+            footer {
+                padding: 12px 16px;
+                font-size: 0.75rem;
+            }
+        }
+        
+        /* Very small screens (iPhone SE, etc.) */
+        @media (max-width: 380px) {
+            header h1 {
+                font-size: 0.85rem;
+            }
+            
+            .mobile-tab {
+                padding: 10px 8px;
+                font-size: 0.85rem;
+            }
+            
+            #mid-pane {
+                max-height: 30vh;
+                min-height: 140px;
+            }
+            
+            .experience-selector button {
+                padding: 8px 6px;
+                font-size: 0.75rem;
+            }
+            
+            .control-group {
+                padding: 10px;
+            }
+            .control-group label {
+                font-size: 0.85rem;
+            }
+            .control-group p {
+                font-size: 0.75rem;
+            }
+            
+            /* Don't override typography-preview font-size - JS controls it */
+            
+            #emoji-text-display {
+                font-size: 1rem;
+            }
+            
+            .draggable-emoji {
+                font-size: 1.5rem;
+            }
+            
+            .modal-content {
+                width: calc(100% - 24px);
+                margin: 12% 12px;
+                padding: 14px;
             }
         }
     </style>
@@ -522,6 +932,12 @@
     <header>
         <h1>Beyond Dictionary: Designer Typography Playground</h1>
     </header>
+
+    <!-- Mobile Tab Navigation (hidden on desktop) -->
+    <nav class="mobile-tabs" id="mobileTabs">
+        <button class="mobile-tab active" data-tab="controls">⚙️ Controls</button>
+        <button class="mobile-tab" data-tab="instructions">📖 Help</button>
+    </nav>
 
     <main id="app-container">
         <aside id="left-pane" class="pane">
@@ -533,15 +949,22 @@
             </div>
             </aside>
 
+        <aside id="right-pane" class="pane">
+            <h2>Instructions</h2>
+            </aside>
+
+        <!-- Mobile Resizable Divider -->
+        <div class="pane-divider" id="paneDivider">
+            <div class="divider-handle">
+                <span class="divider-icon">⋯</span>
+            </div>
+        </div>
+
         <section id="mid-pane" class="pane">
             <h2>Live Preview</h2>
             <div id="typography-preview">
                 </div>
         </section>
-
-        <aside id="right-pane" class="pane">
-            <h2>Instructions</h2>
-            </aside>
     </main>
 
     <footer>
@@ -564,6 +987,89 @@
             const leftPane = document.getElementById('left-pane');
             const midPane = document.getElementById('mid-pane');
             const rightPane = document.getElementById('right-pane');
+            
+            // --- Mobile Tab Switching ---
+            const mobileTabs = document.querySelectorAll('.mobile-tab');
+            
+            function switchMobileTab(tabName) {
+                // Update tab buttons
+                mobileTabs.forEach(tab => {
+                    tab.classList.toggle('active', tab.dataset.tab === tabName);
+                });
+                
+                // Switch pane visibility
+                if (tabName === 'controls') {
+                    leftPane.classList.remove('tab-hidden');
+                    rightPane.classList.remove('tab-visible');
+                } else if (tabName === 'instructions') {
+                    leftPane.classList.add('tab-hidden');
+                    rightPane.classList.add('tab-visible');
+                }
+            }
+            
+            // Attach tab click listeners
+            mobileTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    switchMobileTab(tab.dataset.tab);
+                });
+            });
+            
+            // --- Resizable Divider ---
+            const paneDivider = document.getElementById('paneDivider');
+            const appContainer = document.getElementById('app-container');
+            let isDragging = false;
+            let startY = 0;
+            let startHeight = 0;
+            
+            function getControlsHeight() {
+                const style = getComputedStyle(appContainer);
+                const currentHeight = style.getPropertyValue('--controls-height');
+                if (currentHeight && currentHeight.includes('px')) {
+                    return parseInt(currentHeight);
+                }
+                // Default: 45vh converted to pixels
+                return window.innerHeight * 0.45;
+            }
+            
+            function setControlsHeight(height) {
+                const containerHeight = appContainer.offsetHeight;
+                const minHeight = 100;
+                const maxHeight = containerHeight - 140; // Leave room for divider + preview
+                const clampedHeight = Math.max(minHeight, Math.min(maxHeight, height));
+                appContainer.style.setProperty('--controls-height', clampedHeight + 'px');
+            }
+            
+            function onDividerStart(e) {
+                if (window.innerWidth >= 768) return; // Only on mobile
+                isDragging = true;
+                startY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+                startHeight = getControlsHeight();
+                document.body.style.cursor = 'ns-resize';
+                e.preventDefault();
+            }
+            
+            function onDividerMove(e) {
+                if (!isDragging) return;
+                const currentY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+                const deltaY = currentY - startY;
+                setControlsHeight(startHeight + deltaY);
+            }
+            
+            function onDividerEnd() {
+                isDragging = false;
+                document.body.style.cursor = '';
+            }
+            
+            // Mouse events
+            paneDivider.addEventListener('mousedown', onDividerStart);
+            document.addEventListener('mousemove', onDividerMove);
+            document.addEventListener('mouseup', onDividerEnd);
+            
+            // Touch events
+            paneDivider.addEventListener('touchstart', onDividerStart, { passive: false });
+            document.addEventListener('touchmove', onDividerMove, { passive: false });
+            document.addEventListener('touchend', onDividerEnd);
+            
             const typographyPreview = document.getElementById('typography-preview');
             const infoModalOverlay = document.getElementById('info-modal-overlay');
             const modalCloseButton = infoModalOverlay.querySelector('.modal-close-button');

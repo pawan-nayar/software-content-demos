@@ -35,7 +35,74 @@
             background: var(--bg);
             color: var(--text);
             line-height: 1.7;
+            overflow-x: hidden;
         }
+        /* --- Header & Footer --- */
+        .site-header, .site-footer {
+            background: var(--muted);
+            color: var(--header-fg);
+            padding: 14px 24px;
+        }
+        .site-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            position: sticky;
+            top: 0;
+            z-index: 200;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            border-bottom: 1px solid var(--border);
+        }
+        .logo {
+            font-weight: 700;
+            font-size: 1.15rem;
+            color: #fff;
+            text-decoration: none;
+        }
+        .logo:hover {
+            color: var(--accent);
+            text-decoration: none;
+        }
+        .site-nav {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .site-nav a {
+            color: #ced4da;
+            text-decoration: none;
+        }
+        .site-nav a:hover {
+            color: #fff;
+            text-decoration: none;
+        }
+        .hamburger {
+            display: none;
+            background: none;
+            border: 1px solid rgba(255,255,255,0.4);
+            color: #fff;
+            border-radius: 8px;
+            padding: 8px 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            line-height: 1;
+            transition: background 0.2s;
+            min-width: 48px;
+            min-height: 48px;
+        }
+        .hamburger:hover, .hamburger[aria-expanded="true"] {
+            background: rgba(255,255,255,0.15);
+        }
+        .site-footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 40px;
+            font-size: 0.9rem;
+            border-top: 1px solid var(--border);
+        }
+        
         .container {
             max-width: 1200px;
             margin: auto;
@@ -86,6 +153,57 @@
             color: var(--accent);
             font-weight: 500;
             margin-bottom: 16px;
+        }
+        
+        /* Desktop Optimized Notice */
+        .desktop-notice {
+            background: linear-gradient(135deg, rgba(74, 144, 226, 0.15), rgba(58, 123, 200, 0.15));
+            border: 2px solid var(--accent);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin: 24px 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .desktop-notice-icon {
+            font-size: 2rem;
+            flex-shrink: 0;
+        }
+        .desktop-notice-text {
+            flex: 1;
+        }
+        .desktop-notice-title {
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 4px;
+            font-size: 1.05rem;
+        }
+        .desktop-notice-desc {
+            font-size: 0.9rem;
+            color: #b0b0b0;
+            line-height: 1.5;
+        }
+        
+        /* Hide notice on desktop */
+        @media (min-width: 1025px) {
+            .desktop-notice { display: none; }
+        }
+        
+        /* Mobile SVG Hint */
+        .mobile-svg-hint {
+            display: none;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--accent);
+            padding: 8px;
+            background: rgba(74, 144, 226, 0.1);
+            border-radius: 8px;
+            margin-top: 8px;
+        }
+        
+        @media (max-width: 640px) {
+            .mobile-svg-hint { display: block; }
         }
         .svg-section {
             margin-top: 48px;
@@ -156,20 +274,95 @@
         .tooltip li {
             padding-left: 0;
         }
+        /* Mobile header: collapse nav into hamburger */
+        @media (max-width: 768px) {
+            .site-header {
+                flex-wrap: nowrap;
+            }
+            .logo {
+                flex: 0 0 auto;
+            }
+            .hamburger {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                margin-left: auto;
+            }
+            .site-nav {
+                display: none;
+                position: absolute;
+                top: 100%;
+                right: 16px;
+                flex-direction: column;
+                gap: 0;
+                background: var(--muted);
+                padding: 8px 0;
+                border-radius: 8px;
+                box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+                min-width: 200px;
+            }
+            .site-nav.open {
+                display: flex;
+            }
+            .site-nav a {
+                display: block;
+                padding: 10px 18px;
+                color: #f8f9fa;
+                white-space: nowrap;
+            }
+            .site-nav a + a {
+                border-top: 1px solid rgba(255,255,255,0.15);
+            }
+        }
+        
         @media (max-width: 640px) {
-            body {
-                padding: 0.5rem;
+            .container {
+                padding: 1rem;
+            }
+            h2 {
+                margin: 32px 0 12px;
+            }
+            .intro {
+                font-size: 0.95rem;
+                padding: 14px;
+            }
+            .desktop-notice {
+                padding: 12px 16px;
+                flex-direction: column;
+                text-align: center;
+            }
+            .desktop-notice-icon {
+                font-size: 2.5rem;
             }
             .interactive-svg-container {
                 width: 100%;
                 max-width: 100%;
                 aspect-ratio: unset;
-                min-height: 90vh;
+                min-height: 65vh;
+                max-height: 70vh;
+                overflow-x: auto;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+                border: 2px solid var(--border);
+                border-radius: 8px;
+                position: relative;
+            }
+            .svg-section {
+                margin-top: 24px;
             }
             .tooltip {
-                max-width: calc(100vw - 30px);
-                font-size: 12px;
+                position: fixed !important;
+                left: 50% !important;
+                bottom: 20px !important;
+                transform: translateX(-50%) !important;
+                max-width: calc(100vw - 32px);
+                font-size: 11px;
                 padding: 0.75rem;
+                max-height: 40vh;
+                overflow-y: auto;
+            }
+            .tooltip-title {
+                font-size: 13px;
             }
         }
     </style>
@@ -178,9 +371,28 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
+    <header class="site-header">
+        <a href="../../../index.html" class="logo">Beyond Dictionary</a>
+        <button class="hamburger" id="hamburger-btn" aria-expanded="false" aria-controls="primary-nav">☰ Menu</button>
+        <nav id="primary-nav" class="site-nav">
+            <a href="#">Learning</a>
+            <a href="#">Tutorials</a>
+            <a href="#">Claude Code</a>
+            <a href="#">Blog</a>
+        </nav>
+    </header>
+
     <div class="container">
         <h1>Claude Console Interactive Demo</h1>
         <p class="byline">Master the Anthropic Workbench: Your Interactive Guide to AI Development</p>
+
+        <div class="desktop-notice">
+            <div class="desktop-notice-icon">🖥️</div>
+            <div class="desktop-notice-text">
+                <div class="desktop-notice-title">Best Viewed on Desktop</div>
+                <div class="desktop-notice-desc">This interactive SVG diagram is optimized for desktop screens (1024px+) for the perfect experience. Mobile version is functional but may require scrolling to explore all elements.</div>
+            </div>
+        </div>
 
         <p class="intro">Explore the Anthropic Workbench interface through this interactive guide. Hover over any element to discover detailed tooltips explaining its purpose, impact, and practical usage. This hands-on demonstration helps you understand the Console's powerful features for prompt engineering, AI model interaction, and project management workflows.</p>
 
@@ -188,6 +400,7 @@
 
         <div class="svg-section">
             <h2>Interactive Console Interface</h2>
+            <p class="mobile-svg-hint">👆 Tap any element for details • Scroll/pan to explore the interface</p>
         <div class="interactive-svg-container">
             <!-- This SVG recreates the UI from the provided image and adds interactivity -->
             <svg id="workbench-svg" width="100%" height="100%" viewBox="0 0 1200 675" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -327,9 +540,32 @@
         </div>
         </div>
     </div>
+    
+    <footer class="site-footer">
+        <p>&copy; 2025 Beyond Dictionary. All rights reserved.</p>
+    </footer>
+    
     <div id="tooltip" class="tooltip"></div>
 
 <script>
+    // Hamburger menu toggle
+    document.getElementById('hamburger-btn')?.addEventListener('click', function() {
+        const nav = document.getElementById('primary-nav');
+        const isOpen = this.getAttribute('aria-expanded') === 'true';
+        this.setAttribute('aria-expanded', !isOpen);
+        nav?.classList.toggle('open');
+    });
+
+    // Close menu when clicking outside
+    document.addEventListener('click', function(e) {
+        const hamburger = document.getElementById('hamburger-btn');
+        const nav = document.getElementById('primary-nav');
+        if (hamburger && nav && !hamburger.contains(e.target) && !nav.contains(e.target)) {
+            hamburger.setAttribute('aria-expanded', 'false');
+            nav.classList.remove('open');
+        }
+    });
+
     document.addEventListener('DOMContentLoaded', () => {
         const svg = document.getElementById('workbench-svg');
         const outputText = document.getElementById('output-text');
@@ -609,6 +845,15 @@
             el.addEventListener('touchend', hideTooltip);
             el.addEventListener('touchcancel', hideTooltip);
         });
+
+        // Close tooltip on tap anywhere (mobile)
+        if (window.innerWidth <= 640) {
+            document.addEventListener('touchstart', (e) => {
+                if (tooltip.style.opacity === '1' && !e.target.closest('.clickable')) {
+                    tooltip.style.opacity = '0';
+                }
+            });
+        }
 
     });
 </script>

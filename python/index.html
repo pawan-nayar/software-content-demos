@@ -8,124 +8,271 @@ Month: Sep 2025
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Python Learning Hub | Integrated</title>
+    <title>Python Learning Hub | Beyond Dictionary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
-        /* === UPDATED COLOR PALETTE (from your files) === */
         :root {
             --text: #212529;
-            --bg: #fff;
-            --muted: #f8f9fa;
-            --border: #e9ecef;
+            --text-muted: #6c757d;
+            --bg: #f0f4f8;
+            --bg-card: rgba(255, 255, 255, 0.7);
+            --border: rgba(255, 255, 255, 0.5);
             --accent: #fd7e14;
             --accent-2: #e87312;
-            --header-bg: #212529;
+            --header-bg: #1a1a2e;
             --header-fg: #f8f9fa;
-            --ok: #16a34a;
-            --bad: #dc2626;
-            --info: #3b82f6;
         }
 
-        body {
-            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-            line-height: 1.6;
-            margin: 0;
-            background-color: var(--bg);
-            color: var(--text);
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
-
-        /* === ENHANCED DARK MODE (to match your theme) === */
         body.dark-mode {
             --text: #e9ecef;
-            --bg: #121212;
-            --muted: #1a1a1a;
-            --border: #343a40;
-            --header-bg: #1a1a1a;
-            --header-fg: #f8f9fa;
-            --card-bg: #212529; /* Using header-bg for cards */
+            --text-muted: #a0aec0;
+            --bg: #0f0f1a;
+            --bg-card: rgba(30, 30, 50, 0.7);
+            --border: rgba(255, 255, 255, 0.1);
+            --header-bg: #0a0a14;
         }
 
-        /* === HEADER STYLED TO MATCH YOUR INTERNAL PAGES === */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { 
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* === HEADER === */
         .hero {
-            text-align: center;
-            padding: 3rem 1rem;
-            background-color: var(--header-bg);
+            background: var(--header-bg);
             color: var(--header-fg);
+            padding: 2.5rem 1.5rem 2rem;
+            text-align: center;
             position: relative;
         }
         
+        .hero-content {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
         .hero h1 {
-            color: var(--header-fg);
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 0.25rem;
+        }
+        
+        .hero-accent {
+            width: 60px;
+            height: 4px;
+            background: var(--accent);
+            border-radius: 2px;
+            margin: 0.75rem auto;
         }
         
         .hero .subtitle {
-            color: #ced4da;
+            color: #9ca3af;
+            font-size: 0.95rem;
+            line-height: 1.5;
         }
         
         #theme-toggle {
             position: absolute;
             top: 1rem;
             right: 1rem;
-            background: rgba(255, 255, 255, 0.1); /* Subtle button on dark header */
-            border: 1px solid var(--border);
-            color: var(--header-fg);
-            padding: 0.5rem 0.75rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: #fff;
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
             cursor: pointer;
-            font-size: 1.2rem;
-            line-height: 1;
-            transition: background-color 0.3s ease, transform 0.2s ease;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
         }
+        #theme-toggle:hover { background: rgba(255, 255, 255, 0.2); }
 
-        #theme-toggle:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: scale(1.1);
-        }
-
+        /* === MAIN === */
         main {
-            padding: 1rem;
+            padding: 1.5rem 1rem;
+            max-width: 900px;
+            margin: 0 auto;
         }
 
-        h1, h2, h3 { color: var(--text); }
+        /* === SECTION WITH NUMBERED BADGE === */
+        .step-section {
+            margin-bottom: 2rem;
+        }
         
-        section { margin: 2rem 0; }
-        .section-intro { text-align: center; margin-bottom: 2rem; color: #6c757d; }
-        body.dark-mode .section-intro { color: #a0aec0; }
-
-        .card-container { list-style-type: none; padding: 0; margin: 0; }
-        .card {
-            background-color: var(--bg); /* Light mode uses main bg, dark mode uses card-bg */
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 1.5rem;
+        .step-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
             margin-bottom: 1rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.3s ease;
-        }
-        body.dark-mode .card {
-            background-color: var(--card-bg);
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
         
-        .card h3 { margin-top: 0; }
-        .card a { text-decoration: none; color: var(--accent); } /* Using your orange accent */
-        .card a:hover { color: var(--accent-2); text-decoration: underline; }
-        .card p { margin-bottom: 0; }
+        .step-badge {
+            width: 36px;
+            height: 36px;
+            background: var(--accent);
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+        
+        .step-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text);
+        }
 
-        /* --- Desktop Styles --- */
-        @media (min-width: 768px) {
-            main { padding: 2rem; max-width: 1200px; margin: 0 auto; }
-            .card-container {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-                gap: 1.5rem;
+        /* === GLASSMORPHISM CARD CONTAINER === */
+        .glass-panel {
+            background: var(--bg-card);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 0.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+        
+        body.dark-mode .glass-panel {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        /* === LINK ITEMS (inside glass panel) === */
+        .link-list {
+            list-style: none;
+        }
+        
+        .link-item {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+        }
+        body.dark-mode .link-item {
+            border-bottom-color: rgba(255, 255, 255, 0.06);
+        }
+        .link-item:last-child {
+            border-bottom: none;
+        }
+        
+        .link-item a {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 500;
+            border-radius: 12px;
+            transition: background 0.2s;
+            min-height: 56px;
+        }
+        
+        .link-item a:hover {
+            background: rgba(253, 126, 20, 0.08);
+        }
+        
+        .link-item a::after {
+            content: '→';
+            color: var(--accent);
+            font-weight: 600;
+            opacity: 0.6;
+            transition: transform 0.2s, opacity 0.2s;
+        }
+        
+        .link-item a:hover::after {
+            transform: translateX(4px);
+            opacity: 1;
+        }
+        
+        .link-title {
+            font-size: 0.95rem;
+        }
+        
+        .link-desc {
+            display: none; /* Hidden on mobile by default */
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 400;
+            margin-top: 0.25rem;
+        }
+
+        /* === FOOTER === */
+        .site-footer {
+            background: var(--header-bg);
+            color: #9ca3af;
+            text-align: center;
+            padding: 1.25rem 1rem;
+            font-size: 0.85rem;
+        }
+
+        /* === MOBILE (default) === */
+        @media (max-width: 768px) {
+            .hero { padding: 3.5rem 1rem 1.5rem; }
+            .hero h1 { font-size: 1.4rem; }
+            .hero .subtitle { font-size: 0.9rem; }
+            
+            .step-badge { width: 32px; height: 32px; font-size: 0.9rem; }
+            .step-title { font-size: 1rem; }
+            
+            .link-item a { padding: 0.875rem 1rem; min-height: 52px; }
+            .link-title { font-size: 0.9rem; }
+        }
+        
+        @media (max-width: 380px) {
+            .hero h1 { font-size: 1.25rem; }
+            main { padding: 1rem 0.75rem; }
+            .link-title { font-size: 0.85rem; }
+        }
+
+        /* === DESKTOP === */
+        @media (min-width: 769px) {
+            .hero { padding: 3rem 2rem; }
+            .hero h1 { font-size: 2rem; }
+            
+            main { padding: 2rem; }
+            
+            .step-section { margin-bottom: 2.5rem; }
+            .step-badge { width: 40px; height: 40px; font-size: 1.1rem; }
+            .step-title { font-size: 1.2rem; }
+            
+            .glass-panel { padding: 0.75rem; }
+            
+            .link-item a { padding: 1.25rem 1.5rem; }
+            .link-title { font-size: 1rem; }
+            
+            /* Show descriptions on desktop */
+            .link-desc { display: block; }
+            
+            .link-item a {
+                flex-direction: column;
+                align-items: flex-start;
             }
-            .card { margin-bottom: 0; }
+            .link-item a::after {
+                position: absolute;
+                right: 1.5rem;
+                top: 50%;
+                transform: translateY(-50%);
+            }
+            .link-item {
+                position: relative;
+            }
+            .link-item a:hover::after {
+                transform: translateY(-50%) translateX(4px);
+            }
         }
     </style>
 </head>
@@ -133,68 +280,126 @@ Month: Sep 2025
 
     <header class="hero">
         <button id="theme-toggle" title="Toggle dark/light mode">🌙</button>
-        <h1>🐍 Python Interactive Demos & Guides</h1>
-        <p class="subtitle">Your journey to Python mastery starts here. Explore structured concepts, interactive tools, and applied computer science examples.</p>
+        <div class="hero-content">
+            <h1>Python Learning Hub</h1>
+            <div class="hero-accent"></div>
+            <p class="subtitle">Interactive demos and structured guides for your Python journey</p>
+        </div>
     </header>
 
     <main>
-        <section id="foundations">
-            <h2>Step 1: Build Your Foundation</h2>
-            <p class="section-intro">Grasp the core principles of Python programming, from logical thinking to data fundamentals.</p>
-            <ul class="card-container">
-                <li class="card">
-                    <h3><a href="think-plan-code-python.html">How to Think, Plan and Code</a></h3>
-                    <p>Learn the mental framework required to translate ideas into effective Python code.</p>
-                </li>
-                <li class="card">
-                    <h3><a href="python-flow-of-control.html">Flow of Control: Triple Path Analysis</a></h3>
-                    <p>Master loops and conditionals to direct your program's logic with precision.</p>
-                </li>
-                <li class="card">
-                    <h3><a href="python-variables-and-data-types.html">Variables & Data Types</a></h3>
-                    <p>An interactive guide to how Python stores and manages different kinds of information.</p>
-                </li>
-                <li class="card">
-                    <h3><a href="python-keyword-peek-tool.html">Python Keyword Peek Tool</a></h3>
-                    <p>A handy reference tool to quickly understand the purpose of Python's reserved keywords.</p>
-                </li>
-            </ul>
+        <!-- Step 1 -->
+        <section class="step-section">
+            <div class="step-header">
+                <div class="step-badge">1</div>
+                <h2 class="step-title">Build Your Foundation</h2>
+            </div>
+            <div class="glass-panel">
+                <ul class="link-list">
+                    <li class="link-item">
+                        <a href="think-plan-code-python.html">
+                            <div>
+                                <div class="link-title">How to Think, Plan and Code</div>
+                                <div class="link-desc">The mental framework to translate ideas into Python</div>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="link-item">
+                        <a href="python-flow-of-control.html">
+                            <div>
+                                <div class="link-title">Flow of Control</div>
+                                <div class="link-desc">Master loops and conditionals with precision</div>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="link-item">
+                        <a href="python-variables-and-data-types.html">
+                            <div>
+                                <div class="link-title">Variables & Data Types</div>
+                                <div class="link-desc">How Python stores different kinds of information</div>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="link-item">
+                        <a href="python-keyword-peek-tool.html">
+                            <div>
+                                <div class="link-title">Keyword Peek Tool</div>
+                                <div class="link-desc">Quick reference for Python's reserved words</div>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </section>
 
-        <section id="tools">
-            <h2>Step 2: Get Hands-On with Tools</h2>
-            <p class="section-intro">Solidify your knowledge with interactive applications that bring concepts to life.</p>
-            <ul class="card-container">
-                <li class="card">
-                    <h3><a href="hello-calc-python.html">Hello-Calc: Python Basics</a></h3>
-                    <p>Our "Hello, World!" with a twist. A simple calculator to practice basic syntax and operations.</p>
-                </li>
-                <li class="card">
-                    <h3><a href="python-runner-cbse-class-11-12.html">Python Runner for CBSE</a></h3>
-                    <p>An online environment to run and test code specifically tailored for the CBSE curriculum.</p>
-                </li>
-                <li class="card">
-                    <h3><a href="best-practices-flip-cards.html">25 Best Practices Flip Cards</a></h3>
-                    <p>Quiz yourself on essential coding standards to write clean, professional Python code.</p>
-                </li>
-            </ul>
+        <!-- Step 2 -->
+        <section class="step-section">
+            <div class="step-header">
+                <div class="step-badge">2</div>
+                <h2 class="step-title">Get Hands-On</h2>
+            </div>
+            <div class="glass-panel">
+                <ul class="link-list">
+                    <li class="link-item">
+                        <a href="hello-calc-python.html">
+                            <div>
+                                <div class="link-title">Hello-Calc: Python Basics</div>
+                                <div class="link-desc">Practice syntax with an interactive calculator</div>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="link-item">
+                        <a href="python-runner-cbse-class-11-12.html">
+                            <div>
+                                <div class="link-title">Python Runner for CBSE</div>
+                                <div class="link-desc">Run code tailored for Class 11-12 curriculum</div>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="link-item">
+                        <a href="best-practices-flip-cards.html">
+                            <div>
+                                <div class="link-title">25 Best Practices</div>
+                                <div class="link-desc">Flip cards to quiz yourself on coding standards</div>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </section>
-        
-        <section id="applied-cs">
-            <h2>Step 3: Apply Your Skills</h2>
-            <p class="section-intro">See how Python is used to solve real-world computer science problems.</p>
-            <ul class="card-container">
-                <li class="card">
-                    <h3><a href="network-topology-diagrams.html">Network Topology Diagrams</a></h3>
-                    <p>Explore how to model and visualize computer networks using Python libraries.</p>
-                </li>
-                <li class="card">
-                    <h3><a href="python-glossary-graceful-error-management.html">Graceful Error Management</a></h3>
-                    <p>A deep dive into `try-except` blocks and strategies for building robust, crash-proof applications.</p>
-                </li>
-            </ul>
+
+        <!-- Step 3 -->
+        <section class="step-section">
+            <div class="step-header">
+                <div class="step-badge">3</div>
+                <h2 class="step-title">Apply Your Skills</h2>
+            </div>
+            <div class="glass-panel">
+                <ul class="link-list">
+                    <li class="link-item">
+                        <a href="network-topology-diagrams.html">
+                            <div>
+                                <div class="link-title">Network Topology Diagrams</div>
+                                <div class="link-desc">Model and visualize computer networks</div>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="link-item">
+                        <a href="python-glossary-graceful-error-management.html">
+                            <div>
+                                <div class="link-title">Graceful Error Management</div>
+                                <div class="link-desc">Build robust apps with try-except strategies</div>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </section>
     </main>
+
+    <footer class="site-footer">
+        © Beyond Dictionary, 2025
+    </footer>
 
     <script>
         const themeToggleButton = document.getElementById('theme-toggle');

@@ -65,8 +65,8 @@
         
         /* Learning Scenarios Carousel Styles */
         .carousel-container { position: relative; padding: 0 40px; overflow: hidden; margin-bottom: 16px; }
-        .carousel-deck { position: relative; height: 260px; }
-        .flip-card { background-color: transparent; height: 250px; perspective: 1000px; cursor: pointer; position: absolute; width: 100%; top:0; left:0; opacity: 0; transition: opacity 0.5s, transform 0.5s; transform: scale(0.95); }
+        .carousel-deck { position: relative; height: min(360px, 70vh); }
+        .flip-card { background-color: transparent; height: min(350px, 70vh); perspective: 1000px; cursor: pointer; position: absolute; width: 100%; top:0; left:0; opacity: 0; transition: opacity 0.5s, transform 0.5s; transform: scale(0.95); }
         .flip-card.active { opacity: 1; transform: scale(1); z-index: 10; }
         .flip-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s; transform-style: preserve-3d; }
         .flip-card.flipped .flip-card-inner { transform: rotateY(180deg); }
@@ -127,7 +127,7 @@
         /* Horizontal Flip Card Carousel Styles */
         .h-carousel-container { perspective: 1200px; position: relative; padding: 0 50px 24px 50px; }
         .h-carousel-deck { min-height: 420px; display: flex; align-items: center; justify-content: center; }
-        .h-flip-card { width: 100%; height: 420px; background-color: transparent; display: none; }
+        .h-flip-card { width: 100%; height: min(420px, 75vh); background-color: transparent; display: none; }
         #faq-section { position: relative; z-index: 2; }
         .h-flip-card.active { display: block; }
         .h-flip-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.7s, box-shadow 0.3s; transform-style: preserve-3d; cursor: pointer; border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
@@ -145,9 +145,112 @@
         .reflection-note { background: #343a40; padding: 12px; border-radius: 6px; border-left: 3px solid var(--accent); margin-top: 15px; font-style: italic; font-size: 0.9rem !important; }
         .prompt-option { border: 1px solid #495057; padding: 8px; border-radius: 4px; margin-bottom: 8px; }
         .prompt-option strong { color: var(--accent); }
+        
+        /* ================= Header / Navigation ================= */
+        .site-header { background: var(--header-bg); color: var(--header-fg); padding: 14px 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; position: sticky; top: 0; z-index: 200; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .logo { font-weight: 700; font-size: 1.15rem; color: #fff; text-decoration: none; }
+        .logo:hover { color: var(--accent); text-decoration: none; }
+        .site-nav { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
+        .site-nav a { color: #ced4da; text-decoration: none; }
+        .site-nav a:hover { color: #fff; text-decoration: none; }
+        .hamburger { display: none; background: none; border: 1px solid rgba(255,255,255,0.4); color: #fff; border-radius: 8px; padding: 8px 10px; font-size: 1rem; cursor: pointer; line-height: 1; transition: background 0.2s; min-width: 48px; min-height: 48px; align-items: center; justify-content: center; }
+        .hamburger:hover, .hamburger[aria-expanded="true"] { background: rgba(255,255,255,0.15); }
+        
+        /* ================= MOBILE RESPONSIVE - SHOT 1 (768px) ================= */
+        @media (max-width: 768px) {
+            body { font-size: 0.95rem; }
+            .container { padding: 18px 16px; }
+            
+            /* Header & Navigation */
+            .site-header { flex-wrap: nowrap; padding: 12px 16px; }
+            .logo { flex: 0 0 auto; font-size: 1.05rem; }
+            .hamburger { display: inline-flex; margin-left: auto; }
+            .site-nav { display: none; position: absolute; top: 100%; right: 16px; flex-direction: column; gap: 0; background: var(--header-bg); padding: 8px 0; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.35); min-width: 200px; }
+            .site-nav.open { display: flex; }
+            .site-nav a { width: 100%; padding: 10px 18px; color: #f8f9fa; white-space: nowrap; }
+            .site-nav a + a { border-top: 1px solid rgba(255,255,255,0.15); }
+            
+            /* Typography */
+            h1 { font-size: 1.75rem; margin-bottom: 10px; }
+            h2 { font-size: 1.4rem; margin: 32px 0 12px; padding-bottom: 6px; }
+            h3 { font-size: 1.2rem; margin: 24px 0 10px; }
+            h4 { font-size: 1rem; }
+            p { margin-bottom: 16px; }
+            
+            /* Grid Layouts - Stack to Single Column */
+            .grid { grid-template-columns: 1fr; gap: 16px; }
+            .track-suggestions { grid-template-columns: 1fr; }
+            
+            /* Carousel */
+            .carousel-container { padding: 0 24px; }
+            .h-carousel-container { padding: 0 24px 24px 24px; }
+            
+            /* Code blocks */
+            pre { padding: 12px; font-size: 0.85rem; overflow-x: auto; word-wrap: break-word; white-space: pre-wrap; }
+            code { font-size: 0.85rem; word-break: break-word; }
+            
+            /* Boxes & Containers */
+            .intro { padding: 18px; margin: 20px 0; }
+            .card { padding: 16px; }
+            .rtc-quiz-container { padding: 1.5rem; }
+            .story-intro { padding: 18px; }
+            .progress-section { padding: 20px; }
+            .completion-summary { padding: 28px; }
+        }
+        
+        /* ================= MOBILE RESPONSIVE - SHOT 2 (600px) ================= */
+        @media (max-width: 600px) {
+            /* Typography - Adjust clamp ranges */
+            h1 { font-size: clamp(1.5rem, 6vw, 1.8rem); }
+            h2 { font-size: 1.3rem; margin: 28px 0 10px; }
+            h3 { font-size: 1.1rem; margin: 20px 0 8px; }
+            
+            /* Carousel Navigation - Smaller for small screens */
+            .carousel-nav { width: 32px; height: 32px; font-size: 18px; }
+            
+            /* Boxes & Containers */
+            .interactive-box { padding: 18px; }
+            .rtc-quiz-container { padding: 1.25rem; }
+            .story-intro { padding: 16px; }
+            .progress-section { padding: 18px; }
+            .completion-summary { padding: 24px; }
+        }
+        
+        /* ================= MOBILE RESPONSIVE - SHOT 3 (480px) ================= */
+        @media (max-width: 480px) {
+            /* Container - Ultra-compact */
+            .container { padding: 20px 12px; }
+            
+            /* Typography - Further reduction */
+            h1 { font-size: 1.5rem; }
+            h2 { font-size: 1.2rem; margin: 24px 0 8px; }
+            h3 { font-size: 1rem; margin: 16px 0 6px; }
+            
+            /* Carousel - Minimal padding */
+            .carousel-container { padding: 0 8px; }
+            .h-carousel-container { padding: 0 8px 20px 8px; }
+            
+            /* Touch Targets - Ensure minimum 44px */
+            .accordion-header { min-height: 48px; padding: 12px 16px; font-size: 1rem; }
+            .quiz-option label { min-height: 44px; padding: 12px; }
+            .btn { min-height: 44px; padding: 12px 20px; }
+            
+            /* Progress dots */
+            .step-dot { width: 10px; height: 10px; }
+        }
     </style>
 </head>
 <body>
+    <header class="site-header">
+        <a href="#" class="logo">Beyond Dictionary</a>
+        <button class="hamburger" id="hamburger-btn" aria-expanded="false" aria-controls="primary-nav">☰ Menu</button>
+        <nav id="primary-nav" class="site-nav">
+            <a href="#">Learning</a>
+            <a href="#">Resources</a>
+            <a href="#">About</a>
+        </nav>
+    </header>
+    
     <div class="container">
         <div id="back-to-main-top" style="display: none; margin-bottom: 20px;">
             <button onclick="showMainPage()" style="background: var(--accent); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 0.9rem;">← Back to Main</button>
@@ -771,6 +874,16 @@
                     card.addEventListener('click', () => loadTrackContent(card.dataset.track));
                 });
             }
+            
+            function updateProgress() {
+                // Stub function to prevent errors - can be enhanced later
+                const progressFill = document.getElementById('progress-fill');
+                const progressText = document.getElementById('progress-text');
+                if (progressFill && progressText) {
+                    progressFill.style.width = '0%';
+                    progressText.textContent = '0% Complete';
+                }
+            }
 
 
 
@@ -1053,6 +1166,16 @@
             // --- INITIALIZATION ---
             setupTrackSelection();
             setupAccordion();
+            
+            // Hamburger menu toggle
+            const hamburger = document.getElementById('hamburger-btn');
+            const nav = document.getElementById('primary-nav');
+            if (hamburger && nav) {
+                hamburger.addEventListener('click', () => {
+                    const isOpen = nav.classList.toggle('open');
+                    hamburger.setAttribute('aria-expanded', isOpen);
+                });
+            }
         });
 
         // Global functions (outside DOMContentLoaded)

@@ -16,17 +16,20 @@
             --font-main: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
+        html, body {
             font-family: var(--font-main);
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             color: var(--text);
-            line-height: 1.45; /* Reduced from 1.6 */
+            line-height: 1.5;
             min-height: 100vh;
+            scroll-behavior: smooth;
+            overflow-x: hidden;
         }
 
         /* --- Layout & Header --- */
-        .site-header { background: var(--header-bg); color: var(--header-fg); text-align:center; padding: 1rem; font-size: 1.5rem; font-weight: bold; }
-        .quiz-container { padding: 1.75rem 1rem; /* Reduced from 2rem */ max-width: 850px; margin: auto; }
+        .site-header { background: var(--header-bg); color: var(--header-fg); padding: 1rem; font-size: clamp(1.2rem, 4vw, 1.5rem); font-weight: bold; display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+        .site-header .header-title { flex: 1; text-align: center; }
+        .quiz-container { padding: 1.75rem 1rem; max-width: 850px; margin: auto; }
         
         /* --- Progress Bar --- */
         .progress-bar-container { width: 100%; height: 10px; background-color: var(--border); border-radius: 999px; overflow: hidden; margin-bottom: 0.85rem; /* Reduced from 1rem */ }
@@ -40,7 +43,7 @@
             box-shadow: 0 6px 18px rgba(0,0,0,0.07);
             border: 1px solid var(--border);
         }
-        .quiz-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.4rem; /* Reduced from 0.5rem */ color: var(--accent-2); }
+        .quiz-title { font-size: clamp(1.25rem, 4vw, 1.5rem); font-weight: 700; margin-bottom: 0.4rem; color: var(--accent-2); word-wrap: break-word; }
         .quiz-prompt { font-size: 1.05rem; margin-bottom: 1.3rem; /* Reduced from 1.5rem */ color: #495057; border-left: 4px solid var(--accent); padding-left: 1rem; background: var(--muted); padding-top: 0.4rem; padding-bottom: 0.4rem; border-radius: 4px;}
 
         /* --- Criteria Styling --- */
@@ -67,8 +70,8 @@
         .learning-note strong { color: var(--header-bg); }
 
         /* --- Navigation --- */
-        .nav-buttons { display: flex; justify-content: space-between; margin-top: 1.3rem; /* Reduced from 1.5rem */ }
-        .nav-buttons button { padding: .75rem 1.5rem; border: none; border-radius: 8px; background: var(--accent); color: #fff; cursor: pointer; font-weight: 600; transition: background-color 0.2s; font-size: 1rem; }
+        .nav-buttons { display: flex; justify-content: space-between; margin-top: 1.3rem; gap: 0.75rem; }
+        .nav-buttons button { padding: .75rem 1.5rem; border: none; border-radius: 8px; background: var(--accent); color: #fff; cursor: pointer; font-weight: 600; transition: background-color 0.2s; font-size: 1rem; min-height: 48px; }
         .nav-buttons button:hover:not(:disabled) { background: var(--accent-2); }
         .nav-buttons button:disabled { background: #ccc; cursor: not-allowed; }
         #prev-btn { background: #6c757d; }
@@ -77,10 +80,350 @@
         /* --- Results Screen --- */
         .results-summary td.score-cell { font-weight: 700; text-align: right; }
         .results-summary .final-score { font-size: 1.2rem; font-weight: 700; }
+
+        /* --- Help Modal --- */
+        .help-btn {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.4);
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+        .help-btn:hover {
+            background: rgba(255,255,255,0.15);
+        }
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            display: none;
+            z-index: 1000;
+        }
+        .modal-overlay.show {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-box {
+            background: #fff;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 480px;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--border);
+            background: var(--muted);
+            border-radius: 12px 12px 0 0;
+        }
+        .modal-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            color: var(--accent-2);
+        }
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6c757d;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+        .modal-close:hover {
+            background: var(--border);
+            color: var(--text);
+        }
+        .modal-body {
+            padding: 1.25rem;
+        }
+        .modal-body p {
+            margin: 0 0 1rem;
+            color: #495057;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        .modal-body ul {
+            margin: 0 0 1rem 1.25rem;
+            color: #495057;
+        }
+        .modal-body li {
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+        .modal-body strong {
+            color: var(--accent-2);
+        }
+        .modal-footer {
+            padding: 1rem 1.25rem;
+            border-top: 1px solid var(--border);
+            text-align: center;
+        }
+        .modal-footer button {
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            min-height: 48px;
+            font-size: 1rem;
+            transition: background 0.2s;
+        }
+        .modal-footer button:hover {
+            background: var(--accent-2);
+        }
+
+        /* ================= Mobile Responsive (CBSE Pattern) ================= */
+        @media (max-width: 768px) {
+            .site-header {
+                padding: 0.75rem;
+                gap: 0.5rem;
+            }
+            
+            .site-header .header-title {
+                font-size: clamp(1rem, 3.5vw, 1.25rem);
+            }
+            
+            .help-btn {
+                padding: 8px 10px;
+                font-size: 0.85rem;
+                min-height: 44px;
+            }
+            
+            .site-header > div:first-child {
+                display: none;
+            }
+            
+            .modal-box {
+                width: 92%;
+                max-width: none;
+                max-height: 80vh;
+            }
+            
+            .modal-header {
+                padding: 0.85rem 1rem;
+            }
+            
+            .modal-header h3 {
+                font-size: 1rem;
+            }
+            
+            .modal-close {
+                min-width: 44px;
+                min-height: 44px;
+            }
+            
+            .modal-body {
+                padding: 1rem;
+            }
+            
+            .modal-body p, .modal-body li {
+                font-size: 0.9rem;
+            }
+            
+            .modal-footer {
+                padding: 0.85rem 1rem;
+            }
+            
+            .quiz-container {
+                padding: 1.25rem 0.75rem;
+            }
+            
+            .quiz-card {
+                padding: 1rem 1.25rem;
+                border-radius: 10px;
+            }
+            
+            .quiz-prompt {
+                font-size: 1rem;
+                margin-bottom: 1rem;
+                padding: 0.5rem 0.75rem;
+            }
+            
+            .criteria {
+                padding: 0.75rem;
+                margin-bottom: 1rem;
+            }
+            
+            .criteria p {
+                font-size: 0.9rem;
+            }
+            
+            /* Touch-friendly radio labels */
+            .criteria label {
+                padding: 0.6rem 0.75rem;
+                margin: 0.3rem 0;
+                min-height: 44px;
+                display: flex;
+                align-items: center;
+            }
+            
+            .criteria input[type="radio"] {
+                width: 20px;
+                height: 20px;
+                margin-right: 0.75rem;
+                flex-shrink: 0;
+            }
+            
+            .feedback-panel {
+                padding: 1rem;
+            }
+            
+            .feedback-panel h3 {
+                font-size: 1.25rem;
+            }
+            
+            /* Table horizontal scroll */
+            .rubric-table {
+                display: block;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                font-size: 0.85rem;
+            }
+            
+            .rubric-table th, .rubric-table td {
+                padding: 0.5rem;
+                min-width: 100px;
+            }
+            
+            .learning-note {
+                padding: 0.75rem;
+                font-size: 0.9rem;
+            }
+            
+            .nav-buttons {
+                gap: 0.5rem;
+            }
+            
+            .nav-buttons button {
+                padding: 0.75rem 1rem;
+                font-size: 0.95rem;
+                flex: 1;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .quiz-container {
+                padding: 1rem 0.5rem;
+            }
+            
+            .quiz-card {
+                padding: 0.85rem 1rem;
+            }
+            
+            .quiz-title {
+                font-size: 1.1rem;
+            }
+            
+            .quiz-prompt {
+                font-size: 0.9rem;
+                padding: 0.4rem 0.6rem;
+            }
+            
+            .criteria {
+                padding: 0.6rem;
+            }
+            
+            .criteria strong {
+                font-size: 0.95rem;
+            }
+            
+            .criteria p {
+                font-size: 0.85rem;
+            }
+            
+            .criteria label {
+                font-size: 0.9rem;
+                padding: 0.5rem 0.6rem;
+            }
+            
+            .feedback-panel h3 {
+                font-size: 1.1rem;
+            }
+            
+            .rubric-table {
+                font-size: 0.8rem;
+            }
+            
+            .rubric-table th, .rubric-table td {
+                padding: 0.4rem;
+            }
+            
+            .learning-note {
+                font-size: 0.85rem;
+            }
+            
+            .nav-buttons button {
+                padding: 0.65rem 0.75rem;
+                font-size: 0.9rem;
+            }
+            
+            .results-summary .final-score {
+                font-size: 1rem;
+            }
+        }
     </style>
 </head>
 <body>
-    <header class="site-header">🔥 GitHub Mastery Rubric Quiz 🔥</header>
+    <header class="site-header">
+        <div style="width: 70px;"></div>
+        <span class="header-title">🔥 GitHub Mastery Rubric Quiz 🔥</span>
+        <button class="help-btn" onclick="toggleHelpModal(true)">❓ Help</button>
+    </header>
+
+    <!-- Help Modal -->
+    <div class="modal-overlay" id="helpModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>📋 How This Quiz Works</h3>
+                <button class="modal-close" onclick="toggleHelpModal(false)" aria-label="Close">×</button>
+            </div>
+            <div class="modal-body">
+                <p>Welcome to the <strong>GitHub Mastery Rubric Quiz Series</strong>! This isn't a typical quiz—it's designed to build your judgment through real-world scenarios.</p>
+                
+                <p><strong>What makes this different:</strong></p>
+                <ul>
+                    <li><strong>Multi-criteria rubric:</strong> Each question evaluates 4 dimensions (Accuracy, Process, Clarity, Risk Awareness)</li>
+                    <li><strong>Weighted scoring:</strong> Criteria have different weights (10-40%) reflecting their importance</li>
+                    <li><strong>Partial credit:</strong> You earn points for partially correct answers, not just all-or-nothing</li>
+                    <li><strong>Detailed feedback:</strong> After submitting, you'll see why each answer scored the way it did</li>
+                </ul>
+                
+                <p><strong>How to proceed:</strong></p>
+                <ul>
+                    <li>Read the scenario carefully</li>
+                    <li>Select one answer per criterion</li>
+                    <li>Click <strong>Submit</strong> to see your score and feedback</li>
+                    <li>Use <strong>Prev/Next</strong> to navigate between quizzes</li>
+                    <li>Complete all 10 quizzes to see your final summary</li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button onclick="toggleHelpModal(false)">Got it!</button>
+            </div>
+        </div>
+    </div>
+
     <main class="quiz-container">
         <div id="progress-container"></div>
         <div id="quiz-area"></div>
@@ -484,6 +827,30 @@
         navBtn.onclick = handleSubmitOrNav;
         renderQuiz();
     }
+
+    // Help Modal Toggle
+    function toggleHelpModal(show) {
+        const modal = document.getElementById('helpModal');
+        if (show) {
+            modal.classList.add('show');
+        } else {
+            modal.classList.remove('show');
+        }
+    }
+    
+    // Close modal on overlay click
+    document.getElementById('helpModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            toggleHelpModal(false);
+        }
+    });
+    
+    // Close modal on Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            toggleHelpModal(false);
+        }
+    });
 
     // Initial render
     document.addEventListener('DOMContentLoaded', renderQuiz);

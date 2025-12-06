@@ -45,35 +45,39 @@
         --bad: var(--error); --bad-soft: var(--error-soft);
       }
       *{box-sizing:border-box;margin:0;padding:0}
-      html,body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.8; scroll-behavior: smooth;}
+      html,body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;scroll-behavior:smooth;overflow-x:hidden}
       
-      .container{max-width:900px;margin:auto;padding:24px;background:var(--bg)}
+      .container{max-width:1080px;margin:auto;padding:24px;background:var(--bg)}
       
-      h1, h2, h3, h4 { color: var(--header-bg); font-weight: 700; line-height: 1.3; }
-      h1{font-size:clamp(1.8rem, 4vw, 2.4rem); margin-bottom: 4px;}
-      .byline{font-size:clamp(1rem, 3vw, 1.2rem); margin-bottom: 24px; font-style: italic; color: #495057;}
-      h2{font-size:clamp(1.5rem,4vw,2rem); margin: 80px 0 32px; border-bottom: 2px solid var(--border); padding-bottom: 12px; font-weight: 600;}
-      h3{font-size:clamp(1.2rem,3vw,1.5rem); margin: 40px 0 20px; font-weight: 700;}
-      h4 {color: var(--text); font-weight: 600; font-size: 1.1rem;}
+      h1,h2,h3,h4{color:var(--header-bg);font-weight:700;line-height:1.3}
+      h1{font-size:clamp(1.75rem,4vw,2.25rem);margin-bottom:8px}
+      .byline{font-size:clamp(0.95rem,2.5vw,1.1rem);margin-bottom:24px;font-style:italic;color:var(--text);opacity:0.7}
+      h2{font-size:clamp(1.4rem,3.5vw,1.85rem);margin:64px 0 24px;border-bottom:2px solid var(--border);padding-bottom:12px;font-weight:600}
+      h3{font-size:clamp(1.15rem,2.8vw,1.4rem);margin:32px 0 16px;font-weight:700}
+      h4{color:var(--text);font-weight:600;font-size:1.05rem}
       p{margin-bottom: 24px;}
       strong { font-weight: 600; }
       ul, ol { padding-left: 20px; margin-bottom: 24px; }
       li { margin-bottom: 10px; }
-      code { background: var(--muted); border: 1px solid var(--border); padding: 2px 6px; border-radius: 4px; font-family: 'Roboto Mono', monospace; font-size: 0.9em; }
-      pre { background: var(--code-bg); color: #e2e8f0; padding: 1rem; border-radius: 8px; overflow-x: auto; font-family: 'Roboto Mono', monospace; margin: 16px 0; white-space: pre-wrap; word-wrap: break-word; }
-      pre code { background: transparent; border: none; padding: 0; font-size: 0.9em; line-height: 1.6; display: block; }
+      code{background:var(--muted);border:1px solid var(--border);padding:2px 6px;border-radius:4px;font-family:'Roboto Mono',monospace;font-size:0.9em;word-break:break-all;overflow-wrap:break-word}
+      pre{background:var(--code-bg);color:#e2e8f0;padding:1rem;border-radius:8px;overflow-x:auto;font-family:'Roboto Mono',monospace;margin:16px 0;white-space:pre-wrap;word-wrap:break-word;overflow-wrap:break-word;word-break:break-word}
+      pre code{background:transparent;border:none;padding:0;font-size:0.9em;line-height:1.6;display:block;white-space:pre-wrap;word-break:break-word;overflow-wrap:break-word}
 
       .site-header,.site-footer{background:var(--header-bg);color:var(--header-fg);padding:14px 24px}
-      .site-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;position:sticky;top:0;z-index:100; box-shadow: 0 2px 10px rgba(0,0,0,0.1); transition: all 0.3s ease;}
-      .site-header.minimized { padding: 8px 24px; }
-      .site-header.minimized .logo { font-size: 1rem; }
-      .logo{font-weight:700;font-size:1.15rem;color:#fff; text-decoration: none; transition: font-size 0.3s ease;}
-      .logo:hover{color:var(--accent);}
-      .site-footer{text-align:center;margin-top:50px;padding:30px; font-size: 0.9rem;}
+      .site-header{display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100;box-shadow:0 2px 10px rgba(0,0,0,0.1);transition:all 0.3s ease}
+      .site-header.minimized{padding:8px 24px}
+      .logo{font-weight:700;font-size:1.15rem;color:#fff;text-decoration:none;transition:font-size 0.3s ease}
+      .logo:hover{color:var(--accent)}
+      .site-footer{text-align:center;margin-top:50px;padding:30px;font-size:0.9rem}
+      
+      /* Slide-out navigation drawer */
+      .sheet-nav{position:fixed;top:0;right:-100%;width:280px;height:100vh;background:#212529;padding:80px 24px 24px;display:flex;flex-direction:column;gap:8px;transition:right 0.3s ease;z-index:101;box-shadow:-4px 0 20px rgba(0,0,0,0.3);overflow-y:auto}
+      .sheet-nav.open{right:0}
+      .sheet-nav a{color:#f8f9fa;text-decoration:none;padding:12px 16px;border-radius:8px;font-size:0.95rem;font-weight:500;transition:background 0.2s}
+      .sheet-nav a:hover,.sheet-nav a:focus{background:rgba(253,126,20,0.1);color:var(--accent)}
       
       /* Module Navigation */
-      .module-nav { background: #2d2d2d; border-bottom: 2px solid var(--accent); padding: 12px 24px; position: sticky; top: 56px; z-index: 99; transition: all 0.3s ease; box-shadow: 0 1px 5px rgba(0,0,0,0.1); }
-      .module-nav.minimized { padding: 6px 24px; top: 42px; }
+      .module-nav{background:#2d2d2d;border-bottom:2px solid var(--accent);padding:12px 24px;position:sticky;top:56px;z-index:99}
       .module-nav-inner { display: flex; gap: 8px; overflow-x: auto; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; scrollbar-width: thin; scrollbar-color: var(--accent) #3a3a3a; }
       .module-nav-inner::-webkit-scrollbar { height: 4px; }
       .module-nav-inner::-webkit-scrollbar-track { background: #3a3a3a; }
@@ -85,16 +89,62 @@
       .module-link .module-num { opacity: 0.7; }
       .nav-controls { display: none; }
       
+      /* CBSE Table Styles */
+      .table-wrap{position:relative;border:1px solid var(--border);border-radius:12px;background:#fff;margin:24px 0;overflow:hidden}
+      .table-scroll{position:relative;overflow-x:auto;-webkit-overflow-scrolling:touch}
+      .swipe-hint{text-align:center;padding:8px;background:var(--accent-soft);color:var(--accent-2);font-size:0.85rem;font-weight:600;border-bottom:1px solid var(--border)}
+      table.data-table{width:100%;border-collapse:collapse;min-width:600px}
+      table.data-table th,table.data-table td{padding:12px 15px;border:1px solid var(--border);text-align:left;vertical-align:top;word-wrap:break-word;overflow-wrap:break-word}
+      table.data-table thead th{background:var(--muted);font-weight:600;position:sticky;top:0;z-index:1}
+      table.data-table tbody tr:nth-child(even){background:#f8f9fa}
+      table.data-table tbody tr:hover{background:#e9ecef}
+      
       @media (max-width: 768px) {
-        .module-nav { top: 52px; padding: 8px 12px; position: relative; }
-        .module-nav-wrapper { position: relative; }
-        .module-nav-inner { gap: 12px; padding: 0 40px; scroll-snap-type: x mandatory; }
-        .module-link { scroll-snap-align: center; padding: 10px 16px; font-size: 0.9rem; min-width: 140px; justify-content: center; }
-        .nav-controls { display: flex; position: absolute; top: 50%; transform: translateY(-50%); width: 100%; justify-content: space-between; pointer-events: none; z-index: 1; }
-        .nav-btn { pointer-events: all; background: var(--accent); color: white; border: none; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
-        .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-        .nav-btn-prev { margin-left: 4px; }
-        .nav-btn-next { margin-right: 4px; }
+        /* Prevent horizontal scroll */
+        body{overflow-x:hidden;width:100%}
+        .container{padding:16px;max-width:100%;overflow-x:hidden}
+        
+        /* Header - show hamburger */
+        .site-header{padding:12px 16px}
+        #hamburger-btn{display:block!important}
+        
+        /* Module nav - 2x3 grid */
+        .module-nav{top:52px;padding:10px 12px}
+        .module-nav-wrapper{position:relative}
+        .module-nav-inner{display:grid!important;grid-template-columns:repeat(3,1fr)!important;gap:8px;padding:0;overflow:visible}
+        .module-link{padding:10px 4px;font-size:0.8rem;min-width:auto;justify-content:center;text-align:center;flex-direction:column;gap:2px}
+        .module-link .module-num{display:block;font-size:0.75rem}
+        .nav-controls{display:none!important}
+        
+        /* Typography mobile adjustments */
+        h1{font-size:1.5rem}
+        h2{font-size:1.3rem;margin:48px 0 20px}
+        h3{font-size:1.15rem;margin:24px 0 12px}
+        h4{font-size:1rem}
+        p,li{font-size:0.95rem}
+        
+        /* Code blocks - prevent overflow */
+        pre{overflow-x:auto;max-width:100%;font-size:0.85rem;padding:12px;white-space:pre-wrap!important;word-wrap:break-word!important;overflow-wrap:break-word!important}
+        code{word-break:break-all;font-size:0.85rem;white-space:pre-wrap!important;overflow-wrap:break-word!important}
+        
+        /* Flip card carousel - CBSE pattern */
+        .carousel-container{padding:0 24px}
+        .carousel-nav{width:40px;height:40px;font-size:20px}
+        
+        /* Quiz navigation - compact */
+        .quiz-container{padding:16px}
+        .quiz-navigation{margin-bottom:16px;padding-bottom:16px}
+        .quiz-navigation .btn{min-width:48px;min-height:48px;font-size:1.1rem}
+        .quiz-option label{padding:12px;font-size:0.95rem}
+        
+        /* Force all 2-column grids to stack */
+        .infographic-grid,.governance-grid{grid-template-columns:1fr!important}
+        
+        /* SVG diagrams - full width */
+        svg{max-width:100%;height:auto}
+        
+        /* All inline grid layouts - stack vertically */
+        div[style*="grid-template-columns: 1fr 1fr"]{display:flex!important;flex-direction:column!important;gap:16px!important}
       }
       
       .module-section { margin-bottom: 80px; }
@@ -239,13 +289,18 @@
       .final-bridge.visible { opacity: 1; transform: translateY(0); }
       
       /* Consistent Quiz Styles from previous modules */
-      .quiz-container{padding:24px;border:2px solid var(--border);border-radius:12px;background:#fff;}
+      .quiz-container{padding:20px;border:2px solid var(--border);border-radius:12px;background:#fff;margin:24px 0}
       .quiz-navigation{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border)}
-      .quiz-body.active{display:block; animation: fadeIn 0.5s;}
-      .quiz-options{display:grid; gap:12px;}
-      .quiz-option{position:relative;}
-      .quiz-option label{display:block; padding:14px;border:2px solid var(--border);border-radius:8px;cursor:pointer;background:var(--muted); font-weight: 500;}
-      .quiz-option label:hover { border-color: var(--accent); }
+      .quiz-navigation .btn{min-width:50px}
+      .quiz-navigation .question-counter{font-weight:600;font-size:1.05rem}
+      .quiz-body{display:none}
+      .quiz-body.active{display:block;animation:fadeIn 0.5s}
+      @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+      .quiz-options{display:grid;gap:12px}
+      .quiz-option{position:relative}
+      .quiz-option label{display:flex;align-items:center;gap:12px;padding:14px;border:2px solid var(--border);border-radius:8px;cursor:pointer;background:#f8f9fa;transition:all 0.2s}
+      .quiz-option label:hover{background:#e9ecef;border-color:var(--accent)}
+      .quiz-option input[type="radio"]{flex-shrink:0}
       .quiz-option input[type="radio"]{margin-right: 12px; transform: scale(1.2); }
       .quiz-option .explanation{display:none;margin-top:12px;padding:15px;border-radius:6px;border-left:4px solid var(--accent); background: var(--accent-soft);}
       .quiz-option.selected.correct label{background:var(--ok-soft);border-color:var(--ok)}
@@ -272,9 +327,9 @@
       .rtc-nav-buttons button { flex: 1; }
       
       /* Copy Code Button Styles */
-      .copy-code-container { position: relative; margin: 16px 0; }
-      .copy-code-container pre { margin: 0; padding-right: 80px; max-width: 100%; overflow-x: hidden; }
-      .copy-code-btn { position: absolute; top: 8px; right: 8px; background: var(--accent); color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; font-weight: 600; z-index: 1; }
+      .copy-code-container{position:relative;margin:16px 0}
+      .copy-code-container pre{margin:0;max-width:100%;overflow-x:hidden;padding:1rem;padding-right:1rem}
+      .copy-code-btn{position:absolute;top:8px;right:8px;background:var(--accent);color:white;border:none;padding:6px 12px;border-radius:6px;font-size:0.85rem;cursor:pointer;transition:all 0.2s;font-weight:600;z-index:10}
       .copy-code-btn:hover { background: var(--accent-2); transform: translateY(-2px); }
       .copy-code-btn:active { transform: translateY(0); }
       .copy-code-btn.copied { background: var(--success); }
@@ -347,16 +402,24 @@
 
  <header class="site-header">
      <a href="claude_code_for_financial_consultants_index.html" class="logo">Claude for Consultants</a>
-     <span style="font-size:0.9rem;opacity:0.8;">Module 5 of 6</span>
+     <button id="hamburger-btn" aria-label="Toggle navigation menu" aria-expanded="false" style="background:none;border:none;color:#fff;font-size:1.8rem;cursor:pointer;padding:8px;min-width:48px;min-height:48px;display:none;">☰</button>
  </header>
+ 
+ <!-- Slide-out navigation drawer -->
+ <nav class="sheet-nav" id="sheet-nav" role="navigation" aria-label="Page sections">
+     <a href="#intro">Introduction</a>
+     <a href="#automation-chains">Automation Chains</a>
+     <a href="#workflow-design">Workflow Design</a>
+     <a href="#case-study">Case Study</a>
+     <a href="#ethical-governance">Ethical Governance</a>
+     <a href="#practice-library">Practice Library</a>
+     <a href="#reflection">Reflection & Quiz</a>
+     <a href="#faq">FAQ</a>
+     <a href="#glossary-section">Glossary</a>
+ </nav>
 
  <nav class="module-nav" role="navigation" aria-label="Course modules">
-     <div class="module-nav-wrapper">
-         <div class="nav-controls">
-             <button class="nav-btn nav-btn-prev" id="navPrev" aria-label="Previous modules">‹</button>
-             <button class="nav-btn nav-btn-next" id="navNext" aria-label="Next modules">›</button>
-         </div>
-         <div class="module-nav-inner" id="moduleNavInner">
+     <div class="module-nav-inner" id="moduleNavInner">
              <a href="claude_code_for_financial_consultants_part_0.html" class="module-link" data-module="0">
                  <span class="module-num">M0</span> Introduction
              </a>
@@ -376,7 +439,6 @@
                  <span class="module-num">M5</span> AI-Native
              </a>
          </div>
-     </div>
  </nav>
 
  <div class="container">
@@ -449,32 +511,32 @@
             <h4 style="margin: 0 0 16px 0; color: var(--info); font-size: 1.2rem;">📁 Download Practice Files</h4>
             <p style="margin: 0 0 16px 0; font-size: 0.95rem;">Click each file to download, then move them to your <code>Claude_Practice</code> folder:</p>
             <div style="display: grid; gap: 12px;">
-                <a href="Q4_financials.csv" download class="asset-download-link" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: white; border: 2px solid var(--info); border-radius: 8px; text-decoration: none; color: var(--text); transition: all 0.2s;">
-                    <span style="font-size: 1.5rem;">📊</span>
-                    <div style="flex: 1;">
-                        <div style="font-weight: 600; color: var(--info);">Q4_financials.csv</div>
-                        <div style="font-size: 0.85rem; color: #6c757d;">Financial data for 6 companies (Oct-Dec 2024)</div>
+                <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border:2px solid var(--info);border-radius:8px">
+                    <span style="font-size:1.5rem">📊</span>
+                    <div style="flex:1">
+                        <div style="font-weight:600;color:var(--info)">Q4_financials.csv</div>
+                        <div style="font-size:0.85rem;color:#1e293b">Financial data for 6 companies (Oct-Dec 2024)</div>
                     </div>
-                    <span style="background: var(--info); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600;">REQUIRED</span>
-                </a>
-                <a href="client_success_story.md" download class="asset-download-link" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: white; border: 2px solid #6c757d; border-radius: 8px; text-decoration: none; color: var(--text); transition: all 0.2s;">
-                    <span style="font-size: 1.5rem;">📝</span>
-                    <div style="flex: 1;">
-                        <div style="font-weight: 600; color: var(--text);">client_success_story.md</div>
-                        <div style="font-size: 0.85rem; color: #6c757d;">Case study template for branding exercises</div>
+                    <span style="background:var(--info);color:white;padding:4px 12px;border-radius:20px;font-size:0.8rem;font-weight:600">REQUIRED</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border:2px solid #6c757d;border-radius:8px">
+                    <span style="font-size:1.5rem">📝</span>
+                    <div style="flex:1">
+                        <div style="font-weight:600;color:var(--text)">client_success_story.md</div>
+                        <div style="font-size:0.85rem;color:#1e293b">Case study template for branding exercises</div>
                     </div>
-                    <span style="background: #6c757d; color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600;">OPTIONAL</span>
-                </a>
-                <a href="CLAUDE_TEMPLATE_Financial.md" download class="asset-download-link" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: white; border: 2px solid var(--warning); border-radius: 8px; text-decoration: none; color: var(--text); transition: all 0.2s;">
-                    <span style="font-size: 1.5rem;">⚙️</span>
-                    <div style="flex: 1;">
-                        <div style="font-weight: 600; color: var(--warning);">CLAUDE_TEMPLATE_Financial.md</div>
-                        <div style="font-size: 0.85rem; color: #6c757d;">Professional context template with standards</div>
+                    <span style="background:#6c757d;color:white;padding:4px 12px;border-radius:20px;font-size:0.8rem;font-weight:600">OPTIONAL</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border:2px solid var(--warning);border-radius:8px">
+                    <span style="font-size:1.5rem">⚙️</span>
+                    <div style="flex:1">
+                        <div style="font-weight:600;color:var(--warning)">CLAUDE_TEMPLATE_Financial.md</div>
+                        <div style="font-size:0.85rem;color:#1e293b">Professional context template with standards</div>
                     </div>
-                    <span style="background: var(--warning); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600;">RECOMMENDED</span>
-                </a>
+                    <span style="background:var(--warning);color:white;padding:4px 12px;border-radius:20px;font-size:0.8rem;font-weight:600">RECOMMENDED</span>
+                </div>
             </div>
-            <p style="margin: 16px 0 0 0; padding-top: 16px; border-top: 1px solid #dee2e6; font-size: 0.9rem; color: #495057;">💡 <strong>Tip:</strong> All files are in the same folder as this HTML module. Download and save them to your practice workspace.</p>
+            <p style="margin: 16px 0 0 0; padding-top: 16px; border-top: 1px solid rgba(0,0,0,0.1); font-size: 0.9rem; color: #1e293b;">💡 <strong>Tip:</strong> All files are in the same folder as this HTML module. Download and save them to your practice workspace.</p>
         </div>
 
         <p style="margin: 32px 0 24px 0; font-size: 1.05rem; line-height: 1.7; color: var(--text);">
@@ -798,9 +860,9 @@
         <p style="margin-bottom: 24px; color: #6c757d;">Eight focused questions on Module 5: batching, governance, CLAUDE.md, assets, and the Roadmap Builder.</p>
         <div class="quiz-container">
             <div class="quiz-navigation">
-                <button class="btn" id="m5Prev">❮ Previous</button>
+                <button class="btn" id="m5Prev">❮</button>
                 <span class="question-counter"><span id="m5Current">1</span> of <span id="m5Total">8</span></span>
-                <button class="btn" id="m5Next">Next ❯</button>
+                <button class="btn" id="m5Next">❯</button>
             </div>
             <div id="m5QuizBody" class="quiz-body-container"></div>
         </div>
@@ -814,20 +876,23 @@
         </div>
         <h3 style="margin-top: 60px;">📚 Capstone Glossary</h3>
         <p style="color: #6c757d; font-size: 0.95rem; margin-bottom: 20px;">Key terms and concepts from this module, with associated roles and thought leaders.</p>
-        <div style="overflow-x: auto;">
-            <table class="glossary-table" id="glossary-table">
-                <thead>
-                    <tr>
-                        <th style="min-width: 150px;">Term</th>
-                        <th style="min-width: 250px;">Description</th>
-                        <th style="min-width: 140px;">Associated Role</th>
-                        <th style="min-width: 200px;">Thought Leader</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Glossary will be injected by JS -->
-                </tbody>
-            </table>
+        <div class="table-wrap">
+            <div class="swipe-hint">← Swipe left/right to see all columns →</div>
+            <div class="table-scroll">
+                <table class="data-table" id="glossary-table">
+                    <thead>
+                        <tr>
+                            <th style="min-width: 150px;">Term</th>
+                            <th style="min-width: 250px;">Description</th>
+                            <th style="min-width: 140px;">Associated Role</th>
+                            <th style="min-width: 200px;">Thought Leader</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Glossary will be injected by JS -->
+                    </tbody>
+                </table>
+            </div>
         </div>
     </section>
 
@@ -951,42 +1016,25 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     
-    // Mobile carousel navigation
-    const navInner = document.getElementById('moduleNavInner');
-    const navPrev = document.getElementById('navPrev');
-    const navNext = document.getElementById('navNext');
+    // --- Hamburger Menu Toggle ---
+    const hamburgerBtn = document.getElementById('hamburger-btn');
+    const sheetNav = document.getElementById('sheet-nav');
     
-    if (navInner && navPrev && navNext) {
-        // Scroll to active module on load (mobile)
-        const activeLink = navInner.querySelector('.module-link.active');
-        if (activeLink && window.innerWidth <= 768) {
-            activeLink.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-        }
-        
-        // Prev/Next button handlers
-        navPrev.addEventListener('click', () => {
-            navInner.scrollBy({ left: -160, behavior: 'smooth' });
+    if (hamburgerBtn && sheetNav) {
+        hamburgerBtn.addEventListener('click', () => {
+            const isOpen = sheetNav.classList.contains('open');
+            sheetNav.classList.toggle('open');
+            hamburgerBtn.setAttribute('aria-expanded', !isOpen);
         });
         
-        navNext.addEventListener('click', () => {
-            navInner.scrollBy({ left: 160, behavior: 'smooth' });
+        // Close menu when clicking nav links
+        sheetNav.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                sheetNav.classList.remove('open');
+                hamburgerBtn.setAttribute('aria-expanded', 'false');
+            });
         });
-        
-        // Update button states on scroll
-        function updateNavButtons() {
-            const scrollLeft = navInner.scrollLeft;
-            const scrollWidth = navInner.scrollWidth;
-            const clientWidth = navInner.clientWidth;
-            
-            navPrev.disabled = scrollLeft <= 0;
-            navNext.disabled = scrollLeft + clientWidth >= scrollWidth - 5;
-        }
-        
-        navInner.addEventListener('scroll', updateNavButtons);
-        window.addEventListener('resize', updateNavButtons);
-        updateNavButtons();
     }
-    
 
     // --- Data for flip card carousel ---
     const automationChainData = [
@@ -1031,7 +1079,7 @@ document.addEventListener('DOMContentLoaded', () => {
 - Profit margins below 15%
 - Negative YoY growth
 
-Format as a markdown table with columns: Company | Risk Level (High/Medium/Low) | Primary Concern | Recommended Action"</code></pre><button class='copy-code-btn' onclick='copyCode(this)'>📋 Copy</button></div><h4>Expected Output Pattern:</h4><div class='soft-card' style='background:var(--warning-soft); border-left: 4px solid var(--warning);'><p><strong>Risk Assessment Matrix</strong><br><br>| Company | Risk Level | Primary Concern | Recommended Action |<br>|---------|-----------|-----------------|-------------------|<br>| RetailHub Ltd | High | Consecutive monthly revenue decline | Schedule emergency strategy review |<br>| MediaCorp | Medium | Low profit margin (13.9%) + volatility | Conduct cost structure audit |<br>| FinServe Co | Low | Stable but slow growth | Monitor for Q1 acceleration |</p></div><p style='margin-top: 16px;'><strong>🛡️ Human Checkpoint:</strong> This is where YOU step in. Review the risk classifications. Does Claude's assessment match your business intuition? Adjust levels based on qualitative factors Claude can't know (e.g., upcoming product launches, industry disruption).</p>` },
+Format as a markdown table with columns: Company | Risk Level (High/Medium/Low) | Primary Concern | Recommended Action"</code></pre><button class='copy-code-btn' onclick='copyCode(this)'>📋 Copy</button></div><h4>Expected Output Pattern:</h4><div class='table-wrap'><div class='swipe-hint'>← Swipe to see all columns →</div><div class='table-scroll'><table class='data-table'><thead><tr><th>Company</th><th>Risk Level</th><th>Primary Concern</th><th>Recommended Action</th></tr></thead><tbody><tr><td><strong>RetailHub Ltd</strong></td><td>High</td><td>Consecutive monthly revenue decline</td><td>Schedule emergency strategy review</td></tr><tr><td><strong>MediaCorp</strong></td><td>Medium</td><td>Low profit margin (13.9%) + volatility</td><td>Conduct cost structure audit</td></tr><tr><td><strong>FinServe Co</strong></td><td>Low</td><td>Stable but slow growth</td><td>Monitor for Q1 acceleration</td></tr></tbody></table></div></div><p style='margin-top: 16px;'><strong>🛡️ Human Checkpoint:</strong> This is where YOU step in. Review the risk classifications. Does Claude's assessment match your business intuition? Adjust levels based on qualitative factors Claude can't know (e.g., upcoming product launches, industry disruption).</p>` },
         { title: "Chain Step 3: Draft Personalized Client Outreach Emails", content: `<p>With risk levels confirmed, it's time to communicate. Claude will generate personalized emails, but you maintain final editorial control.</p><div class='copy-code-container'><pre><code>claude "For each HIGH or MEDIUM risk company from the risk matrix, draft a professional email to the CFO:
 - Start with a specific positive metric from their Q4 data
 - Mention the concern diplomatically
@@ -1262,7 +1310,7 @@ Base entirely on Q4_financials.csv data. Include specific metrics and company na
                     <div style="background: var(--ok-soft); padding: 20px; border-radius: 12px; border-left: 4px solid var(--ok);">
                         <h5 style="color: var(--ok); margin: 0 0 12px 0; font-size: 1.1rem;">✅ Excellent Choice!</h5>
                         <p style="margin: 0 0 16px 0; font-weight: 500;">${oversightQuizData.options[selectedIndex].analysis}</p>
-                        <div style="background: white; padding: 16px; border-radius: 8px; margin: 12px 0;">
+                        <div style="background: rgba(255,255,255,0.5); padding: 16px; border-radius: 8px; margin: 12px 0;">
                             <h6 style="margin: 0 0 8px 0; color: var(--text); font-size: 0.95rem;">🎯 Why This Requires Human Judgment:</h6>
                             <p style="margin: 0 0 12px 0; font-size: 0.9rem;">${feedback.whyBest}</p>
                             <div style="display: flex; gap: 16px; margin: 12px 0;">
@@ -1299,7 +1347,7 @@ Base entirely on Q4_financials.csv data. Include specific metrics and company na
                     <div style="background: var(--bad-soft); padding: 20px; border-radius: 12px; border-left: 4px solid var(--bad);">
                         <h5 style="color: var(--bad); margin: 0 0 12px 0; font-size: 1.1rem;">🤔 Let's Think About This...</h5>
                         <p style="margin: 0 0 16px 0; font-weight: 500;">${oversightQuizData.options[selectedIndex].analysis}</p>
-                        <div style="background: white; padding: 16px; border-radius: 8px; margin: 12px 0;">
+                        <div style="background: rgba(255,255,255,0.5); padding: 16px; border-radius: 8px; margin: 12px 0;">
                             <h6 style="margin: 0 0 8px 0; color: var(--text); font-size: 0.95rem;">📊 Why This Option:</h6>
                             <p style="margin: 0 0 12px 0; font-size: 0.9rem;">${feedback.whyNotBest}</p>
                             <div style="display: flex; gap: 16px; margin: 12px 0;">
@@ -1330,7 +1378,7 @@ Base entirely on Q4_financials.csv data. Include specific metrics and company na
                                     <span style="font-size: 0.9rem;">${correctFeedback.humanRole}</span>
                                 </div>
                             </div>
-                            <div style="background: white; padding: 12px; border-radius: 6px; margin-top: 12px;">
+                            <div style="background: rgba(255,255,255,0.5); padding: 12px; border-radius: 6px; margin-top: 12px;">
                                 <strong style="color: var(--ok); font-size: 0.85rem;">💡 Key Insight:</strong><br>
                                 <span style="font-size: 0.9rem; font-style: italic;">${correctFeedback.example}</span>
                             </div>
@@ -1932,7 +1980,7 @@ Elena approves the plan but adds one more requirement: "Document this entire wor
                     `;
                 }
                 explanationHTML += `
-                    <div style="background: white; padding: 16px; border-radius: 6px; margin-top: 16px;">
+                    <div style="background: rgba(255,255,255,0.5); padding: 16px; border-radius: 6px; margin-top: 16px;">
                         <h5 style="margin: 0 0 8px 0; color: var(--text);">🔗 Connect the Concept</h5>
                         <p style="margin: 0; font-size: 0.95rem;">${q.explanation.connectConcept}</p>
                     </div>
@@ -1957,7 +2005,7 @@ Elena approves the plan but adds one more requirement: "Document this entire wor
                     `;
                 }
                 explanationHTML += `
-                    <div style="background: white; padding: 16px; border-radius: 6px; margin-top: 16px;">
+                    <div style="background: rgba(255,255,255,0.5); padding: 16px; border-radius: 6px; margin-top: 16px;">
                         <h5 style="margin: 0 0 8px 0; color: var(--text);">🔗 Connect the Concept</h5>
                         <p style="margin: 0; font-size: 0.95rem;">${q.explanation.connectConcept}</p>
                     </div>
@@ -1972,11 +2020,11 @@ Elena approves the plan but adds one more requirement: "Document this entire wor
                 explanationHTML += `
                     <div style="background: var(--ok-soft); border-left: 4px solid var(--ok); padding: 20px; border-radius: 8px; margin-top: 16px; text-align: left;">
                         <h4 style="color: var(--ok); margin: 0 0 12px 0;">✓ Response Submitted. Here's What We're Looking For:</h4>
-                        <div style="background: white; padding: 16px; border-radius: 6px; margin-bottom: 16px;">
+                        <div style="background: rgba(255,255,255,0.5); padding: 16px; border-radius: 6px; margin-bottom: 16px;">
                             <h5 style="margin: 0 0 8px 0;">📝 Sample Answer:</h5>
                             <p style="margin: 0; font-size: 0.95rem; font-style: italic;">${q.sampleAnswer}</p>
                         </div>
-                        <div style="background: white; padding: 16px; border-radius: 6px; margin-bottom: 16px;">
+                        <div style="background: rgba(255,255,255,0.5); padding: 16px; border-radius: 6px; margin-bottom: 16px;">
                             <h5 style="margin: 0 0 12px 0;">🎯 Key Elements Your Answer Should Include:</h5>
                             <ul style="margin: 0; padding-left: 20px;">
                                 ${q.guidancePoints.map(point => `<li style="margin-bottom: 8px;">${point}</li>`).join('')}

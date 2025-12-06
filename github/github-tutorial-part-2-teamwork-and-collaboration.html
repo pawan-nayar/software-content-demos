@@ -64,12 +64,12 @@
             background: var(--accent); 
             color: white; 
             border: none; 
-            padding: 1rem; 
-            font-size: 1.2rem; 
+            padding: 0.875rem; 
+            font-size: 1.1rem; 
             font-weight: 700; 
             border-radius: 8px; 
             cursor: pointer; 
-            margin-top: 1.5rem; 
+            margin-top: 0.75rem; 
             transition: background-color 0.2s; 
         }
         .start-btn:hover { background: var(--accent-2); }
@@ -224,6 +224,728 @@
         .match-item { background: #fff; border: 1px solid var(--border); border-radius: 10px; padding: 0.55rem 0.7rem; cursor: pointer; transition: 0.2s; margin-bottom: 0.4rem; }
         .match-item.is-picked { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(239, 125, 85, 0.18); }
         
+        /* Educational Quiz Feedback Styling */
+        .quiz-feedback-box {
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .quiz-feedback-box code {
+            background: rgba(0,0,0,0.08);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        /* ============================================
+           MOBILE RESPONSIVE STYLES
+           ============================================ */
+        
+        /* --- Desktop: Ensure no scrollbar from mobile elements --- */
+        .mobile-topic-view,
+        .mobile-topic-nav,
+        .mobile-topic-header {
+            display: none !important;
+        }
+        
+        /* --- Foundation Mobile CSS --- */
+        @media (max-width: 768px) {
+            html, body {
+                overflow-x: hidden;
+                scroll-behavior: smooth;
+            }
+            
+            /* Re-enable mobile elements on mobile */
+            .mobile-topic-view:not(.hidden) {
+                display: flex !important;
+            }
+            .mobile-topic-nav {
+                display: flex !important;
+            }
+            .mobile-topic-header {
+                display: flex !important;
+            }
+            body {
+                font-size: 15px;
+            }
+            
+            /* Typography scaling */
+            .wizard-panel h1 {
+                font-size: clamp(1.4rem, 5vw, 1.8rem);
+            }
+            .wizard-panel h2 {
+                font-size: clamp(1.1rem, 4vw, 1.3rem);
+            }
+            .wizard-panel p {
+                font-size: 0.95rem;
+                word-wrap: break-word;
+            }
+            
+            /* Header compact */
+            .site-header {
+                padding: 12px 16px;
+            }
+            .logo {
+                font-size: 1rem;
+            }
+            
+            /* Footer compact */
+            .site-footer {
+                padding: 20px 16px;
+                font-size: 0.85rem;
+            }
+            
+            /* Touch targets - all buttons min 48px */
+            .start-btn {
+                min-height: 48px;
+                font-size: 1.1rem;
+                padding: 14px 16px;
+            }
+            .back-btn {
+                min-height: 44px;
+                padding: 10px 16px;
+            }
+            
+            /* Wizard panels - reduced padding */
+            .wizard-container {
+                padding: 12px;
+                align-items: flex-start;
+            }
+            .wizard-panel {
+                padding: 1.25rem 1rem;
+                border-radius: 10px;
+            }
+            
+            /* Code blocks - full width, line wrap */
+            .code-viewer {
+                font-size: 0.8rem;
+                padding: 12px;
+                white-space: pre-wrap;
+                word-wrap: break-word;
+                overflow-x: visible;
+                line-height: 1.5;
+            }
+            
+            /* Output viewer */
+            .output-viewer {
+                font-size: 0.9rem;
+            }
+            .output-viewer h1 {
+                font-size: 1.2rem;
+            }
+            .output-viewer h2 {
+                font-size: 1.1rem;
+            }
+        }
+        
+        /* --- Home/Select Screen Mobile --- */
+        @media (max-width: 768px) {
+            /* Select grid - single column */
+            .select-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            
+            /* Select cards - touch optimized */
+            .select-card {
+                padding: 16px;
+                min-height: 80px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                text-align: left;
+            }
+            .select-card h3 {
+                font-size: 1.05rem;
+                margin-bottom: 4px;
+            }
+            .select-card p {
+                font-size: 0.85rem;
+                line-height: 1.4;
+            }
+            .select-card:hover {
+                transform: none;
+            }
+            .select-card:active {
+                transform: scale(0.98);
+                background: #e9ecef;
+            }
+        }
+        
+        /* --- Mobile Topic View (Accordion Layout) --- */
+        @media (max-width: 768px) {
+            .tutorial-container {
+                display: none !important;
+            }
+            
+            /* Mobile Topic View */
+            .mobile-topic-view:not(.hidden) {
+                display: flex !important;
+                flex-direction: column;
+                min-height: calc(100vh - 60px);
+                padding-bottom: 70px;
+            }
+            .mobile-topic-view.hidden {
+                display: none !important;
+            }
+            
+            /* Mobile sticky header */
+            .mobile-topic-header {
+                display: flex !important;
+                align-items: center;
+                gap: 12px;
+                padding: 12px 16px;
+                background: var(--bg);
+                border-bottom: 1px solid var(--border);
+                position: sticky;
+                top: 52px;
+                z-index: 90;
+            }
+            .mobile-topic-header .back-home-btn {
+                background: none;
+                border: none;
+                font-size: 1.2rem;
+                cursor: pointer;
+                padding: 8px;
+                min-width: 44px;
+                min-height: 44px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 8px;
+                color: var(--text);
+            }
+            .mobile-topic-header .back-home-btn:active {
+                background: var(--muted);
+            }
+            .mobile-topic-header .topic-title {
+                font-weight: 600;
+                font-size: 1rem;
+                color: var(--accent-2);
+                flex-grow: 1;
+            }
+        }
+        
+        /* Mobile accordions */
+        .mobile-accordion {
+            border-bottom: 1px solid var(--border);
+        }
+        .mobile-accordion-header {
+            width: 100%;
+            background: var(--bg);
+            border: none;
+            padding: 16px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 56px;
+            color: var(--text);
+        }
+        .mobile-accordion-header:active {
+            background: var(--muted);
+        }
+        .mobile-accordion-header .chevron {
+            font-size: 0.9rem;
+            transition: transform 0.2s;
+            color: #6c757d;
+        }
+        .mobile-accordion-header.expanded .chevron {
+            transform: rotate(180deg);
+        }
+        .mobile-accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+            padding: 0 16px;
+            background: var(--bg);
+        }
+        .mobile-accordion-content.expanded {
+            max-height: 2000px;
+            padding: 0 16px 16px 16px;
+            overflow: visible;
+        }
+        
+        /* Playground accordion special styling */
+        .mobile-accordion-content .mobile-code-viewer {
+            background: var(--code-bg);
+            color: var(--code-fg);
+            font-family: var(--font-code);
+            font-size: 0.8rem;
+            line-height: 1.5;
+            padding: 12px;
+            border-radius: 8px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            margin-bottom: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .mobile-accordion-content .mobile-output-viewer {
+            background: var(--muted);
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+        .mobile-accordion-content .mobile-output-viewer h1 {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+        .mobile-accordion-content .mobile-commit-info {
+            background: #fff3e0;
+            padding: 10px 12px;
+            border-radius: 6px;
+            font-family: var(--font-code);
+            font-size: 0.8rem;
+            margin-top: 12px;
+            border-left: 3px solid var(--accent);
+        }
+        
+        /* Mobile quiz options - larger touch targets */
+        @media (max-width: 768px) {
+            .quiz-option {
+                min-height: 52px;
+                padding: 14px 12px;
+                display: flex;
+                align-items: center;
+                font-size: 0.95rem;
+            }
+            .quiz-option input {
+                width: 20px;
+                height: 20px;
+                margin-right: 12px;
+                flex-shrink: 0;
+            }
+        }
+        
+        /* Mobile sticky bottom navigation */
+        @media (max-width: 768px) {
+            .mobile-topic-nav {
+                display: flex !important;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: var(--bg);
+                border-top: 1px solid var(--border);
+                padding: 12px 16px;
+                gap: 12px;
+                z-index: 100;
+                box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            }
+            .mobile-topic-nav button {
+                flex: 1;
+                min-height: 48px;
+                border: 1px solid var(--border);
+                background: var(--muted);
+                border-radius: 8px;
+                font-weight: 600;
+                font-size: 0.95rem;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 6px;
+                color: var(--text);
+            }
+            .mobile-topic-nav button:active {
+                background: #e9ecef;
+            }
+            .mobile-topic-nav .topic-counter {
+                flex: 0 0 auto;
+                min-width: 60px;
+                text-align: center;
+                font-weight: 600;
+                font-size: 0.9rem;
+                color: var(--accent-2);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+        }
+        
+        /* --- Final Quiz Mobile --- */
+        @media (max-width: 768px) {
+            .quiz-container .quiz-panel {
+                padding: 1rem;
+                border-radius: 10px;
+            }
+            .quiz-container .quiz-panel .q-card {
+                min-height: auto;
+            }
+            .quiz-container .quiz-panel .q-card h2 {
+                font-size: 1.15rem;
+                line-height: 1.4;
+            }
+            
+            /* Quiz options - large touch targets */
+            .question-options label {
+                min-height: 52px;
+                padding: 14px 12px;
+                display: flex;
+                align-items: center;
+                font-size: 0.95rem;
+            }
+            .question-options input[type="radio"],
+            .question-options input[type="checkbox"] {
+                width: 22px;
+                height: 22px;
+                margin-right: 12px;
+                flex-shrink: 0;
+            }
+            
+            /* Sequence items - tap to reorder */
+            .seq-item {
+                min-height: 52px;
+                padding: 12px;
+                cursor: pointer;
+            }
+            .seq-item .handle {
+                display: none;
+            }
+            .seq-item.selected-for-move {
+                background: #fff3e0;
+                border-color: var(--accent);
+                box-shadow: 0 0 0 2px rgba(253, 126, 20, 0.3);
+            }
+            
+            /* Match items - larger */
+            .match-item {
+                min-height: 52px;
+                padding: 14px 12px;
+                display: flex;
+                align-items: center;
+            }
+            
+            /* Quiz navigation */
+            .quiz-nav {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            .quiz-nav button {
+                min-height: 48px;
+                padding: 12px 16px;
+                font-size: 0.95rem;
+            }
+            #quiz-skip-btn {
+                order: -1;
+                width: 100%;
+            }
+            #quiz-prev-btn, #quiz-next-btn {
+                flex: 1;
+            }
+            
+            /* Progress bar */
+            .progress-bar {
+                height: 8px;
+            }
+            #quiz-counter {
+                font-size: 0.85rem;
+            }
+            
+            /* Feedback */
+            .feedback {
+                padding: 12px;
+                font-size: 0.9rem;
+            }
+            
+            /* Quiz container spacing */
+            .quiz-container {
+                padding-bottom: 20px;
+            }
+            #quiz-feedback {
+                margin-bottom: 80px;
+            }
+        }
+        
+        /* Smaller mobile screens */
+        @media (max-width: 400px) {
+            .wizard-panel {
+                padding: 1rem 0.75rem;
+            }
+            .wizard-panel h1 {
+                font-size: 1.3rem;
+            }
+            .select-card {
+                padding: 14px 12px;
+            }
+            .mobile-topic-header {
+                padding: 10px 12px;
+            }
+            .mobile-accordion-header {
+                padding: 14px 12px;
+            }
+            .mobile-accordion-content {
+                padding: 0 12px 14px 12px;
+            }
+            .mobile-topic-nav {
+                padding: 10px 12px;
+            }
+        }
+        
+        /* Hide footer when in mobile topic view */
+        @media (max-width: 768px) {
+            body.mobile-topic-active .site-footer {
+                display: none;
+            }
+        }
+        
+        /* Ensure analogy boxes wrap properly */
+        @media (max-width: 768px) {
+            .analogy, .mobile-accordion-content .analogy {
+                word-wrap: break-word;
+                overflow-wrap: break-word;
+            }
+            .mobile-accordion-content code {
+                background: rgba(0,0,0,0.08);
+                padding: 2px 6px;
+                border-radius: 4px;
+                font-size: 0.85em;
+                word-break: break-word;
+            }
+        }
+        
+        /* Enhanced Intro Screen Styling */
+        .intro-panel-enhanced {
+            text-align: center;
+        }
+        .intro-hero {
+            margin-bottom: 0.75rem;
+        }
+        .intro-icon-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+        .intro-icon-row .intro-icon:nth-child(2),
+        .intro-icon-row .intro-icon:nth-child(4) {
+            font-size: 1rem;
+            color: var(--accent);
+        }
+        .intro-panel-enhanced h1 {
+            font-size: 1.8rem;
+            margin-bottom: 0.25rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .intro-subtitle {
+            font-size: 1rem;
+            color: #6c757d;
+            margin-bottom: 0 !important;
+            font-weight: 500;
+        }
+        .intro-features {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 12px;
+            padding: 1rem;
+            margin: 1rem 0;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+        .intro-feature {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 8px;
+            text-align: center;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .feature-icon {
+            font-size: 1.3rem;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .intro-feature span:last-child {
+            font-size: 0.85rem;
+            color: var(--text);
+            line-height: 1.3;
+        }
+        .intro-note {
+            font-size: 0.9rem;
+            color: #495057;
+            line-height: 1.4;
+            margin-bottom: 0.75rem !important;
+        }
+        .intro-panel-enhanced .start-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 1.15rem;
+        }
+        .start-btn .btn-arrow {
+            font-size: 1.2rem;
+            transition: transform 0.2s;
+        }
+        .start-btn:hover .btn-arrow {
+            transform: translateX(4px);
+        }
+        .intro-hint {
+            font-size: 0.8rem !important;
+            color: #868e96 !important;
+            margin-top: 0.75rem !important;
+            margin-bottom: 0 !important;
+        }
+        
+        /* Mobile intro enhancements */
+        @media (max-width: 768px) {
+            .intro-panel-enhanced {
+                padding: 1.25rem 1rem !important;
+            }
+            .intro-icon-row {
+                font-size: 1.8rem;
+                margin-bottom: 0.75rem;
+            }
+            .intro-panel-enhanced h1 {
+                font-size: clamp(1.5rem, 6vw, 1.8rem);
+            }
+            .intro-subtitle {
+                font-size: 0.9rem;
+            }
+            .intro-features {
+                padding: 0.75rem;
+                margin: 1rem 0;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            .intro-feature {
+                padding: 10px 6px;
+            }
+            .feature-icon {
+                width: 32px;
+                height: 32px;
+                font-size: 1.1rem;
+            }
+            .intro-feature span:last-child {
+                font-size: 0.8rem;
+            }
+            .intro-note {
+                font-size: 0.9rem;
+                padding: 0 4px;
+            }
+            .intro-panel-enhanced .start-btn {
+                font-size: 1.1rem;
+            }
+        }
+        
+        @media (max-width: 400px) {
+            .intro-icon-row {
+                font-size: 1.5rem;
+                gap: 6px;
+            }
+            .intro-panel-enhanced h1 {
+                font-size: 1.4rem;
+            }
+            .intro-features {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+                padding: 0.5rem;
+            }
+            .intro-feature {
+                padding: 8px 4px;
+            }
+            .intro-feature span:last-child {
+                font-size: 0.75rem;
+            }
+        }
+        
+        /* Enhanced Select Screen */
+        .select-panel-enhanced .select-header {
+            margin-bottom: 1rem;
+        }
+        .select-panel-enhanced .select-header h1 {
+            font-size: 1.6rem;
+            margin-bottom: 0.5rem;
+        }
+        .select-intro {
+            font-size: 0.95rem;
+            color: #6c757d;
+            margin-bottom: 0 !important;
+        }
+        
+        @media (max-width: 768px) {
+            .select-panel-enhanced {
+                padding: 1rem !important;
+            }
+            .select-panel-enhanced .select-header h1 {
+                font-size: 1.4rem;
+                text-align: center;
+            }
+            .select-intro {
+                text-align: center;
+                font-size: 0.9rem;
+                line-height: 1.4;
+            }
+            
+            /* Enhanced topic cards on mobile */
+            .select-card {
+                background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+                border-left: 4px solid var(--accent);
+                border-top: none;
+                padding: 14px 16px;
+                position: relative;
+                overflow: hidden;
+            }
+            .select-card::after {
+                content: '→';
+                position: absolute;
+                right: 16px;
+                top: 50%;
+                transform: translateY(-50%);
+                font-size: 1.2rem;
+                color: var(--accent);
+                opacity: 0.6;
+            }
+            .select-card h3 {
+                font-size: 1rem;
+                padding-right: 24px;
+            }
+            .select-card p {
+                font-size: 0.85rem;
+                color: #6c757d;
+                padding-right: 24px;
+            }
+            .select-card.completed {
+                border-left-color: var(--ok);
+                background: linear-gradient(135deg, #f0fff4 0%, #dcfce7 100%);
+            }
+            .select-card.completed::after {
+                content: '✓';
+                color: var(--ok);
+                opacity: 1;
+            }
+            
+            /* Quiz unlock section */
+            #select-screen hr {
+                margin: 1.5rem 0 1rem 0;
+            }
+            #select-screen h2 {
+                font-size: 1.2rem;
+            }
+            #quiz-status-text {
+                font-size: 0.9rem;
+                color: #6c757d;
+            }
+        }
+        
     </style>
 </head>
 <body>
@@ -234,26 +956,52 @@
 
     <!-- Screen 1: Intro -->
     <div id="intro-screen" class="wizard-container">
-        <div class="wizard-panel">
-            <h1>Part 2: Teamwork & Collaboration 🤝</h1>
-            <p>In Part 1, you learned to manage a project like a personal diary. Now, you'll learn to work like you're co-authoring a story with a team. It's time to build on your foundation and learn the social processes for safe, effective collaboration.</p>
-            <div class="intro-primer">
-                <h3>A Quick Primer on Teamwork Etiquette</h3>
-                <ul>
-                    <li><strong>Communicate Clearly:</strong> Use descriptive names for branches and PRs.</li>
-                    <li><strong>Work in Parallel:</strong> Use branches to keep the main codebase stable.</li>
-                    <li><strong>Stay Updated:</strong> Sync your work frequently to avoid conflicts.</li>
-                </ul>
+        <div class="wizard-panel intro-panel-enhanced">
+            <div class="intro-hero">
+                <div class="intro-icon-row">
+                    <span class="intro-icon">👤</span>
+                    <span class="intro-icon">+</span>
+                    <span class="intro-icon">👤</span>
+                    <span class="intro-icon">=</span>
+                    <span class="intro-icon">🚀</span>
+                </div>
+                <h1>Teamwork & Collaboration</h1>
+                <p class="intro-subtitle">Part 2 of Your Developer Journey</p>
             </div>
-            <button id="start-tutorial-btn" class="start-btn">Start Collaborating 🚀</button>
+            
+            <div class="intro-features">
+                <div class="intro-feature">
+                    <span class="feature-icon">🌿</span>
+                    <span>Work in parallel with branches</span>
+                </div>
+                <div class="intro-feature">
+                    <span class="feature-icon">🔄</span>
+                    <span>Propose changes via Pull Requests</span>
+                </div>
+                <div class="intro-feature">
+                    <span class="feature-icon">⚔️</span>
+                    <span>Handle merge conflicts like a pro</span>
+                </div>
+            </div>
+            
+            <p class="intro-note">Learn the social processes for safe, effective team collaboration on code.</p>
+            
+            <button id="start-tutorial-btn" class="start-btn">
+                <span>Start Collaborating</span>
+                <span class="btn-arrow">→</span>
+            </button>
+            
+            <p class="intro-hint">⏱️ ~20 minutes • 6 interactive topics • 1 final quiz</p>
         </div>
     </div>
     
     <!-- Screen 2: Select Tutorial -->
     <div id="select-screen" class="wizard-container" style="display: none;">
-        <div class="wizard-panel">
-            <h1>Teamwork Essentials ✨</h1>
-            <p>These concepts are the key to working with others, contributing to projects, and managing team tasks.</p>
+        <div class="wizard-panel select-panel-enhanced">
+            <div class="select-header">
+                <h1>🎯 Choose a Topic</h1>
+                <p class="select-intro">Tap any card below to start learning. Complete 3 topics to unlock the final quiz!</p>
+            </div>
             <div id="select-grid" class="select-grid">
                 <div class="select-card" data-crud="branch">
                     <h3>🌿 Branching for Teams</h3>
@@ -328,6 +1076,81 @@
             </div>
         </div>
     </main>
+
+    <!-- Mobile Topic View (Hidden on Desktop) -->
+    <div id="mobile-topic-screen" class="mobile-topic-view hidden">
+        <div class="mobile-topic-header">
+            <button class="back-home-btn" id="mobile-back-btn">←</button>
+            <span class="topic-title" id="mobile-topic-title">🌿 Branching</span>
+        </div>
+        
+        <div id="mobile-accordions">
+            <!-- Accordion 1: Playground -->
+            <div class="mobile-accordion">
+                <button class="mobile-accordion-header" data-accordion="playground">
+                    <span>🎮 Playground</span>
+                    <span class="chevron">▼</span>
+                </button>
+                <div class="mobile-accordion-content" id="mobile-playground-content">
+                    <div class="mobile-code-viewer" id="mobile-code-viewer"></div>
+                    <div class="mobile-output-viewer" id="mobile-output-viewer"></div>
+                    <div class="mobile-commit-info" id="mobile-commit-info"></div>
+                </div>
+            </div>
+            
+            <!-- Accordion 2: Concepts -->
+            <div class="mobile-accordion">
+                <button class="mobile-accordion-header expanded" data-accordion="concepts">
+                    <span>💡 Concepts</span>
+                    <span class="chevron">▼</span>
+                </button>
+                <div class="mobile-accordion-content expanded" id="mobile-concepts-content"></div>
+            </div>
+            
+            <!-- Accordion 3: Steps -->
+            <div class="mobile-accordion">
+                <button class="mobile-accordion-header" data-accordion="steps">
+                    <span>📋 Steps</span>
+                    <span class="chevron">▼</span>
+                </button>
+                <div class="mobile-accordion-content" id="mobile-steps-content"></div>
+            </div>
+            
+            <!-- Accordion 4: Knowledge Quiz -->
+            <div class="mobile-accordion">
+                <button class="mobile-accordion-header" data-accordion="quiz">
+                    <span>✅ Knowledge Quiz</span>
+                    <span class="chevron">▼</span>
+                </button>
+                <div class="mobile-accordion-content" id="mobile-quiz-content"></div>
+            </div>
+            
+            <!-- Accordion 5: Best Practices & Glossary -->
+            <div class="mobile-accordion">
+                <button class="mobile-accordion-header" data-accordion="bestpractices">
+                    <span>⭐ Best Practices & Glossary</span>
+                    <span class="chevron">▼</span>
+                </button>
+                <div class="mobile-accordion-content" id="mobile-bestpractices-content"></div>
+            </div>
+            
+            <!-- Accordion 6: FAQs -->
+            <div class="mobile-accordion">
+                <button class="mobile-accordion-header" data-accordion="faq">
+                    <span>❓ FAQs</span>
+                    <span class="chevron">▼</span>
+                </button>
+                <div class="mobile-accordion-content" id="mobile-faq-content"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Mobile Sticky Bottom Navigation -->
+    <div class="mobile-topic-nav" id="mobile-topic-nav" style="display: none;">
+        <button id="mobile-prev-topic">← Prev</button>
+        <span class="topic-counter" id="mobile-topic-counter">1/6</span>
+        <button id="mobile-next-topic">Next →</button>
+    </div>
 
     <!-- Screen 4: Final Quiz -->
     <div id="final-quiz-screen" class="wizard-container light-quiz-style hidden">
@@ -775,7 +1598,7 @@ Fast-forward
             <div id="quiz-content" class="explanation-content">
                 <h3>Knowledge Check</h3>
                 ${data.quiz.map((quizItem, index) => `
-                    <div class="quiz-question" data-correct="${quizItem.correct}">
+                    <div class="quiz-question" data-correct="${quizItem.correct}" data-explain="${quizItem.explain.replace(/"/g, '&quot;')}" data-correct-text="${quizItem.options[quizItem.correct].replace(/"/g, '&quot;')}">
                         <p><strong>Question ${index + 1}:</strong> ${renderMarkdown(quizItem.q)}</p>
                         <div class="quiz-options">
                         ${quizItem.options.map((opt, optIndex) => `
@@ -784,6 +1607,7 @@ Fast-forward
                             </label>
                         `).join('')}
                         </div>
+                        <div class="quiz-feedback-box" style="display: none; margin-top: 12px; padding: 12px; border-radius: 8px;"></div>
                     </div>
                 `).join('')}
             </div>
@@ -839,6 +1663,9 @@ Fast-forward
         quizQuestions.forEach(quizQuestion => {
             const optionsContainer = quizQuestion.querySelector('.quiz-options');
             const correctAnswerIndex = parseInt(quizQuestion.dataset.correct);
+            const explanation = quizQuestion.dataset.explain;
+            const correctText = quizQuestion.dataset.correctText;
+            const feedbackBox = quizQuestion.querySelector('.quiz-feedback-box');
 
             optionsContainer.addEventListener('click', (e) => {
                 const selectedLabel = e.target.closest('label');
@@ -851,10 +1678,25 @@ Fast-forward
 
                 if (selectedIndex === correctAnswerIndex) {
                     selectedLabel.classList.add('correct');
+                    feedbackBox.innerHTML = `
+                        <div style="background: var(--ok-soft); border-left: 4px solid var(--ok); padding: 12px;">
+                            <p style="font-weight: 600; color: var(--ok); margin-bottom: 6px;">✅ Correct!</p>
+                            <p style="margin-bottom: 8px;">${renderMarkdown(explanation)}</p>
+                            <p style="font-size: 0.9rem; color: #666;"><strong>💡 Tip:</strong> This is key to effective team collaboration.</p>
+                        </div>
+                    `;
                 } else {
                     selectedLabel.classList.add('incorrect');
                     labels[correctAnswerIndex].classList.add('correct');
+                    feedbackBox.innerHTML = `
+                        <div style="background: var(--bad-soft); border-left: 4px solid var(--bad); padding: 12px;">
+                            <p style="font-weight: 600; color: var(--bad); margin-bottom: 6px;">❌ Not quite right</p>
+                            <p style="margin-bottom: 8px;"><strong>The correct answer is:</strong> ${renderMarkdown(correctText)}</p>
+                            <p style="margin-bottom: 0;"><strong>Why?</strong> ${renderMarkdown(explanation)}</p>
+                        </div>
+                    `;
                 }
+                feedbackBox.style.display = 'block';
             });
         });
     }
@@ -902,9 +1744,11 @@ Fast-forward
             `;
         } else if (q.type === 'SEQ') {
             const items = q.items || [];
+            const mobileHint = isMobileDevice() ? '<p class="text-sm text-gray-500 mb-3">📱 Tap an item to select it, then tap where you want to move it.</p>' : '<p class="text-sm text-gray-500 mb-3">🖱️ Drag items to reorder them.</p>';
             questionContent = `
                 <div class="question-body">
                     <h2 class="text-xl font-semibold mb-4 text-gray-800">${renderMarkdown(q.text)}</h2>
+                    ${mobileHint}
                     <ul id="sequence-list" class="space-y-2">
                         ${shuffleArray([...items]).map(item => `
                             <li draggable="true" class="seq-item">
@@ -979,20 +1823,54 @@ Fast-forward
 
     function addDragAndDropListeners() {
         let dragSrcEl = null;
+        let selectedForMove = null;
+        
         document.querySelectorAll('#sequence-list li').forEach(item => {
+            // Desktop: Drag and drop
             item.addEventListener('dragstart', (e) => {
+                if (isMobileDevice()) return;
                 e.dataTransfer.effectAllowed = 'move'; dragSrcEl = item;
                 setTimeout(() => item.classList.add('dragging'), 0);
             });
             item.addEventListener('dragend', () => {
+                if (isMobileDevice()) return;
                 dragSrcEl.classList.remove('dragging'); saveSequenceOrder();
             });
             item.addEventListener('dragover', (e) => {
+                if (isMobileDevice()) return;
                 e.preventDefault();
                 const after = getDragAfterElement(item.parentNode, e.clientY);
                 if (dragSrcEl && after !== dragSrcEl) { item.parentNode.insertBefore(dragSrcEl, after); }
             });
             item.addEventListener('drop', (e) => { e.preventDefault(); e.stopPropagation(); });
+            
+            // Mobile: Tap to select, tap again to place
+            item.addEventListener('click', (e) => {
+                if (!isMobileDevice()) return;
+                
+                if (selectedForMove === null) {
+                    selectedForMove = item;
+                    item.classList.add('selected-for-move');
+                } else if (selectedForMove === item) {
+                    selectedForMove.classList.remove('selected-for-move');
+                    selectedForMove = null;
+                } else {
+                    const list = document.getElementById('sequence-list');
+                    const items = Array.from(list.children);
+                    const selectedIndex = items.indexOf(selectedForMove);
+                    const targetIndex = items.indexOf(item);
+                    
+                    if (selectedIndex < targetIndex) {
+                        list.insertBefore(selectedForMove, item.nextSibling);
+                    } else {
+                        list.insertBefore(selectedForMove, item);
+                    }
+                    
+                    selectedForMove.classList.remove('selected-for-move');
+                    selectedForMove = null;
+                    saveSequenceOrder();
+                }
+            });
         });
         
         function getDragAfterElement(container, y) {
@@ -1009,6 +1887,10 @@ Fast-forward
             const currentOrder = Array.from(document.querySelectorAll('#sequence-list li')).map(el => el.querySelector('span:last-child').textContent);
             quizState.answers[quizState.currentQ] = { answer: currentOrder, graded: false };
         }
+    }
+    
+    function isMobileDevice() {
+        return window.innerWidth <= 768;
     }
 
     function addMatchListeners() {
@@ -1151,12 +2033,37 @@ Fast-forward
         quizNextBtn.textContent = (quizState.currentQ === finalQuizQuestions.length - 1) ? 'Finish Quiz' : 'Next Question →';
         quizSkipBtn.style.display = 'none';
 
-        feedbackDiv.innerHTML = `
-            <div class="feedback ${isCorrect ? 'correct' : 'incorrect'}">
-                <p class="font-bold text-lg mb-1">${isCorrect ? 'Correct! 🎉' : 'Not quite.'}</p>
-                <p>${renderMarkdown(q.explain)}</p>
-            </div>
-        `;
+        // Build educational feedback
+        let correctAnswerText = '';
+        if (q.type === 'MCQ') {
+            correctAnswerText = q.options[q.correct];
+        } else if (q.type === 'TF') {
+            correctAnswerText = q.correct ? 'True' : 'False';
+        } else if (q.type === 'MMCQ') {
+            correctAnswerText = q.correct.map(i => q.options[i]).join(', ');
+        } else if (q.type === 'SEQ') {
+            correctAnswerText = q.correct.join(' → ');
+        } else if (q.type === 'MATCH') {
+            correctAnswerText = q.correct.map(p => `${q.stems[p.s]} ↔ ${q.responses[p.r]}`).join('; ');
+        }
+
+        if (isCorrect) {
+            feedbackDiv.innerHTML = `
+                <div class="feedback correct">
+                    <p class="font-bold text-lg mb-2">✅ Correct! 🎉</p>
+                    <p class="mb-2"><strong>Why this is right:</strong> ${renderMarkdown(q.explain)}</p>
+                    <p class="text-sm text-gray-600 mt-2"><strong>💡 Pro Tip:</strong> This concept is essential for effective team collaboration.</p>
+                </div>
+            `;
+        } else {
+            feedbackDiv.innerHTML = `
+                <div class="feedback incorrect">
+                    <p class="font-bold text-lg mb-2">❌ Not quite right</p>
+                    <p class="mb-2"><strong>The correct answer:</strong> ${renderMarkdown(correctAnswerText)}</p>
+                    <p class="mb-0"><strong>Why?</strong> ${renderMarkdown(q.explain)}</p>
+                </div>
+            `;
+        }
     }
 
     function shuffleArray(array) {
@@ -1279,6 +2186,291 @@ Fast-forward
         quizProgress.style.width = '100%';
         document.querySelector('.quiz-nav').style.display = 'none';
     }
+
+    // ============================================
+    // MOBILE VIEW HANDLING
+    // ============================================
+    
+    const topicOrder = ['branch', 'pr', 'merge', 'fork', 'issues', 'syncing'];
+    const topicTitles = {
+        branch: '🌿 Branching for Teams',
+        pr: '🔄 Pull Requests',
+        merge: '⚔️ Basic Conflicts',
+        fork: '🍴 Forking & Contributing',
+        issues: '📋 Issues & Boards',
+        syncing: '🔄 Syncing Your Work'
+    };
+    
+    let currentMobileTopic = 0;
+    
+    function isMobile() {
+        return window.innerWidth <= 768;
+    }
+    
+    // Mobile elements
+    const mobileTopicScreen = document.getElementById('mobile-topic-screen');
+    const mobileTopicNav = document.getElementById('mobile-topic-nav');
+    const mobileBackBtn = document.getElementById('mobile-back-btn');
+    const mobileTopicTitle = document.getElementById('mobile-topic-title');
+    const mobileTopicCounter = document.getElementById('mobile-topic-counter');
+    const mobilePrevTopic = document.getElementById('mobile-prev-topic');
+    const mobileNextTopic = document.getElementById('mobile-next-topic');
+    
+    function showMobileTopicView(topicKey) {
+        currentMobileTopic = topicOrder.indexOf(topicKey);
+        if (currentMobileTopic === -1) currentMobileTopic = 0;
+        
+        // Hide other screens
+        introScreen.style.display = 'none';
+        selectScreen.style.display = 'none';
+        tutorialScreen.style.display = 'none';
+        finalQuizScreen.style.display = 'none';
+        
+        // Show mobile topic view
+        mobileTopicScreen.classList.remove('hidden');
+        mobileTopicScreen.style.display = 'flex';
+        mobileTopicNav.style.display = 'flex';
+        
+        // Add body class to hide footer
+        document.body.classList.add('mobile-topic-active');
+        
+        renderMobileTopic(topicKey);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    
+    function hideMobileTopicView() {
+        mobileTopicScreen.classList.add('hidden');
+        mobileTopicScreen.style.display = 'none';
+        mobileTopicNav.style.display = 'none';
+        
+        // Remove body class to show footer again
+        document.body.classList.remove('mobile-topic-active');
+    }
+    
+    function renderMobileTopic(topicKey) {
+        const data = playgroundData[topicKey];
+        const explanation = data.explanation;
+        
+        // Update header
+        mobileTopicTitle.textContent = topicTitles[topicKey];
+        mobileTopicCounter.textContent = `${currentMobileTopic + 1}/6`;
+        
+        // Render playground content
+        document.getElementById('mobile-code-viewer').textContent = data.code;
+        document.getElementById('mobile-output-viewer').innerHTML = renderMarkdown(data.output);
+        document.getElementById('mobile-commit-info').innerHTML = renderMarkdown(data.commit);
+        
+        // Render concepts
+        document.getElementById('mobile-concepts-content').innerHTML = `
+            <h3 style="font-size: 1.1rem; color: var(--accent-2); margin-bottom: 12px;">${explanation.concepts.title}</h3>
+            <div class="analogy" style="background: var(--muted); border-left: 4px solid var(--accent); padding: 12px; border-radius: 4px; font-style: italic; margin-bottom: 12px;">
+                ${renderMarkdown(explanation.concepts.analogy)}
+            </div>
+            <p style="line-height: 1.6;">${renderMarkdown(explanation.concepts.text)}</p>
+        `;
+        
+        // Render steps
+        document.getElementById('mobile-steps-content').innerHTML = `
+            <h3 style="font-size: 1.1rem; color: var(--accent-2); margin-bottom: 12px;">${explanation.steps.title}</h3>
+            <ol class="step-list">
+                ${explanation.steps.list.map(step => `<li><span>${renderMarkdown(step)}</span></li>`).join('')}
+            </ol>
+        `;
+        
+        // Render quiz
+        document.getElementById('mobile-quiz-content').innerHTML = `
+            <h3 style="font-size: 1.1rem; color: var(--accent-2); margin-bottom: 12px;">Knowledge Check</h3>
+            ${explanation.quiz.map((quizItem, index) => `
+                <div class="quiz-question mobile-quiz-q" data-correct="${quizItem.correct}" data-topic="${topicKey}" data-index="${index}" data-explain="${quizItem.explain.replace(/"/g, '&quot;')}" data-correct-text="${quizItem.options[quizItem.correct].replace(/"/g, '&quot;')}">
+                    <p style="font-weight: 600; margin-bottom: 8px;"><strong>Q${index + 1}:</strong> ${renderMarkdown(quizItem.q)}</p>
+                    <div class="quiz-options">
+                        ${quizItem.options.map((opt, optIndex) => `
+                            <label class="quiz-option" for="mq-${topicKey}-${index}-${optIndex}">
+                                <input type="radio" id="mq-${topicKey}-${index}-${optIndex}" name="mq-${topicKey}-${index}" value="${optIndex}">
+                                <span>${renderMarkdown(opt)}</span>
+                            </label>
+                        `).join('')}
+                    </div>
+                    <div class="mobile-quiz-feedback" style="display: none;"></div>
+                </div>
+            `).join('')}
+        `;
+        
+        // Render best practices & glossary
+        document.getElementById('mobile-bestpractices-content').innerHTML = `
+            <h3 style="font-size: 1.1rem; color: var(--accent-2); margin-bottom: 12px;">Do's and Don'ts</h3>
+            <ul style="list-style: none; padding: 0; margin-bottom: 16px;">
+                ${explanation.bestPractices.dos.map(item => `<li style="margin-bottom: 8px; display: flex; align-items: flex-start;"><span style="margin-right: 10px;">✅</span><span>${renderMarkdown(item)}</span></li>`).join('')}
+            </ul>
+            <ul style="list-style: none; padding: 0; margin-bottom: 16px;">
+                ${explanation.bestPractices.donts.map(item => `<li style="margin-bottom: 8px; display: flex; align-items: flex-start;"><span style="margin-right: 10px;">❌</span><span>${renderMarkdown(item)}</span></li>`).join('')}
+            </ul>
+            <h4 style="font-weight: 600; margin-top: 16px; margin-bottom: 8px;">Glossary</h4>
+            <ul style="list-style: none; padding: 0;">
+                ${explanation.bestPractices.glossary.map(item => `<li style="margin-bottom: 10px;"><strong style="color: var(--accent-2);">${item.term}</strong>: ${renderMarkdown(item.def)}</li>`).join('')}
+            </ul>
+        `;
+        
+        // Render FAQs
+        document.getElementById('mobile-faq-content').innerHTML = `
+            <h3 style="font-size: 1.1rem; color: var(--accent-2); margin-bottom: 12px;">Frequently Asked Questions</h3>
+            ${explanation.faq.map(item => `
+                <div style="margin-bottom: 16px;">
+                    <h4 style="font-weight: 600; margin-bottom: 6px;">${renderMarkdown(item.q)}</h4>
+                    <p style="line-height: 1.6;">${renderMarkdown(item.a)}</p>
+                </div>
+            `).join('')}
+        `;
+        
+        // Setup mobile quiz interactions
+        setupMobileQuiz(topicKey);
+        
+        // Reset accordions - expand first, collapse others
+        resetMobileAccordions();
+        
+        // Mark as completed
+        markTutorialCompleted(topicKey);
+    }
+    
+    function setupMobileQuiz(topicKey) {
+        const quizQuestions = document.querySelectorAll('#mobile-quiz-content .mobile-quiz-q');
+        quizQuestions.forEach(quizQuestion => {
+            const optionsContainer = quizQuestion.querySelector('.quiz-options');
+            const correctAnswerIndex = parseInt(quizQuestion.dataset.correct);
+            const explanation = quizQuestion.dataset.explain;
+            const correctText = quizQuestion.dataset.correctText;
+            const feedbackDiv = quizQuestion.querySelector('.mobile-quiz-feedback');
+
+            optionsContainer.addEventListener('click', (e) => {
+                const selectedLabel = e.target.closest('label');
+                if (!selectedLabel || selectedLabel.classList.contains('disabled')) return;
+
+                const selectedIndex = parseInt(selectedLabel.querySelector('input').value);
+                const labels = optionsContainer.querySelectorAll('.quiz-option');
+
+                labels.forEach(label => label.classList.add('disabled'));
+
+                if (selectedIndex === correctAnswerIndex) {
+                    selectedLabel.classList.add('correct');
+                    feedbackDiv.innerHTML = `
+                        <div style="background: var(--ok-soft); border-left: 4px solid var(--ok); padding: 12px; border-radius: 6px; margin-top: 12px;">
+                            <p style="font-weight: 600; color: var(--ok); margin-bottom: 6px;">✅ Correct!</p>
+                            <p style="margin-bottom: 8px; font-size: 0.9rem;">${renderMarkdown(explanation)}</p>
+                            <p style="font-size: 0.85rem; color: #666; margin: 0;"><strong>💡 Tip:</strong> This is key to effective team collaboration.</p>
+                        </div>
+                    `;
+                } else {
+                    selectedLabel.classList.add('incorrect');
+                    labels[correctAnswerIndex].classList.add('correct');
+                    feedbackDiv.innerHTML = `
+                        <div style="background: var(--bad-soft); border-left: 4px solid var(--bad); padding: 12px; border-radius: 6px; margin-top: 12px;">
+                            <p style="font-weight: 600; color: var(--bad); margin-bottom: 6px;">❌ Not quite right</p>
+                            <p style="margin-bottom: 8px; font-size: 0.9rem;"><strong>Correct answer:</strong> ${renderMarkdown(correctText)}</p>
+                            <p style="margin: 0; font-size: 0.9rem;"><strong>Why?</strong> ${renderMarkdown(explanation)}</p>
+                        </div>
+                    `;
+                }
+                feedbackDiv.style.display = 'block';
+            });
+        });
+    }
+    
+    function resetMobileAccordions() {
+        const accordionHeaders = document.querySelectorAll('.mobile-accordion-header');
+        const accordionContents = document.querySelectorAll('.mobile-accordion-content');
+        
+        // Open second accordion (Concepts) by default - establishes the interaction pattern
+        accordionHeaders.forEach((header, index) => {
+            if (index === 1) {
+                header.classList.add('expanded');
+            } else {
+                header.classList.remove('expanded');
+            }
+        });
+        
+        accordionContents.forEach((content, index) => {
+            if (index === 1) {
+                content.classList.add('expanded');
+            } else {
+                content.classList.remove('expanded');
+            }
+        });
+    }
+    
+    function setupMobileAccordions() {
+        const accordionHeaders = document.querySelectorAll('.mobile-accordion-header');
+        
+        accordionHeaders.forEach(header => {
+            header.addEventListener('click', () => {
+                const accordion = header.closest('.mobile-accordion');
+                const content = accordion.querySelector('.mobile-accordion-content');
+                
+                const isExpanded = header.classList.contains('expanded');
+                
+                if (isExpanded) {
+                    header.classList.remove('expanded');
+                    content.classList.remove('expanded');
+                } else {
+                    header.classList.add('expanded');
+                    content.classList.add('expanded');
+                }
+            });
+        });
+    }
+    
+    function navigateMobileTopic(direction) {
+        if (direction === 'prev') {
+            currentMobileTopic = currentMobileTopic === 0 ? topicOrder.length - 1 : currentMobileTopic - 1;
+        } else {
+            currentMobileTopic = currentMobileTopic === topicOrder.length - 1 ? 0 : currentMobileTopic + 1;
+        }
+        
+        renderMobileTopic(topicOrder[currentMobileTopic]);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    
+    // Initialize mobile functionality
+    document.addEventListener('DOMContentLoaded', () => {
+        setupMobileAccordions();
+        
+        // Mobile back button
+        if (mobileBackBtn) {
+            mobileBackBtn.addEventListener('click', () => {
+                hideMobileTopicView();
+                showScreen(selectScreen);
+            });
+        }
+        
+        // Mobile prev/next navigation
+        if (mobilePrevTopic) {
+            mobilePrevTopic.addEventListener('click', () => navigateMobileTopic('prev'));
+        }
+        if (mobileNextTopic) {
+            mobileNextTopic.addEventListener('click', () => navigateMobileTopic('next'));
+        }
+        
+        // Override select card click for mobile
+        const selectCards = document.querySelectorAll('.select-card');
+        selectCards.forEach(card => {
+            card.addEventListener('click', (e) => {
+                const crudAction = card.dataset.crud;
+                if (isMobile()) {
+                    e.stopPropagation();
+                    showMobileTopicView(crudAction);
+                }
+            });
+        });
+    });
+    
+    // Handle window resize
+    window.addEventListener('resize', () => {
+        if (!isMobile() && mobileTopicScreen && !mobileTopicScreen.classList.contains('hidden')) {
+            hideMobileTopicView();
+            const topicKey = topicOrder[currentMobileTopic];
+            showScreen(tutorialScreen);
+            switchCrudTab(topicKey);
+        }
+    });
     
     </script>
 </body>

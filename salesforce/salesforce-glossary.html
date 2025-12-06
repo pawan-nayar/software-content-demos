@@ -4,369 +4,521 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Salesforce Glossary</title>
-    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* --- CSS STYLES V13 (Adapted for Glossary) --- */
         :root {
-            --font-heading: "Georgia", "Times New Roman", serif;
-            --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            --color-background-body: #fdfdfd;
-            --color-background-card: #ffffff;
-            --color-text: #2c2c2c;
-            --color-muted: #999999;
-            --color-border: #f0f0f0;
-            --grid-gap: 1.25rem;
-            --header-initial-height: 140px;
-            --header-sticky-height: 55px;
+            --text: #212529;
+            --bg: #fff;
+            --muted: #f8f9fa;
+            --border: #e9ecef;
+            --accent: #fd7e14;
+            --accent-2: #e87312;
+            --header-bg: #1a1a2e;
+            --header-fg: #f8f9fa;
+            --grid-gap: 1rem;
         }
 
-        body {
-            background-color: var(--color-background-body);
-            color: var(--color-text);
-            font-family: var(--font-body);
-            margin: 0;
-            padding: var(--header-initial-height) var(--grid-gap) var(--grid-gap); 
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html, body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
             -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
         }
 
-        /* --- Header Architecture --- */
-        #header-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 100;
-            height: var(--header-initial-height); 
-            background-color: var(--color-background-body);
-            transition: height 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-        }
-
-        .header-initial, .header-sticky {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            box-sizing: border-box;
-            transition: opacity 0.3s ease-in-out;
-        }
-
-        .header-initial {
-            padding: var(--grid-gap);
-            opacity: 1;
-            border-bottom: 1px solid var(--color-border);
-        }
-        .header-initial .brand-row {
-            display: flex;
-            align-items: center;
-            margin-bottom: var(--grid-gap);
-        }
-        .header-initial .brand-initials {
-            font-family: var(--font-heading);
-            font-size: 2.5rem;
-            font-weight: 700;
-            line-height: 1;
-        }
-        .header-initial .info-row {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: var(--grid-gap);
-        }
-        .header-initial .header-info {
-            font-size: 0.8rem;
-            color: var(--color-muted);
-        }
-        .header-initial .header-info span:first-child {
-            display: block;
-            font-weight: bold;
-            color: var(--color-text);
-            margin-bottom: 0.25em;
-        }
-
-        .header-sticky {
+        /* ========== Header - CBSE Pattern ========== */
+        .site-header {
+            background: var(--header-bg);
+            color: var(--header-fg);
+            padding: 14px 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 var(--grid-gap);
-            height: var(--header-sticky-height);
-            opacity: 0;
-            background-color: rgba(253, 253, 253, 0.9);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--color-border);
-            pointer-events: none;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
         }
-        
-        .sticky-brand {
-            font-family: var(--font-heading);
+
+        .logo {
             font-weight: 700;
-            font-size: 1.25rem;
-            cursor: pointer;
-            position: relative;
+            font-size: 1.1rem;
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .site-nav {
             display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
             align-items: center;
         }
-        .sticky-brand .brand-short, .sticky-brand .brand-full {
-            transition: opacity 0.3s ease-in-out;
-        }
-        .sticky-brand .brand-full {
-            opacity: 0;
-            position: absolute;
-            white-space: nowrap;
-        }
-        .sticky-brand:hover .brand-short {
-            opacity: 0;
-        }
-        .sticky-brand:hover .brand-full {
-            opacity: 1;
-        }
 
-        .sticky-nav {
-            display: flex;
-            flex-wrap: nowrap;
-            overflow: hidden; 
-        }
-        .sticky-nav a {
-            margin-left: var(--grid-gap);
+        .site-nav a {
+            color: #ced4da;
             text-decoration: none;
-            color: var(--color-text);
-            font-size: 0.85rem;
-            white-space: nowrap;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: color 0.2s;
+            padding: 4px 0;
         }
-        .sticky-nav a.active {
+
+        .site-nav a:hover {
+            color: #fff;
+        }
+
+        .site-nav a.active {
+            color: #fff;
             font-weight: bold;
-            border-bottom: 2px solid var(--color-text);
+            border-bottom: 2px solid var(--accent);
         }
 
-        body.scrolled #header-container {
-            height: var(--header-sticky-height);
-        }
-        body.scrolled .header-initial {
-            opacity: 0;
-            pointer-events: none;
-        }
-        body.scrolled .header-sticky {
-            opacity: 1;
-            pointer-events: auto;
+        /* Hamburger - CBSE Pattern */
+        .hamburger {
+            display: none;
+            background: none;
+            border: 1px solid rgba(255,255,255,0.4);
+            color: #fff;
+            border-radius: 8px;
+            padding: 8px 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            line-height: 1;
+            transition: background 0.2s;
         }
 
-        /* --- Grid & Card Styling --- */
+        .hamburger:hover,
+        .hamburger[aria-expanded="true"] {
+            background: rgba(255,255,255,0.15);
+        }
+
+        /* Mobile header & menu - CBSE Pattern */
+        @media (max-width: 768px) {
+            .site-header {
+                flex-wrap: nowrap;
+                padding: 12px 16px;
+            }
+
+            .logo {
+                flex: 0 0 auto;
+                font-size: 0.95rem;
+            }
+
+            .hamburger {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                margin-left: auto;
+            }
+
+            .site-nav {
+                display: none;
+                position: absolute;
+                top: 100%;
+                right: 16px;
+                left: 16px;
+                flex-direction: column;
+                gap: 0;
+                background: var(--header-bg);
+                padding: 8px 0;
+                border-radius: 8px;
+                box-shadow: 0 10px 25px rgba(0,0,0,0.35);
+            }
+
+            .site-nav.open {
+                display: flex;
+            }
+
+            .site-nav a {
+                display: block;
+                padding: 12px 18px;
+                color: #f8f9fa;
+                white-space: nowrap;
+                border-bottom: none;
+            }
+
+            .site-nav a + a {
+                border-top: 1px solid rgba(255,255,255,0.15);
+            }
+
+            .site-nav a.active {
+                background: rgba(253,126,20,0.2);
+                border-bottom: none;
+            }
+        }
+
+        /* ========== Main Container ========== */
+        main {
+            padding: 24px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .page-title {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .page-title h1 {
+            font-size: clamp(1.8rem, 5vw, 2.4rem);
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+
+        .page-title p {
+            font-size: 1rem;
+            color: #6c757d;
+        }
+
+        .category-label {
+            display: inline-block;
+            background: var(--accent);
+            color: #fff;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        /* ========== Grid & Cards ========== */
         .grid-container {
             display: grid;
             gap: var(--grid-gap);
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
         }
 
         .card {
-            background: var(--color-background-card);
-            border: 1px solid var(--color-border);
-            border-radius: 6px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
             display: flex;
             flex-direction: column;
-            position: relative; 
-            z-index: 1; 
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
+
         .card:hover {
             transform: translateY(-8px);
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
-            z-index: 2; 
+            box-shadow: 0 16px 32px rgba(253,126,20,0.15);
+            border-color: var(--accent);
         }
 
         .card-background-emoji {
             position: absolute;
             top: 50%;
             left: 50%;
-            font-size: 4rem;
+            font-size: 5rem;
             opacity: 0;
             transform: translate(-50%, -50%) scale(0.5);
-            transition: transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.5s ease-out;
-            z-index: 0; 
-            color: var(--color-text);
+            transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+            z-index: 0;
+            pointer-events: none;
         }
+
         .card:hover .card-background-emoji {
-            opacity: 0.2;
-            transform: translate(-50%, -50%) scale(2.5);
-        }
-
-
-        .card-header, .card-body {
-            position: relative; 
-            z-index: 1;
-            background: transparent; 
+            opacity: 0.12;
+            transform: translate(-50%, -50%) scale(2.5) rotate(-10deg);
         }
 
         .card-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: calc(var(--grid-gap) * 0.9);
-            border-bottom: 1px solid var(--color-border);
-            min-height: 40px;
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+            background: var(--muted);
+            position: relative;
+            z-index: 1;
         }
-        .card-header-theme {
-            line-height: 1.3;
-        }
+
         .card-header-theme h3 {
-            font-family: var(--font-heading);
-            font-size: 1.1rem; /* Made concept name slightly larger */
-            margin: 0;
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--accent-2);
+            margin-bottom: 4px;
         }
+
         .card-header-theme p {
-            font-size: 0.85rem;
-            color: var(--color-muted);
-            margin: 0;
+            font-size: 0.82rem;
+            color: #6c757d;
             font-style: italic;
         }
+
         .card-header .emoji {
-            font-size: 1.75rem;
-            line-height: 1;
+            font-size: 2rem;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        
+
+        .card:hover .card-header .emoji {
+            transform: scale(1.2) rotate(-8deg);
+        }
+
         .card-body {
-            padding: calc(var(--grid-gap) * 0.9);
+            padding: 16px;
             font-size: 0.9rem;
-            line-height: 1.6;
+            line-height: 1.65;
             flex-grow: 1;
+            position: relative;
+            z-index: 1;
         }
-        
+
         .roles-section {
-            margin-bottom: 1rem;
-            font-size: 0.8rem;
-            color: var(--color-muted);
+            margin-bottom: 12px;
+            font-size: 0.78rem;
+            color: #6c757d;
+            padding: 8px 10px;
+            background: var(--muted);
+            border-radius: 8px;
         }
+
         .roles-section strong {
-            color: var(--color-text);
+            color: var(--accent-2);
             font-weight: 600;
         }
-        
+
         blockquote {
             margin: 0;
-            padding: 0;
-            border: none;
+            padding: 12px 14px;
+            background: linear-gradient(135deg, #fff7ed, #ffedd5);
+            border-left: 3px solid var(--accent);
+            border-radius: 0 8px 8px 0;
+            font-size: 0.88rem;
         }
-        blockquote p { 
-            margin: 0; 
-        }
-        
 
-        @media (max-width: 1200px) {
-            .grid-container { grid-template-columns: repeat(2, 1fr); }
+        blockquote p {
+            margin: 0;
+            color: #495057;
         }
-        @media (max-width: 992px) {
-            .grid-container { grid-template-columns: repeat(1, 1fr); }
-            .header-initial .info-row { display: none; }
-            #header-container, body { --header-initial-height: 90px; }
+
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+            font-size: 1.1rem;
         }
-        @media (max-width: 576px) {
-            body { 
-                padding-top: var(--header-initial-height);
+
+        /* ========== Mobile ========== */
+        @media (max-width: 768px) {
+            main {
+                padding: 16px;
             }
-            .sticky-nav { display: none; }
-            .header-sticky { justify-content: center; }
+
+            .page-title {
+                margin-bottom: 20px;
+            }
+
+            .page-title h1 {
+                font-size: 1.5rem;
+            }
+
+            .grid-container {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            main {
+                padding: 12px;
+            }
+
+            .page-title h1 {
+                font-size: 1.3rem;
+            }
+
+            .card-header {
+                padding: 14px;
+            }
+
+            .card-body {
+                padding: 14px;
+            }
+
+            .card-header-theme h3 {
+                font-size: 0.95rem;
+            }
         }
     </style>
 </head>
 <body>
-
-    <div id="header-container">
-        <header class="header-initial">
-            <div class="brand-row">
-                <div class="brand-initials">Salesforce Glossary</div>
-            </div>
-            <div class="info-row">
-                 <div class="header-info">
-                    <span>A Technical Archive</span>
-                    <span>Inspired by Modern Martech</span>
-                </div>
-                <div class="header-info">
-                    <span>Focus Area</span>
-                    <span>Salesforce &amp; Marketing Cloud</span>
-                </div>
-                <div class="header-info">
-                    <span>A Project</span>
-                    <span>By a Collaborator</span>
-                </div>
-            </div>
-        </header>
-
-        <div class="header-sticky">
-            <div class="sticky-brand">
-                <span class="brand-short">SFG</span>
-                <span class="brand-full">Salesforce Glossary</span>
-            </div>
-            <nav class="sticky-nav">
-                <a href="#" class="active">Core Concepts</a>
-                <a href="#">Data &amp; Analytics</a>
-                <a href="#">Operations</a>
-                <a href="#">Strategy</a>
-            </nav>
-        </div>
-    </div>
-
+    <header class="site-header">
+        <a href="#" class="logo">🚀 Salesforce Glossary</a>
+        <button class="hamburger" id="hamburger-btn" aria-expanded="false" aria-controls="primary-nav">☰ Menu</button>
+        <nav id="primary-nav" class="site-nav">
+            <a href="#" class="active" data-category="all">All Terms</a>
+            <a href="#" data-category="core">Core Concepts</a>
+            <a href="#" data-category="data">Data &amp; Analytics</a>
+            <a href="#" data-category="ops">Operations</a>
+            <a href="#" data-category="strategy">Strategy</a>
+        </nav>
+    </header>
 
     <main>
+        <div class="page-title">
+            <h1>📚 Salesforce & Martech Glossary</h1>
+            <p>Essential concepts for CRM, marketing ops, and data teams</p>
+        </div>
+
+        <div id="category-label"></div>
         <div id="glossary-grid" class="grid-container"></div>
     </main>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+        // ========== GLOSSARY DATA WITH CATEGORIES ==========
+        const glossaryData = [
+            // CORE CONCEPTS (12)
+            { concept: "Event metadata", category: "core", roles: "Event Manager, Marketing Analyst, CRM Engineer, Product Owner", slogan: "Label your moments right", emoji: "🗂️", definition: "Structured data fields describing time, place, audience, and content of an event, enabling consistent classification, searchability, and integration across marketing and CRM tools." },
+            { concept: "Event taxonomy", category: "core", roles: "Information Architect, Event Strategist, Content Ops, Data Librarian", slogan: "Organize events, unlock insight", emoji: "🧬", definition: "A structured classification system that groups events by type, theme, audience, and goal, allowing better reporting, personalization, and knowledge reuse." },
+            { concept: "Standard codes", category: "core", roles: "Tech Writer, QA Specialist, Systems Architect, API Manager", slogan: "Codes that speak clearly", emoji: "💡", definition: "Predefined, consistent codes (e.g., event types, sources) used across systems to ensure compatibility, accurate tracking, and seamless data integration." },
+            { concept: "sObject", category: "core", roles: "Developer, Admin, Architect", slogan: "The building blocks", emoji: "🧱", definition: "Salesforce Object - a database table type that stores records. Standard sObjects include Account, Contact, Opportunity. Custom sObjects end with __c." },
+            { concept: "Record ID", category: "core", roles: "Developer, Admin, Integration Engineer", slogan: "Unique identity for every record", emoji: "🔑", definition: "An 18-character alphanumeric identifier that uniquely identifies every record in Salesforce. The first 3 characters indicate the object type." },
+            { concept: "Org", category: "core", roles: "Admin, Architect, Developer", slogan: "Your Salesforce tenant", emoji: "🏢", definition: "A Salesforce organization (org) is your isolated tenant containing data, metadata, users, and configurations for your company or environment." },
+            { concept: "Sandbox", category: "core", roles: "Admin, Developer, QA", slogan: "Safe place to test", emoji: "🧪", definition: "A replica of your production org used for testing, training, or development without impacting live data or users." },
+            { concept: "Profile", category: "core", roles: "Admin, Security", slogan: "Baseline permissions", emoji: "🛡️", definition: "Profiles define object permissions, field access, and basic user capabilities. They establish the minimum access a user has." },
+            { concept: "Permission Set", category: "core", roles: "Admin, Security", slogan: "Additive access", emoji: "➕", definition: "Permission Sets layer additional permissions on top of a user's profile to grant targeted access without cloning profiles." },
+            { concept: "Role Hierarchy", category: "core", roles: "Admin, Architect", slogan: "Who can see whose data", emoji: "🪜", definition: "Defines data visibility up the hierarchy; managers can typically see their subordinates' records, subject to sharing rules." },
+            { concept: "Sharing Rules", category: "core", roles: "Admin, Security", slogan: "Open up access safely", emoji: "🔓", definition: "Rules that grant record access to groups or roles beyond the org-wide defaults, enabling collaboration while keeping principle of least privilege." },
+            { concept: "Field-Level Security", category: "core", roles: "Admin, Security", slogan: "Protect the sensitive fields", emoji: "🧷", definition: "Controls visibility and editability of individual fields per profile/permission set, preventing exposure of sensitive data." },
+            
+            // DATA & ANALYTICS (12)
+            { concept: "Tag management", category: "data", roles: "Marketing Ops, Web Developer, Campaign Manager, Analytics Specialist", slogan: "Tags that tell the story", emoji: "🏷️", definition: "Systems or processes to assign, organize, and control descriptive labels (tags) for data points, user actions, or content for tracking, personalization, and segmentation." },
+            { concept: "Tracking consistency", category: "data", roles: "Data Engineer, QA Analyst, Growth Marketer, Product Manager", slogan: "Every click, every count", emoji: "📈", definition: "Ensuring all user actions or data events are recorded uniformly across platforms, minimizing gaps or duplications for accurate reporting." },
+            { concept: "Attribution logic", category: "data", roles: "Marketing Analyst, Campaign Strategist, CRM Manager, CMO", slogan: "Know who drove the win", emoji: "🔁", definition: "Logic that determines how credit for a conversion or lead is assigned across multiple user touchpoints." },
+            { concept: "Analytics labels", category: "data", roles: "Performance Analyst, Marketing Manager, BI Lead, Web Strategist", slogan: "Tag, track, triumph", emoji: "📊", definition: "Short descriptors attached to user or system events for organizing and analyzing marketing performance and user behavior." },
+            { concept: "SOQL", category: "data", roles: "Developer, Analyst, Admin", slogan: "Query the cloud", emoji: "🔍", definition: "Salesforce Object Query Language - SQL-like language for querying Salesforce data with multi-tenant governor limits." },
+            { concept: "Governor Limits", category: "data", roles: "Developer, Architect, Admin", slogan: "Guardrails for the cloud", emoji: "⚠️", definition: "Runtime limits enforced by Salesforce to ensure fair resource usage in a multi-tenant environment (CPU, queries, DML, heap)." },
+            { concept: "Report Types", category: "data", roles: "Admin, Analyst", slogan: "Choose the dataset", emoji: "🗃️", definition: "Blueprints that define which objects and relationships are available for reporting; custom report types extend beyond standard joins." },
+            { concept: "Dashboards", category: "data", roles: "Executive, Manager, Analyst", slogan: "See it at a glance", emoji: "📊", definition: "Visual collections of reports with charts, metrics, and tables that provide at-a-glance insights and can be scheduled for refresh." },
+            { concept: "Data Cloud (CDP)", category: "data", roles: "CDP Architect, Data Engineer, Marketer", slogan: "Unify customer profiles", emoji: "🧩", definition: "Salesforce Data Cloud (Customer Data Platform) unifies data from multiple sources, resolves identities, and activates segments across channels." },
+            { concept: "Data Import Wizard", category: "data", roles: "Admin, Ops", slogan: "Simple guided loads", emoji: "📥", definition: "Browser-based guided importer for standard objects and some custom objects; great for light data loads without complex mappings." },
+            { concept: "Data Loader", category: "data", roles: "Admin, Developer, Ops", slogan: "Heavy-duty importer", emoji: "🪣", definition: "Client tool for bulk insert, update, upsert, delete, and export; suited for larger data volumes and scheduled jobs." },
+            { concept: "Einstein Discovery", category: "data", roles: "Analyst, Data Scientist, Product Owner", slogan: "Explain and predict", emoji: "🤖", definition: "ML-powered insights that surface drivers, predictions, and recommended actions directly inside Salesforce analytics experiences." },
+            
+            // OPERATIONS (12)
+            { concept: "CRM sync", category: "ops", roles: "CRM Admin, Integration Engineer, Sales Ops, Automation Lead", slogan: "Every detail, everywhere it counts", emoji: "🔄", definition: "Real-time or scheduled synchronization of contact, lead, or engagement data between systems to maintain a single source of truth." },
+            { concept: "Marketing ops", category: "ops", roles: "Marketing Ops Lead, Campaign Analyst, Martech Architect, GTM Strategist", slogan: "Run smooth, scale smart", emoji: "⚙️", definition: "Operational discipline managing tools, data, processes, and reporting for efficient marketing execution." },
+            { concept: "Flow Builder", category: "ops", roles: "Admin, Developer, Business Analyst", slogan: "Automate without code", emoji: "🔀", definition: "Declarative automation tool for building business processes; successor to Workflow Rules and Process Builder." },
+            { concept: "Apex Trigger", category: "ops", roles: "Developer, Architect", slogan: "Code that reacts", emoji: "⚡", definition: "Server-side code that runs before/after DML to enforce complex logic not achievable declaratively." },
+            { concept: "Validation Rule", category: "ops", roles: "Admin, Business Analyst", slogan: "Data quality at the gate", emoji: "✅", definition: "Formula-based rule to prevent invalid data from being saved; enforces consistency at field level." },
+            { concept: "Assignment Rules", category: "ops", roles: "Admin, Support Lead", slogan: "Route to the right owner", emoji: "📬", definition: "Rules that automatically assign Leads or Cases to users or queues based on criteria." },
+            { concept: "Escalation Rules", category: "ops", roles: "Support Manager, Admin", slogan: "Keep SLAs honest", emoji: "⏱️", definition: "Automatically escalate Cases when conditions meet SLA thresholds to ensure timely resolution." },
+            { concept: "Queues", category: "ops", roles: "Support Lead, Sales Ops", slogan: "Shared work buckets", emoji: "🪣", definition: "Shared holding areas for records (Leads, Cases, custom) so teams can pick up work from a common pool." },
+            { concept: "Omni-Channel", category: "ops", roles: "Contact Center Lead, Admin", slogan: "Route every channel", emoji: "🎧", definition: "Real-time routing engine that pushes work (chats, cases, messages) to the best available agent based on capacity and skills." },
+            { concept: "Knowledge", category: "ops", roles: "Support Lead, Agent, Admin", slogan: "Answers at scale", emoji: "📚", definition: "Centralized article management for agents and customers, with versioning, publication, and multilingual support." },
+            { concept: "Change Sets", category: "ops", roles: "Admin, Release Manager", slogan: "Move config safely", emoji: "🚚", definition: "Point-and-click deployments of metadata between related Salesforce orgs (typically sandbox to production)." },
+            { concept: "DevOps Center", category: "ops", roles: "Release Manager, Admin, Developer", slogan: "Modern releases for Salesforce", emoji: "🛠️", definition: "Salesforce’s Git-based release management tool providing pipelines, work tracking, and change promotion with source control." },
+            
+            // STRATEGY (12)
+            { concept: "Customer 360", category: "strategy", roles: "CMO, CRO, CTO, Strategy Lead", slogan: "One view to rule them all", emoji: "🎯", definition: "Unified customer data across Sales, Service, Marketing, and Commerce clouds for a complete view and coordinated engagement." },
+            { concept: "Multi-cloud architecture", category: "strategy", roles: "Architect, CTO, Strategy Lead", slogan: "Best of all worlds", emoji: "☁️", definition: "Combining multiple Salesforce clouds with integration patterns to deliver end-to-end customer journeys." },
+            { concept: "Digital transformation", category: "strategy", roles: "CIO, CDO, Strategy Lead, Change Manager", slogan: "Evolve or be left behind", emoji: "🚀", definition: "Using digital technologies to change how organizations operate and deliver value, with people/process/tech alignment." },
+            { concept: "Platform events", category: "strategy", roles: "Architect, Developer, Integration Lead", slogan: "Real-time enterprise messaging", emoji: "📡", definition: "Event-driven architecture within Salesforce enabling publish/subscribe patterns for decoupled integrations." },
+            { concept: "API-first", category: "strategy", roles: "CTO, Architect, Product", slogan: "Integrate by design", emoji: "🛣️", definition: "Designing products and services with APIs as primary interfaces to ensure interoperability and ecosystem extensibility." },
+            { concept: "Center of Excellence", category: "strategy", roles: "PMO, Architecture, Security", slogan: "Governance at scale", emoji: "🏛️", definition: "Cross-functional team that sets standards, patterns, and guardrails for Salesforce delivery and operations." },
+            { concept: "Data residency", category: "strategy", roles: "CISO, Legal, Architect", slogan: "Where data lives matters", emoji: "📍", definition: "Policies and configurations ensuring data is stored/processed in approved regions to meet compliance requirements." },
+            { concept: "Enterprise Scale", category: "strategy", roles: "CTO, Architect", slogan: "Design for millions", emoji: "📈", definition: "Architectural principles to handle high data volumes, concurrency, and integrations without breaching limits." },
+            { concept: "B2B vs B2C Journeys", category: "strategy", roles: "CMO, Journey Architect", slogan: "Map to the right motions", emoji: "🧭", definition: "Tailoring lifecycle, segmentation, and touchpoints to the buying motion—long-cycle multi-stakeholder B2B vs high-velocity B2C." },
+            { concept: "Consent & Preference", category: "strategy", roles: "Privacy Lead, Marketing Ops", slogan: "Respect choices, stay compliant", emoji: "🔒", definition: "Managing opt-ins/opt-outs and communication preferences across channels to satisfy GDPR/CCPA and build trust." },
+            { concept: "Health Scores", category: "strategy", roles: "CS Ops, CSM, RevOps", slogan: "Spot risk early", emoji: "❤️", definition: "Composite metrics (usage, support, financial) to track customer health, predict churn, and trigger plays." },
+            { concept: "Adoption Playbooks", category: "strategy", roles: "CS Ops, Enablement, PM", slogan: "Turn features into habits", emoji: "📒", definition: "Structured sequences of actions to drive product adoption, combining in-app guidance, training, and success milestones." }
+        ];
 
-            const glossaryData = [
-                { concept: "Event metadata", roles: "Event Manager, Marketing Analyst, CRM Engineer, Product Owner", slogan: "Label your moments right", emoji: "🗂️", definition: "Structured data fields describing time, place, audience, and content of an event, enabling consistent classification, searchability, and integration across marketing and CRM tools." },
-                { concept: "Tag management", roles: "Marketing Ops, Web Developer, Campaign Manager, Analytics Specialist", slogan: "Tags that tell the story", emoji: "🏷️", definition: "Systems or processes to assign, organize, and control descriptive labels (tags) for data points, user actions, or content for tracking, personalization, and segmentation." },
-                { concept: "Tracking consistency", roles: "Data Engineer, QA Analyst, Growth Marketer, Product Manager", slogan: "Every click, every count", emoji: "📈", definition: "The principle and practice of ensuring that all user actions or data events are recorded uniformly across platforms, minimizing gaps or duplications for accurate reporting." },
-                { concept: "Attribution logic", roles: "Marketing Analyst, Campaign Strategist, CRM Manager, CMO", slogan: "Know who drove the win", emoji: "🔁", definition: "Logic that determines how credit for a conversion or lead is assigned across multiple user touchpoints, helping marketers identify impactful campaigns or channels." },
-                { concept: "Event taxonomy", roles: "Information Architect, Event Strategist, Content Ops, Data Librarian", slogan: "Organize events, unlock insight", emoji: "🧬", definition: "A structured classification system that groups events by type, theme, audience, and goal, allowing better reporting, personalization, and knowledge reuse." },
-                { concept: "CRM sync", roles: "CRM Admin, Integration Engineer, Sales Ops, Automation Lead", slogan: "Every detail, everywhere it counts", emoji: "🔄", definition: "The real-time or scheduled synchronization of contact, lead, or engagement data between an event system and CRM, ensuring a single source of truth." },
-                { concept: "Analytics labels", roles: "Performance Analyst, Marketing Manager, BI Lead, Web Strategist", slogan: "Tag, track, triumph", emoji: "📊", definition: "Short descriptors attached to user or system events for the purpose of organizing and analyzing marketing performance and user behavior trends." },
-                { concept: "Marketing ops", roles: "Marketing Ops Lead, Campaign Analyst, Martech Architect, GTM Strategist", slogan: "Run smooth, scale smart", emoji: "⚙️", definition: "Operational function that manages tools, data, processes, and reporting for efficient marketing execution, enabling teams to focus on strategy and performance." },
-                { concept: "Standard codes", roles: "Tech Writer, QA Specialist, Systems Architect, API Manager", slogan: "Codes that speak clearly", emoji: "💡", definition: "Predefined, consistent codes (e.g., event types, sources) used across systems to ensure compatibility, accurate tracking, and seamless data integration." }
-            ];
+        let currentCategory = 'all';
+        const grid = document.getElementById('glossary-grid');
+        const categoryLabel = document.getElementById('category-label');
+        const menuBtn = document.getElementById('hamburger-btn');
+        const primaryNav = document.getElementById('primary-nav');
 
-            const grid = document.getElementById('glossary-grid');
+        // Category display names
+        const categoryNames = {
+            'all': 'All Terms',
+            'core': 'Core Concepts',
+            'data': 'Data & Analytics',
+            'ops': 'Operations',
+            'strategy': 'Strategy'
+        };
 
-            function renderGlossary() {
-                grid.innerHTML = '';
+        // Render cards
+        function renderGlossary() {
+            const filtered = currentCategory === 'all' 
+                ? glossaryData 
+                : glossaryData.filter(item => item.category === currentCategory);
+
+            // Update category label
+            if (currentCategory !== 'all') {
+                categoryLabel.innerHTML = `<span class="category-label">${categoryNames[currentCategory]} (${filtered.length})</span>`;
+            } else {
+                categoryLabel.innerHTML = '';
+            }
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '<div class="no-results">No terms found in this category.</div>';
+                return;
+            }
+
+            grid.innerHTML = filtered.map(item => `
+                <div class="card">
+                    <div class="card-background-emoji">${item.emoji}</div>
+                    <div class="card-header">
+                        <div class="card-header-theme">
+                            <h3>${item.concept}</h3>
+                            <p>${item.slogan}</p>
+                        </div>
+                        <div class="emoji">${item.emoji}</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="roles-section">
+                            <strong>Key Roles:</strong> ${item.roles}
+                        </div>
+                        <blockquote>
+                            <p>"${item.definition}"</p>
+                        </blockquote>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ========== NAVIGATION TOGGLE - CBSE PATTERN ==========
+        (function(){
+            if(!menuBtn || !primaryNav) return;
+            menuBtn.addEventListener('click', () => {
+                const open = !primaryNav.classList.contains('open');
+                primaryNav.classList.toggle('open', open);
+                menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+            });
+        })();
+
+        // Nav category clicks
+        primaryNav.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
                 
-                glossaryData.forEach(item => {
-                    const card = document.createElement('div');
-                    card.className = 'card';
-                    card.innerHTML = `
-                        <div class="card-background-emoji">${item.emoji}</div>
-                        <div class="card-header">
-                            <div class="card-header-theme">
-                                <h3>${item.concept}</h3>
-                                <p>${item.slogan}</p>
-                            </div>
-                            <div class="emoji">${item.emoji}</div>
-                        </div>
-                        <div class="card-body">
-                            <div class="roles-section">
-                                <strong>Key Roles:</strong> ${item.roles}
-                            </div>
-                            <blockquote>
-                                <p>"${item.definition}"</p>
-                            </blockquote>
-                        </div>
-                    `;
-                    grid.appendChild(card);
-                });
-            }
-
-            function handleScroll() {
-                if (window.scrollY > 20) { 
-                    document.body.classList.add('scrolled');
-                } else {
-                    document.body.classList.remove('scrolled');
-                }
-            }
-
-            window.addEventListener('scroll', handleScroll, { passive: true });
-
-            renderGlossary();
+                // Update active state
+                primaryNav.querySelectorAll('a').forEach(a => a.classList.remove('active'));
+                link.classList.add('active');
+                
+                // Filter by category
+                currentCategory = link.dataset.category;
+                renderGlossary();
+                
+                // Close mobile menu
+                primaryNav.classList.remove('open');
+                menuBtn.setAttribute('aria-expanded', 'false');
+            });
         });
+
+        // Initial render
+        renderGlossary();
     </script>
 </body>
 </html>
