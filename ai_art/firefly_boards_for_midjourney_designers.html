@@ -73,14 +73,43 @@
     .quiz-option.wrong .explanation{border-left-color:var(--bad);background:#fff5f5}
 
     /* --- Glossary Styles --- */
+    #glossary{position:relative}
     .glossary-cloud{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px;justify-content:center}
-    .glossary-chip{position:relative;display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:999px;background:#fff7ed;border:1px solid #ffd8a8;color:#d9480f;font-weight:600;cursor:pointer;box-shadow:0 2px 6px rgba(253,126,20,.12)}
+    .glossary-chip{position:relative;display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:999px;background:#fff7ed;border:1px solid #ffd8a8;color:#d9480f;font-weight:600;cursor:pointer;box-shadow:0 8px 18px rgba(253,126,20,.12)}
     .glossary-chip:focus{outline:2px solid var(--accent); outline-offset:2px}
     .glossary-chip:hover, .glossary-chip:focus{background:#ffecde;}
-    .chip-tip{position:fixed;z-index:99999;min-width:240px;max-width:min(92vw,420px);background:var(--accent);color:#fff;padding:12px 14px;border-radius:12px;box-shadow:0 12px 28px rgba(253,126,20,.35);opacity:0;visibility:hidden;transition:.15s;line-height:1.45;pointer-events:none}
-    .chip-tip.show{opacity:1;visibility:visible}
-    .chip-tip .arrow{position:absolute;width:12px;height:12px;background:var(--accent);transform:rotate(45deg)}
-    @media (max-width:640px){.chip-tip{max-width:92vw}}
+    .glossary-tip{
+      position:fixed;
+      z-index:9999;
+      max-width:min(90vw,420px);
+      background:var(--accent);
+      color:#fff;
+      padding:14px 18px;
+      border-radius:14px;
+      box-shadow:0 16px 35px rgba(253,126,20,.35);
+      line-height:1.5;
+      opacity:0;
+      visibility:hidden;
+      transition:opacity 0.15s ease;
+      pointer-events:none;
+    }
+    .glossary-tip.show{
+      opacity:1;
+      visibility:visible;
+    }
+    .glossary-tip .tip-arrow{
+      position:absolute;
+      width:14px;
+      height:14px;
+      background:var(--accent);
+      transform:rotate(45deg);
+      left:50%;
+      margin-left:-7px;
+      top:-7px;
+    }
+    @media (max-width:640px){
+      .glossary-chip{width:100%;justify-content:flex-start;}
+    }
   </style>
 </head>
 <body>
@@ -332,7 +361,8 @@
   <footer class="site-footer">© 2025 AI Designer Academy. All Rights Reserved.</footer>
 
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    (function initPage(){
+      try {
       // --- DATA ---
      const quiz1Questions = [
     {
@@ -602,96 +632,110 @@
       function setupGlossary() {
         const cloud = document.getElementById('glossaryCloud');
         if (!cloud) return;
-        cloud.innerHTML = glossaryData.map((kw, i) => `<button class="glossary-chip" type="button" data-index="${i}" aria-label="${kw.term} definition tooltip" title="${kw.term}: ${kw.def.replace(/\"/g,'&quot;')}">${kw.term}</button>`).join('');
+
+        cloud.innerHTML = glossaryData.map((kw, i) => `
+          <button class="glossary-chip" type="button" data-index="${i}" aria-label="${kw.term} definition">
+            ${kw.term}
+          </button>
+        `).join('');
+
         const tip = document.createElement('div');
-        tip.className = 'chip-tip';
-        tip.innerHTML = '<div class="arrow"></div><div class="tip-content"></div>';
+        tip.className = 'glossary-tip';
+        tip.innerHTML = '<div class="tip-arrow"></div><div class="tip-content"></div>';
         document.body.appendChild(tip);
         const tipContent = tip.querySelector('.tip-content');
-        const arrow = tip.querySelector('.arrow');
-        let openBtn = null;
+        const arrow = tip.querySelector('.tip-arrow');
+        let currentBtn = null;
 
-        function showTipFor(btn) {
-            const idx = parseInt(btn.getAttribute('data-index'), 10);
-            const def = glossaryData[idx] ? glossaryData[idx].def : '';
-            if (!def) return;
-            
-            tipContent.textContent = def;
-            tip.classList.add('show');
-            openBtn = btn;
-            
-            // Position after content is set and display is visible
-            setTimeout(() => {
-                const rect = btn.getBoundingClientRect();
-                const tipRect = tip.getBoundingClientRect();
-                let top = rect.bottom + 12;
-                let arrowTop = -6;
-                
-                if (top + tipRect.height > window.innerHeight - 20) {
-                    top = rect.top - tipRect.height - 12;
-                    arrowTop = tipRect.height - 6;
-                }
-                
-                let left = rect.left + rect.width / 2 - tipRect.width / 2;
-                left = Math.max(8, Math.min(left, window.innerWidth - tipRect.width - 8));
-                
-                tip.style.top = `${top}px`;
-                tip.style.left = `${left}px`;
-                arrow.style.top = `${arrowTop}px`;
-                arrow.style.left = `${rect.left + rect.width / 2 - left - 6}px`;
-            }, 10);
+        function positionTip(btn) {
+          const rect = btn.getBoundingClientRect();
+          const tipRect = tip.getBoundingClientRect();
+          let top = rect.bottom + 12;
+          if (top + tipRect.height > window.innerHeight - 12) {
+            top = rect.top - tipRect.height - 12;
+            arrow.style.top = `${tipRect.height - 7}px`;
+          } else {
+            arrow.style.top = '-7px';
+          }
+          let left = rect.left + rect.width / 2 - tipRect.width / 2;
+          left = Math.max(12, Math.min(left, window.innerWidth - tipRect.width - 12));
+          tip.style.top = `${top}px`;
+          tip.style.left = `${left}px`;
+          arrow.style.left = `${rect.left + rect.width / 2 - left - 7}px`;
+        }
+
+        function showTip(btn) {
+          const idx = parseInt(btn.getAttribute('data-index'), 10);
+          const entry = glossaryData[idx];
+          if (!entry) return;
+          tipContent.innerHTML = `<strong>${entry.term}:</strong> ${entry.def}`;
+          tip.classList.add('show');
+          currentBtn = btn;
+          positionTip(btn);
         }
 
         function hideTip() {
-            tip.classList.remove('show');
-            openBtn = null;
+          tip.classList.remove('show');
+          currentBtn = null;
         }
 
         cloud.querySelectorAll('.glossary-chip').forEach(btn => {
-            // Hover (desktop)
-            btn.addEventListener('mouseenter', () => showTipFor(btn));
-            btn.addEventListener('mouseleave', hideTip);
-            
-            // Focus (keyboard)
-            btn.addEventListener('focus', () => showTipFor(btn));
-            btn.addEventListener('blur', hideTip);
-
-            // Click/tap toggle (mobile-friendly)
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const isOpen = tip.classList.contains('show') && openBtn === btn;
-                if (isOpen) {
-                    hideTip();
-                } else {
-                    showTipFor(btn);
-                }
-            });
-
-            // Keyboard toggle
-            btn.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    btn.click();
-                }
-            });
-        });
-
-        // Close on outside click
-        document.addEventListener('click', (e) => {
-            if (openBtn && !e.target.closest('.glossary-chip')) {
-                hideTip();
+          btn.addEventListener('mouseenter', () => showTip(btn));
+          btn.addEventListener('mouseleave', hideTip);
+          btn.addEventListener('focus', () => showTip(btn));
+          btn.addEventListener('blur', hideTip);
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isOpen = currentBtn === btn && tip.classList.contains('show');
+            if (isOpen) {
+              hideTip();
+            } else {
+              showTip(btn);
             }
+          });
+          btn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            const isOpen = currentBtn === btn && tip.classList.contains('show');
+            if (isOpen) {
+              hideTip();
+            } else {
+              showTip(btn);
+            }
+          }, { passive: false });
+          btn.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              const isOpen = currentBtn === btn && tip.classList.contains('show');
+              if (isOpen) {
+                hideTip();
+              } else {
+                showTip(btn);
+              }
+            }
+          });
         });
 
-        // Close on scroll
+        document.addEventListener('click', (e) => {
+          if (!e.target.closest('.glossary-chip')) {
+            hideTip();
+          }
+        });
         window.addEventListener('scroll', hideTip, { passive: true });
+        window.addEventListener('resize', () => {
+          if (currentBtn) {
+            positionTip(currentBtn);
+          }
+        });
       }
 
       // --- INITIALIZE ALL COMPONENTS ---
       setupQuiz('quiz-container-1', quiz1Questions);
       setupAccordions();
       setupGlossary();
-    });
+      } catch (err) {
+        console.error('Firefly Boards page init error:', err);
+      }
+    })();
   </script>
 </body>
 </html>

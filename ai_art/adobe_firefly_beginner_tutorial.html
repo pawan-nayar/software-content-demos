@@ -66,7 +66,16 @@
 
         /* ================= QUIZ & GLOSSARY ================= */
         .quiz-container{padding:20px;border:2px solid var(--border);border-radius:12px;background:var(--bg)}
-        .quiz-navigation{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border)}
+        .quiz-navigation{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:16px;
+            margin-bottom:20px;
+            padding-bottom:20px;
+            border-bottom:1px solid var(--border);
+        }
+        .quiz-navigation .btn{flex:1;width:auto;min-width:90px}
         .quiz-body{display:none;} .quiz-body.active{display:block}
         .quiz-options{display:grid; gap:12px;}
         .quiz-option label{display:flex; align-items:center; gap:12px; padding:14px;border:2px solid var(--border);border-radius:8px;cursor:pointer;background:var(--muted); transition: all 0.2s ease;}
@@ -78,9 +87,40 @@
         .quiz-option.correct .explanation{border-left-color:var(--ok);background:#d1e7dd}
         .quiz-option.wrong .explanation{border-left-color:var(--bad);background:#f8d7da}
         .glossary-cloud{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px;justify-content:center}
-        .glossary-chip{position:relative;display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:999px;background:#fff7ed;border:1px solid #ffd8a8;color:#d9480f;font-weight:600;cursor:pointer;box-shadow:0 2px 6px rgba(253,126,20,.12); transition: all 0.2s ease;}
-        .glossary-chip:hover, .glossary-chip:focus{background:#ffecde;}
-        .glossary-chip .icon { font-size: 1.1em; line-height: 1; }
+        .glossary-chip{
+            position:relative;
+            display:inline-flex;
+            align-items:center;
+            gap:10px;
+            padding:12px 18px;
+            border-radius:999px;
+            background:rgba(255,255,255,0.5);
+            border:1px solid rgba(255,255,255,0.65);
+            color:#d9480f;
+            font-weight:600;
+            cursor:pointer;
+            box-shadow:0 12px 32px rgba(253,126,20,.15);
+            transition:all 0.2s ease;
+            backdrop-filter:blur(12px);
+            overflow:hidden;
+        }
+        .glossary-chip::after{
+            content:"";
+            position:absolute;
+            inset:0;
+            background:linear-gradient(135deg,rgba(255,255,255,0.4),rgba(255,255,255,0));
+            pointer-events:none;
+        }
+        .glossary-chip:hover,.glossary-chip:focus{transform:translateY(-2px);box-shadow:0 18px 34px rgba(253,126,20,.22);}
+        .glossary-chip .icon{
+            font-size:1.3em;
+            line-height:1;
+            background:rgba(253,126,20,0.2);
+            color:var(--accent-2);
+            padding:6px;
+            border-radius:14px;
+            backdrop-filter:blur(6px);
+        }
         .chip-tip{position:fixed;z-index:9999;min-width:240px;max-width:min(92vw,420px);background:var(--accent);color:#fff;padding:12px 14px;border-radius:12px;box-shadow:0 12px 28px rgba(253,126,20,.35);opacity:0;visibility:hidden;transition:.15s;line-height:1.45}
         .chip-tip.show{opacity:1;visibility:visible}
         .chip-tip .arrow{position:absolute;width:12px;height:12px;background:var(--accent);transform:rotate(45deg)}
@@ -112,9 +152,10 @@
         .flip-card { background-color: transparent; width: 100%; height: 200px; perspective: 1000px; cursor: pointer; }
         .flip-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s; transform-style: preserve-3d; }
         .flip-card:hover .flip-card-inner, .flip-card.flipped .flip-card-inner { transform: rotateY(180deg); }
-        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; border-radius: 12px; border: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
-        .flip-card-front { background-color: var(--muted); color: var(--text); font-weight: bold; font-size: 1.2rem; }
-        .flip-card-back { background-color: var(--accent); color: white; transform: rotateY(180deg); font-size: 0.9rem; }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; border-radius: 14px; border: 1px solid rgba(255,255,255,0.5); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 22px; }
+        .flip-card-front { background: rgba(255,255,255,0.6); box-shadow: 0 20px 40px rgba(0,0,0,0.08); backdrop-filter: blur(15px); color: var(--text); font-weight: bold; font-size: 1.15rem; gap: 12px; }
+        .card-icon { font-size: 2.2rem; background: rgba(253,126,20,0.15); padding: 12px; border-radius: 18px; }
+        .flip-card-back { background-color: var(--accent); color: white; transform: rotateY(180deg); font-size: 0.95rem; box-shadow: 0 25px 45px rgba(253,126,20,0.35); }
         .flip-card-back strong { color: #ffecde; }
 
         /* ================= TABLE with STICKY COLUMN ================= */
@@ -160,6 +201,90 @@
         .poll-text { position: relative; z-index: 1; }
         .poll-percent { position: relative; z-index: 1; font-weight: bold; }
         .challenge-solution { margin-top: 16px; padding-top: 16px; border-top: 1px dashed var(--border); }
+        .workspace-card{
+            background:#fff;
+            border:1px solid var(--border);
+            border-radius:18px;
+            padding:20px;
+            box-shadow:0 20px 40px rgba(0,0,0,0.08);
+            margin-top:20px;
+        }
+        .workspace-tip{
+            font-size:0.95rem;
+            color:#6c757d;
+            margin-bottom:12px;
+        }
+        .scroll-hint{
+            font-size:0.85rem;
+            color:#6c757d;
+            margin:8px 0 0;
+        }
+
+        /* ================= Mobile Focused Layout ================= */
+        @media (max-width: 768px) {
+            body {
+                background: radial-gradient(circle at top, #fff8f0 0%, #fff5ec 50%, #fffefa 100%);
+                padding-bottom: 48px;
+            }
+            .site-header {
+                position: static;
+                padding: 12px 18px;
+            }
+            .container {
+                padding: 18px 16px 32px;
+            }
+            h1 {
+                font-size: 1.9rem;
+                text-align: center;
+            }
+            .intro {
+                padding: 18px;
+                font-size: 1rem;
+            }
+            .img-frame {
+                padding: 12px;
+            }
+            .progress-tracker {
+                position: static;
+                flex-wrap: nowrap;
+                justify-content: flex-start;
+                gap: 8px;
+                padding: 14px;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            .progress-tracker::-webkit-scrollbar{display:none;}
+            .progress-line { display: none; }
+            .progress-step {
+                flex: 0 0 36px;
+                width: 36px;
+                height: 36px;
+            }
+            .recipe-grid {
+                grid-template-columns: 1fr;
+            }
+            .flip-card {
+                height: 220px;
+            }
+            .quiz-navigation {
+                flex-direction: row;
+                flex-wrap: nowrap;
+            }
+            .btn {
+                width: 100%;
+                min-height: 48px;
+            }
+            .poll-container,
+            .quiz-container,
+            .scenario-container,
+            .table-wrap {
+                padding: 16px;
+            }
+            .glossary-chip {
+                width: 100%;
+                justify-content: flex-start;
+            }
+        }
     </style>
 </head>
 <body>
@@ -200,8 +325,10 @@
         
         <section id="workspace-tour">
             <h2>Section 1: Your Creative Cockpit</h2>
-            <p>Before we create, let's get familiar with the workspace. Click on the labeled areas below to learn their function.</p>
-             <div class="img-frame">
+            <p>Before we create, let's get familiar with the workspace.</p>
+            <div class="workspace-card">
+                <p class="workspace-tip">Tap any highlighted zone to learn what it controls.</p>
+                <div class="img-frame">
                 <svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg" style="background: var(--muted); border-radius: 8px;">
                     <title>Firefly UI Tour</title>
                     <style>.tour-label{font-family:Inter;font-size:14px;fill:var(--text);font-weight:600; cursor:pointer; transition: fill 0.2s; pointer-events: bounding-box;}.tour-label:hover{fill:var(--accent);}.tour-area{fill:rgba(253, 126, 20, 0.1);stroke:var(--accent);stroke-width:2;stroke-dasharray:5,5;cursor:pointer;transition:fill 0.2s; pointer-events: all;} .tour-area:hover{fill:rgba(253, 126, 20, 0.3);}</style>
@@ -217,6 +344,7 @@
                     <rect id="tour-prompt" class="tour-area" x="220" y="355" width="450" height="75" rx="4" pointer-events="all" fill="rgba(253, 126, 20, 0.1)"/><text x="445" y="395" class="tour-label" text-anchor="middle">✍️ The Prompt Box</text>
                     <rect id="tour-generate" class="tour-area" x="680" y="355" width="100" height="75" rx="4" fill="var(--accent)" pointer-events="all"/><text x="730" y="395" class="tour-label" text-anchor="middle" style="fill:#000;">Generate</text>
                 </svg>
+                </div>
             </div>
         </section>
 
@@ -229,6 +357,7 @@
         <section id="cheatsheet">
              <h2>Section 3: Firefly Feature Cheatsheet</h2>
              <p>A structured reference table for Firefly's key features and controls. Use this as a quick guide to remember the purpose of each tool.</p>
+             <div class="scroll-hint">Swipe left/right on the table to reveal additional columns.</div>
              <div class="table-wrap">
                 <div class="table-scroll">
                     <table class="data-table">
@@ -472,21 +601,21 @@
         ];
 
         const recipeData = [
-            { front: "Seamless Texture", back: "<strong>Prompt:</strong> <code>photorealistic cobblestone texture, mossy --style seamless tile</code><br><strong>Use Case:</strong> Creating tiling backgrounds and materials for 3D models." },
-            { front: "Match a Movie's Style", back: "Upload a screenshot from a movie (e.g., 'Dune') to <strong>Style Reference</strong>.<br><strong>Prompt:</strong> <code>A lone wanderer in a desert</code>" },
-            { front: "Consistent Icons", back: "Perfect one icon, then use it as a <strong>Style Reference</strong> with high intensity for all other icons." },
-            { front: "Isolated Asset", back: "Add <code>game asset, on a plain background</code> or <code>... on a black background</code> to your prompt to get clean, isolated objects." },
-            { front: "Vector Logo", back: "Use the <strong>Text to Vector</strong> model. <strong>Prompt:</strong> <code>Minimalist wolf head logo, geometric, clean lines</code>" },
-            { front: "Specific Camera Angle", back: "Use photographic terms like <code>low-angle shot</code>, <code>top-down view</code>, or <code>macro photography</code> in your prompt." },
-            { front: "Change a Color", back: "Use the <strong>Generative Fill</strong> tool in Photoshop/Express or prompt: <code>A red sports car</code> and use a Style Reference of a blue object." },
-            { front: "Animated Icon", back: "In <strong>Text to Video</strong>, prompt: <code>A golden star icon, gently rotating and sparkling, looping animation</code>" },
-            { front: "Sound Effect", back: "In <strong>Generate Sound Effects</strong>, be descriptive: <code>Sound of a heavy stone door grinding open, deep echo</code>" },
-            { front: "Pixel Art", back: "Add <code>pixel art</code>, <code>16-bit video game style</code> to your prompt and use the <strong>Pixel Art</strong> effect from the Effects panel." },
-            { front: "Watercolor Style", back: "Add <code>watercolor painting, soft edges, paper texture</code> to your prompt and use the <strong>Watercolor</strong> effect." },
-            { front: "Clean UI Element", back: "Prompt: <code>A clean, minimalist health bar, green to red gradient, UI element for a sci-fi game</code>" },
-            { front: "Force a Mood", back: "Use lighting keywords: <code>eerie backlighting</code> for horror, <code>golden hour</code> for warmth, <code>neon lighting</code> for cyberpunk." },
-            { front: "Blueprint Schematic", back: "Prompt: <code>Blueprint schematic of a futuristic spaceship, white lines on a blue background, technical drawing</code>" },
-            { front: "Get a Specific Pose", back: "Describe the action: <code>A knight, seen from behind, looking out over a vast valley at sunrise, silhouette</code>" },
+            { icon:"🧱", front: "Seamless Texture", back: "<strong>Prompt:</strong> <code>photorealistic cobblestone texture, mossy --style seamless tile</code><br><strong>Use Case:</strong> Creating tiling backgrounds and materials for 3D models." },
+            { icon:"🎬", front: "Match a Movie's Style", back: "Upload a screenshot from a movie (e.g., 'Dune') to <strong>Style Reference</strong>.<br><strong>Prompt:</strong> <code>A lone wanderer in a desert</code>" },
+            { icon:"🧩", front: "Consistent Icons", back: "Perfect one icon, then use it as a <strong>Style Reference</strong> with high intensity for all other icons." },
+            { icon:"📦", front: "Isolated Asset", back: "Add <code>game asset, on a plain background</code> or <code>... on a black background</code> to your prompt to get clean, isolated objects." },
+            { icon:"🔺", front: "Vector Logo", back: "Use the <strong>Text to Vector</strong> model. <strong>Prompt:</strong> <code>Minimalist wolf head logo, geometric, clean lines</code>" },
+            { icon:"📷", front: "Specific Camera Angle", back: "Use photographic terms like <code>low-angle shot</code>, <code>top-down view</code>, or <code>macro photography</code> in your prompt." },
+            { icon:"🎨", front: "Change a Color", back: "Use the <strong>Generative Fill</strong> tool in Photoshop/Express or prompt: <code>A red sports car</code> and use a Style Reference of a blue object." },
+            { icon:"✨", front: "Animated Icon", back: "In <strong>Text to Video</strong>, prompt: <code>A golden star icon, gently rotating and sparkling, looping animation</code>" },
+            { icon:"🔊", front: "Sound Effect", back: "In <strong>Generate Sound Effects</strong>, be descriptive: <code>Sound of a heavy stone door grinding open, deep echo</code>" },
+            { icon:"🕹️", front: "Pixel Art", back: "Add <code>pixel art</code>, <code>16-bit video game style</code> to your prompt and use the <strong>Pixel Art</strong> effect from the Effects panel." },
+            { icon:"🖌️", front: "Watercolor Style", back: "Add <code>watercolor painting, soft edges, paper texture</code> to your prompt and use the <strong>Watercolor</strong> effect." },
+            { icon:"📊", front: "Clean UI Element", back: "Prompt: <code>A clean, minimalist health bar, green to red gradient, UI element for a sci-fi game</code>" },
+            { icon:"🌗", front: "Force a Mood", back: "Use lighting keywords: <code>eerie backlighting</code> for horror, <code>golden hour</code> for warmth, <code>neon lighting</code> for cyberpunk." },
+            { icon:"📐", front: "Blueprint Schematic", back: "Prompt: <code>Blueprint schematic of a futuristic spaceship, white lines on a blue background, technical drawing</code>" },
+            { icon:"🛡️", front: "Get a Specific Pose", back: "Describe the action: <code>A knight, seen from behind, looking out over a vast valley at sunrise, silhouette</code>" },
         ];
         
         const glitchGalleryData = [
@@ -838,7 +967,10 @@
             grid.innerHTML = recipeData.map(item => `
                 <div class="flip-card">
                     <div class="flip-card-inner">
-                        <div class="flip-card-front">${item.front}</div>
+                        <div class="flip-card-front">
+                            <div class="card-icon">${item.icon || "🎯"}</div>
+                            <div>${item.front}</div>
+                        </div>
                         <div class="flip-card-back">${item.back}</div>
                     </div>
                 </div>

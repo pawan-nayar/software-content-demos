@@ -38,6 +38,32 @@
         }
         *{box-sizing:border-box;margin:0;padding:0}
         html,body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;}
+        
+        /* ================= Header / Navigation ================= */
+        .site-header,.site-footer{background:var(--header-bg);color:var(--header-fg);padding:14px 24px;}
+        .site-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,0.1);}
+        .site-footer{text-align:center;margin-top:50px;padding:40px;font-size:0.95rem;}
+        .site-footer p{margin:6px 0;opacity:0.85;}
+        .logo{font-weight:700;font-size:1.15rem;color:#fff;text-decoration:none;}
+        .logo:hover{text-decoration:none;opacity:0.9;}
+        .site-nav{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+        .site-nav a{color:#ced4da;text-decoration:none;padding:6px 12px;border-radius:6px;transition:all 0.2s ease;}
+        .site-nav a:hover{color:#fff;background:rgba(255,255,255,0.1);text-decoration:none;}
+        .hamburger{display:none;background:none;border:1px solid rgba(255,255,255,0.4);color:#fff;border-radius:8px;padding:8px 10px;font-size:1rem;cursor:pointer;line-height:1;transition:background 0.2s}
+        .hamburger:hover,.hamburger[aria-expanded="true"]{background:rgba(255,255,255,0.15)}
+
+        /* Mobile header & menu: collapse nav into hamburger */
+        @media (max-width: 768px) {
+          .site-header{flex-wrap:nowrap;}
+          .logo{flex:0 0 auto;}
+          .hamburger{display:inline-flex;align-items:center;justify-content:center;margin-left:auto;}
+          .site-nav{display:none;position:absolute;top:100%;right:16px;flex-direction:column;gap:0;background:var(--header-bg);padding:8px 0;border-radius:8px;box-shadow:0 10px 25px rgba(0,0,0,0.35);min-width:200px;}
+          .site-nav.open{display:flex;}
+          .site-nav a{display:block;padding:10px 18px;color:#f8f9fa;white-space:nowrap;border-radius:0;}
+          .site-nav a + a{border-top:1px solid rgba(255,255,255,0.15);}
+          .site-nav a:hover{background:rgba(255,255,255,0.15);}
+        }
+        
         .container{max-width:800px;margin:auto;padding:24px;background:#fff}
         h1{font-size:clamp(2rem,5vw,2.6rem);text-align:left;margin-bottom:8px;color:var(--secondary-accent);line-height:1.2}
         .byline{font-size:clamp(1rem,3vw,1.2rem);font-style:italic;color:#4a5568;margin-bottom:24px}
@@ -61,11 +87,11 @@
         .reflection-feedback.show { display: block; }
         
         .carousel-wrapper { perspective: 1000px; position: relative; padding: 0 50px; margin: 24px 0; }
-        .flip-card { width: 100%; height: 300px; background-color: transparent; display: none; }
+        .flip-card { width: 100%; height: min(320px, 65vh); background-color: transparent; display: none; }
         .flip-card.active { display: block; }
         .flip-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s; transform-style: preserve-3d; cursor: pointer; border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         .flip-card.flipped .flip-card-inner { transform: rotateY(180deg); }
-        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; flex-direction: column; justify-content: center; padding: 20px; border-radius: 12px; }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; flex-direction: column; justify-content: center; padding: 20px; border-radius: 12px; overflow-y: auto; }
         .flip-card-front { background-color: #fff; color: var(--text); }
         .flip-card-back { background-color: #2d2d2d; color: white; transform: rotateY(180deg); text-align: left; }
         .flip-card-front .icon { font-size: 2.5rem; margin-bottom: 10px; line-height: 1; }
@@ -117,10 +143,11 @@
         .faq-accordion-container { margin: 24px 0; }
         .faq-accordion .accordion-item { border-bottom: 1px solid var(--border); }
         .faq-accordion .accordion-item:last-child { border-bottom: none; }
-        .faq-accordion .accordion-header { width: 100%; text-align: left; background: transparent; border: none; padding: 16px 8px; cursor: pointer; font-size: 1.1rem; font-weight: 600; display: flex; justify-content: space-between; align-items: center; color: var(--text); }
+        .faq-accordion .accordion-header { width: 100%; text-align: left; background: transparent; border: none; padding: 16px 8px; cursor: pointer; font-size: 1.1rem; font-weight: 600; display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; color: var(--text); }
         .faq-accordion .accordion-header:hover { background: var(--muted); }
-        .faq-accordion .accordion-header::after { content: '+'; color: var(--accent); font-size: 1.5rem; transition: transform 0.2s ease; }
-        .faq-accordion .accordion-header[aria-expanded="true"]::after { content: '−'; transform: rotate(45deg); }
+        .faq-accordion .accordion-header strong { color: var(--accent); margin-right: 6px; font-weight: 700; }
+        .faq-accordion .accordion-header::after { content: '+'; color: var(--accent); font-size: 1.5rem; font-weight: 400; line-height: 1; flex-shrink: 0; }
+        .faq-accordion .accordion-header[aria-expanded="true"]::after { content: '-'; }
         .faq-accordion .accordion-content { text-align: left; padding: 0 8px 16px; display: none; }
         .faq-accordion .accordion-header[aria-expanded="true"] + .accordion-content { display: block; }
 
@@ -128,14 +155,206 @@
         .tips-card { background: var(--ok-soft); border-left-color: var(--ok); padding: 20px; border-radius: 8px; margin: 24px 0; }
         .tips-card h4 { color: var(--ok); margin: 0 0 10px 0; font-size: 1.2rem; }
         .tips-card ul { list-style-type: '💡'; margin-left: 20px; padding-left: 10px; }
+
+        /* ========================================
+           MOBILE RESPONSIVE - COMMANDMENTS APPLIED
+           ======================================== */
+        
+        /* Commandment #11: Thou shalt not miniaturize desktop layouts */
+        /* Commandment #2: Mobile is re-priorization, not compression */
+        @media (max-width: 768px) {
+            /* Eliminate vertical wastelands (Commandment #13) */
+            .container { padding: 20px; } /* CBSE pattern: gentler reduction maintains readability */
+            h2 { margin: 28px 0 12px; font-size: clamp(1.3rem, 5vw, 1.75rem); }
+            h3 { margin-top: 20px; font-size: clamp(1.1rem, 4vw, 1.35rem); }
+            .intro { padding: 16px; margin: 16px 0; }
+            .img-frame { margin: 20px 0; }
+            
+            /* FLIP CARDS: Expand vertically, don't shrink (Commandment #11) */
+            .flip-card { 
+                height: auto; 
+                min-height: 320px; /* Expand for mobile, don't compress */
+            }
+            .flip-card-inner { min-height: 320px; }
+            .flip-card-front, .flip-card-back { 
+                padding: 20px 16px;
+                min-height: 320px;
+            }
+            
+            /* Icons: Cluster with purpose, not scatter (Commandment #2, #8) */
+            .flip-card-front .icon { 
+                font-size: 2.2rem; 
+                margin-bottom: 12px; 
+            }
+            .flip-card-front h4 { 
+                font-size: 1.25rem; 
+                padding-bottom: 8px;
+            }
+            .flip-card-front p { 
+                font-size: 0.9rem;
+                line-height: 1.5;
+            }
+            .flip-card-back h5 { font-size: 0.95rem; }
+            .flip-card-back p { font-size: 0.88rem; line-height: 1.55; }
+            
+            /* CBSE Lesson: Control scroll area on medium mobile */
+            .flip-card-back { max-height: 50vh; }
+            
+            /* CAROUSEL NAV: Thumb zone placement (Commandment #12) */
+            .carousel-wrapper { padding: 0 24px; } /* CBSE pattern: progressive reduction */
+            .carousel-nav { 
+                width: 48px;  /* Minimum 44px touch target */
+                height: 48px;
+                font-size: 24px;
+                bottom: 10px; /* Move to thumb zone */
+                top: auto; /* Remove centered position */
+            }
+            .carousel-prev { left: -8px; }
+            .carousel-next { right: -8px; }
+            
+            /* COPY BUTTONS: Explicit touch targets (Commandment #10) */
+            .copy-prompt-btn { 
+                padding: 12px 16px; /* Increase from 8px 12px */
+                font-size: 0.9rem;
+                min-height: 44px;
+                width: 100%; /* Full width for easy tapping */
+                margin-top: 12px;
+            }
+            
+            /* INTERACTIVE ELEMENTS: 44px minimum (Commandment #10, #6) */
+            .btn { 
+                padding: 12px 16px; 
+                min-height: 44px;
+                font-size: 1rem;
+            }
+            .reflection-option { 
+                padding: 16px; 
+                min-height: 48px;
+                font-size: 0.95rem;
+            }
+            .quiz-option label { 
+                padding: 16px; 
+                min-height: 48px;
+                font-size: 0.95rem;
+            }
+            .accordion-header { 
+                padding: 16px 10px; 
+                min-height: 48px;
+                font-size: 1rem;
+            }
+            
+            /* GLOSSARY: Touch-explicit, not hover-implicit (Commandment #10) */
+            .glossary-chip { 
+                padding: 12px 16px;
+                font-size: 0.95rem;
+                min-height: 44px;
+                /* Make it clear these are tappable */
+                box-shadow: 0 2px 8px rgba(253,126,20,.18);
+            }
+            .glossary-cloud { gap: 10px; }
+            
+            /* Tooltip sizing for mobile */
+            .chip-tip { 
+                max-width: min(88vw, 360px);
+                font-size: 0.9rem;
+                padding: 14px 16px;
+            }
+            
+            /* QUIZ: Better vertical utilization */
+            .quiz-container { padding: 16px; margin: 20px 0; }
+            .quiz-navigation { 
+                padding-bottom: 16px; 
+                gap: 10px;
+            }
+            .quiz-options { gap: 10px; }
+            
+            /* PROMPTS: Mobile-readable code */
+            .prompt-text-cell { 
+                font-size: 0.8em; 
+                padding: 12px;
+                word-break: break-word;
+            }
+            
+            /* TIPS CARDS: Optimize spacing */
+            .tips-card { padding: 16px; margin: 20px 0; }
+            .tips-card h4 { font-size: 1.1rem; }
+            .tips-card ul { margin-left: 16px; font-size: 0.95rem; }
+            
+            /* FAQ: Reduce wasted vertical space */
+            .faq-accordion-container { margin: 16px 0; }
+        }
+        
+        /* Extra small devices - aggressive mobile optimization */
+        @media (max-width: 480px) {
+            /* Commandment #13: Eliminate vertical wastelands */
+            .container { padding: 18px; } /* CBSE pattern: 18px minimum for comfortable reading */
+            h1 { font-size: clamp(1.6rem, 7vw, 2.2rem); margin-bottom: 6px; }
+            .byline { font-size: clamp(0.95rem, 4vw, 1.1rem); margin-bottom: 16px; }
+            h2 { margin: 20px 0 10px; }
+            h3 { margin-top: 16px; margin-bottom: 10px; }
+            
+            /* FLIP CARDS: CBSE Lesson - Let content flow naturally on tiny screens */
+            .flip-card { 
+                height: auto; 
+                min-height: min(340px, 75vh); 
+            }
+            .flip-card-inner { 
+                height: 100%;
+                min-height: min(340px, 75vh); 
+            }
+            .flip-card-front, .flip-card-back { 
+                padding: 18px 14px;
+                min-height: min(340px, 75vh);
+            }
+            .flip-card-front .icon { font-size: 2rem; }
+            .flip-card-front h4 { font-size: 1.15rem; }
+            .flip-card-front p { font-size: 0.87rem; }
+            .flip-card-back p { font-size: 0.85rem; }
+            
+            /* CBSE Lesson: Remove scroll limit on tiny screens */
+            .flip-card-back { max-height: none; }
+            
+            /* CAROUSEL NAV: Maximum thumb accessibility */
+            .carousel-wrapper { padding: 0 8px; } /* CBSE pattern: minimal padding for max content space */
+            .carousel-nav { 
+                width: 44px; 
+                height: 44px; 
+                font-size: 22px;
+            }
+            .carousel-prev { left: -6px; }
+            .carousel-next { right: -6px; }
+            
+            /* Tighter spacing without wasteland */
+            .intro { padding: 14px; font-size: 1.05rem; }
+            .img-frame { margin: 16px 0; }
+            .reflection-poll { padding: 16px; margin: 20px 0; }
+            .quiz-container { padding: 14px; }
+            .tips-card { padding: 14px; }
+            
+            /* Text hierarchy respects mobile proximity */
+            body { font-size: 0.95rem; line-height: 1.65; }
+            p { margin-bottom: 14px; }
+        }
     </style>
 </head>
 <body>
+
+<header class="site-header">
+    <a href="#" class="logo">Beyond Dictionary</a>
+    <button class="hamburger" id="hamburger-btn" aria-expanded="false" aria-controls="primary-nav">☰ Menu</button>
+    <nav id="primary-nav" class="site-nav">
+        <a href="#">What's New</a>
+        <a href="#">Learning</a>
+        <a href="#">Games & Quizzes</a>
+        <a href="#">Blog</a>
+    </nav>
+</header>
+
 <div class="container">
-    <header>
+    <div style="margin-top:24px;">
         <h1>Level Up Your Reality</h1>
         <p class="byline">The Ultimate Guide to AI Art in Online Gaming</p>
-    </header>
+    </div>
 
     <p class="intro">
         You have an epic story: a sacred migration across a mystical Himalayan plateau, guarded by a mythic White Tiger. You have a target: the hyper-competitive online casino market. But how do you bridge the gap between a 50-step narrative and a high-retention slot game that players actually want to spin? Welcome to the new era of game design. This isn't just a guide to AI art; it's a playbook for transforming rich narratives into winning game mechanics, using generative AI as your co-designer. We'll deconstruct this epic journey, map each story beat to proven slot features, and provide the AI prompts to bring it all to life.
@@ -317,6 +536,26 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // --- HAMBURGER MENU TOGGLE ---
+    (function() {
+        const menuBtn = document.getElementById('hamburger-btn');
+        const primaryNav = document.getElementById('primary-nav');
+        if(!menuBtn || !primaryNav) return;
+        menuBtn.addEventListener('click', ()=>{
+            const open = !primaryNav.classList.contains('open');
+            primaryNav.classList.toggle('open', open);
+            menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        });
+        
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.site-header') && primaryNav.classList.contains('open')) {
+                primaryNav.classList.remove('open');
+                menuBtn.setAttribute('aria-expanded', 'false');
+            }
+        });
+    })();
+    
     // --- DATA (Single Source of Truth) ---
     const allTerms = {
         'Stampede Wilds': { icon: '🐃', short_def: 'A reel modifier where a herd of symbols rushes across the screen, turning multiple reels wild.' },
@@ -400,18 +639,126 @@ document.addEventListener('DOMContentLoaded', function() {
     };
     const quizData = {
         questions: [
-            { q: "In the game concept, what real-world slot mechanic is mapped to the 'Avalanche' story beat?", correct: 1, options: [ {text:"Free Spins with a multiplier"}, {text:"Cascading wins with a rising multiplier"}, {text:"A pick bonus"}, {text:"Sticky wilds"} ] },
-            { q: "The 'White Tiger expanding wild' adds what extra feature when it expands?", correct: 2, options: [ {text:"Extra free spins"}, {text:"A guaranteed 5OAK"}, {text:"A 2x-5x multiplier"}, {text:"A sticky reel"} ] },
-            { q: "What is the primary purpose of a 'Feature Meter' like the Star-map meter in this game concept?", correct: 0, options: [ {text:"To track player progression and visually reward milestones"}, {text:"To guarantee a jackpot win"}, {text:"To change the color of the symbols"}, {text:"To decrease the game's volatility"} ] },
-            { q: "What is 'Trade Dress' in the context of game design?", correct: 3, options: [ {text:"The costumes worn by characters in the game"}, {text:"The legal name and trademark of the game"}, {text:"A specific type of bonus feature"}, {text:"The overall 'look and feel' of a game that can be legally protected"} ] },
-            { q: "The 'Ice Bridge' bonus round is an example of which popular slot mechanic family?", correct: 1, options: [ {text:"Expanding Wilds"}, {text:"Hold-and-Collect"}, {text:"Cascading Reels"}, {text:"Pick Bonus"} ] },
-            { q: "According to the 'Originality Checklist,' what is a 'Lore Bible' used for?", correct: 2, options: [ {text:"To list all the game's mathematical formulas"}, {text:"To track player spending habits"}, {text:"To document the game's unique story, setting, and characters"}, {text:"To serve as the game's user manual"} ] },
-            { q: "The 'Ally Conversion' mechanic, where wolves and polar bears become wilds, serves to:", correct: 0, options: [ {text:"Dramatize the 'predators become protectors' story arc as a symbol upgrade"}, {text:"End the free spins round"}, {text:"Trigger the main jackpot"}, {text:"Increase the number of reels"} ] },
-            { q: "To avoid IP issues, the guide suggests that core game mechanics are generally:", correct: 3, options: [ {text:"Always patentable"}, {text:"Protected by copyright"}, {text:"A legal grey area that should be avoided"}, {text:"Not copyrightable, but specific implementations can be patented"} ] },
-            { q: "In the AI Art prompts, what is the purpose of a parameter like `--ar 16:9`?", correct: 1, options: [ {text:"To make the image more stylized"}, {text:"To set the image's width-to-height ratio (aspect ratio)"}, {text:"To increase the image quality"}, {text:"To ensure the image is a silhouette"} ] },
-            { q: "The 'Cornice Blocker' feature, where leopards drop mystery symbols, is designed to:", correct: 0, options: [ {text:"Turn a losing spin into a potential win or rescue"}, {text:"Make the game harder"}, {text:"Start the Hold-and-Collect bonus"}, {text:"Add a multiplier to the spin"} ] },
-            { q: "What does RTP stand for in the context of slot games?", correct: 2, options: [ {text:"Real-Time Payout"}, {text:"Random Trigger Probability"}, {text:"Return to Player"}, {text:"Reel Timing Protocol"} ] },
-            { q: "The guide suggests blending multiple inspirations and mechanics to ensure:", correct: 3, options: [ {text:"The game is easy to understand"}, {text:"The game has a lower development cost"}, {text:"The game can be finished faster"}, {text:"The game is an original creation and not a clone"} ] }
+            { 
+                q: "In the game concept, what real-world slot mechanic is mapped to the 'Avalanche' story beat?", 
+                correct: 1, 
+                options: [ 
+                    {text:"Free Spins with a multiplier", feedback:"Not quite! Free Spins work for stampedes, but avalanches need something more dynamic. Think about symbols falling and disappearing."}, 
+                    {text:"Cascading wins with a rising multiplier", feedback:"Brilliant! You've got it! Cascading wins perfectly mirror an avalanche's energy—symbols fall, disappear, and rebuild momentum with each cascade."}, 
+                    {text:"A pick bonus", feedback:"Good thinking, but pick bonuses suit choices, not chaos. Avalanches need continuous, unpredictable action where symbols keep tumbling and replacing."}, 
+                    {text:"Sticky wilds", feedback:"Interesting idea! But sticky wilds freeze symbols in place, while avalanches cascade and flow. We need constant motion, not static persistence."}
+                ] 
+            },
+            { 
+                q: "The 'White Tiger expanding wild' adds what extra feature when it expands?", 
+                correct: 2, 
+                options: [ 
+                    {text:"Extra free spins", feedback:"Close! Extra spins are valuable, but when a mythic tiger expands, something more immediate happens. Think about boosting the current win."}, 
+                    {text:"A guaranteed 5OAK", feedback:"That would be powerful! But guaranteeing 5OAK might be too predictable. Expanding wilds typically enhance win potential through multipliers instead."}, 
+                    {text:"A 2x-5x multiplier", feedback:"Exactly right! When the White Tiger expands its divine presence, it multiplies your wins by 2x-5x, making every expansion electrifying and rewarding!"}, 
+                    {text:"A sticky reel", feedback:"Smart thought! Sticky features are great, but the tiger's expansion is about immediate power. Multipliers amplify the drama of that exact moment."}
+                ] 
+            },
+            { 
+                q: "What is the primary purpose of a 'Feature Meter' like the Star-map meter in this game concept?", 
+                correct: 0, 
+                options: [ 
+                    {text:"To track player progression and visually reward milestones", feedback:"Perfect! Feature meters create a visual journey, building anticipation as players see themselves getting closer to unlocking epic bonuses and rewards."}, 
+                    {text:"To guarantee a jackpot win", feedback:"Not quite! While meters build excitement, they trigger features—not guaranteed jackpots. They create anticipation through visible progress toward bonus unlocks."}, 
+                    {text:"To change the color of the symbols", feedback:"That would be decorative, but feature meters serve gameplay! They track collection progress and trigger bonuses, giving players a tangible sense of advancement."}, 
+                    {text:"To decrease the game's volatility", feedback:"Interesting thought! But meters actually maintain engagement during volatility—they don't reduce it. They show progress toward features regardless of win frequency."}
+                ] 
+            },
+            { 
+                q: "What is 'Trade Dress' in the context of game design?", 
+                correct: 3, 
+                options: [ 
+                    {text:"The costumes worn by characters in the game", feedback:"That's character design! Trade Dress is broader—it's the entire visual identity, UI, color schemes, and overall 'feel' that makes your game instantly recognizable."}, 
+                    {text:"The legal name and trademark of the game", feedback:"Close to IP territory! But Trade Dress specifically protects the visual 'look and feel'—the complete aesthetic presentation, not just the name."}, 
+                    {text:"A specific type of bonus feature", feedback:"Not a game mechanic! Trade Dress is legal protection for your game's unique visual style, preventing competitors from creating confusingly similar-looking products."}, 
+                    {text:"The overall 'look and feel' of a game that can be legally protected", feedback:"Absolutely correct! Trade Dress protects your game's complete visual identity—colors, UI, style—ensuring competitors can't clone your distinctive aesthetic appearance."}
+                ] 
+            },
+            { 
+                q: "The 'Ice Bridge' bonus round is an example of which popular slot mechanic family?", 
+                correct: 1, 
+                options: [ 
+                    {text:"Expanding Wilds", feedback:"Not this time! Expanding wilds cover reels, but the Ice Bridge is about collecting symbols that stick while empty positions respin repeatedly."}, 
+                    {text:"Hold-and-Collect", feedback:"Spot on! The Ice Bridge exemplifies Hold-and-Collect: special symbols freeze in place while other positions respin, building your collection with each trigger."}, 
+                    {text:"Cascading Reels", feedback:"Good instinct! Cascading has motion, but Ice Bridge uses persistence. Symbols hold their position and respin empty spaces—classic Hold-and-Collect behavior."}, 
+                    {text:"Pick Bonus", feedback:"Not quite! Pick bonuses involve player choice. Ice Bridge automatically holds collected symbols and respins empty positions—that's the Hold-and-Collect family."}
+                ] 
+            },
+            { 
+                q: "According to the 'Originality Checklist,' what is a 'Lore Bible' used for?", 
+                correct: 2, 
+                options: [ 
+                    {text:"To list all the game's mathematical formulas", feedback:"That's the math model document! A Lore Bible is creative, not mathematical—it records your game's story, world-building, character backgrounds, and narrative consistency."}, 
+                    {text:"To track player spending habits", feedback:"That's analytics data! A Lore Bible is your creative reference guide—documenting story arcs, character details, world rules, and thematic elements for consistency."}, 
+                    {text:"To document the game's unique story, setting, and characters", feedback:"Exactly right! A Lore Bible is your story encyclopedia—preserving character histories, world rules, and narrative details that make your game's universe unique."}, 
+                    {text:"To serve as the game's user manual", feedback:"That's player documentation! A Lore Bible is an internal creative tool—your team's reference for maintaining story consistency, character depth, and world-building."}
+                ] 
+            },
+            { 
+                q: "The 'Ally Conversion' mechanic, where wolves and polar bears become wilds, serves to:", 
+                correct: 0, 
+                options: [ 
+                    {text:"Dramatize the 'predators become protectors' story arc as a symbol upgrade", feedback:"Brilliant understanding! When story drives mechanics, predators transforming into wilds becomes gameplay poetry—narrative tension literally converts into winning power."}, 
+                    {text:"End the free spins round", feedback:"Not its purpose! Ally Conversion enhances play by upgrading symbols to wilds. It extends excitement and winning potential rather than ending features."}, 
+                    {text:"Trigger the main jackpot", feedback:"Close to jackpot territory, but not quite! Ally Conversion increases win frequency by turning common symbols into wilds—building momentum rather than triggering jackpots."}, 
+                    {text:"Increase the number of reels", feedback:"That's a structural change! Ally Conversion works within existing reels—transforming predator symbols into wilds to reflect the story's 'enemies become allies' arc."}
+                ] 
+            },
+            { 
+                q: "To avoid IP issues, the guide suggests that core game mechanics are generally:", 
+                correct: 3, 
+                options: [ 
+                    {text:"Always patentable", feedback:"Not always! While some novel implementations can be patented, most core mechanics like 'expanding wilds' are shared industry conventions that anyone can use."}, 
+                    {text:"Protected by copyright", feedback:"Not quite! Copyright protects creative expression like art and writing. Game mechanics themselves are usually free to use, though specific implementations might have patents."}, 
+                    {text:"A legal grey area that should be avoided", feedback:"Don't fear them! Mechanics like cascading reels or hold-and-collect are industry standards. It's specific implementations and unique combinations that need careful consideration."}, 
+                    {text:"Not copyrightable, but specific implementations can be patented", feedback:"Precisely right! Basic mechanics are fair game for everyone, but truly innovative implementations with novel technical processes can potentially receive patent protection."}
+                ] 
+            },
+            { 
+                q: "In the AI Art prompts, what is the purpose of a parameter like `--ar 16:9`?", 
+                correct: 1, 
+                options: [ 
+                    {text:"To make the image more stylized", feedback:"Not about style! That's what parameters like --stylize control. The --ar parameter specifically determines the width-to-height proportions of your generated image."}, 
+                    {text:"To set the image's width-to-height ratio (aspect ratio)", feedback:"Perfect! --ar 16:9 defines the image's dimensions—creating wide landscape compositions ideal for backgrounds and panoramic game views. Aspect ratio is everything!"}, 
+                    {text:"To increase the image quality", feedback:"Not for quality! That's the --q parameter. --ar controls the shape and proportions—essential for matching your image to screen layouts like portrait cabinets or mobile."}, 
+                    {text:"To ensure the image is a silhouette", feedback:"That's achieved through prompt keywords like 'silhouette' or 'backlit'! --ar only controls the dimensional ratio, determining whether your image is square, wide, or tall."}
+                ] 
+            },
+            { 
+                q: "The 'Cornice Blocker' feature, where leopards drop mystery symbols, is designed to:", 
+                correct: 0, 
+                options: [ 
+                    {text:"Turn a losing spin into a potential win or rescue", feedback:"Exactly! Cornice Blocker is a 'near-miss rescue' mechanic—when no wins appear, leopards intervene with mystery symbols, transforming disappointment into unexpected opportunity!"}, 
+                    {text:"Make the game harder", feedback:"Opposite intent! Game design rewards engagement. Cornice Blocker actually helps players by adding rescue opportunities when spins would otherwise produce no wins."}, 
+                    {text:"Start the Hold-and-Collect bonus", feedback:"Different trigger! Hold-and-Collect typically requires scatter symbols. Cornice Blocker activates during base game as a rescue—dropping mystery symbols to create surprise wins."}, 
+                    {text:"Add a multiplier to the spin", feedback:"Close concept! But Cornice Blocker specifically drops mystery symbols that can match and create wins, rather than multiplying existing wins. It's about rescue, not amplification."}
+                ] 
+            },
+            { 
+                q: "What does RTP stand for in the context of slot games?", 
+                correct: 2, 
+                options: [ 
+                    {text:"Real-Time Payout", feedback:"Good guess with the 'payout' word! But RTP is 'Return to Player'—the theoretical percentage of all wagers that the game pays back over thousands of spins."}, 
+                    {text:"Random Trigger Probability", feedback:"That relates to feature hit frequency! RTP is 'Return to Player'—a percentage showing how much of total wagered money theoretically returns to players over time."}, 
+                    {text:"Return to Player", feedback:"Spot on! RTP is the theoretical percentage returned to players over time. A 96% RTP means for every $100 wagered, $96 returns to players (on average)."}, 
+                    {text:"Reel Timing Protocol", feedback:"That sounds technical! But RTP is 'Return to Player'—the percentage of all bets the game theoretically pays back, typically ranging from 92-98% in modern slots."}
+                ] 
+            },
+            { 
+                q: "The guide suggests blending multiple inspirations and mechanics to ensure:", 
+                correct: 3, 
+                options: [ 
+                    {text:"The game is easy to understand", feedback:"Simplicity is valuable! But blending inspirations primarily protects originality. By combining 5+ sources, you create something transformative that stands distinct from any single reference."}, 
+                    {text:"The game has a lower development cost", feedback:"Efficiency matters! But mixing inspirations is about creative protection—synthesizing multiple sources makes your game legally defensible and artistically unique, not necessarily cheaper."}, 
+                    {text:"The game can be finished faster", feedback:"Speed helps! But blending inspirations focuses on originality—combining diverse sources creates a transformed work that's legally distinct from any single competitor's game."}, 
+                    {text:"The game is an original creation and not a clone", feedback:"Absolutely correct! Synthesizing 5+ different inspirations creates something genuinely new—legally defensible and artistically unique, not just a copy of one successful game."}
+                ] 
+            }
         ]
     };
     const faqData = {
@@ -542,6 +889,35 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         prevBtn.addEventListener('click', () => { currentIndex = (currentIndex - 1 + cards.length) % cards.length; showCard(currentIndex); });
         nextBtn.addEventListener('click', () => { currentIndex = (currentIndex + 1) % cards.length; showCard(currentIndex); });
+        
+        // Mobile swipe support (Commandment #10 - touch must be explicit)
+        let touchStartX = 0;
+        let touchEndX = 0;
+        const minSwipeDistance = 50;
+        
+        deck.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+        
+        deck.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, { passive: true });
+        
+        function handleSwipe() {
+            const swipeDistance = touchEndX - touchStartX;
+            if (Math.abs(swipeDistance) > minSwipeDistance) {
+                if (swipeDistance > 0) {
+                    // Swipe right - go to previous
+                    currentIndex = (currentIndex - 1 + cards.length) % cards.length;
+                } else {
+                    // Swipe left - go to next
+                    currentIndex = (currentIndex + 1) % cards.length;
+                }
+                showCard(currentIndex);
+            }
+        }
+        
         showCard(0);
     }
     
@@ -579,15 +955,20 @@ document.addEventListener('DOMContentLoaded', function() {
             
             options.forEach((optDiv, index) => {
                 const explanationDiv = optDiv.querySelector('.quiz-explanation');
+                const optionData = qData.options[index];
                 
                 if (index === selectedOptionIndex) {
                     optDiv.classList.add('selected', 'answered');
                     const isCorrect = index === qData.correct;
                     optDiv.classList.toggle('correct', isCorrect);
                     optDiv.classList.toggle('wrong', !isCorrect);
-                    explanationDiv.innerHTML = isCorrect ? "✅ Correct!" : "❌ Incorrect.";
+                    // Show encouraging feedback with emoji
+                    explanationDiv.innerHTML = (isCorrect ? "✅ " : "💡 ") + optionData.feedback;
                 } else if (index === qData.correct) {
-                     optDiv.classList.add('correct');
+                    optDiv.classList.add('correct');
+                    // Show the correct answer's feedback for learning
+                    explanationDiv.innerHTML = "✅ " + optionData.feedback;
+                    optDiv.classList.add('answered');
                 }
             });
         }
@@ -609,9 +990,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const tipContent = tip.querySelector('.tip-content');
         const tipArrow = tip.querySelector('.arrow');
         let openBtn = null;
+        let closeTimer = null;
+        let isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
 
         function clamp(n,min,max){return Math.max(min,Math.min(n,max))}
         function positionTipFor(btn){
+            if (!btn) return;
             const rect=btn.getBoundingClientRect(),vw=window.innerWidth,pad=8;
             tip.style.maxWidth=Math.min(vw-pad*2,420)+'px';
             const tipRect=tip.getBoundingClientRect(),preferTop=rect.top>(window.innerHeight-rect.bottom);
@@ -621,18 +1005,107 @@ document.addEventListener('DOMContentLoaded', function() {
             tipArrow.style.top=preferTop?(tipRect.height-6)+'px':'-6px';
             tipArrow.style.left=clamp(rect.left+rect.width/2-left-6,10,tipRect.width-22)+'px';
         }
-        function openTip(btn, text){ tipContent.innerHTML=text;tip.classList.add('show');positionTipFor(btn);openBtn=btn }
-        function closeTip(){ tip.classList.remove('show');openBtn=null }
+        
+        function openTip(btn, text){ 
+            if (closeTimer) clearTimeout(closeTimer);
+            tipContent.innerHTML=text;
+            tip.classList.add('show');
+            positionTipFor(btn);
+            openBtn=btn;
+        }
+        
+        function closeTip(immediate = false){ 
+            if (closeTimer) clearTimeout(closeTimer);
+            if (immediate) {
+                tip.classList.remove('show');
+                openBtn=null;
+            } else {
+                // Delay closing to allow for tab navigation
+                closeTimer = setTimeout(() => {
+                    tip.classList.remove('show');
+                    openBtn=null;
+                }, 150);
+            }
+        }
 
         cloud.querySelectorAll('.glossary-chip').forEach(btn => {
-            const term = btn.textContent;
+            const term = btn.textContent.trim();
             const termData = allTerms[term];
+            if (!termData) return; // Skip if term not found
+            
             const defHtml = `<strong>${term}</strong>: ${termData.short_def}`;
-            ['mouseover','focus'].forEach(evt => btn.addEventListener(evt, () => openTip(btn, defHtml)));
-            ['mouseout','blur'].forEach(evt => btn.addEventListener(evt, closeTip));
+            
+            if (isTouchDevice) {
+                // Mobile: Explicit touch only (Commandment #10)
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (openBtn === btn) {
+                        closeTip(true);
+                    } else {
+                        closeTip(true); // Close any existing tooltip first
+                        openTip(btn, defHtml);
+                    }
+                });
+            } else {
+                // Desktop: hover and keyboard navigation
+                btn.addEventListener('mouseenter', () => {
+                    if (closeTimer) clearTimeout(closeTimer);
+                    openTip(btn, defHtml);
+                });
+                
+                btn.addEventListener('mouseleave', () => {
+                    closeTip(false);
+                });
+                
+                // Keyboard focus - only show on Enter/Space, not on Tab focus
+                btn.addEventListener('focus', (e) => {
+                    // Don't auto-open on tab focus, wait for activation
+                    if (closeTimer) clearTimeout(closeTimer);
+                });
+                
+                btn.addEventListener('blur', () => {
+                    // Check if focus is moving to another glossary chip
+                    setTimeout(() => {
+                        if (!cloud.contains(document.activeElement)) {
+                            closeTip(true);
+                        }
+                    }, 50);
+                });
+                
+                // Activate on Enter or Space for keyboard users
+                btn.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        if (openBtn === btn) {
+                            closeTip(true);
+                        } else {
+                            openTip(btn, defHtml);
+                        }
+                    } else if (e.key === 'Escape') {
+                        closeTip(true);
+                        btn.blur();
+                    }
+                });
+            }
         });
+        
         window.addEventListener('resize',()=>openBtn&&positionTipFor(openBtn));
         window.addEventListener('scroll',()=>openBtn&&positionTipFor(openBtn),{passive:true});
+        
+        // Close tooltip when clicking/tapping outside
+        document.addEventListener('click', (e) => {
+            if (openBtn && !e.target.closest('.glossary-chip') && !e.target.closest('.chip-tip')) {
+                closeTip(true);
+            }
+        });
+        
+        // Close on Escape key globally
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && openBtn) {
+                closeTip(true);
+            }
+        });
     }
 
     function setupFaqs() {
@@ -670,6 +1143,12 @@ document.addEventListener('DOMContentLoaded', function() {
     setupFaqs();
 });
 </script>
+
+<footer class="site-footer">
+    <p>&copy; 2025 Beyond Dictionary. All Rights Reserved.</p>
+    <p>The Ultimate Guide to AI Art in Online Gaming</p>
+</footer>
+
 </body>
 </html>
 

@@ -7,41 +7,44 @@
 <title>DeepThink • AI Art Practitioner's Guide</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  /* Color Palette for SEO Theme */
+  /* Color Palette - Orange Theme */
   :root {
     /* Core neutrals */
     --bg: #ffffff;
-    --text: #1f2937;
-    --muted: #f9fafb;
-    --border: #e5e7eb;
-    /* Brand / accents */
-    --accent: #2563eb;
-    --accent-2: #1d4ed8;
+    --text: #212529;
+    --muted: #f8f9fa;
+    --border: #e9ecef;
+    /* Brand / accents - Orange theme */
+    --accent: #fd7e14;
+    --accent-2: #e87312;
     /* Header / footer */
-    --header-bg: #111827;
-    --header-fg: #f9fafb;
-    --heading: #111827;
+    --header-bg: #212529;
+    --header-fg: #f8f9fa;
+    --heading: #212529;
     /* Chips and Labels */
-    --chip-bg: #eef2ff;
-    --chip-border: #c7d2fe;
-    --chip-text: #4338ca;
+    --chip-bg: #fff7ed;
+    --chip-border: #ffd8a8;
+    --chip-text: #d9480f;
     /* Semantic states */
-    --ok: #16a34a; --ok-soft: #f0fdf4;
-    --bad: #dc2626; --bad-soft: #fef2f2;
+    --ok: #16a34a; --ok-soft: #dcfce7;
+    --bad: #dc2626; --bad-soft: #fee2e2;
     --warn: #f59e0b; --warn-soft: #fffbeb;
-    --info: #3b82f6; --info-soft: #eff6ff;
+    --info: #fd7e14; --info-soft: #fff7ed;
     /* Inputs / focus */
-    --input-focus: #2563eb;
+    --input-focus: #fd7e14;
   }
 
+  *{box-sizing:border-box;margin:0;padding:0}
   html,body{
     margin:0;
     background:var(--bg);
     color:var(--text);
     font-family:'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    line-height:1.6;
+    line-height:1.7;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    scroll-behavior:smooth;
+    overflow-x:hidden;
   }
   .container{
     max-width:880px;
@@ -55,8 +58,29 @@
     color:var(--header-fg);
     text-align:center;
   }
+  header {
+    position:sticky;
+    top:0;
+    z-index:100;
+    box-shadow:0 2px 8px rgba(0,0,0,0.1);
+  }
   header .container, footer .container {
     padding:24px;
+  }
+  .hamburger{
+    display:none;
+    background:none;
+    border:1px solid rgba(255,255,255,0.4);
+    color:#fff;
+    border-radius:8px;
+    padding:8px 10px;
+    font-size:1rem;
+    cursor:pointer;
+    line-height:1;
+    transition:background 0.2s;
+  }
+  .hamburger:hover,.hamburger[aria-expanded="true"]{
+    background:rgba(255,255,255,0.15);
   }
   h1 {
     font-size:clamp(2rem, 5vw, 2.6rem);
@@ -187,7 +211,24 @@
 
   /* Back to question chip */
   #back {
-    position:absolute; right:16px; bottom:64px; display:none; background:var(--bg); border:1px solid var(--border); color:color-mix(in srgb, var(--text) 70%, transparent); border-radius:16px; padding:6px 12px; font-weight:600; cursor:pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    position:absolute; 
+    right:16px; 
+    bottom:64px; 
+    display:none; 
+    background:var(--bg); 
+    border:1px solid var(--border); 
+    color:#6c757d; 
+    border-radius:16px; 
+    padding:8px 14px; 
+    font-weight:600; 
+    cursor:pointer; 
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition:all 0.2s ease;
+  }
+  #back:hover{
+    background:var(--muted);
+    transform:translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
   }
   
   .muted { color:color-mix(in srgb, var(--text) 70%, transparent); }
@@ -206,6 +247,259 @@
   .level-1 { background-color: var(--ok-soft); color: var(--ok); }
   .level-2 { background-color: var(--warn-soft); color: var(--warn); }
   .level-3 { background-color: var(--bad-soft); color: var(--bad); }
+
+  /* ================= Responsive Media Queries ================= */
+  @media (max-width: 768px) {
+    .container {
+      padding: 20px 16px;
+    }
+    
+    h1 {
+      font-size: clamp(1.75rem, 6vw, 2.2rem);
+    }
+    
+    h2 {
+      font-size: clamp(1.2rem, 4.5vw, 1.6rem);
+      margin: 32px 0 12px;
+    }
+    
+    h3 {
+      font-size: 1rem;
+    }
+    
+    .player {
+      padding: 12px;
+    }
+    
+    .viewport {
+      padding: 12px;
+      min-height: 300px;
+    }
+    
+    .scenario-card {
+      padding: 12px;
+    }
+    
+    .row {
+      gap: 8px;
+    }
+    
+    .btn {
+      padding: 10px 16px;
+      font-size: 0.95rem;
+    }
+    
+    #counter {
+      font-size: 0.9rem;
+      margin: 0 8px;
+    }
+    
+    #back {
+      right: 12px;
+      bottom: 56px;
+      padding: 6px 10px;
+      font-size: 0.9rem;
+    }
+    
+    .intro {
+      padding: 16px;
+      font-size: 1rem;
+    }
+    
+    .formula-box {
+      padding: 10px;
+      font-size: 0.95rem;
+    }
+    
+    ol, ul {
+      padding-left: 16px;
+    }
+    
+    li {
+      margin-bottom: 6px;
+      font-size: 0.95rem;
+    }
+    
+    .level-chip {
+      font-size: 0.75rem;
+      padding: 3px 10px;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .container {
+      padding: 16px 12px;
+    }
+    
+    h1 {
+      font-size: clamp(1.6rem, 7vw, 2rem);
+      margin-bottom: 6px;
+    }
+    
+    .intro {
+      padding: 14px;
+      font-size: 0.95rem;
+      border-radius: 10px;
+    }
+    
+    .player {
+      padding: 10px;
+      border-radius: 12px;
+    }
+    
+    .viewport {
+      padding: 10px;
+      min-height: 250px;
+      border-radius: 10px;
+    }
+    
+    .scenario-card {
+      padding: 10px;
+    }
+    
+    .scenario-title {
+      font-size: 1.1rem;
+    }
+    
+    .scenario-text {
+      font-size: 1rem;
+    }
+    
+    .btn {
+      padding: 8px 14px;
+      font-size: 0.9rem;
+    }
+    
+    .row {
+      gap: 6px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .container {
+      padding: 12px 10px;
+    }
+    
+    header .container, footer .container {
+      padding: 16px;
+    }
+    
+    h1 {
+      font-size: clamp(1.4rem, 8vw, 1.8rem);
+    }
+    
+    .intro {
+      padding: 12px;
+      font-size: 0.9rem;
+    }
+    
+    .player {
+      padding: 8px;
+    }
+    
+    .viewport {
+      padding: 8px;
+      min-height: 220px;
+    }
+    
+    .scenario-card {
+      padding: 8px;
+    }
+    
+    .scenario-title {
+      font-size: 1rem;
+      margin-bottom: 6px;
+    }
+    
+    .scenario-text {
+      font-size: 0.95rem;
+      margin-bottom: 10px;
+    }
+    
+    .formula-box {
+      padding: 8px;
+      font-size: 0.9rem;
+    }
+    
+    .formula-box .desc {
+      font-size: 0.85rem;
+    }
+    
+    h3 {
+      font-size: 0.95rem;
+      margin: 10px 0 3px;
+    }
+    
+    .btn {
+      padding: 7px 12px;
+      font-size: 0.85rem;
+    }
+    
+    #counter {
+      font-size: 0.85rem;
+      margin: 0 6px;
+    }
+    
+    #back {
+      right: 8px;
+      bottom: 50px;
+      padding: 5px 8px;
+      font-size: 0.85rem;
+    }
+    
+    ol, ul {
+      padding-left: 12px;
+    }
+    
+    li {
+      font-size: 0.9rem;
+      margin-bottom: 5px;
+    }
+    
+    p {
+      margin-bottom: 12px;
+      font-size: 0.95rem;
+    }
+    
+    .muted {
+      font-size: 0.9rem;
+    }
+    
+    .level-chip {
+      font-size: 0.7rem;
+      padding: 2px 8px;
+      margin-bottom: 8px;
+    }
+    
+    .row {
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+  }
+
+  /* Landscape mobile optimization */
+  @media (max-width: 768px) and (orientation: landscape) {
+    .viewport {
+      min-height: 200px;
+    }
+    
+    .intro {
+      padding: 12px 14px;
+    }
+  }
+
+  /* Touch-friendly improvements */
+  @media (hover: none) and (pointer: coarse) {
+    .btn {
+      min-height: 44px;
+      min-width: 44px;
+    }
+    
+    #back {
+      min-height: 38px;
+      padding: 8px 12px;
+    }
+  }
 
 </style>
 </head>

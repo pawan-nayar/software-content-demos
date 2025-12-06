@@ -8,14 +8,15 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        /* --- Base Styles & Variables --- */
+        /* --- Base Styles & Variables (aligned with CBSE framework) --- */
         :root {
             --bg-color: #ffffff;
             --text-color: #212529;
             --muted-bg: #f8f9fa;
             --border-color: #e9ecef;
-            --accent-color: #ea7a27;
-            --accent-hover: #d96d1a;
+            --accent-color: #fd7e14;
+            --accent-hover: #e87312;
+            --accent-2: #e87312;
             --header-bg: #212529;
             --header-fg: #f8f9fa;
             --neutral-gradient: linear-gradient(135deg, #f8f9fa, #e9ecef);
@@ -41,37 +42,42 @@
         }
 
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
-            line-height: 1.6;
+            line-height: 1.7;
+            overflow-x: hidden;
         }
-        /* Global typography rhythm */
-        p { margin: 0 0 1rem; }
+
+        p { margin: 0 0 1rem; word-wrap: break-word; }
+        a { color: var(--accent-color); text-decoration: none; transition: color 0.2s ease; }
+        a:hover { text-decoration: underline; color: var(--accent-hover); }
         ul, ol { margin: 0 0 1rem 1.25rem; padding-left: 1.25rem; }
         ul { list-style: disc; }
         ol { list-style: decimal; }
         li { margin: 0.35rem 0; }
-        pre, code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+        pre, code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; }
 
         .container {
-            max-width: 960px;
+            max-width: 1080px;
             margin: 0 auto;
-            padding: 1rem;
+            padding: 24px 20px;
+            background: #fff;
         }
-        
+
         /* --- Header & Footer --- */
         .site-header {
             background: var(--header-bg);
             color: var(--header-fg);
-            padding: 14px 18px;
+            padding: 14px 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
             position: sticky;
             top: 0;
-            z-index: 60;
+            z-index: 100;
+            box-shadow: 0 6px 24px rgba(0,0,0,0.15);
         }
         .logo {
             font-weight: 700;
@@ -79,24 +85,76 @@
             color: #fff;
             text-decoration: none;
         }
-        .site-header nav {
+        .hamburger {
+            display: none;
+            background: none;
+            border: 1px solid rgba(255,255,255,0.4);
+            color: #fff;
+            border-radius: 8px;
+            padding: 8px 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            line-height: 1;
+            transition: background 0.2s ease;
+        }
+        .hamburger:hover,
+        .hamburger[aria-expanded="true"] {
+            background: rgba(255,255,255,0.15);
+        }
+        .site-nav {
             display: flex;
             gap: 14px;
+            flex-wrap: wrap;
+            align-items: center;
         }
-        .site-header nav a {
+        .site-nav a {
             color: #ced4da;
             text-decoration: none;
         }
-        .site-header nav a:hover {
+        .site-nav a:hover {
             color: #fff;
             text-decoration: underline;
         }
         .site-footer {
             background: var(--header-bg);
             color: var(--header-fg);
-            padding: 14px 18px;
+            padding: 40px 24px;
             text-align: center;
-            margin-top: 2rem;
+            margin-top: 3rem;
+        }
+
+        @media (max-width: 768px) {
+            .hamburger {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                margin-left: auto;
+            }
+            .site-nav {
+                display: none;
+                position: absolute;
+                top: 100%;
+                right: 16px;
+                flex-direction: column;
+                gap: 0;
+                background: var(--header-bg);
+                padding: 8px 0;
+                border-radius: 8px;
+                box-shadow: 0 10px 25px rgba(0,0,0,0.35);
+                min-width: 200px;
+            }
+            .site-nav.open {
+                display: flex;
+            }
+            .site-nav a {
+                display: block;
+                padding: 10px 18px;
+                color: #f8f9fa;
+                white-space: nowrap;
+            }
+            .site-nav a + a {
+                border-top: 1px solid rgba(255,255,255,0.15);
+            }
         }
         
         /* --- Breadcrumbs & Intro --- */
@@ -112,32 +170,46 @@
         .breadcrumbs a:hover {
             text-decoration: underline;
         }
-        .intro {
-            font-size: 1.05rem;
-            color: #495057;
-            margin-bottom: 2rem;
-            text-align: center;
-        }
 
-
-        h1, h2, h3 {
+        h1, h2, h3, h4 {
             font-weight: 800;
-            margin-bottom: 1rem;
+            color: var(--text-color);
         }
-        
         h1 {
-            text-align: center;
-            font-size: 2.5rem;
+            font-size: clamp(2rem, 5vw, 2.6rem);
+            line-height: 1.2;
             margin-bottom: 1rem;
+            text-align: left;
         }
-
         h2 {
-            font-size: 1.75rem;
+            font-size: clamp(1.5rem, 4vw, 2rem);
             border-bottom: 2px solid var(--border-color);
             padding-bottom: 0.5rem;
             margin-top: 2.5rem;
+            margin-bottom: 1rem;
         }
-        
+        h3 {
+            font-size: clamp(1.2rem, 3vw, 1.5rem);
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+        }
+        h4 {
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
+            font-weight: 700;
+            color: var(--accent-2);
+        }
+
+        .intro {
+            font-size: 1.08rem;
+            color: #495057;
+            margin-bottom: 2rem;
+            text-align: center;
+            background: var(--muted-bg);
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid var(--accent-color);
+        }
+
         section {
             margin-bottom: 2rem;
         }
@@ -500,9 +572,11 @@
 <body>
     <header class="site-header">
         <a class="logo" href="#">Beyond Dictionary</a>
-        <nav>
+        <button class="hamburger" id="hamburger-btn" aria-expanded="false" aria-controls="primary-nav">☰ Menu</button>
+        <nav id="primary-nav" class="site-nav">
+            <a href="#">What's New</a>
             <a href="#">Learning</a>
-            <a href="#">Games</a>
+            <a href="#">Games &amp; Quizzes</a>
             <a href="#">Blog</a>
         </nav>
     </header>
@@ -857,10 +931,32 @@
             
             // --- INITIALIZATION ---
             function initializeAll() {
+                setupHamburgerNav();
                 setupGlossary();
                 setupQuiz();
                 setupFaqAccordion();
             }
+            function setupHamburgerNav() {
+                const hamburger = document.getElementById('hamburger-btn');
+                const nav = document.getElementById('primary-nav');
+                if (!hamburger || !nav) return;
+
+                hamburger.addEventListener('click', () => {
+                    const isExpanded = hamburger.getAttribute('aria-expanded') === 'true';
+                    hamburger.setAttribute('aria-expanded', String(!isExpanded));
+                    nav.classList.toggle('open', !isExpanded);
+                });
+
+                nav.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('click', () => {
+                        if (nav.classList.contains('open')) {
+                            nav.classList.remove('open');
+                            hamburger.setAttribute('aria-expanded', 'false');
+                        }
+                    });
+                });
+            }
+
 
             // --- COMPONENT SETUP FUNCTIONS ---
             function setupGlossary() {

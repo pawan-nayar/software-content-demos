@@ -28,8 +28,14 @@
             color: var(--text);
             line-height: 1.7;
             scroll-behavior: smooth;
+            overflow-x: hidden;
         }
         .container { max-width: 900px; margin: auto; padding: 24px; background: var(--bg); }
+        @media (max-width: 768px) {
+            .container { padding: 16px; }
+            h2 { margin: 40px 0 16px; }
+            .tips-card, .highlight-card, .critique-card { padding: 16px 18px; }
+        }
         a { color: var(--accent); text-decoration: none; }
         a:hover { text-decoration: underline; }
 
@@ -48,9 +54,9 @@
         .intro { font-size: 1.15rem; line-height: 1.8; background: #fff; padding: 24px; border-radius: 4px; border-left: 4px solid var(--accent); margin: 24px 0; border: 1px solid var(--border); }
         .img-frame { width: 100%; border-radius: 12px; margin: 24px 0; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; background: var(--header-bg); padding: 20px; }
         .img-frame img { max-width: 100%; height: auto; border-radius: 8px; }
-        .btn { background: var(--accent); color: #fff; border: none; padding: 10px 14px; border-radius: 10px; font-weight: 700; cursor: pointer; transition: background-color 0.2s ease; }
-        .btn:hover { background-color: var(--accent-2); }
-        .btn:disabled { background-color: #95a5a6; cursor: not-allowed; }
+        .btn { background: var(--accent); color: #fff; border: none; padding: 12px 18px; border-radius: 10px; font-weight: 700; cursor: pointer; transition: background-color 0.2s ease; min-height: 44px; font-size: clamp(0.95rem, 2.5vw, 1rem); touch-action: manipulation; }
+        .btn:hover, .btn:active { background-color: var(--accent-2); }
+        .btn:disabled { background-color: #95a5a6; cursor: not-allowed; opacity: 0.6; }
         
         /* ================= Card & Tip Styles ================= */
         .highlight-card, .critique-card, .tips-card {
@@ -78,35 +84,42 @@
 
 
         /* ================= Interactive & Structural Elements ================= */
-        .accordion { display: grid; gap: 8px; }
+        .accordion { display: grid; gap: 12px; }
         .accordion-item { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
-        .accordion-header { width: 100%; text-align: left; background: var(--muted); border: none; padding: 16px 20px; cursor: pointer; font-size: 1.1rem; font-weight: bold; display: flex; align-items: center; justify-content: space-between; color: var(--text); }
-        .accordion-header i { transition: transform 0.3s ease; }
+        .accordion-header { width: 100%; text-align: left; background: var(--muted); border: none; padding: 18px 20px; cursor: pointer; font-size: clamp(1rem, 3vw, 1.1rem); font-weight: bold; display: flex; align-items: center; justify-content: space-between; color: var(--text); min-height: 56px; touch-action: manipulation; line-height: 1.4; }
+        .accordion-header i { transition: transform 0.3s ease; font-size: 1rem; flex-shrink: 0; margin-left: 12px; }
         .accordion-header[aria-expanded="true"] { background: #f1f3f5; }
         .accordion-header[aria-expanded="true"] i { transform: rotate(180deg); }
         .accordion-content { padding: 0 20px; background: #fff; max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out, padding 0.3s ease-out; }
 
         .quiz-container { padding: 20px; border: 1px solid var(--border); border-radius: 12px; background: #fff; margin-top: 24px; }
-        .quiz-navigation { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+        .quiz-navigation { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--border); gap: 12px; flex-wrap: wrap; }
+        .quiz-navigation > span { flex: 0 1 auto; text-align: center; font-weight: 600; font-size: clamp(0.95rem, 2.5vw, 1rem); }
         .quiz-body { display: none; } .quiz-body.active { display: block; }
-        .quiz-options { display: grid; gap: 12px; }
-        .quiz-option label { display: block; padding: 14px; border: 2px solid var(--border); border-radius: 8px; cursor: pointer; background: var(--muted); }
-        .quiz-option .explanation { display: none; margin-top: 10px; padding: 15px; border-radius: 6px; }
+        .quiz-body h3 { font-size: clamp(1.2rem, 3.5vw, 1.4rem); margin-bottom: 16px; }
+        .quiz-body p { font-size: clamp(1rem, 2.8vw, 1.05rem); line-height: 1.6; }
+        .quiz-options { display: grid; gap: 14px; margin-top: 20px; }
+        .quiz-option label { display: flex; align-items: flex-start; gap: 12px; padding: 16px; border: 2px solid var(--border); border-radius: 8px; cursor: pointer; background: var(--muted); min-height: 52px; font-size: clamp(0.95rem, 2.5vw, 1rem); line-height: 1.5; touch-action: manipulation; }
+        .quiz-option label input[type="radio"] { margin-top: 2px; flex-shrink: 0; width: 18px; height: 18px; cursor: pointer; }
+        .quiz-option .explanation { display: none; margin-top: 12px; padding: 16px; border-radius: 6px; font-size: clamp(0.9rem, 2.5vw, 0.95rem); line-height: 1.6; }
         .quiz-option.selected.correct label { background: var(--ok-soft); border-color: var(--ok); }
         .quiz-option.selected.wrong label { background: var(--bad-soft); border-color: var(--bad); }
         .quiz-option.correct .explanation { border-left: 4px solid var(--ok); background: var(--ok-soft); }
         .quiz-option.wrong .explanation { border-left: 4px solid var(--bad); background: var(--bad-soft); }
-        .final-score { text-align: center; font-size: 1.5rem; font-weight: bold; padding: 30px; }
+        .final-score { text-align: center; font-size: clamp(1.3rem, 4vw, 1.5rem); font-weight: bold; padding: 30px; line-height: 1.4; }
 
-        .flip-card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 24px; margin: 32px 0; }
-        .flip-card { background-color: transparent; width: 100%; height: 180px; perspective: 1000px; cursor: pointer; }
-        .flip-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s; transform-style: preserve-3d; }
+        .flip-card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 20px; margin: 32px 0; }
+        .flip-card { background-color: transparent; width: 100%; min-height: 200px; height: auto; perspective: 1000px; cursor: pointer; touch-action: manipulation; }
+        .flip-card-inner { position: relative; width: 100%; min-height: 200px; text-align: center; transition: transform 0.6s; transform-style: preserve-3d; }
         .flip-card.flipped .flip-card-inner { transform: rotateY(180deg); }
-        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        .flip-card-front { background: var(--header-bg); color: var(--header-fg); }
-        .flip-card-back { background: var(--muted); color: var(--text); transform: rotateY(180deg); font-family: 'Courier New', monospace; font-size: 0.9rem; padding: 10px; text-align: left; }
-        .original-script { font-size: 3rem; margin-bottom: 10px; font-weight: bold; font-family: 'Lora', serif; }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; min-height: 200px; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .flip-card-front { background: var(--header-bg); color: var(--header-fg); font-size: clamp(1rem, 3vw, 1.1rem); }
+        .flip-card-back { background: var(--muted); color: var(--text); transform: rotateY(180deg); font-family: 'Courier New', monospace; font-size: clamp(0.85rem, 2.5vw, 0.95rem); padding: 16px; text-align: left; line-height: 1.5; }
+        .original-script { font-size: clamp(2.5rem, 6vw, 3rem); margin-bottom: 10px; font-weight: bold; font-family: 'Lora', serif; }
         .lang-name { font-weight: bold; font-style: italic; color: var(--accent); }
+        @media (max-width: 768px) {
+            .flip-card-grid { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 16px; }
+        }
 
         .progress-tracker { display: flex; align-items: center; gap: 6px; margin: 24px 0; padding: 12px; background: var(--muted); border-radius: 8px; flex-wrap: wrap; border: 1px solid var(--border); }
         .progress-step { width: 20px; height: 20px; border-radius: 50%; background: var(--border); color: #6c757d; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 600; transition: background-color 0.3s; }
@@ -116,64 +129,294 @@
         .progress-line.completed { background: var(--ok); }
         
         .iteration-carousel {
-            border: 1px solid var(--border);
+            border: 2px solid var(--accent);
             border-radius: 12px;
             background: #fff;
-            margin: 24px 0;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            padding: 20px;
+            margin: 32px 0;
+            box-shadow: 0 4px 16px rgba(253,126,20,0.15);
+            padding: 28px 24px;
         }
         .iteration-carousel h4 {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Lora', serif;
             margin-top: 0;
-            color: var(--accent);
+            margin-bottom: 24px;
+            color: var(--header-bg);
             text-align: center;
+            font-size: clamp(1.3rem, 3.5vw, 1.6rem);
+            line-height: 1.3;
         }
         .carousel-slide {
             display: none;
             flex-direction: column;
             align-items: center;
-            gap: 15px;
-            text-align: center;
+            gap: 20px;
+            text-align: left;
         }
         .carousel-slide.active {
             display: flex;
         }
         .carousel-slide img {
-            max-width: 80%;
-            height: auto;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            margin-top: 10px;
+            max-width: 120px;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 3px solid var(--accent);
+            object-fit: cover;
+            flex-shrink: 0;
+            opacity: 0.85;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
         .prompt-text-display {
             font-family: 'Courier New', Courier, monospace;
-            font-size: 0.9em;
+            font-size: clamp(1rem, 3vw, 1.15rem);
             background-color: var(--code-bg);
             color: var(--code-fg);
-            padding: 12px 15px;
-            border-radius: 5px;
+            padding: 20px 24px;
+            border-radius: 8px;
             width: 100%;
             word-wrap: break-word;
+            word-break: break-word;
             text-align: left;
+            line-height: 1.6;
+            border: 2px solid var(--accent);
+            box-shadow: 0 4px 12px rgba(253, 126, 20, 0.15);
+        }
+        .prompt-rationale {
+            width: 100%;
+            background: var(--muted);
+            padding: 0;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            max-height: 0;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+        }
+        .prompt-rationale.expanded {
+            max-height: 400px;
+            padding: 16px 20px;
+        }
+        .rationale-toggle {
+            background: transparent;
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            padding: 10px 18px;
+            border-radius: 6px;
+            font-size: clamp(0.9rem, 2.5vw, 0.95rem);
+            cursor: pointer;
+            font-weight: 600;
+            min-height: 40px;
+            touch-action: manipulation;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+            justify-content: center;
+        }
+        .rationale-toggle:hover {
+            background: var(--accent);
+            color: #fff;
+        }
+        .rationale-toggle i {
+            transition: transform 0.3s ease;
+        }
+        .rationale-toggle.expanded i {
+            transform: rotate(180deg);
+        }
+        @media (max-width: 768px) {
+            .carousel-slide img {
+                width: 80px;
+                height: 80px;
+            }
+            .prompt-text-display {
+                font-size: 0.95rem;
+                padding: 16px 18px;
+                line-height: 1.5;
+            }
         }
         .carousel-navigation {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-top: 20px;
+            gap: 12px;
+            flex-wrap: wrap;
         }
         .step-counter {
             font-weight: 600;
             color: #6c757d;
+            font-size: clamp(0.9rem, 2.5vw, 1rem);
+            flex: 0 1 auto;
+            text-align: center;
         }
 
-        .glossary-cloud { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; justify-content: center; }
-        .glossary-chip { position: relative; display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 999px; background: #fff7ed; border: 1px solid #ffd8a8; color: var(--accent-2); font-weight: 600; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
-        .glossary-chip:hover, .glossary-chip:focus { background: #ffecde; }
-        .chip-tip { position: fixed; z-index: 1001; min-width: 240px; max-width: min(92vw, 420px); background: var(--header-bg); color: #fff; padding: 12px 14px; border-radius: 12px; box-shadow: 0 12px 28px rgba(0,0,0, .2); opacity: 0; visibility: hidden; transition: opacity 0.15s, visibility 0.15s; line-height: 1.45; }
+        .glossary-cloud { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; justify-content: center; }
+        .glossary-chip { position: relative; display: inline-block; padding: 8px 14px; border-radius: 999px; background: #fff7ed; border: 1px solid #ffd8a8; color: #d9480f; font-weight: 600; cursor: pointer; box-shadow: 0 2px 6px rgba(253,126,20,.12); font-size: 0.9rem; white-space: nowrap; }
+        .glossary-chip:hover, .glossary-chip:focus { background: #ffecde; outline: none; }
+        .chip-tip { position: fixed; z-index: 1001; min-width: 240px; max-width: min(92vw, 420px); background: var(--accent); color: #fff; padding: 12px 14px; border-radius: 12px; box-shadow: 0 12px 28px rgba(253,126,20,.35); opacity: 0; visibility: hidden; transition: .15s; line-height: 1.45; font-size: 0.9rem; }
         .chip-tip.show { opacity: 1; visibility: visible; }
-        .chip-tip .arrow { position: absolute; width: 12px; height: 12px; background: var(--header-bg); transform: rotate(45deg); }
+        .chip-tip .arrow { position: absolute; width: 12px; height: 12px; background: var(--accent); transform: rotate(45deg); }
+        @media (max-width: 768px) {
+            .carousel-navigation { justify-content: center; }
+            .carousel-navigation .btn { flex: 0 1 auto; min-width: 90px; }
+        }
+
+        /* ================= Mobile Responsive: Commandments #1-13 ================= */
+        @media (max-width: 768px) {
+            /* Fix #1: Cards expand vertically on mobile, never shrink */
+            .container { padding: 16px; }
+            
+            .highlight-card, .critique-card, .tips-card, 
+            .iteration-carousel, .quiz-container {
+                margin: 20px 0;
+                padding: 20px 16px;
+            }
+            
+            /* Fix #7: Eliminate vertical wastelands - tighter spacing */
+            .progress-tracker { margin: 16px 0; padding: 10px; }
+            h2 { margin: 32px 0 16px; }
+            h3 { margin-top: 24px; }
+            .intro { margin: 16px 0; padding: 16px; }
+            
+            /* Fix #3: Mobile typography with proper viewing-distance scale */
+            h1 { font-size: clamp(1.8rem, 6vw, 2.4rem); line-height: 1.15; }
+            .byline { font-size: clamp(1rem, 3.5vw, 1.25rem); }
+            h2 { font-size: clamp(1.4rem, 5vw, 1.8rem); }
+            h3 { font-size: clamp(1.2rem, 4vw, 1.5rem); }
+            p { font-size: 1rem; line-height: 1.65; margin-bottom: 14px; }
+            
+            /* Fix #4 & #5: Touch targets minimum 44px, positioned in thumb zones */
+            .btn {
+                min-height: 44px;
+                min-width: 44px;
+                padding: 12px 18px;
+                font-size: 1rem;
+                border-radius: 12px;
+            }
+            
+            /* Navigation buttons in thumb-friendly bottom zones */
+            .carousel-navigation, .quiz-navigation {
+                padding: 12px 0;
+                gap: 12px;
+            }
+            
+            .prev-btn, .next-btn, #prevBtn, #nextBtn {
+                min-height: 48px;
+                min-width: 80px;
+                font-size: 1rem;
+                padding: 12px 16px;
+            }
+            
+            /* Fix #2: Icon clustering for mobile - group, don't disperse */
+            .progress-tracker {
+                gap: 4px;
+                justify-content: center;
+            }
+            
+            .progress-step {
+                width: 24px;
+                height: 24px;
+                font-size: 0.8rem;
+            }
+            
+            .progress-line {
+                min-width: 12px;
+                flex: 0 1 auto;
+                max-width: 30px;
+            }
+            
+            /* Fix #6: Remove hover dependencies - explicit mobile affordances */
+            .glossary-chip {
+                min-height: 44px;
+                padding: 12px 16px;
+                font-size: 0.95rem;
+                justify-content: center;
+            }
+            
+            .accordion-header {
+                min-height: 56px;
+                padding: 16px;
+                font-size: 1rem;
+            }
+            
+            /* Flip cards touch-friendly */
+            .flip-card {
+                min-height: 200px;
+                height: auto;
+            }
+            
+            .flip-card-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            
+            /* Cards re-prioritize, don't compress */
+            .iteration-carousel {
+                padding: 16px;
+            }
+            
+            .carousel-slide img {
+                max-width: 100%;
+                margin-top: 12px;
+            }
+            
+            .prompt-text-display {
+                font-size: 0.85rem;
+                padding: 10px 12px;
+                line-height: 1.5;
+            }
+            
+            /* Quiz options expand for readability */
+            .quiz-option label {
+                padding: 16px 14px;
+                font-size: 1rem;
+                min-height: 48px;
+            }
+            
+            .quiz-option .explanation {
+                padding: 14px;
+                font-size: 0.95rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            /* Extra-small screens: maximize vertical real estate */
+            .container { padding: 12px; }
+            
+            h1 { font-size: clamp(1.6rem, 7vw, 2rem); }
+            
+            .site-header { 
+                padding: 12px 16px;
+                font-size: 1rem;
+            }
+            
+            /* Ultra-tight vertical spacing - no wastelands */
+            h2 { margin: 24px 0 12px; }
+            .intro { padding: 14px; margin: 12px 0; }
+            
+            .highlight-card, .critique-card, .tips-card {
+                padding: 16px 12px;
+                margin: 16px 0;
+            }
+            
+            /* Progress tracker becomes vertical stack on tiny screens */
+            .progress-tracker span {
+                width: 100%;
+                text-align: center;
+                font-size: 0.85rem;
+                margin-top: 8px;
+            }
+            
+            /* Cards take full vertical attention */
+            .iteration-carousel, .quiz-container {
+                border-radius: 8px;
+                margin: 16px 0;
+            }
+            
+            .glossary-chip {
+                padding: 10px 14px;
+                font-size: 0.9rem;
+            }
+        }
 
     </style>
 </head>
@@ -191,7 +434,7 @@
     <p class="byline">The PARAM Model for Midjourney Mastery in Interactive Game Design</p>
 
     <p class="intro">
-        In the hyper-competitive world of casino game design, visual impact is everything. This masterclass guide introduces the <strong>PARAM model</strong>, a battle-tested, 5-phase framework for transforming your game concepts into polished, market-ready masterpieces using the power of Midjourney.
+        In the hyper-competitive world of casino game design, visual impact is everything. This masterclass guide introduces the **PARAM model**, a battle-tested, 5-phase framework for transforming your game concepts into polished, market-ready masterpieces using the power of Midjourney.
     </p>
 
     <div class="progress-tracker">
@@ -219,7 +462,7 @@
             <ul>
                 <li><strong>Define Your Core Loop:</strong> Clearly articulate the primary emotion. Is it the thrill of the chase? The allure of ancient treasure? Let this feeling guide your initial keywords.</li>
                 <li><strong>Know Your Hardware:</strong> Specify the target aspect ratio from the start (e.g., `--ar 9:16` for portrait cabinets). This avoids major compositional rework later.</li>
-                <li><strong>Identify Thematic Pillars:</strong> List 3-5 non-negotiable keywords that define your theme (e.g., Aztec, Jungle, Gold, Temple). These are your anchors.</li>
+                <li><strong>Identify Thematic Pillars:</strong> List 3-5 non-negotiable keywords that define your theme (e.g., "Aztec," "Jungle," "Gold," "Temple"). These are your anchors.</li>
                 <li><strong>Start Simple:</strong> Your first prompt should be basic. For example, `Aztec temple in a jungle`. The goal is to get a baseline, not a masterpiece.</li>
                 <li><strong>Gather Visual References:</strong> Collect 2-3 images that capture the mood or style you're aiming for. You won't use them yet, but they will inform your next steps.</li>
             </ul>
@@ -227,15 +470,15 @@
 
         <h3>A - Analysis: The Creative Sandbox 🧪</h3>
         <p>The Analysis phase is where you unleash creative chaos to discover your game's soul. This is the "blue sky" concepting stage, where no idea is too wild. Here, you actively experiment with Midjourney’s more exploratory parameters.</p>
-        <p>Use high <code>--chaos</code> values to generate four wildly different art directions from a single prompt. Test a broad range of styles by referencing artists or other games with <code>--sref</code>. How does Anubis's Golden Gamble look in a gritty, realistic style versus a vibrant, stylized one?</p>
+        <p>Use high <code>--chaos</code> values to generate four wildly different art directions from a single prompt. Test a broad range of styles by referencing artists or other games with <code>--sref</code>. How does "Anubis's Golden Gamble" look in a gritty, realistic style versus a vibrant, stylized one?</p>
         <p>The goal isn't to create final assets, but to generate a wide spectrum of possibilities. This phase is about divergence—pushing the boundaries of your initial concept to find unexpected visual hooks that are engaging, exciting, and, most importantly, fun. It provides the raw creative material from which you'll later chisel your masterpiece.</p>
         <div class="tips-card">
             <h4>Key Tips for Analysis</h4>
             <ul>
                 <li><strong>Embrace Chaos:</strong> Use `--chaos 50` or higher to force Midjourney to think outside the box. This is your fastest route to unexpected and innovative concepts.</li>
                 <li><strong>Test Different Styles:</strong> Use `--sref` with URLs of existing game art or famous paintings to see your theme in various aesthetics. Does it work better as painterly or as a graphic novel?</li>
-                <li><strong>Play with Adjectives:</strong> Generate variations where you only change the mood words. Compare mysterious Aztec temple with vibrant Aztec temple and ruined Aztec temple.</li>
-                <li><strong>Explore Composition:</strong> Prompt for different camera angles like cinematic wide shot, low-angle shot, or top-down view to see how perspective changes the feeling.</li>
+                <li><strong>Play with Adjectives:</strong> Generate variations where you only change the mood words. Compare "mysterious Aztec temple" with "vibrant Aztec temple" and "ruined Aztec temple."</li>
+                <li><strong>Explore Composition:</strong> Prompt for different camera angles like "cinematic wide shot," "low-angle shot," or "top-down view" to see how perspective changes the feeling.</li>
                 <li><strong>Don't Judge, Just Generate:</strong> The goal here is quantity and variety. Don't discard ideas too quickly. Generate a large pool of concepts to choose from in the next phase.</li>
             </ul>
         </div>
@@ -243,7 +486,7 @@
         <h3>R - Reflection: The Art Director's Cut 🤔</h3>
         <p>After the creative explosion of the Analysis phase, Reflection is the crucial moment of pause and critical evaluation. This is your internal art review. Spread out all your generated concepts and assess them with a cold, objective eye.</p>
         <p>Which of these visuals truly serves the game's core theme defined in Preparation? Which character design has the most personality and player appeal? Does that moody lighting actually make the reel symbols harder to read on a small screen?</p>
-        <p>This is where you filter the signal from the noise. You're not just looking for what's pretty; you're looking for what <em>works</em>. This phase is about making tough decisions and identifying the strongest visual direction. It's where you separate the interesting-but-flawed ideas from the concepts that have true potential.</p>
+        <p>This is where you filter the signal from the noise. You're not just looking for what's "pretty"; you're looking for what <em>works</em>. This phase is about making tough decisions and identifying the strongest visual direction. It’s where you separate the interesting-but-flawed ideas from the concepts that have true potential.</p>
         <div class="tips-card">
             <h4>Key Tips for Reflection</h4>
             <ul>
@@ -278,7 +521,7 @@
             <h4>Key Tips for Mastery</h4>
             <ul>
                 <li><strong>Always Use `--q 2`:</strong> For your final renders, ensure you're using the highest quality setting to capture all the detail.</li>
-                <li><strong>Think in Cinematic Terms:</strong> Use keywords like cinematic, hyper-detailed, 8k, and Unreal Engine render to push the AI to produce its most polished output.</li>
+                <li><strong>Think in "Cinematic" Terms:</strong> Use keywords like "cinematic," "hyper-detailed," "8k," and "Unreal Engine render" to push the AI to produce its most polished output.</li>
                 <li><strong>Upscale and Review:</strong> After generating the grid, choose the best image and use the Upscale buttons. Zoom in on the upscaled image to check for any flaws or artifacts before finalizing.</li>
                 <li><strong>Create a Cohesive Set:</strong> Generate all your final symbols (A, K, Q, J, themed symbols) using the same core style prompts and `--sref` to ensure they look like they belong in the same game.</li>
                 <li><strong>Document Your Winning Prompt:</strong> Save the final, perfect prompt for each key asset in your GDD. This becomes part of your game's official art bible.</li>
@@ -293,27 +536,27 @@
         <div class="highlight-card">
             <h5>Phase P: Preparation</h5>
             <p><strong>Goal:</strong> Establish a dignified yet powerful Anubis mascot for a modern portrait slot cabinet.</p>
-            <p class="prompt-text-display">imagine Anubis, the Egyptian god, slot machine art --v 7</p>
+            <p class="prompt-text-display">`/imagine prompt: Anubis, the Egyptian god, slot machine art --v 7`</p>
         </div>
         <div class="highlight-card">
             <h5>Phase A: Analysis</h5>
             <p><strong>Goal:</strong> Experiment with styles to find a premium, exciting look. We introduce casino elements and specify the portrait aspect ratio.</p>
-            <p class="prompt-text-display">imagine the Egyptian god Anubis as a casino high roller, wearing a golden headdress and a sharp suit, holding a glowing scepter, dramatic lighting, high detail --ar 9:16 --stylize 750 --chaos 20</p>
+            <p class="prompt-text-display">`/imagine prompt: the Egyptian god Anubis as a casino high roller, wearing a golden headdress and a sharp suit, holding a glowing scepter, dramatic lighting, high detail --ar 9:16 --stylize 750 --chaos 20`</p>
         </div>
         <div class="critique-card">
             <h5>Phase R: Reflection</h5>
             <p><strong>Goal:</strong> The "high roller" concept works, but the suit/headdress blend is disjointed. We need to integrate the ancient and modern elements more seamlessly.</p>
-            <p class="prompt-text-display">imagine the god Anubis as a casino VIP, wearing ornate Egyptian armor fused with modern black and gold fabric::1.5, holding a scepter that ends in a glowing poker chip, standing in a lavish pharaoh's tomb reimagined as a casino vault --ar 9:16 --stylize 600 --no cartoon</p>
+            <p class="prompt-text-display">`/imagine prompt: the god Anubis as a casino VIP, wearing ornate Egyptian armor fused with modern black and gold fabric::1.5, holding a scepter that ends in a glowing poker chip, standing in a lavish pharaoh's tomb reimagined as a casino vault --ar 9:16 --stylize 600 --no cartoon`</p>
         </div>
         <div class="highlight-card">
             <h5>Phase A: Adjustment</h5>
             <p><strong>Goal:</strong> Refine the winning concept and lock in the character's appearance for brand consistency using `--oref`.</p>
-            <p class="prompt-text-display">imagine Anubis the casino VIP celebrating a jackpot, raising his glowing scepter in triumph as gold coins and scarab beetles erupt around him, dynamic energy --ar 9:16 --oref [URL_of_Anubis_Design_from_Phase_3] --cw 100</p>
+            <p class="prompt-text-display">`/imagine prompt: Anubis the casino VIP celebrating a jackpot, raising his glowing scepter in triumph as gold coins and scarab beetles erupt around him, dynamic energy --ar 9:16 --oref [URL_of_Anubis_Design_from_Phase_3] --cw 100`</p>
         </div>
         <div class="highlight-card">
             <h5>Phase M: Mastery</h5>
             <p><strong>Goal:</strong> Create the final, production-ready key art for the game cabinet, optimized for maximum player attraction.</p>
-            <p class="prompt-text-display">imagine cinematic key art for Anubis's Golden Gamble, the god Anubis in futuristic Egyptian armor, standing confidently in a pharaoh's vault overflowing with gold, a glowing jackpot symbol reflected in his eyes, volumetric light rays, 8k --ar 9:16 --stylize 700 --q 2</p>
+            <p class="prompt-text-display">`/imagine prompt: cinematic key art for "Anubis's Golden Gamble", the god Anubis in futuristic Egyptian armor, standing confidently in a pharaoh's vault overflowing with gold, a glowing jackpot symbol reflected in his eyes, volumetric light rays, 8k --ar 9:16 --stylize 700 --q 2`</p>
         </div>
         
         <h3>Case Study 2: Designing a "Dragon's Hoard Hold & Spin" Environment</h3>
@@ -321,33 +564,33 @@
         <div class="highlight-card">
             <h5>Phase P: Preparation</h5>
             <p><strong>Goal:</strong> Create a rich, treasure-filled dragon's lair that can serve as a repeating background.</p>
-            <p class="prompt-text-display">imagine a cave full of gold coins --v 7</p>
+            <p class="prompt-text-display">`/imagine prompt: a cave full of gold coins --v 7`</p>
         </div>
         <div class="highlight-card">
             <h5>Phase A: Analysis</h5>
             <p><strong>Goal:</strong> Introduce key thematic elements (dragon, Asian art style) and use the `--tile` parameter for seamlessness.</p>
-            <p class="prompt-text-display">imagine seamless pattern of a dragon's hoard, piles of gold coins, shimmering jewels, ancient Chinese jade artifacts, glowing magical items, intricate details --ar 1:1 --tile --stylize 600</p>
+            <p class="prompt-text-display">`/imagine prompt: seamless pattern of a dragon's hoard, piles of gold coins, shimmering jewels, ancient Chinese jade artifacts, glowing magical items, intricate details --ar 1:1 --tile --stylize 600`</p>
         </div>
         <div class="critique-card">
             <h5>Phase R: Reflection</h5>
             <p><strong>Goal:</strong> The texture is good but feels static. Add a sense of the dragon's presence and more dynamic lighting.</p>
-            <p class="prompt-text-display">imagine seamless texture of an ancient dragon's treasure, gold coins glimmering from a hidden light source, emeralds and rubies glowing faintly, subtle wisps of magical smoke, hints of dragon scales visible beneath the gold --ar 1:1 --tile --stylize 750</p>
+            <p class="prompt-text-display">`/imagine prompt: seamless texture of an ancient dragon's treasure, gold coins glimmering from a hidden light source, emeralds and rubies glowing faintly, subtle wisps of magical smoke, hints of dragon scales visible beneath the gold --ar 1:1 --tile --stylize 750`</p>
         </div>
         <div class="highlight-card">
             <h5>Phase A: Adjustment</h5>
             <p><strong>Goal:</strong> Refine the aesthetic using `--sref` to match the look of successful "Dragon Link" style games.</p>
-            <p class="prompt-text-display">imagine a seamless background for a dragon-themed slot game, piles of gold and glowing gems, magical atmosphere --ar 1:1 --tile --sref [URL_of_Dragon_Link_Game_Art] --stylize 500</p>
+            <p class="prompt-text-display">`/imagine prompt: a seamless background for a dragon-themed slot game, piles of gold and glowing gems, magical atmosphere --ar 1:1 --tile --sref [URL_of_Dragon_Link_Game_Art] --stylize 500`</p>
         </div>
         <div class="highlight-card">
             <h5>Phase M: Mastery</h5>
             <p><strong>Goal:</strong> Create the final background, ensuring it's rich but doesn't distract from the main symbols. We'll use `--stop` to soften details.</p>
-            <p class="prompt-text-display">imagine seamless, atmospheric background of a dragon's hoard, soft glimmer on gold coins, out-of-focus glowing gems, deep shadows, rich textures, painterly --ar 1:1 --tile --sref [URL_of_Dragon_Link_Game_Art] --stylize 600 --stop 85 --q 2</p>
+            <p class="prompt-text-display">`/imagine prompt: seamless, atmospheric background of a dragon's hoard, soft glimmer on gold coins, out-of-focus glowing gems, deep shadows, rich textures, painterly --ar 1:1 --tile --sref [URL_of_Dragon_Link_Game_Art] --stylize 600 --stop 85 --q 2`</p>
         </div>
     </section>
 
     <section id="part3">
-        <h2>Part 3: The Art of Iteration: Maturing 5 Game Assets 10x</h2>
-        <p>True design mastery comes from iteration. The following interactive carousels demonstrate how a simple concept can evolve into a polished, production-ready game asset through 10 steps of progressive refinement. Click the arrows to see the prompt change at each step.</p>
+        <h2>Part 3: The Art of Iteration: 25 Steps to Prompt Mastery</h2>
+        <p>True design mastery comes from understanding <em>why</em> each refinement matters. This interactive masterclass demonstrates progressive prompt evolution across multiple asset types: symbols, backgrounds, characters, and marketing art. Each step includes a strategic explanation (40-70 words) revealing the thinking behind professional game design prompting. Navigate with arrows.</p>
         
         <div id="iteration-carousels-container"></div>
     </section>
@@ -375,65 +618,75 @@
         // --- DATA ---
         const iterationData = [
             {
-                title: 'A "WILD" Symbol (Aztec Theme)',
+                title: 'Progressive Refinement Masterclass: 25 Essential Prompt Evolution Steps',
                 prompts: [
                     'WILD symbol',
                     'WILD symbol, gold, block letters',
                     'WILD symbol for an Aztec jungle game, gold block letters, stone texture',
-                    'WILD symbol, 3D gold letters with carved Aztec patterns, cracked stone texture',
-                    'WILD symbol, 3D gold letters with glowing Aztec carvings, jungle vines wrapping around the letters',
-                    'WILD symbol, 3D gold letters, glowing Aztec carvings, dramatic cinematic lighting from above, deep shadows',
-                    'WILD symbol, polished gold with intricate Aztec engravings that pulse with light, mossy stone texture',
-                    'WILD symbol, polished gold, on a mossy temple stone, sunlight filtering through jungle canopy above',
-                    'WILD symbol, ancient polished gold, glowing with mysterious energy, moody, atmospheric, ancient temple background',
-                    'cinematic game asset, WILD symbol, hyper-detailed polished gold, Aztec engravings pulsating with magical light, on a crumbling temple altar, volumetric light rays, 8k --ar 1:1 --q 2'
+                    'WILD symbol, 3D gold letters with carved Aztec patterns, cracked stone texture, dramatic shadows',
+                    'cinematic game asset, WILD symbol, hyper-detailed polished gold, Aztec engravings pulsating with magical light, crumbling temple altar, volumetric light rays, 8k --ar 1:1 --q 2',
+                    'the letter K',
+                    'the letter K, forged from hammered gold, medieval style',
+                    'the letter K, ornate hammered gold with intricate medieval filigree, glowing ruby at center, lit by torchlight',
+                    'cinematic low-tier reel symbol, letter K, ancient gold with dwarven filigree, ruby heart glowing faintly, hyper-detailed, stone background --ar 1:1 --q 2 --stylize 400',
+                    'sci-fi pattern',
+                    'sci-fi pattern of hexagons --tile',
+                    'seamless pattern of 3D metallic sci-fi hexagons with glowing blue circuit lines --tile',
+                    'seamless sci-fi background for game UI, hyper-detailed carbon fiber hexagonal tiles with pulsating blue energy streams, clean, minimalist, 4k texture --ar 1:1 --tile --q 2 --stylize 300',
+                    'a rich gentleman mascot',
+                    'a rich gentleman mascot, cartoon style, 1930s aesthetic, top hat and monocle, friendly expression',
+                    'cheerful rich gentleman mascot named Mr. Gold, tuxedo, top hat, monocle, tipping hat, clean vector art style',
+                    'character design sheet for Mr. Gold mascot, different poses: waving, pointing, laughing, celebrating --oref [URL] --cw 100',
+                    'high-quality game asset, Mr. Gold mascot, clean vector illustration, celebrating jackpot win, vibrant colors, ready for animation --ar 1:1 --q 2 --niji 6 --oref [URL] --cw 100',
+                    'slot game advertisement',
+                    'splash screen for "Anubis\'s Golden Gamble" featuring god Anubis',
+                    'marketing art, Anubis in center holding golden jackpot symbol, dramatic lighting, gold coins in foreground',
+                    'cinematic splash screen, Anubis in hyper-detailed armor, giant glowing jackpot symbol, gold coins and magical energy swirling, moody epic atmosphere',
+                    'epic marketing splash screen for "Anubis\'s Golden Gamble", Anubis holding massive glowing jackpot, gold coins exploding outwards, space for game logo and call-to-action button, 8k, cinematic --ar 16:9 --q 2 --stylize 700',
+                    'ancient dragon character, slot machine art',
+                    'ancient dragon character, detailed scales, fierce eyes, surrounded by treasure hoard, golden lighting, game asset quality --ar 9:16 --stylize 600 --q 2'
+                ],
+                rationales: [
+                    'The Preparation baseline. Start with bare minimum to see Midjourney\'s default interpretation. This establishes your foundation before adding artistic direction. No adjectives means no bias—you\'ll discover what needs refinement.',
+                    'First refinement adds materials and basic style. "Gold" and "block letters" begin constraining the aesthetic toward premium casino assets. Materials are your first power lever—they instantly elevate perceived value without complexity.',
+                    'Introduce thematic context early. Naming the game genre ("Aztec jungle game") tells Midjourney the world this lives in. "Stone texture" adds environmental authenticity. Theme + material = instant cohesion across all assets.',
+                    'Layer dimension and detail. "3D" transforms flat graphics into tactile objects. "Carved patterns" and "dramatic shadows" add depth that reads at distance. Casino floors demand symbols that pop from 15 feet away—depth is critical.',
+                    'Master-level production prompt. Combines all learnings: cinematic framing, technical specs (8k, --q 2), magical lighting (volumetric rays), environmental storytelling (crumbling altar). This is cabinet-ready art. Notice how every word earns its place.',
+                    'Reset to baseline for contrast teaching. Same bare-minimum approach as step 1, but for a different asset type. The starkness helps you appreciate what each subsequent refinement achieves. Simplicity reveals the power of iteration.',
+                    'Add material and era simultaneously. "Forged" implies craftsmanship, "hammered gold" suggests premium hand-made quality, "medieval style" anchors the visual era. Three words establish both material properties and historical authenticity—efficient prompting.',
+                    'Lighting changes everything. "Lit by torchlight" creates warm drama that contrasts with the cold metal. "Glowing ruby" adds a focal point for player eyes. Lighting is the fastest path to atmosphere—master it early.',
+                    'Technical mastery with style control. --stylize 400 reduces Midjourney\'s artistic interpretation for game asset consistency. --q 2 ensures upscale-ready detail. --ar 1:1 guarantees square format for reel symbols. Parameters are your precision tools.',
+                    'Third baseline—establishing the pattern. Backgrounds require different prompting than foreground assets. Starting simple lets you see how Midjourney handles repeating patterns before adding complexity. Pattern logic differs from object logic.',
+                    'Introduce the critical --tile parameter immediately. This makes patterns seamlessly repeating, essential for tiling UI backgrounds. "Hexagons" gives geometric structure. One parameter transforms a static image into an infinite texture—that\'s leverage.',
+                    'Add dimension, material richness, and energy. "3D metallic" creates depth in flat backgrounds. "Glowing blue circuit lines" adds animated visual interest without cluttering. Background textures must be rich enough to feel premium, subtle enough to not compete with foreground symbols.',
+                    'Background production ready. Combines --tile for seamlessness, --q 2 for 4K cabinet resolution, --stylize 300 for clean minimalism. "Pulsating energy" suggests animation potential. Backgrounds must enhance, never distract—this prompt achieves that balance perfectly.',
+                    'Character baseline with personality intent. "Rich gentleman" and "mascot" establish the character\'s role and approachability. Even at step 1, character prompts need personality keywords. Characters are judged on emotion first, detail second.',
+                    'Era defines visual language. "1930s aesthetic" instantly communicates rubber hose animation style players recognize. "Friendly expression" emphasizes approachability—critical for mascot design. Era + emotion + iconic props (top hat, monocle) = memorable character archetype.',
+                    'Name the character to build brand consistency. "Mr. Gold" gives Midjourney a personality hook. "Clean vector art" specifies animation-ready output. Named characters with clear art styles become brandable IP—this is where concept becomes property.',
+                    'Unlock character consistency with --oref and --cw 100. Reference image URL with character weight 100 ensures identical appearance across all generations. "Different poses" creates your model sheet. This is the turning point from concept to production-ready IP.',
+                    'Character production mastery. --niji 6 activates anime/cartoon-optimized model. "Ready for animation" prompts for clean lines and flat colors animators need. "Vibrant colors" ensures slot cabinet visual impact. Every parameter serves technical production requirements, not just aesthetics.',
+                    'Marketing baseline—intentionally vague. Advertising prompts start broad to see Midjourney\'s generic interpretation of "slot game ad." This shows you what NOT to do. Vague prompts get vague results—this step proves specificity\'s value.',
+                    'Add brand and character focus. Naming the game ("Anubis\'s Golden Gamble") and featuring the god establishes IP focus. Splash screens must communicate theme in 2 seconds—this prompt prioritizes visual brand recognition over generic "ad" vibes.',
+                    'Introduce composition and lighting hierarchy. "Anubis in center" establishes focal point. "Dramatic lighting from jackpot symbol" creates visual flow—eye follows light from jackpot to character. "Gold coins in foreground" adds depth layers. Composition is storytelling through placement.',
+                    'Cinematic atmosphere separates good from great. "Hyper-detailed armor" rewards close inspection. "Giant glowing jackpot symbol" clarifies the win message. "Magical energy swirling" adds motion and excitement. "Moody epic atmosphere" communicates premium AAA quality. Marketing must sell both gameplay and production value.',
+                    'Marketing production mastery with UX planning. "Massive glowing jackpot" centers player desire. "Gold coins exploding outwards" creates energy and motion. "Space for game logo and call-to-action button" shows technical understanding—marketing art must accommodate UI overlays. --ar 16:9 matches horizontal marketing screens. --stylize 700 ensures cinematic polish.',
+                    'Fourth asset type—portrait character art. "Ancient dragon" and "treasure hoard" establish slot theme. Portrait orientation (--ar 9:16) matches modern cabinet hardware. This demonstrates how the same progressive refinement approach applies across any asset type—the methodology is universal.',
+                    'Character production with premium parameters. "Detailed scales" passes the zoom-in test. "Fierce eyes" creates personality. "Golden lighting" maintains tonal consistency with other gold-themed assets. --stylize 600 balances artistry with asset consistency. Mastery means knowing when to dial parameters up or down for cohesion.'
                 ],
                 images: [
-                    'https://placehold.co/400x400/7a2a2a/ffffff?text=WILD', 'https://placehold.co/400x400/b58a3f/ffffff?text=WILD',
-                    'https://placehold.co/400x400/6b4f3a/ffffff?text=WILD', 'https://placehold.co/400x400/D4AF37/000000?text=WILD',
-                    'https://placehold.co/400x400/228B22/FFD700?text=WILD', 'https://placehold.co/400x400/000000/FFD700?text=WILD',
-                    'https://placehold.co/400x400/556B2F/E0AA3E?text=WILD', 'https://placehold.co/400x400/3A5F0B/FFD700?text=WILD',
-                    'https://placehold.co/400x400/4B3621/F0E68C?text=WILD', 'https://placehold.co/400x400/1a1a1a/FFD700?text=WILD+MASTER'
-                ]
-            },
-            {
-                title: 'A "K" Royal Symbol (Fantasy Theme)',
-                prompts: [
-                    'the letter K', 'the letter K, in a royal font, gold', 'the letter K for a fantasy game, ornate gold font, medieval style',
-                    'the letter K, forged from hammered gold, inlaid with a small ruby', 'the letter K, forged from ornate hammered gold, with intricate medieval filigree, a glowing ruby at its center',
-                    'the letter K symbol, hammered gold with glowing ruby, lit by torchlight, casting long shadows', 'the letter K symbol, weathered hammered gold, cracked texture, glowing ruby, on a dark wood background',
-                    'the letter K symbol, ornate gold, ruby at its center pulsing with a soft red light, magical particle effects', 'low-value game symbol K, epic fantasy style, weathered gold, ruby pulsing with faint light, dark, moody',
-                    'cinematic low-tier reel symbol, the letter K, forged from ancient gold with dwarven filigree, a single ruby heart that glows faintly, hyper-detailed, on a stone background --ar 1:1 --q 2 --stylize 400'
-                ]
-            },
-             {
-                title: 'A Sci-Fi Background Texture (UI)',
-                prompts: [
-                    'sci-fi pattern', 'sci-fi pattern of hexagons --tile', 'seamless pattern of metallic sci-fi hexagons --tile',
-                    'seamless pattern of metallic sci-fi hexagons with glowing blue circuit lines --tile', 'seamless pattern of 3D metallic sci-fi hexagons, glowing blue circuits, carbon fiber texture',
-                    'seamless pattern, 3D carbon fiber hexagons, glowing blue circuits, subtle internal lighting, dark background', 'seamless background, 3D carbon fiber hexagons, energy pulsing through blue circuit lines, faint digital haze',
-                    'seamless background, detailed 3D carbon fiber hexagons, micro-circuits glowing blue, clean, high-tech', 'dark sci-fi background texture, subtle glow from hexagonal pattern, minimalist, high-tech, moody',
-                    'seamless sci-fi background for a game UI, hyper-detailed carbon fiber hexagonal tiles with pulsating blue energy streams, clean, minimalist, 4k texture --ar 1:1 --tile --q 2 --stylize 300'
-                ]
-            },
-            {
-                title: 'A "Mr. Gold" Mascot (Cartoon Theme)',
-                prompts: [
-                    'a rich gentleman mascot', 'a rich gentleman mascot, cartoon style, top hat and monocle', 'a cheerful, friendly rich gentleman mascot, 1930s cartoon style, top hat, monocle, smiling',
-                    'a cheerful rich gentleman mascot, 1930s cartoon style, tipping his top hat, holding a bag of money', 'a cheerful rich gentleman mascot named Mr. Gold, wearing a tuxedo, top hat, monocle, tipping his hat, vector art',
-                    'character design sheet for Mr. Gold, a cheerful rich gentleman mascot, different poses: waving, pointing, laughing --oref [URL] --cw 100', 'Mr. Gold mascot standing in front of a giant gold coin, celebrating a win --oref [URL] --cw 100',
-                    'Mr. Gold mascot jumping for joy as coins rain down around him, dynamic, energetic --oref [URL] --cw 100', 'portrait of Mr. Gold mascot, winking at the camera, friendly and inviting, bright casino background --oref [URL] --cw 100',
-                    'high-quality game asset, Mr. Gold mascot, clean vector illustration, celebrating a jackpot win, vibrant colors, ready for animation --ar 1:1 --q 2 --niji 6 --oref [URL] --cw 100'
-                ]
-            },
-            {
-                title: 'A Marketing Splash Screen (Anubis Game)',
-                prompts: [
-                    'slot game advertisement', 'advertisement for "Anubis\'s Golden Gamble" slot game', 'splash screen for "Anubis\'s Golden Gamble" featuring the god Anubis',
-                    'splash screen, Anubis holding a golden jackpot symbol, looking powerful', 'marketing art for "Anubis\'s Golden Gamble", Anubis in the center, golden reels on the side, game logo at the top',
-                    'marketing splash screen, Anubis in the center, dramatic lighting from the jackpot symbol, gold coins in the foreground', 'cinematic splash screen for "Anubis\'s Golden Gamble", moody, epic, Anubis looking mysterious, glowing eyes',
-                    'cinematic splash screen, Anubis in hyper-detailed armor, giant glowing jackpot symbol, gold coins and magical energy swirling', 'marketing splash screen with a "Play Now" button area at the bottom',
-                    'epic marketing splash screen for "Anubis\'s Golden Gamble", Anubis holding a massive glowing jackpot, gold coins exploding outwards, prominent game logo, space for call to action, 8k, cinematic --ar 16:9 --q 2 --stylize 700'
+                    'https://placehold.co/120x120/7a2a2a/ffffff?text=1', 'https://placehold.co/120x120/8a4a3f/ffffff?text=2',
+                    'https://placehold.co/120x120/9b5a4a/ffffff?text=3', 'https://placehold.co/120x120/D4AF37/000000?text=4',
+                    'https://placehold.co/120x120/228B22/FFD700?text=5', 'https://placehold.co/120x120/1a5f2a/FFD700?text=6',
+                    'https://placehold.co/120x120/556B2F/E0AA3E?text=7', 'https://placehold.co/120x120/3A5F0B/FFD700?text=8',
+                    'https://placehold.co/120x120/4B3621/F0E68C?text=9', 'https://placehold.co/120x120/1a1a1a/FFD700?text=10',
+                    'https://placehold.co/120x120/2d2d2d/00BFFF?text=11', 'https://placehold.co/120x120/1a3a52/00CED1?text=12',
+                    'https://placehold.co/120x120/0f1c26/4169E1?text=13', 'https://placehold.co/120x120/FFD700/000000?text=14',
+                    'https://placehold.co/120x120/F4A460/000000?text=15', 'https://placehold.co/120x120/DAA520/000000?text=16',
+                    'https://placehold.co/120x120/B8860B/FFFFFF?text=17', 'https://placehold.co/120x120/CD853F/000000?text=18',
+                    'https://placehold.co/120x120/8B4513/FFFFFF?text=19', 'https://placehold.co/120x120/654321/FFFFFF?text=20',
+                    'https://placehold.co/120x120/D2691E/000000?text=21', 'https://placehold.co/120x120/8B7355/FFFFFF?text=22',
+                    'https://placehold.co/120x120/A0522D/FFFFFF?text=23', 'https://placehold.co/120x120/8B0000/FFD700?text=24',
+                    'https://placehold.co/120x120/DC143C/FFD700?text=25'
                 ]
             }
         ];
@@ -489,12 +742,26 @@
             const container = document.getElementById('iteration-carousels-container');
             iterationData.forEach((data, index) => {
                 const carouselId = `carousel-${index}`;
-                let slidesHTML = data.prompts.map((prompt, i) => `
+                let slidesHTML = data.prompts.map((prompt, i) => {
+                    const hasRationale = data.rationales && data.rationales[i];
+                    const rationaleHTML = hasRationale ? `
+                        <button class="rationale-toggle expanded" data-carousel="${index}" data-slide="${i}">
+                            <i class="fa-solid fa-lightbulb"></i>
+                            <span>Hide Strategy</span>
+                        </button>
+                        <div class="prompt-rationale expanded" data-carousel="${index}" data-slide="${i}">
+                            <p>${data.rationales[i]}</p>
+                        </div>
+                    ` : '';
+                    
+                    return `
                     <div class="carousel-slide" data-index="${i}">
-                        ${data.images && data.images[i] ? `<img src="${data.images[i]}" alt="Visual for step ${i+1}" onerror="this.src='https://placehold.co/400x400/2c0000/ffffff?text=Image+${i+1}';">` : `<img src="https://placehold.co/400x400/2c0000/ffffff?text=Image+${i+1}" alt="Placeholder for step ${i+1}">`}
+                        ${data.images && data.images[i] ? `<img src="${data.images[i]}" alt="Step ${i+1}" onerror="this.src='https://placehold.co/120x120/333/fff?text=${i+1}';">` : `<img src="https://placehold.co/120x120/333/fff?text=${i+1}" alt="Step ${i+1}">`}
                         <div class="prompt-text-display">${prompt}</div>
+                        ${rationaleHTML}
                     </div>
-                `).join('');
+                `;
+                }).join('');
 
                 container.innerHTML += `
                     <div class="iteration-carousel" id="${carouselId}">
@@ -502,10 +769,28 @@
                         <div class="carousel-slides">${slidesHTML}</div>
                         <div class="carousel-navigation">
                             <button class="btn prev-btn">⮜ Prev</button>
-                            <span class="step-counter">Step 1 / 10</span>
+                            <span class="step-counter">Step 1 / 25</span>
                             <button class="btn next-btn">Next ⮞</button>
                         </div>
                     </div>`;
+            });
+            
+            // Setup rationale toggle buttons
+            document.addEventListener('click', (e) => {
+                if (e.target.closest('.rationale-toggle')) {
+                    const btn = e.target.closest('.rationale-toggle');
+                    const carouselId = btn.dataset.carousel;
+                    const slideId = btn.dataset.slide;
+                    const rationale = document.querySelector(`.prompt-rationale[data-carousel="${carouselId}"][data-slide="${slideId}"]`);
+                    const btnText = btn.querySelector('span');
+                    
+                    if (rationale && btnText) {
+                        const isExpanded = rationale.classList.contains('expanded');
+                        rationale.classList.toggle('expanded');
+                        btn.classList.toggle('expanded');
+                        btnText.textContent = isExpanded ? 'Why This Works' : 'Hide Strategy';
+                    }
+                }
             });
 
             document.querySelectorAll('.iteration-carousel').forEach(carousel => {
@@ -517,7 +802,17 @@
                 const counter = carousel.querySelector('.step-counter');
 
                 function showSlide(index) {
-                    slides.forEach(slide => slide.classList.remove('active'));
+                    slides.forEach(slide => {
+                        slide.classList.remove('active');
+                        // Reset rationale to expanded (default open)
+                        const rationaleBtn = slide.querySelector('.rationale-toggle');
+                        const rationaleDiv = slide.querySelector('.prompt-rationale');
+                        if (rationaleBtn && rationaleDiv) {
+                            rationaleDiv.classList.add('expanded');
+                            rationaleBtn.classList.add('expanded');
+                            rationaleBtn.querySelector('span').textContent = 'Hide Strategy';
+                        }
+                    });
                     slides[index].classList.add('active');
                     counter.textContent = `Step ${index + 1} / ${totalSlides}`;
                     prevBtn.disabled = index === 0;
@@ -659,51 +954,47 @@
             }
             const tip = document.querySelector('.chip-tip');
             const tipContent = tip.querySelector('.tip-content');
+            const tipArrow = tip.querySelector('.arrow');
             let openBtn = null;
 
+            function clamp(n, min, max) { return Math.max(min, Math.min(n, max)); }
+            
             function positionTipFor(btn) {
                 const rect = btn.getBoundingClientRect();
-                tip.style.display = 'block'; // Make it visible to get its dimensions
+                const vw = window.innerWidth;
+                const pad = 8;
+                tip.style.maxWidth = Math.min(vw - pad*2, 420) + 'px';
                 const tipRect = tip.getBoundingClientRect();
-                
-                let top = rect.bottom + 12;
-                let arrowTop = -6;
-
-                if (top + tipRect.height > window.innerHeight) {
-                    top = rect.top - tipRect.height - 12;
-                    arrowTop = tipRect.height - 6;
-                }
-
-                let left = rect.left + rect.width / 2 - tipRect.width / 2;
-                left = Math.max(8, Math.min(left, window.innerWidth - tipRect.width - 8));
-                
-                tip.style.top = `${top + window.scrollY}px`;
-                tip.style.left = `${left + window.scrollX}px`;
-                tip.querySelector('.arrow').style.top = `${arrowTop}px`;
-                tip.querySelector('.arrow').style.left = `${rect.left + rect.width / 2 - left - 6}px`;
+                const preferTop = rect.top > (window.innerHeight - rect.bottom);
+                const top = preferTop ? rect.top - tipRect.height - 12 : rect.bottom + 12;
+                const left = clamp(rect.left + rect.width/2 - tipRect.width/2, pad, vw - tipRect.width - pad);
+                tip.style.top = Math.max(8, top) + 'px';
+                tip.style.left = left + 'px';
+                tipArrow.style.top = preferTop ? (tipRect.height - 6) + 'px' : '-6px';
+                tipArrow.style.left = clamp(rect.left + rect.width/2 - left - 6, 10, tipRect.width - 22) + 'px';
             }
             
-            function showTip(event) {
-                const btn = event.currentTarget;
-                tipContent.innerHTML = `<strong>${btn.dataset.term}</strong>: ${btn.dataset.def}`;
-                tip.classList.add('show');
-                openBtn = btn;
-                positionTipFor(btn);
+            function openTip(btn, text) { 
+                tipContent.textContent = text; 
+                tip.classList.add('show'); 
+                positionTipFor(btn); 
+                openBtn = btn; 
             }
             
-            function hideTip() {
-                tip.classList.remove('show');
-                openBtn = null;
+            function closeTip() { 
+                tip.classList.remove('show'); 
+                openBtn = null; 
             }
 
-            cloud.querySelectorAll('.glossary-chip').forEach(btn => {
-                btn.addEventListener('mouseenter', showTip);
-                btn.addEventListener('mouseleave', hideTip);
-                btn.addEventListener('focus', showTip);
-                btn.addEventListener('blur', hideTip);
+            cloud.querySelectorAll('.glossary-chip').forEach((btn, i) => {
+                const def = glossaryData[i].def;
+                ['click','focus'].forEach(evt => btn.addEventListener(evt, () => { openTip(btn, def); }));
+                btn.addEventListener('blur', () => { if(document.activeElement !== btn) closeTip(); });
             });
-            window.addEventListener('scroll', () => { if (openBtn) positionTipFor(openBtn); }, true);
-            window.addEventListener('resize', () => { if (openBtn) hideTip(); }, true);
+            
+            window.addEventListener('resize', () => { if(openBtn) positionTipFor(openBtn); });
+            window.addEventListener('scroll', () => { if(openBtn) positionTipFor(openBtn); }, {passive:true});
+            document.addEventListener('click', (e) => { if(openBtn && !openBtn.contains(e.target) && !tip.contains(e.target)) closeTip(); });
         }
 
         // --- INITIALIZE ALL COMPONENTS ---

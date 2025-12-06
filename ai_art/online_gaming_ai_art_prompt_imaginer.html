@@ -9,57 +9,102 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
     <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: 'Inter', sans-serif;
             background-color: #111827;
             color: #F3F4F6;
+            line-height: 1.6;
+        }
+        .container { 
+            max-width: 900px; 
+            margin: 0 auto; 
+            padding: 20px; 
+        }
+        h1 { 
+            font-size: clamp(1.75rem, 5vw, 2.5rem); 
+            line-height: 1.2; 
+            margin-bottom: 12px; 
+        }
+        h2 { 
+            font-size: clamp(1.25rem, 4vw, 1.75rem); 
+            line-height: 1.3; 
         }
         .prompt-card {
             font-family: 'Merriweather', serif;
             background-color: #1F2937;
             border: 1px solid #374151;
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            font-size: clamp(1rem, 3vw, 1.125rem);
+            line-height: 1.7;
         }
         .character-card {
             background-color: #1F2937;
-            border: 1px solid #4B5563;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 2px solid #4B5563;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+            cursor: pointer;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
-        .character-card:hover {
-            transform: translateY(-5px) scale(1.05);
-            box-shadow: 0 0 25px rgba(139, 92, 246, 0.5);
+        .character-card:hover, .character-card:focus {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(139, 92, 246, 0.4);
             border-color: #8B5CF6;
+        }
+        .character-card .text-6xl {
+            font-size: clamp(3rem, 8vw, 4rem);
+        }
+        .character-card .mt-2 {
+            font-size: clamp(0.875rem, 2.5vw, 1rem);
+            font-weight: 600;
         }
         .generate-button {
             background: linear-gradient(to right, #8B5CF6, #EC4899);
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            min-height: 48px;
+            font-size: clamp(1rem, 3vw, 1.125rem);
+            touch-action: manipulation;
         }
-        .generate-button:hover {
+        .generate-button:hover, .generate-button:active {
             transform: translateY(-2px);
-            box-shadow: 0 7px 10px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+        .back-button {
+            min-height: 44px;
+            font-size: clamp(0.95rem, 2.5vw, 1.05rem);
+            padding: 10px 20px;
+            touch-action: manipulation;
         }
         .fade-in {
-            animation: fadeIn 1s ease-in-out;
+            animation: fadeIn 0.6s ease-in-out;
         }
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
+            from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+        @media (max-width: 768px) {
+            .container { padding: 16px; }
+            #character-grid { gap: 12px; }
+            .character-card { min-height: 110px; }
         }
     </style>
 </head>
-<body class="flex flex-col items-center justify-between min-h-screen p-4 sm:p-6 md:p-8">
+<body class="flex flex-col min-h-screen">
 
-    <header class="text-center w-full">
-        <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">Online Gaming AI Art Prompt Imaginer</h1>
+    <header class="text-center container" style="padding-top: 20px; padding-bottom: 12px;">
+        <h1 class="font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">Online Gaming AI Art Prompt Imaginer</h1>
     </header>
 
-    <main id="app" class="w-full flex-grow flex items-center justify-center">
+    <main id="app" class="flex-grow flex items-center justify-center container">
         <!-- Screen 1: Character Selection -->
-        <div id="screen1" class="w-full max-w-6xl text-center">
-            <h2 class="text-2xl font-semibold mb-2 text-gray-300">Choose Your Archetype</h2>
-            <p class="text-gray-400 mb-8">Select a character to inspire your imagination.</p>
-            <div id="character-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-4">
+        <div id="screen1" class="w-full text-center">
+            <h2 class="font-semibold mb-2 text-gray-300">Choose Your Archetype</h2>
+            <p class="text-gray-400 mb-6" style="font-size: clamp(0.9rem, 2.5vw, 1rem);">Select a character to inspire your imagination.</p>
+            <div id="character-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 16px;">
                 <div class="character-card rounded-lg p-4 cursor-pointer" data-char="🧙‍♂️" data-name="Wizard/Mage">
                     <div class="text-6xl">🧙‍♂️</div>
                     <div class="mt-2 font-semibold">Wizard/Mage</div>
@@ -116,22 +161,22 @@
         </div>
 
         <!-- Screen 2: Prompt Generation -->
-        <div id="screen2" class="hidden w-full max-w-4xl text-center">
-            <div id="char-display" class="text-8xl mb-6"></div>
-            <div id="prompt-output" class="prompt-card rounded-lg p-6 min-h-[150px] text-lg leading-relaxed text-gray-300 mb-8 flex items-center justify-center fade-in">
+        <div id="screen2" class="hidden w-full text-center">
+            <div id="char-display" style="font-size: clamp(4rem, 12vw, 6rem); margin-bottom: 1.5rem;"></div>
+            <div id="prompt-output" class="prompt-card rounded-lg p-6 text-gray-300 mb-6 flex items-center justify-center fade-in" style="min-height: 200px;">
                 Click the button to imagine a new prompt...
             </div>
-            <button id="generate-btn" class="generate-button text-white font-bold py-3 px-8 rounded-full text-lg">
+            <button id="generate-btn" class="generate-button text-white font-bold py-3 px-8 rounded-full" style="width: 100%; max-width: 400px;">
                 Imagine New Prompt
             </button>
-             <button id="back-btn" class="mt-4 text-gray-400 hover:text-white transition-colors">
+             <button id="back-btn" class="back-button mt-4 text-gray-400 hover:text-white transition-colors" style="display: block; margin: 16px auto 0;">
                 &larr; Back to selection
             </button>
         </div>
     </main>
 
-    <footer class="w-full text-center text-gray-500 mt-8">
-        <p>&copy; Beyond Dictionary, 2025</p>
+    <footer class="w-full text-center text-gray-500 container" style="padding-top: 24px; padding-bottom: 24px; margin-top: 24px;">
+        <p style="font-size: 0.875rem;">&copy; Beyond Dictionary, 2025</p>
     </footer>
 
     <script>

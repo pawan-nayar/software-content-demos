@@ -9,40 +9,60 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
+        :root{
+            --bg: #fff5ec;
+            --card:#ffffff;
+            --text:#1f2933;
+            --muted:#f8f9fb;
+            --border:#e9ecef;
+            --accent:#fd7e14;
+            --accent-2:#e87312;
+        }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
             font-family: 'Inter', sans-serif; 
-            background: rgb(29, 30, 34);
-            color: #333;
+            background: radial-gradient(circle at top, #fff8f0 0%, var(--bg) 55%, #fffefa 100%);
+            color: var(--text);
+            padding-bottom: 32px;
         }
         .container {
-            max-width: 900px;
+            max-width: 880px;
             margin: 0 auto;
-            padding: 20px;
-            background: white;
-            min-height: 100vh;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            padding: 28px 24px 48px;
+            background: transparent;
         }
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            padding: 20px;
-            background: rgb(29, 30, 34);
-            color: white;
-            border-radius: 10px;
+        .hero-card{
+            background: var(--card);
+            border:1px solid var(--border);
+            border-radius: 18px;
+            padding: 28px 24px;
+            box-shadow: 0 24px 50px rgba(0,0,0,0.08);
+            text-align:center;
+            margin-bottom: 28px;
+        }
+        .header-icon{
+            font-size: 2rem;
+            background: rgba(253,126,20,0.15);
+            color: var(--accent-2);
+            padding: 12px;
+            border-radius: 16px;
+            display: inline-flex;
+            margin-bottom: 12px;
         }
         .header h1 { font-size: 2.2em; margin-bottom: 10px; }
-        .header p { font-size: 1.1em; opacity: 0.9; }
+        .header p { font-size: 1.1em; opacity: 0.8; }
         
         .start-screen { text-align: center; padding: 40px 20px; }
         .start-instructions {
             text-align: left;
-            background: #f8f9fa;
+            background: var(--muted);
             padding: 25px;
-            border-radius: 10px;
+            border-radius: 14px;
             margin: 25px 0;
             line-height: 1.6;
-            border-left: 5px solid #4a90e2;
+            border-left: 5px solid var(--accent);
+            border:1px solid var(--border);
+            box-shadow:0 12px 30px rgba(0,0,0,0.05);
         }
         .start-instructions ul { list-style-position: inside; margin-top: 10px; }
         
@@ -54,13 +74,14 @@
             cursor: pointer;
             transition: all 0.3s ease;
             font-weight: bold;
-            background: #4a90e2;
+            background: var(--accent);
             color: white;
+            min-width: 180px;
         }
         .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(74, 144, 226, 0.4);
-            background: #357ABD;
+            box-shadow: 0 5px 15px rgba(253,126,20,0.35);
+            background: var(--accent-2);
         }
         .hidden { display: none; }
 
@@ -88,9 +109,10 @@
         .question-block {
             margin-bottom: 25px;
             padding: 20px;
-            border: 1px solid #e9ecef;
-            border-radius: 10px;
-            background: #fdfdfd;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            background: var(--card);
+            box-shadow:0 10px 24px rgba(0,0,0,0.04);
         }
         .question-instruction {
             font-weight: bold;
@@ -101,10 +123,10 @@
             border-bottom: 1px solid #e9ecef;
         }
         .passage {
-            background: #f8f9fa;
+            background: var(--muted);
             padding: 20px;
             margin-bottom: 20px;
-            border-left: 4px solid #4a90e2;
+            border-left: 4px solid var(--accent);
             border-radius: 8px;
             line-height: 1.7;
         }
@@ -122,6 +144,7 @@
             font-size: 0.9em;
             border-left: 3px solid #17a2b8;
         }
+        .table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-top:12px;}
         .parameter-table {
             width: 100%;
             border-collapse: collapse;
@@ -152,13 +175,30 @@
              border-radius: 4px;
              color: #333;
         }
+        .table-hint{
+            font-size:0.9rem;
+            color:#6c757d;
+            margin-top:8px;
+        }
+        @media (max-width: 768px){
+            .container{padding:18px 16px 40px;}
+            .hero-card{padding:24px 18px;}
+            .header h1{font-size:1.8rem;}
+            .header p{font-size:1rem;}
+            .btn{width:100%;border-radius:999px;}
+            .exam-header{flex-direction:column;align-items:flex-start;gap:10px;}
+            .section-title{font-size:1.4rem;}
+            .question-block{padding:18px;}
+            .table-hint{text-align:center;}
+        }
     </style>
 </head>
 <body>
   <div class="container">
     <!-- Start Screen -->
     <div id="startScreen" class="start-screen">
-      <div class="header">
+      <div class="hero-card header">
+        <div class="header-icon">🎯✨</div>
         <h1>Advanced AI Art Prompting 🎨</h1>
         <p>Parameters & Control Practice</p>
       </div>
@@ -201,6 +241,7 @@
                 <p class="question-instruction">Use this guide to help you with the exercises. These are common parameters used in tools like Midjourney.</p>
                 
                 <h3 class="param-category">Technical Parameters</h3>
+                <div class="table-scroll">
                 <table class="parameter-table">
                     <tr><th>Parameter</th><th>Description</th></tr>
                     <tr><td><code>--ar [ratio]</code></td><td><strong>Aspect Ratio:</strong> Sets the shape of the image. Examples: <code>--ar 2:3</code> (portrait), <code>--ar 16:9</code> (landscape), <code>--ar 1:1</code> (square).</td></tr>
@@ -210,8 +251,11 @@
                     <tr><td><code>--stop [value]</code></td><td><strong>Stop:</strong> Stops the generation process early. A low value (e.g., <code>--stop 30</code>) creates a sketch-like look. A higher value (e.g., <code>--stop 70</code>) looks semi-complete.</td></tr>
                     <tr><td><code>[word] ::[weight]</code></td><td><strong>Prompt Weights:</strong> Emphasizes or de-emphasizes parts of a prompt. <code>wolf ::2 ranger ::0.5</code> makes the wolf much more dominant than the ranger.</td></tr>
                 </table>
+                </div>
+                <p class="table-hint">Swipe left/right to view all parameter details on mobile.</p>
 
                 <h3 class="param-category">Artistic & Cinematic Modifiers</h3>
+                <div class="table-scroll">
                 <table class="parameter-table">
                      <tr><th>Category</th><th>Examples</th></tr>
                      <tr><td><strong>Lighting</strong></td><td><code>dramatic lighting</code>, <code>soft natural light</code>, <code>backlit</code>, <code>golden hour light</code></td></tr>
@@ -222,6 +266,8 @@
                      <tr><td><strong>Effects</strong></td><td><code>fire aura</code>, <code>ice aura</code>, <code>lightning strikes</code>, <code>glowing runes</code></td></tr>
                      <tr><td><strong>Composition</strong></td><td><code>symmetrical composition</code>, <code>off-center composition</code></td></tr>
                 </table>
+                </div>
+                <p class="table-hint">Swipe to see every modifier category.</p>
             </div>
         </div>
 
@@ -342,6 +388,7 @@
     function startExam() {
       document.getElementById('startScreen').classList.add('hidden');
       document.getElementById('examPaper').classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   </script>
 </body>

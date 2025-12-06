@@ -12,6 +12,19 @@
       font-family: 'Inter', sans-serif;
       overflow: hidden;
     }
+    @media (max-width: 768px) {
+      body.mobile-body {
+        overflow-y: auto;
+        padding: 1.5rem 0.5rem 0.75rem !important;
+        align-items: flex-start;
+        min-height: 100vh;
+        justify-content: flex-start;
+      }
+      #main-content {
+        width: 100%;
+        max-width: 100%;
+      }
+    }
 
     /* --- Intro & Confetti --- */
     #intro-screen {
@@ -108,6 +121,13 @@
       border-top: 1px solid #e2e8f0;
       background: white;
     }
+    .card-controls .flex {
+      flex-wrap: nowrap;
+    }
+    .card-controls .pill-btn {
+      flex: 1 1 0;
+      white-space: nowrap;
+    }
     .flip-back { 
       transform: rotateY(180deg); 
     }
@@ -198,21 +218,123 @@
     
     /* Responsive */
     @media (max-width: 768px) {
-        .flip-card {
-            height: 90vh;
+        body {
+            padding: 0.5rem;
+        }
+        #intro-screen {
+            padding: 2.5rem 1.5rem;
+            margin: 0 auto;
             max-width: 100%;
+            width: 100%;
+            border-radius: 1rem;
+            min-height: auto;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        #intro-screen h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        #intro-screen h2 {
+            font-size: 1.35rem;
+            line-height: 1.3;
+            margin-bottom: 0.75rem;
+            padding: 0 0.5rem;
+        }
+        #intro-screen p {
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 1.5rem;
+            padding: 0 0.5rem;
+        }
+        #intro-screen #start-btn {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1rem;
+            min-height: 52px;
+        }
+        #main-content {
+            padding: 0;
+            margin: 0;
+        }
+        .flip-card {
+            height: auto;
+            min-height: 85vh;
+            max-width: 100%;
+            margin: 0;
         }
         .flip-front, .flip-back {
             padding: 1rem;
+            min-height: 85vh;
         }
-        h2 { font-size: 1.25rem; }
-        .platform-heading { font-size: 0.9rem; }
-        .platform-details { font-size: 0.8rem; }
+        .card-content {
+            padding-right: 0.25rem;
+        }
+        .card-content > .flex {
+            margin-bottom: 0.5rem;
+        }
+        h2 { 
+            font-size: 1.5rem; 
+            margin-top: 0.75rem;
+            margin-bottom: 1rem;
+            line-height: 1.3;
+        }
+        .header-ribbon {
+            font-size: 0.7rem;
+            padding: 0.3rem 0.7rem;
+            display: inline-block;
+        }
+        .label {
+            font-size: 0.75rem;
+            margin-top: 0.75rem;
+            margin-bottom: 0.3rem;
+        }
+        .card-content p {
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        .platform-heading { 
+            font-size: 0.95rem; 
+            margin-bottom: 0.4rem;
+        }
+        .platform-details { 
+            font-size: 0.85rem; 
+            line-height: 1.6;
+        }
+        .pill-btn {
+            padding: 0.75rem 1rem;
+            font-size: 0.85rem;
+            min-height: 48px;
+            min-width: 48px;
+            flex: 1;
+        }
+        .card-controls {
+            padding-top: 1rem;
+            margin-top: 1rem;
+            position: sticky;
+            bottom: 0;
+            background: white;
+            z-index: 10;
+            border-top: 2px solid #e2e8f0;
+        }
+        .card-controls .flex {
+            gap: 0.5rem;
+            width: 100%;
+            flex-wrap: nowrap;
+        }
+        .card-controls .pill-btn {
+            white-space: nowrap;
+            flex: 1 1 0;
+        }
+        footer {
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.75rem;
+        }
     }
 
   </style>
 </head>
-<body class="flex items-center justify-center min-h-screen p-4">
+<body class="flex items-center justify-center min-h-screen p-4 mobile-body">
 
   <!-- Intro Screen -->
   <div id="intro-screen" class="text-center bg-white p-10 rounded-2xl shadow-xl max-w-lg mx-auto">
@@ -295,9 +417,9 @@ function renderCard(index) {
     </div>
     <div class='card-controls'>
       <div class='flex justify-between items-center'>
-      <button onclick="prev()" class='pill-btn'>⏮ Prev</button>
-      <button onclick="flipCard()" class='pill-btn'>🔄 Flip to Details</button>
-      <button onclick="next()" class='pill-btn'>Next ⏭</button>
+        <button onclick="prev()" class='pill-btn'>⏮</button>
+        <button onclick="flipCard()" class='pill-btn'>🔄</button>
+        <button onclick="next()" class='pill-btn'>⏭</button>
       </div>
     </div>
   `;
@@ -320,9 +442,9 @@ function renderCard(index) {
     </div>
     <div class='card-controls'>
         <div class='flex justify-between items-center'>
-        <button onclick="prev()" class='pill-btn'>⏮ Prev</button>
-        <button onclick="flipCard()" class='pill-btn'>🔄 Flip to Summary</button>
-        <button onclick="next()" class='pill-btn'>Next ⏭</button>
+            <button onclick="prev()" class='pill-btn'>⏮</button>
+            <button onclick="flipCard()" class='pill-btn'>🔄</button>
+            <button onclick="next()" class='pill-btn'>⏭</button>
         </div>
     </div>
   `;

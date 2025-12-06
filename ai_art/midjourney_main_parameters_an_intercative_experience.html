@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale-1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MidJourney Parameter Explorer</title>
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <style>
@@ -144,6 +144,8 @@
       z-index: 1000;
       opacity: 0;
       transition: opacity 0.3s ease;
+      overflow-y: auto; /* Allow scrolling if modal taller than viewport */
+      padding: 20px 0;
     }
     .modal-overlay.visible {
       display: flex;
@@ -155,7 +157,7 @@
       border-radius: 12px;
       width: 95%;
       max-width: 1200px;
-      max-height: 95vh; /* Bigger modal */
+      max-height: 90vh; /* Desktop: keep in viewport */
       box-shadow: 0 10px 40px rgba(0,0,0,0.5);
       display: flex;
       flex-direction: column;
@@ -176,7 +178,14 @@
     .modal-header h2 { margin: 0; font-size: 1.5rem; color: var(--accent-blue); }
     .close-button { font-size: 2.5rem; font-weight: 300; color: var(--text-secondary); cursor: pointer; background: none; border: none; line-height: 1; }
     .close-button:hover { color: var(--text-primary); }
-    .modal-content { padding: 1.5rem; flex-grow: 1; display: flex; gap: 1.5rem; overflow-y: auto; }
+    .modal-content { 
+      padding: 1.5rem; 
+      flex-grow: 1; 
+      display: flex; 
+      gap: 1.5rem; 
+      overflow-y: auto; /* Desktop: scroll if content tall */
+      min-height: 0; /* Allow flexbox to shrink */
+    }
     .modal-info { width: 300px; flex-shrink: 0; overflow-y: auto; padding-right: 1rem; }
     .modal-info p { line-height: 1.6; color: var(--text-secondary); }
     .modal-info .examples { display: flex; flex-wrap: wrap; gap: 0.5rem; }
@@ -187,8 +196,8 @@
     #help-modal li { margin-bottom: 0.5rem; }
 
 
-    .viz-container { position: relative; flex-grow: 1; min-height: 300px; }
-    .viz-container svg { width: 100%; height: 100%; }
+    .viz-container { position: relative; flex-grow: 1; min-height: 300px; z-index: 1; }
+    .viz-container svg { width: 100%; height: 100%; position: relative; z-index: 1; }
 
     /* Tooltip */
     .tooltip {
@@ -215,8 +224,68 @@
     @media (max-width: 768px) {
       .header h1 { font-size: 1.25rem; }
       .card-grid { padding: 1.5rem; }
-      .modal-content { flex-direction: column; overflow-y: auto;}
-      .modal-info { width: 100%; flex-shrink: 1; max-height: 40%; padding-right: 0;}
+      
+      /* Overlay: allow scrolling on mobile */
+      .modal-overlay {
+        align-items: flex-start; /* Top align so tall modals don't get cut */
+        padding: 10px 0;
+      }
+      
+      /* Modal: no max-height - let it be as tall as needed */
+      .modal-box {
+        width: 98%;
+        max-height: none; /* ← NO CONSTRAINT */
+        border-radius: 8px;
+        margin: 0 auto;
+      }
+      
+      /* Compact header on mobile */
+      .modal-header {
+        padding: 0.875rem 1rem;
+      }
+      
+      .modal-header h2 {
+        font-size: 1.2rem;
+      }
+      
+      /* Content flows naturally - NO overflow */
+      .modal-content { 
+        flex-direction: column;
+        overflow-y: visible; /* ← Let it all show */
+        padding: 0.875rem;
+        gap: 1rem;
+      }
+      
+      /* Info: full display, no constraints */
+      .modal-info { 
+        width: 100%;
+        flex-shrink: 0;
+        padding-right: 0;
+      }
+      
+      .modal-info p {
+        font-size: 0.9rem;
+        line-height: 1.5;
+        margin-bottom: 0.75rem;
+      }
+      
+      /* Chips wrap naturally */
+      .modal-info .examples {
+        gap: 0.4rem;
+      }
+      
+      .chip {
+        font-size: 0.75rem;
+        padding: 0.3rem 0.65rem;
+      }
+      
+      /* Viz: natural size, no cutting */
+      .viz-container {
+        width: 100%;
+        height: 400px; /* Fixed height - animation gets full space */
+        min-height: 400px;
+        max-height: none;
+      }
     }
   </style>
 </head>
@@ -312,8 +381,27 @@ function init() {
     helpButton.addEventListener('click', () => showModal(null, helpModal));
 
     [paramModal, helpModal].forEach(modal => {
-        modal.querySelector('.close-button').addEventListener('click', () => closeModal(modal));
-        modal.addEventListener('click', e => { if (e.target === modal) closeModal(modal); });
+        const closeBtn = modal.querySelector('.close-button');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => closeModal(modal));
+        }
+        
+        // Prevent clicks inside modal-box from closing
+        const modalBox = modal.querySelector('.modal-box');
+        if (modalBox) {
+            modalBox.addEventListener('click', e => {
+                e.stopPropagation(); // Don't let clicks bubble to overlay
+            });
+        }
+        
+        // Only close on overlay click for desktop (not mobile where scrolling happens)
+        modal.addEventListener('click', e => { 
+            // Only close if clicking directly on overlay (not modal-box) AND not on mobile
+            const isMobile = window.innerWidth <= 768;
+            if (e.target === modal && !isMobile) {
+                closeModal(modal);
+            }
+        });
     });
 }
 
@@ -335,8 +423,17 @@ function closeModal(modalElement) {
     if (modalElement.id === 'param-modal') {
         // Clean up tooltips first
         hideTooltip();
+        
+        // Clean up caption boxes
+        const captionBoxes = document.querySelectorAll('.zoom-caption-box, .weights-caption-box');
+        captionBoxes.forEach(box => {
+            if (box && box.parentNode) {
+                box.parentNode.removeChild(box);
+            }
+        });
+        
         // Clean up any dynamic elements before removing SVG
-        const svg = d3.select("#modal-chart svg");
+        const svg = d3.select("#modal-chart");
         if (svg.node() && svg.node().cleanup) {
             svg.node().cleanup();
         }
@@ -347,11 +444,37 @@ function closeModal(modalElement) {
 function setupSVG() {
     const svg = d3.select("#modal-chart");
     svg.selectAll('*').remove();
-    const container = svg.node().getBoundingClientRect();
-    const margin = {top: 20, right: 30, bottom: 50, left: 50};
-    const width = container.width - margin.left - margin.right;
-    const height = container.height - margin.top - margin.bottom;
+    
+    // Get container - use parent for better sizing
+    const vizContainer = document.querySelector('.viz-container');
+    const modalContent = document.querySelector('.modal-content');
+    
+    // Detect screen size
+    const screenWidth = window.innerWidth;
+    const isMobile = screenWidth <= 768;
+    
+    // Responsive margins
+    const margin = isMobile 
+        ? {top: 15, right: 15, bottom: 35, left: 35}
+        : {top: 20, right: 30, bottom: 50, left: 50};
+    
+    // Get dimensions - with fallbacks
+    let containerWidth, containerHeight;
+    
+    if (vizContainer) {
+        const rect = vizContainer.getBoundingClientRect();
+        containerWidth = rect.width > 0 ? rect.width : (isMobile ? screenWidth - 40 : 600);
+        containerHeight = rect.height > 0 ? rect.height : (isMobile ? 350 : 450);
+    } else {
+        containerWidth = isMobile ? screenWidth - 40 : 600;
+        containerHeight = isMobile ? 350 : 450;
+    }
+    
+    const width = Math.max(containerWidth - margin.left - margin.right, 200);
+    const height = Math.max(containerHeight - margin.top - margin.bottom, 200);
+    
     const g = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
+    
     return { svg, width, height, g, margin };
 }
 
@@ -374,38 +497,10 @@ function showTooltip(event, content) {
 
 function hideTooltip() { tooltipEl.classList.remove('visible'); }
 
-// Zoom & Pan visualization with mobile fallback
+// Zoom & Pan visualization
 function drawZoomPanViz() {
     const { svg, width, height, g, margin } = setupSVG();
     
-    // Detect mobile
-    const isMobile = window.innerWidth <= 768;
-    
-    if (isMobile) {
-        // Mobile: Minimal message directing to desktop
-        const centerX = width / 2;
-        const centerY = height / 2;
-        
-        svg.append("text")
-            .attr("x", centerX).attr("y", centerY - 20)
-            .attr("text-anchor", "middle")
-            .attr("fill", "var(--accent-blue)")
-            .style("font-size", "1.2rem")
-            .style("font-weight", "600")
-            .text("🖥️ Open this file in desktop");
-        
-        svg.append("text")
-            .attr("x", centerX).attr("y", centerY + 10)
-            .attr("text-anchor", "middle")
-            .attr("fill", "var(--accent-yellow)")
-            .style("font-size", "1rem")
-            .style("font-weight", "500")
-            .text("to feel its beauty");
-            
-        return; // Exit early for mobile
-    }
-    
-    // Desktop: Full interactive visualization restored
     // State management
     let currentState = { zoom: 1.0, pan: null };
     
@@ -418,45 +513,66 @@ function drawZoomPanViz() {
         { type: 'subject', x: 180, y: 250, width: 40, height: 50, color: '#FF6B6B' }
     ];
 
-    // Desktop layout
-    const rightPanelWidth = 240;
-    const availableWidth = width - rightPanelWidth - 60;
-    const availableHeight = height - 120;
-    const baseSize = Math.min(availableWidth * 0.85, availableHeight * 0.75);
-    const viewportWidth = baseSize;
-    const viewportHeight = baseSize;
-    const centerX = availableWidth / 2 + 30;
-    const centerY = availableHeight / 2 + 60;
+    // Responsive layout - adapt to screen size
+    const isMobile = window.innerWidth <= 768;
+    const rightPanelWidth = isMobile ? 0 : 240;  // No side panel on mobile
+    const availableWidth = isMobile ? width : (width - rightPanelWidth - 60);
+    const availableHeight = isMobile ? height - 60 : (height - 120);
+    const baseSize = Math.min(availableWidth * 0.85, availableHeight * 0.65);
+    const viewportWidth = Math.max(baseSize, 180);  // Minimum size
+    const viewportHeight = Math.max(baseSize, 180);
+    const centerX = availableWidth / 2;
+    const centerY = availableHeight / 2 + 40;
 
-    // Caption system
-    const captionY = centerY + viewportHeight/2 + 80;
-    const stepText = svg.append("text")
-        .attr("x", centerX).attr("y", captionY)
-        .attr("text-anchor", "middle")
-        .attr("fill", "var(--accent-yellow)")
-        .style("font-size", "0.9rem")
-        .style("font-weight", "500")
-        .style("opacity", 0);
+    // Caption message box - HTML element with wrapping text  
+    // Position it above the SVG animation layer
+    const vizContainerEl = svg.node().parentNode;
+    const captionBox = document.createElement('div');
+    captionBox.className = 'zoom-caption-box';
+    captionBox.style.cssText = `
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: 60px;
+        max-width: calc(100% - 40px);
+        margin: 0 20px;
+        padding: 12px 16px;
+        background: var(--bg-dark-secondary);
+        border: 2px solid var(--accent-yellow);
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.4), 0 0 20px rgba(241,196,15,0.15);
+        color: var(--accent-yellow);
+        font-size: ${isMobile ? '0.8rem' : '0.9rem'};
+        font-weight: 500;
+        text-align: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        z-index: 1000;
+        line-height: 1.4;
+        pointer-events: none;
+    `;
+    if (vizContainerEl) {
+        // Ensure caption is appended after SVG so it renders on top
+        vizContainerEl.appendChild(captionBox);
+    }
 
     function updateCaption(text, delay = 0) {
         const words = text.split(' ');
-        const dwellTime = Math.max(4000, words.length * 333);
-        const lineBreakPause = 2000;
+        const dwellTime = Math.max(3000, words.length * 250);
+        const lineBreakPause = 1000;
         
-        stepText.transition()
-            .delay(delay)
-            .duration(400)
-            .style("opacity", 0)
-            .transition()
-            .duration(400)
-            .text(text)
-            .style("opacity", 1)
-            .transition()
-            .delay(dwellTime + lineBreakPause)
-            .duration(400)
-            .style("opacity", 0);
+        setTimeout(() => {
+            captionBox.style.opacity = '0';
+            setTimeout(() => {
+                captionBox.textContent = text;
+                captionBox.style.opacity = '1';
+                setTimeout(() => {
+                    captionBox.style.opacity = '0';
+                }, dwellTime + lineBreakPause);
+            }, 300);
+        }, delay);
         
-        return delay + 400 + 400 + dwellTime + lineBreakPause + 400;
+        return delay + 300 + 300 + dwellTime + lineBreakPause + 300;
     }
 
     // Create main container
@@ -575,11 +691,12 @@ function drawZoomPanViz() {
         .text("Original 1:1 Frame")
         .style("opacity", 0);
 
-    // Control panel
+    // Control panel - hide on mobile
     const controlPanel = svg.append("g")
         .attr("class", "control-panel")
-        .attr("transform", `translate(${width - rightPanelWidth + 30}, ${centerY - 40})`)
-        .style("opacity", 0);
+        .attr("transform", isMobile ? "translate(-1000, -1000)" : `translate(${width - rightPanelWidth + 30}, ${centerY - 40})`)
+        .style("opacity", 0)
+        .style("display", isMobile ? "none" : "block");
 
     // Pan arrows in 3x3 grid
     const panDirections = [
@@ -648,13 +765,16 @@ function drawZoomPanViz() {
         .text("Zoom Out:");
 
     // HTML zoom slider
-    const controlPanelX = width - rightPanelWidth + 30;
-    const sliderTop = centerY + 90;
-    const zoomSlider = d3.select("#modal-chart").append("div")
+    // Position absolutely relative to viz-container - need to account for margins
+    const controlPanelX = margin.left + width - rightPanelWidth + 30;
+    const sliderTop = margin.top + centerY + 90;
+    // Reuse vizContainerEl declared earlier for caption box
+    const zoomSlider = d3.select(vizContainerEl).append("div")
         .style("position", "absolute")
         .style("top", `${sliderTop}px`)
         .style("left", `${controlPanelX}px`)
-        .style("width", "120px");
+        .style("width", "120px")
+        .style("z-index", "100"); // Ensure slider is above SVG
 
     const slider = zoomSlider.append("input")
         .attr("type", "range")
@@ -708,36 +828,51 @@ function drawZoomPanViz() {
     })
     .on("click", resetView);
 
-    // Command display
-    const commandY = captionY + 35;
-    const commandDisplay = svg.append("text")
+    // Command display - hide on mobile (no controls)
+    // Calculate commandY based on viewport position and caption area
+    // Caption is at bottom (60px from bottom), command should be above it
+    // Note: g is already translated by margin, so coordinates are relative to group
+    const commandY = centerY + viewportHeight/2 + 50;
+    const commandDisplay = isMobile ? null : g.append("text")
         .attr("x", centerX).attr("y", commandY)
         .attr("text-anchor", "middle")
         .attr("fill", "var(--accent-green)")
         .style("font-family", "monospace")
         .style("font-size", "0.9rem")
         .style("font-weight", "500")
-        .text("Click arrows to pan or drag slider to zoom out")
+        .text("Just watch the animation demo")
         .style("opacity", 0);
+    
+    // Mobile note - higher up to avoid clash with caption
+    if (isMobile) {
+        g.append("text")
+            .attr("x", centerX)
+            .attr("y", 20)  // Top of viz area, not bottom
+            .attr("text-anchor", "middle")
+            .attr("fill", "var(--text-secondary)")
+            .style("font-size", "0.7rem")
+            .style("opacity", 0.7)
+            .text("Automatic demo");
+    }
 
     // Animation timeline
     let timeline = 0;
 
-    // Phase 1: Introduction
-    timeline = updateCaption("Photography framing: original frame shows what MidJourney generates", timeline);
+    // Phase 1: Introduction - START IMMEDIATELY
+    timeline = updateCaption("Framing: shows what MidJourney generates", timeline);
     
     expandedFrame.transition()
-        .delay(timeline - 3000)
+        .delay(100)  // Start immediately
         .duration(800)
         .style("opacity", 1);
 
     viewportFrame.transition()
-        .delay(timeline - 2000)
+        .delay(300)  // Start immediately
         .duration(800)
         .style("opacity", 1);
 
     originalLabel.transition()
-        .delay(timeline - 1500)
+        .delay(500)  // Start immediately
         .duration(600)
         .style("opacity", 1);
 
@@ -771,10 +906,12 @@ function drawZoomPanViz() {
         .duration(800)
         .style("opacity", 1);
 
-    commandDisplay.transition()
-        .delay(timeline - 1000)
-        .duration(600)
-        .style("opacity", 1);
+    if (commandDisplay) {
+        commandDisplay.transition()
+            .delay(timeline - 1000)
+            .duration(600)
+            .style("opacity", 1);
+    }
 
     // Core animation functions
     function panTo(direction, isDemo = false) {
@@ -810,13 +947,16 @@ function drawZoomPanViz() {
             .attr("width", newFrameSize)
             .attr("height", newFrameSize);
 
+        // Reset scale to 1.0 when panning and apply translation
         sceneContainer.transition()
             .duration(600)
             .ease(d3.easeCubicOut)
-            .attr("transform", `translate(${offsetX}, ${offsetY})`);
+            .attr("transform", `translate(${offsetX}, ${offsetY}) scale(1)`);
 
         const panCommand = direction === 'center' ? '' : `--pan ${direction.replace('-', '')}`;
-        commandDisplay.text(panCommand || "Original framing");
+        if (commandDisplay) {
+            commandDisplay.text(panCommand || "Original framing");
+        }
     }
 
     function zoomTo(zoomValue, isDemo = false) {
@@ -825,9 +965,6 @@ function drawZoomPanViz() {
             arrowGroup.selectAll('.pan-arrow circle')
                 .transition().duration(300)
                 .attr("fill", "var(--bg-dark-secondary)");
-            sceneContainer.transition()
-                .duration(600)
-                .attr("transform", "translate(0, 0)");
         }
         
         currentState.zoom = zoomValue;
@@ -838,6 +975,11 @@ function drawZoomPanViz() {
 
         const scale = zoomValue;
         const newSize = viewportWidth * scale;
+        const scaleFactor = 1 / scale; // Scale scene down to show more
+        const sceneCenterX = 200; // Center of 400px wide scene
+        const sceneCenterY = 200; // Center of 400px tall scene
+        
+        // Update expanded frame
         expandedFrame.transition()
             .duration(600)
             .ease(d3.easeCubicOut)
@@ -846,8 +988,17 @@ function drawZoomPanViz() {
             .attr("width", newSize)
             .attr("height", newSize);
 
+        // Scale the scene to show more content (zoom out effect)
+        // Scale from center: translate to center, scale, translate back
+        sceneContainer.transition()
+            .duration(600)
+            .ease(d3.easeCubicOut)
+            .attr("transform", `translate(${sceneCenterX}, ${sceneCenterY}) scale(${scaleFactor}) translate(${-sceneCenterX}, ${-sceneCenterY})`);
+
         const zoomCommand = zoomValue > 1.0 ? `--zoom ${zoomValue.toFixed(1)}` : '';
-        commandDisplay.text(zoomCommand || "Original framing");
+        if (commandDisplay) {
+            commandDisplay.text(zoomCommand || "Original framing");
+        }
     }
 
     function resetView(isDemo = false) {
@@ -865,22 +1016,28 @@ function drawZoomPanViz() {
             .attr("width", viewportWidth)
             .attr("height", viewportHeight);
 
+        // Reset scene to original scale and position
         sceneContainer.transition()
             .duration(600)
             .ease(d3.easeCubicOut)
-            .attr("transform", "translate(0, 0)");
+            .attr("transform", "translate(0, 0) scale(1)");
 
         arrowGroup.selectAll('.pan-arrow circle')
             .transition().duration(300)
             .attr("fill", "var(--bg-dark-secondary)");
 
-        commandDisplay.text("Click arrows to pan or drag slider to zoom out");
+        if (commandDisplay) {
+            commandDisplay.text("Click arrows to pan or drag slider to zoom out");
+        }
     }
 
     // Cleanup function for modal close
     function cleanup() {
         if (zoomSlider.node()) {
             zoomSlider.remove();
+        }
+        if (captionBox && captionBox.parentNode) {
+            captionBox.parentNode.removeChild(captionBox);
         }
     }
 
@@ -889,33 +1046,6 @@ function drawZoomPanViz() {
 
 function drawQualityViz() {
     const { svg, width, height, g, margin } = setupSVG();
-    
-    // Detect mobile
-    const isMobile = window.innerWidth <= 768;
-    
-    if (isMobile) {
-        // Mobile: Minimal message directing to desktop
-        const centerX = width / 2;
-        const centerY = height / 2;
-        
-        svg.append("text")
-            .attr("x", centerX).attr("y", centerY - 20)
-            .attr("text-anchor", "middle")
-            .attr("fill", "var(--accent-blue)")
-            .style("font-size", "1.2rem")
-            .style("font-weight", "600")
-            .text("🖥️ Open this file in desktop");
-        
-        svg.append("text")
-            .attr("x", centerX).attr("y", centerY + 10)
-            .attr("text-anchor", "middle")
-            .attr("fill", "var(--accent-yellow)")
-            .style("font-size", "1rem")
-            .style("font-weight", "500")
-            .text("to feel its beauty");
-            
-        return; // Exit early for mobile
-    }
     
     const vizData = [
       {x: 0.25, y: 1.0, label: "--q 0.25", details: "Extremely fast, ideal for rapid concepting where detail is unimportant."},
@@ -952,33 +1082,6 @@ function drawQualityViz() {
 
 function drawAspectRatioViz() {
     const { width, height, g, svg } = setupSVG();
-    
-    // Detect mobile
-    const isMobile = window.innerWidth <= 768;
-    
-    if (isMobile) {
-        // Mobile: Minimal message directing to desktop
-        const centerX = width / 2;
-        const centerY = height / 2;
-        
-        svg.append("text")
-            .attr("x", centerX).attr("y", centerY - 20)
-            .attr("text-anchor", "middle")
-            .attr("fill", "var(--accent-blue)")
-            .style("font-size", "1.2rem")
-            .style("font-weight", "600")
-            .text("🖥️ Open this file in desktop");
-        
-        svg.append("text")
-            .attr("x", centerX).attr("y", centerY + 10)
-            .attr("text-anchor", "middle")
-            .attr("fill", "var(--accent-yellow)")
-            .style("font-size", "1rem")
-            .style("font-weight", "500")
-            .text("to feel its beauty");
-            
-        return; // Exit early for mobile
-    }
     
     const vizData = [
       {w: 1, h: 1, label: "1:1 Square", details: "The standard for social media profile pictures and Instagram grid posts. Excellent for centering a single subject, from portraits to product shots."},
@@ -1048,33 +1151,6 @@ function drawAspectRatioViz() {
 function drawStyleViz() {
     const { svg, width, height, g, margin } = setupSVG();
     
-    // Detect mobile
-    const isMobile = window.innerWidth <= 768;
-    
-    if (isMobile) {
-        // Mobile: Minimal message directing to desktop
-        const centerX = width / 2;
-        const centerY = height / 2;
-        
-        svg.append("text")
-            .attr("x", centerX).attr("y", centerY - 20)
-            .attr("text-anchor", "middle")
-            .attr("fill", "var(--accent-blue)")
-            .style("font-size", "1.2rem")
-            .style("font-weight", "600")
-            .text("🖥️ Open this file in desktop");
-        
-        svg.append("text")
-            .attr("x", centerX).attr("y", centerY + 10)
-            .attr("text-anchor", "middle")
-            .attr("fill", "var(--accent-yellow)")
-            .style("font-size", "1rem")
-            .style("font-weight", "500")
-            .text("to feel its beauty");
-            
-        return; // Exit early for mobile
-    }
-    
     const vizData = [
         {value:0, label:"--style raw --s 0", details:"Strictly photographic. Disables MidJourney's 'artistic opinion', resulting in images that look more like unedited photos."},
         {value:100, label:"--style raw --s 100", details:"Documentary realism. Adds a subtle touch of composition and lighting, akin to a well-shot documentary film."},
@@ -1137,36 +1213,9 @@ function drawStyleViz() {
     g.append("text").attr("class", "cta-text").attr("x", width/2).attr("y", 40).attr("text-anchor", "middle").text("Drag the yellow handle").style("opacity", 0).transition().duration(1000).delay(5000).style("opacity", 1).transition().duration(1000).delay(7000).style("opacity", 0);
 }
 
-// Weights / --no visualization with proper pacing and responsiveness
+// Weights / --no visualization
 function drawWeightsViz() {
     const { svg, width, height, g, margin } = setupSVG();
-    
-    // Detect mobile
-    const isMobile = window.innerWidth <= 768;
-    
-    if (isMobile) {
-        // Mobile: Minimal message directing to desktop
-        const centerX = width / 2;
-        const centerY = height / 2;
-        
-        svg.append("text")
-            .attr("x", centerX).attr("y", centerY - 20)
-            .attr("text-anchor", "middle")
-            .attr("fill", "var(--accent-blue)")
-            .style("font-size", "1.2rem")
-            .style("font-weight", "600")
-            .text("🖥️ Open this file in desktop");
-        
-        svg.append("text")
-            .attr("x", centerX).attr("y", centerY + 10)
-            .attr("text-anchor", "middle")
-            .attr("fill", "var(--accent-yellow)")
-            .style("font-size", "1rem")
-            .style("font-weight", "500")
-            .text("to feel its beauty");
-            
-        return; // Exit early for mobile
-    }
 
     // Real prompt example split into responsive lines
     const promptLines = [
@@ -1186,71 +1235,91 @@ function drawWeightsViz() {
     const size = d3.scaleSqrt().domain([0, 2]).range([8, 22]);
     const color = d3.scaleDiverging([-2, 0, 2], d3.interpolateRdBu);
 
-    // Bottom caption system - moved to bottom to never cover work
-    const captionY = height + margin.bottom - 10;
-    const stepText = svg.append("text")
-        .attr("x", width/2).attr("y", captionY)
-        .attr("text-anchor", "middle")
-        .attr("fill", "var(--accent-yellow)")
-        .style("font-size", "0.9rem")
-        .style("font-weight", "500")
-        .style("opacity", 0);
+    // Caption message box - HTML element with wrapping text
+    const isMobile = window.innerWidth <= 768;
+    const vizContainerEl = svg.node().parentNode;
+    const captionBox = document.createElement('div');
+    captionBox.className = 'weights-caption-box';
+    captionBox.style.cssText = `
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: 40px;
+        max-width: calc(100% - 40px);
+        margin: 0 20px;
+        padding: 10px 16px;
+        background: var(--bg-dark-secondary);
+        border: 2px solid var(--accent-yellow);
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.4), 0 0 20px rgba(241,196,15,0.15);
+        color: var(--accent-yellow);
+        font-size: ${isMobile ? '0.75rem' : '0.85rem'};
+        font-weight: 500;
+        text-align: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        z-index: 1000;
+        line-height: 1.4;
+        pointer-events: none;
+    `;
+    if (vizContainerEl) {
+        // Ensure caption is appended after SVG so it renders on top
+        vizContainerEl.appendChild(captionBox);
+    }
 
     function updateCaption(text, delay = 0) {
         const words = text.split(' ');
-        const dwellTime = Math.max(4000, words.length * 333); // 3 words = 1 sec
-        const lineBreakPause = 3000; // 3s pause at end of logical breaks
+        const dwellTime = Math.max(2500, words.length * 200);
+        const lineBreakPause = 800;
         
-        stepText.transition()
-            .delay(delay)
-            .duration(500)
-            .style("opacity", 0)
-            .transition()
-            .duration(500)
-            .text(text)
-            .style("opacity", 1)
-            .transition()
-            .delay(dwellTime + lineBreakPause)
-            .duration(500)
-            .style("opacity", 0);
+        setTimeout(() => {
+            captionBox.style.opacity = '0';
+            setTimeout(() => {
+                captionBox.textContent = text;
+                captionBox.style.opacity = '1';
+                setTimeout(() => {
+                    captionBox.style.opacity = '0';
+                }, dwellTime + lineBreakPause);
+            }, 300);
+        }, delay);
         
-        return delay + 500 + 500 + dwellTime + lineBreakPause + 500;
+        return delay + 300 + 300 + dwellTime + lineBreakPause + 300;
     }
 
     let timeline = 0;
 
-    // PHASE 1: Show prompt lines with proper timing (0-12s)
-    timeline = updateCaption("Here's a real MidJourney prompt we'll examine:", timeline);
+    // PHASE 1: Show prompt lines - START IMMEDIATELY
+    timeline = updateCaption("MidJourney prompt example:", timeline);
     
-    // Show prompt lines with responsive positioning
-    const promptContainer = svg.append("g").attr("transform", `translate(${width/2}, 60)`);
+    // Show prompt lines with responsive positioning - START IMMEDIATELY
+    const promptContainer = g.append("g").attr("transform", `translate(${width/2}, 50)`);
     
     promptLines.forEach((line, i) => {
         const promptLine = promptContainer.append("text")
             .attr("x", 0)
-            .attr("y", i * 25)
+            .attr("y", i * (isMobile ? 20 : 25))
             .attr("text-anchor", "middle")
             .attr("fill", "var(--accent-blue)")
-            .style("font-size", "0.85rem")
+            .style("font-size", isMobile ? "0.7rem" : "0.85rem")
             .style("font-family", "monospace")
             .style("font-weight", "500")
             .style("opacity", 0)
             .text(line);
         
         promptLine.transition()
-            .delay(timeline - 2000 + i * 1500) // 1.5s between lines
-            .duration(800)
+            .delay(200 + i * 400) // Start immediately, stagger by 400ms
+            .duration(600)
             .style("opacity", 1);
     });
 
     // Keep prompt visible longer, then fade
     promptContainer.transition()
-        .delay(timeline + 8000)
-        .duration(1000)
+        .delay(4000)  // Fade after 4s
+        .duration(800)
         .style("opacity", 0);
 
-    // PHASE 2: Explain weight concept (12-18s)
-    timeline = updateCaption("Weights control how much each concept appears in your image", timeline);
+    // PHASE 2: Explain weight concept - START IMMEDIATELY
+    timeline = updateCaption("Weights control concept appearance", timeline);
     
     const xAxis = g.append("g")
         .attr("transform", `translate(0,${height/2})`)
@@ -1260,12 +1329,12 @@ function drawWeightsViz() {
         .attr("fill", "var(--text-secondary)");
     
     xAxis.transition()
-        .delay(timeline - 4000)
-        .duration(1500)
+        .delay(800)  // Show axis immediately
+        .duration(1000)
         .style("opacity", 1);
 
-    // PHASE 3: Show neutral line (18-24s)
-    timeline = updateCaption("Zero means normal appearance. Left is less visible, right is more prominent", timeline);
+    // PHASE 3: Show neutral line
+    timeline = updateCaption("Zero = normal. Left = less, Right = more", timeline);
     
     const zeroLine = g.append("line")
         .attr("x1", x(0)).attr("x2", x(0))
@@ -1276,44 +1345,44 @@ function drawWeightsViz() {
         .style("opacity", 0);
     
     zeroLine.transition()
-        .delay(timeline - 4000)
-        .duration(2000)
-        .attr("y1", 80).attr("y2", height - 60)
+        .delay(1500)  // Show immediately after axis
+        .duration(1200)
+        .attr("y1", 80).attr("y2", height - 80)
         .style("opacity", 1);
 
     // Add scale labels with slow animation
     const leftLabel = g.append("text")
         .attr("x", x(-1.5))
-        .attr("y", height/2 - 20)
+        .attr("y", height/2 - (isMobile ? 15 : 20))
         .attr("text-anchor", "middle")
         .attr("fill", color(-1))
-        .style("font-size", "0.85rem")
+        .style("font-size", isMobile ? "0.65rem" : "0.85rem")
         .style("font-weight", "600")
         .style("opacity", 0)
-        .text("LESS VISIBLE");
+        .text(isMobile ? "LESS" : "LESS VISIBLE");
     
     const rightLabel = g.append("text")
         .attr("x", x(1.5))
-        .attr("y", height/2 - 20)
+        .attr("y", height/2 - (isMobile ? 15 : 20))
         .attr("text-anchor", "middle")
         .attr("fill", color(1))
-        .style("font-size", "0.85rem")
+        .style("font-size", isMobile ? "0.65rem" : "0.85rem")
         .style("font-weight", "600")
         .style("opacity", 0)
-        .text("MORE PROMINENT");
+        .text(isMobile ? "MORE" : "MORE PROMINENT");
 
     leftLabel.transition()
-        .delay(timeline - 2500)
-        .duration(1000)
+        .delay(1800)
+        .duration(800)
         .style("opacity", 1);
     
     rightLabel.transition()
-        .delay(timeline - 1500)
-        .duration(1000)
+        .delay(2000)
+        .duration(800)
         .style("opacity", 1);
 
-    // PHASE 4: Place concepts slowly (24-35s)
-    timeline = updateCaption("Now let's place each concept according to its weight", timeline);
+    // PHASE 4: Place concepts - START IMMEDIATELY
+    timeline = updateCaption("Placing each concept by weight", timeline);
     
     const nodes = g.selectAll("g.node")
         .data(data)
@@ -1323,13 +1392,13 @@ function drawWeightsViz() {
         .style("cursor", "pointer")
         .style("opacity", 0);
 
-    // Slow staggered appearance - 2.5s between each concept
+    // Faster staggered appearance - 800ms between each
     data.forEach((d, i) => {
         const node = d3.select(nodes.nodes()[i]);
         
         node.transition()
-            .delay(timeline - 6000 + i * 2500)
-            .duration(1200)
+            .delay(2500 + i * 800)  // Start sooner
+            .duration(800)
             .style("opacity", 1);
     });
 
@@ -1353,8 +1422,8 @@ function drawWeightsViz() {
         const circle = d3.select(nodes.nodes()[i]).select("circle");
         
         circle.transition()
-            .delay(timeline - 6000 + i * 2500)
-            .duration(1200)
+            .delay(2500 + i * 800)
+            .duration(800)
             .attr("r", d.no ? 15 : size(Math.abs(d.weight) || 0.8))
             .style("filter", d.weight > 0 ? "drop-shadow(0 0 10px rgba(88,166,255,0.7))" : null);
     });
@@ -1363,7 +1432,7 @@ function drawWeightsViz() {
     nodes.append("text")
         .attr("text-anchor", "middle")
         .attr("fill", "var(--text-primary)")
-        .style("font-size", "0.9rem")
+        .style("font-size", isMobile ? "0.75rem" : "0.9rem")
         .style("font-weight", "600")
         .style("opacity", 0)
         .text(d => d.label)
@@ -1379,7 +1448,7 @@ function drawWeightsViz() {
     nodes.append("text")
         .attr("text-anchor", "middle")
         .attr("fill", "var(--accent-blue)")
-        .style("font-size", "0.8rem")
+        .style("font-size", isMobile ? "0.65rem" : "0.8rem")
         .style("font-weight", "500")
         .style("opacity", 0)
         .text(d => d.example)
@@ -1395,8 +1464,8 @@ function drawWeightsViz() {
         const node = d3.select(nodes.nodes()[i]);
         
         node.selectAll("text").transition()
-            .delay(timeline - 5000 + i * 2500)
-            .duration(800)
+            .delay(2700 + i * 800)
+            .duration(600)
             .style("opacity", 1);
     });
 
@@ -1417,21 +1486,23 @@ function drawWeightsViz() {
                 .attr("stroke", "#ff6b6b")
                 .attr("stroke-width", 4);
             
+            const delay = 2500 + data.length * 800 + 300;
+            
             cross1.transition()
-                .delay(timeline - 4000 + nodeIndex * 2500 + 800)
-                .duration(800)
+                .delay(delay)
+                .duration(600)
                 .attr("x1", -12).attr("x2", 12)
                 .attr("y1", -12).attr("y2", 12);
             
             cross2.transition()
-                .delay(timeline - 4000 + nodeIndex * 2500 + 1200)
-                .duration(800)
+                .delay(delay + 300)
+                .duration(600)
                 .attr("x1", 12).attr("x2", -12)
                 .attr("y1", -12).attr("y2", 12);
         });
 
-    // PHASE 5: Final explanation (35s+)
-    timeline = updateCaption("Hover any concept to learn exactly how it affects your image", timeline);
+    // PHASE 5: Final explanation
+    timeline = updateCaption("Hover concepts to learn more", timeline);
 
     // Rich hover tooltips - ensure all nodes are hoverable
     nodes
@@ -1469,6 +1540,13 @@ function drawWeightsViz() {
                     .style("filter", d.weight > 0 ? "drop-shadow(0 0 10px rgba(88,166,255,0.7))" : null);
             }
         });
+    
+    // Cleanup function
+    svg.node().cleanup = function() {
+        if (captionBox && captionBox.parentNode) {
+            captionBox.parentNode.removeChild(captionBox);
+        }
+    };
 }
 
 document.addEventListener('DOMContentLoaded', init);
